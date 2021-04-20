@@ -3,6 +3,7 @@ import { Story, Meta } from "@storybook/react";
 import { SpeedSearch } from "./SpeedSearch";
 import { minusculeMatch } from "../minusculeMatch";
 import { TextWithHighlights } from "../TextWithHighlights/TextWithHighlights";
+import { useSpeedSearchState } from "./useSpeedSearch";
 
 export default {
   title: "Searchable",
@@ -10,12 +11,13 @@ export default {
 } as Meta;
 
 export const Default = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const { searchTerm, ...props } = useSpeedSearchState();
 
   return (
     <SpeedSearch
+      {...props}
       searchTerm={searchTerm}
-      onSearchTermChange={setSearchTerm}
+      stickySearch
       containerProps={{
         style: { background: "#3b3f41", color: "#bbb", width: 400 },
       }}
