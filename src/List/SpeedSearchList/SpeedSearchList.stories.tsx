@@ -1,12 +1,12 @@
 import React from "react";
 import { Meta } from "@storybook/react";
 import { Item } from "@react-stately/collections";
-import { List } from "./List";
-import { HighlightedTextValue } from "../selection/CollectionSpeedSearch/HighlightedTextValue";
+import { SpeedSearchList } from "./SpeedSearchList";
+import { HighlightedTextValue } from "../../selection/CollectionSpeedSearch/HighlightedTextValue";
 
 export default {
-  title: "List",
-  component: List,
+  title: "SpeedSearchList",
+  component: SpeedSearchList,
 } as Meta;
 
 const legends = [
@@ -34,9 +34,13 @@ const renderItemString = (item: typeof legends[number]) => (
 export const HighlightedByDefault = () => {
   return (
     <Pane>
-      <List selectionMode="multiple" items={legends} fillAvailableSpace>
+      <SpeedSearchList
+        selectionMode="multiple"
+        items={legends}
+        fillAvailableSpace
+      >
         {renderItemString}
-      </List>
+      </SpeedSearchList>
     </Pane>
   );
 };
@@ -44,9 +48,13 @@ export const HighlightedByDefault = () => {
 export const HighlightInCustomUI = () => {
   return (
     <Pane>
-      <List selectionMode="multiple" items={legends} fillAvailableSpace>
+      <SpeedSearchList
+        selectionMode="multiple"
+        items={legends}
+        fillAvailableSpace
+      >
         {renderCustomUI}
-      </List>
+      </SpeedSearchList>
     </Pane>
   );
 };

@@ -1,14 +1,14 @@
-import { BasicListProps, useBasicList } from "./BasicList/useBasicList";
+import { BasicListProps, useBasicList } from "../BasicList/useBasicList";
 import {
   useSpeedSearch,
   useSpeedSearchState,
-} from "../SpeedSearch/useSpeedSearch";
+} from "../../SpeedSearch/useSpeedSearch";
 import { ListState } from "@react-stately/list";
 import { HTMLProps, Key, RefObject, useState } from "react";
 import { mergeProps } from "@react-aria/utils";
-import { SpeedSearchPopupProps } from "../SpeedSearch/SpeedSearchPopup";
-import { useCollectionSpeedSearch } from "../selection/CollectionSpeedSearch/useCollectionSpeedSearch";
-import { TextRange } from "../TextRange";
+import { SpeedSearchPopupProps } from "../../SpeedSearch/SpeedSearchPopup";
+import { useCollectionSpeedSearch } from "../../selection/CollectionSpeedSearch/useCollectionSpeedSearch";
+import { TextRange } from "../../TextRange";
 import { useFocusWithin } from "@react-aria/interactions";
 
 interface UseListProps
@@ -16,7 +16,7 @@ interface UseListProps
   stickySearch?: boolean;
 }
 
-export function useList<T>(
+export function useSpeedSearchList<T>(
   props: UseListProps,
   listState: ListState<T>,
   ref: RefObject<HTMLElement>

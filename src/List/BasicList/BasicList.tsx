@@ -24,6 +24,13 @@ export interface BasicListProps<T extends object> extends AriaListBoxProps<T> {
   alwaysShowListAsFocused?: boolean;
 }
 
+/**
+ * List view with speedSearch instead of default typeahead.
+ * TODO:
+ *  - Support virtualization
+ *  - Support custom rendering
+ *  -
+ */
 export function BasicList<T extends object>({
   disallowEmptySelection = true,
   alwaysShowListAsFocused = false,

@@ -1,11 +1,11 @@
 import React, { useRef } from "react";
-import { ListItem } from "./ListItem";
-import { StyledList } from "./StyledList";
-import { BasicListProps } from "./BasicList/BasicList";
-import { useList } from "./useList";
-import { SpeedSearchContainer } from "../SpeedSearch/SpeedSearchContainer";
-import { SpeedSearchPopup } from "../SpeedSearch/SpeedSearchPopup";
-import { useListState } from "./useListState";
+import { ListItem } from "../ListItem";
+import { StyledList } from "../StyledList";
+import { BasicListProps } from "../BasicList/BasicList";
+import { useSpeedSearchList } from "./useSpeedSearchList";
+import { SpeedSearchContainer } from "../../SpeedSearch/SpeedSearchContainer";
+import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
+import { useListState } from "../useListState";
 
 interface ListProps<T extends object> extends BasicListProps<T> {
   stickySearch?: boolean;
@@ -15,14 +15,7 @@ const StyledListWithSpeedSearch = SpeedSearchContainer.withComponent(
   StyledList
 );
 
-/**
- * List view with speedSearch instead of default typeahead.
- * TODO:
- *  - Support virtualization
- *  - Support custom rendering
- *  -
- */
-export function List<T extends object>({
+export function SpeedSearchList<T extends object>({
   disallowEmptySelection = true,
   alwaysShowListAsFocused = false,
   fillAvailableSpace = false,
@@ -32,7 +25,7 @@ export function List<T extends object>({
   const ref = useRef<HTMLUListElement>(null);
   const state = useListState(props);
 
-  const { listProps, searchPopupProps, matches, focused } = useList(
+  const { listProps, searchPopupProps, matches, focused } = useSpeedSearchList(
     props,
     state,
     ref
