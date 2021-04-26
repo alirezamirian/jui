@@ -49,7 +49,7 @@ export function useSpeedSearchList<T>(
     matches,
     focused,
     searchPopupProps: {
-      active: speedSearch.isSearchTermVisible,
+      active: speedSearch.active,
       match: matches.size > 0,
       children: speedSearch.searchTerm,
     },

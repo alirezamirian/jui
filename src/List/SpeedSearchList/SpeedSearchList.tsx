@@ -15,6 +15,10 @@ const StyledListWithSpeedSearch = SpeedSearchContainer.withComponent(
   StyledList
 );
 
+/**
+ * TODO:
+ *  - Override keyboard navigation (arrows, ctrl+A, etc.) when speed search is active.
+ */
 export function SpeedSearchList<T extends object>({
   disallowEmptySelection = true,
   alwaysShowListAsFocused = false,

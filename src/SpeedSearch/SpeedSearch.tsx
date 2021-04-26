@@ -22,7 +22,7 @@ export function SpeedSearch({
   containerProps,
   ...otherProps
 }: Props) {
-  const { searchTerm, searchTermVisible } = otherProps;
+  const { searchTerm, active } = otherProps;
   const speedSearchState = useSpeedSearchState(otherProps);
   const { containerProps: speedSearchContainerProps } = useSpeedSearch(
     { stickySearch },
@@ -33,9 +33,7 @@ export function SpeedSearch({
     <SpeedSearchContainer
       {...mergeProps(containerProps, speedSearchContainerProps)}
     >
-      <SpeedSearchPopup active={searchTermVisible}>
-        {searchTerm}
-      </SpeedSearchPopup>
+      <SpeedSearchPopup active={active}>{searchTerm}</SpeedSearchPopup>
       {children}
     </SpeedSearchContainer>
   );

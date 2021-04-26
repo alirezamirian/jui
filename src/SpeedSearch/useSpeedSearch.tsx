@@ -4,8 +4,8 @@ import { useControlledState } from "@react-stately/utils";
 import { ControlledStateProps } from "../type-utils";
 
 export interface SpeedSearchState {
-  isSearchTermVisible: boolean;
-  setSearchTermVisible: (value: boolean) => void;
+  active: boolean;
+  setActive: (value: boolean) => void;
   searchTerm: string;
   setSearchTerm: (value: string) => void;
 }
@@ -13,16 +13,16 @@ export interface SpeedSearchState {
 export interface SpeedSearchStateProps
   extends ControlledStateProps<{
     searchTerm: string;
-    searchTermVisible: boolean;
+    active: boolean;
   }> {}
 
 export function useSpeedSearchState(
   props: SpeedSearchStateProps
 ): SpeedSearchState {
-  const [isSearchTermVisible, setSearchTermVisible] = useControlledState(
-    props.searchTermVisible!,
-    props.defaultSearchTermVisible || false,
-    props.onSearchTermVisibleChange!
+  const [active, setActive] = useControlledState(
+    props.active!,
+    props.active || false,
+    props.onActiveChange!
   );
   const [searchTerm, setSearchTerm] = useControlledState(
     props.searchTerm!,
@@ -31,9 +31,9 @@ export function useSpeedSearchState(
   );
 
   return {
-    isSearchTermVisible,
+    active: active,
     searchTerm,
-    setSearchTermVisible,
+    setActive,
     setSearchTerm,
   };
 }
@@ -44,18 +44,18 @@ interface SpeedSearchProps {
 
 export function useSpeedSearch(
   { stickySearch }: SpeedSearchProps,
-  { searchTerm, setSearchTermVisible, setSearchTerm }: SpeedSearchState
+  { searchTerm, setActive, setSearchTerm }: SpeedSearchState
 ) {
   const { onKeyDown: ghostInputKeydown } = useGhostInput({
     value: searchTerm,
     onChange: (value) => {
       setSearchTerm(value);
-      setSearchTermVisible(true);
+      setActive(true);
     },
   });
   const clear = () => {
     setSearchTerm("");
-    setSearchTermVisible(false);
+    setActive(false);
   };
 
   const {
