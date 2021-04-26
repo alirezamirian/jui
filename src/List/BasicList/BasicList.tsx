@@ -2,12 +2,12 @@ import { AriaListBoxProps } from "@react-types/listbox";
 import React, { useRef, useState } from "react";
 import { useFocusWithin } from "@react-aria/interactions";
 import { mergeProps } from "@react-aria/utils";
-import { useJList } from "./useJList";
-import { ListItem } from "./ListItem";
-import { StyledList } from "./StyledList";
-import { useListState } from "./useListState";
+import { useBasicList } from "./useBasicList";
+import { ListItem } from "../ListItem";
+import { StyledList } from "../StyledList";
+import { useListState } from "../useListState";
 
-export interface JListProps<T extends object> extends AriaListBoxProps<T> {
+export interface BasicListProps<T extends object> extends AriaListBoxProps<T> {
   /**
    * fills the available horizontal or vertical space, when rendered in a flex container.
    */
@@ -24,17 +24,17 @@ export interface JListProps<T extends object> extends AriaListBoxProps<T> {
   alwaysShowListAsFocused?: boolean;
 }
 
-export function JList<T extends object>({
+export function BasicList<T extends object>({
   disallowEmptySelection = true,
   alwaysShowListAsFocused = false,
   fillAvailableSpace = false,
   ...inputProps
-}: JListProps<T>) {
+}: BasicListProps<T>) {
   const props = { ...inputProps, disallowEmptySelection };
   const ref = useRef<HTMLUListElement>(null);
   const state = useListState(props);
   const [focusWithin, setFocusWithin] = useState(false);
-  const { listProps } = useJList(props, state, ref);
+  const { listProps } = useBasicList(props, state, ref);
 
   const { focusWithinProps } = useFocusWithin({
     onFocusWithinChange: setFocusWithin,

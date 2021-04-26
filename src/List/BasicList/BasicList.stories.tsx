@@ -1,11 +1,11 @@
 import React from "react";
 import { Meta } from "@storybook/react";
-import { JList } from "./JList";
+import { BasicList } from "./BasicList";
 import { Item } from "@react-stately/collections";
 
 export default {
-  title: "JList",
-  component: JList,
+  title: "Basic List",
+  component: BasicList,
 } as Meta;
 
 const legends = [
@@ -24,9 +24,9 @@ const renderItem = (item: typeof legends[number]) => (
 export const Default = () => {
   return (
     <Pane>
-      <JList selectionMode="single" items={legends} fillAvailableSpace>
+      <BasicList selectionMode="single" items={legends} fillAvailableSpace>
         {renderItem}
-      </JList>
+      </BasicList>
     </Pane>
   );
 };
@@ -34,14 +34,14 @@ export const Default = () => {
 export const AlwaysShownAsFocused = () => {
   return (
     <Pane>
-      <JList
+      <BasicList
         selectionMode="single"
         items={legends}
         fillAvailableSpace
         alwaysShowListAsFocused
       >
         {renderItem}
-      </JList>
+      </BasicList>
     </Pane>
   );
 };
@@ -53,7 +53,7 @@ export const MultiSelect = ({
 }: any) => {
   return (
     <Pane>
-      <JList
+      <BasicList
         selectionMode="multiple"
         items={legends}
         fillAvailableSpace={fillAvailableSpace}
@@ -61,7 +61,7 @@ export const MultiSelect = ({
         alwaysShowListAsFocused={alwaysShowListAsFocused}
       >
         {renderItem}
-      </JList>
+      </BasicList>
     </Pane>
   );
 };

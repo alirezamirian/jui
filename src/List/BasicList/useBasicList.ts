@@ -2,7 +2,7 @@ import { SelectableListOptions } from "@react-aria/selection";
 import { ListState } from "@react-stately/list";
 import React, { useEffect } from "react";
 
-export interface JListProps
+export interface BasicListProps
   extends Omit<
     SelectableListOptions,
     | "selectOnFocus"
@@ -13,19 +13,14 @@ export interface JListProps
   > {
   id?: string;
 }
-import { useSelectableList } from "./useSelectableList";
+import { useSelectableList } from "../useSelectableList";
 // import { useSelectableList } from "@react-aria/selection";
 
-export function useJList<T>(
-  props: JListProps,
+export function useBasicList<T>(
+  props: BasicListProps,
   state: ListState<T>,
   ref: React.RefObject<HTMLElement>
 ) {
-  // const setFocusedKey = state.selectionManager.setFocusedKey;
-  // state.selectionManager.setFocusedKey = (...args) => {
-  //   setFocusedKey.apply(state.selectionManager, args);
-  //   state.selectionManager.extendSelection(args[0]);
-  // };
   const {
     listProps: { onMouseDown, ...listProps },
   } = useSelectableList({
@@ -38,7 +33,7 @@ export function useJList<T>(
     selectOnFocus: true,
   });
 
-  // auto select the first item, if selection is empty.
+  // auto select the first item, if selection is empty and disallowEmptySelection is true.
   useEffect(() => {
     const firstKey = state.collection.getFirstKey();
     if (

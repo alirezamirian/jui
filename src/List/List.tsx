@@ -1,13 +1,13 @@
 import React, { useRef } from "react";
 import { ListItem } from "./ListItem";
 import { StyledList } from "./StyledList";
-import { JListProps } from "./JList";
+import { BasicListProps } from "./BasicList/BasicList";
 import { useList } from "./useList";
 import { SpeedSearchContainer } from "../SpeedSearch/SpeedSearchContainer";
 import { SpeedSearchPopup } from "../SpeedSearch/SpeedSearchPopup";
 import { useListState } from "./useListState";
 
-interface ListProps<T extends object> extends JListProps<T> {
+interface ListProps<T extends object> extends BasicListProps<T> {
   stickySearch?: boolean;
 }
 

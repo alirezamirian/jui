@@ -1,4 +1,4 @@
-import { JListProps, useJList } from "./useJList";
+import { BasicListProps, useBasicList } from "./BasicList/useBasicList";
 import {
   useSpeedSearch,
   useSpeedSearchState,
@@ -12,7 +12,7 @@ import { TextRange } from "../TextRange";
 import { useFocusWithin } from "@react-aria/interactions";
 
 interface UseListProps
-  extends Omit<JListProps, "keyboardDelegate" | "disallowTypeAhead" | ""> {
+  extends Omit<BasicListProps, "keyboardDelegate" | "disallowTypeAhead" | ""> {
   stickySearch?: boolean;
 }
 
@@ -34,7 +34,7 @@ export function useList<T>(
     speedSearch,
   });
   const { containerProps } = useSpeedSearch({ stickySearch }, speedSearch);
-  const { listProps } = useJList(
+  const { listProps } = useBasicList(
     { ...props, disallowTypeAhead: true },
     listState,
     ref
