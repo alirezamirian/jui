@@ -3,7 +3,7 @@ import React, { useRef, useState } from "react";
 import { useFocusWithin } from "@react-aria/interactions";
 import { mergeProps } from "@react-aria/utils";
 import { useBasicList } from "./useBasicList";
-import { ListItem } from "../ListItem";
+import { BasicListItem } from "./BasicListItem";
 import { StyledList } from "../StyledList";
 import { useListState } from "../useListState";
 
@@ -54,7 +54,7 @@ export function BasicList<T extends object>({
       ref={ref}
     >
       {[...state.collection].map((item) => (
-        <ListItem
+        <BasicListItem
           key={item.key}
           item={item}
           state={state}

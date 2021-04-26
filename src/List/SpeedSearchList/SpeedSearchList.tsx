@@ -1,11 +1,11 @@
 import React, { useRef } from "react";
-import { ListItem } from "../ListItem";
 import { StyledList } from "../StyledList";
 import { BasicListProps } from "../BasicList/BasicList";
 import { useSpeedSearchList } from "./useSpeedSearchList";
 import { SpeedSearchContainer } from "../../SpeedSearch/SpeedSearchContainer";
 import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
 import { useListState } from "../useListState";
+import { SpeedSearchListItem } from "./SpeedSearchListItem";
 
 interface ListProps<T extends object> extends BasicListProps<T> {
   stickySearch?: boolean;
@@ -39,7 +39,7 @@ export function SpeedSearchList<T extends object>({
     >
       <SpeedSearchPopup {...searchPopupProps} />
       {[...state.collection].map((item) => (
-        <ListItem
+        <SpeedSearchListItem
           key={item.key}
           item={item}
           state={state}
