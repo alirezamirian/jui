@@ -1,8 +1,6 @@
 import { SelectableListOptions } from "@react-aria/selection";
 import { ListState } from "@react-stately/list";
 import React, { useEffect } from "react";
-import { useId } from "@react-aria/utils";
-import { listIds } from "@react-aria/listbox";
 
 export interface JListProps
   extends Omit<
@@ -40,11 +38,7 @@ export function useJList<T>(
     selectOnFocus: true,
   });
 
-  const id = useId(props.id);
-  listIds.set(state, id);
-
-  // auto select the first item, if selection is empty. Maybe supported by an option in one of the
-  // used hooks already?
+  // auto select the first item, if selection is empty.
   useEffect(() => {
     const firstKey = state.collection.getFirstKey();
     if (

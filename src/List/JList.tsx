@@ -1,4 +1,3 @@
-import { useListState } from "@react-stately/list";
 import { AriaListBoxProps } from "@react-types/listbox";
 import React, { useRef, useState } from "react";
 import { useFocusWithin } from "@react-aria/interactions";
@@ -6,6 +5,7 @@ import { mergeProps } from "@react-aria/utils";
 import { useJList } from "./useJList";
 import { ListItem } from "./ListItem";
 import { StyledList } from "./StyledList";
+import { useListState } from "./useListState";
 
 export interface JListProps<T extends object> extends AriaListBoxProps<T> {
   /**

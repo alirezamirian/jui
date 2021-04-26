@@ -20,7 +20,7 @@ import { HTMLAttributes, Key, RefObject, useEffect, useMemo } from "react";
 import { ListKeyboardDelegate } from "@react-aria/selection";
 import { MultipleSelectionManager } from "@react-stately/selection";
 import { useCollator } from "@react-aria/i18n";
-import { useSelectableCollection } from "./useSelectableCollection";
+import { useSelectableCollection } from "../selection/useSelectableCollection";
 
 interface SelectableListOptions {
   /**

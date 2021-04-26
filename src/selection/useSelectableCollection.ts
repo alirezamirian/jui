@@ -20,18 +20,11 @@ import React, {
 } from "react";
 import { focusSafely, getFocusableTreeWalker } from "@react-aria/focus";
 import { FocusStrategy, KeyboardDelegate } from "@react-types/shared";
-import { isMac, mergeProps } from "@react-aria/utils";
+import { mergeProps } from "@react-aria/utils";
 import { MultipleSelectionManager } from "@react-stately/selection";
 import { useLocale } from "@react-aria/i18n";
 import { useTypeSelect } from "@react-aria/selection";
-
-function isCtrlKeyPressed(e: KeyboardEvent) {
-  if (isMac()) {
-    return e.metaKey;
-  }
-
-  return e.ctrlKey;
-}
+import { isCtrlKeyPressed } from "../utils/keyboard-utils";
 
 interface SelectableCollectionOptions {
   /**

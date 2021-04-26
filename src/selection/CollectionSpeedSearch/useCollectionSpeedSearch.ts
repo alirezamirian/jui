@@ -1,7 +1,7 @@
 import { Key, useMemo } from "react";
-import { minusculeMatch } from "../minusculeMatch";
-import { SpeedSearchState } from "../SpeedSearch/useSpeedSearch";
-import { TextRange } from "../TextRange";
+import { minusculeMatch } from "../../minusculeMatch";
+import { SpeedSearchState } from "../../SpeedSearch/useSpeedSearch";
+import { TextRange } from "../../TextRange";
 import { Collection, Node } from "@react-types/shared";
 import { MultipleSelectionManager } from "@react-stately/selection";
 

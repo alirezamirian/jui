@@ -1652,7 +1652,7 @@
     "@react-stately/utils" "^3.1.1"
     "@react-types/shared" "^3.2.1"
 
-"@react-stately/selection@^3.2.1", "@react-stately/selection@^3.4.0":
+"@react-stately/selection@3.4.0", "@react-stately/selection@^3.2.1", "@react-stately/selection@^3.4.0":
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/@react-stately/selection/-/selection-3.4.0.tgz#795134e17b59f21cc4979b30179bccdfc2e3b9c1"
   integrity sha512-5RV9f1Tm4WSTDguL1iizYcgzeWiK6Qe2EZ03zaaE9gm5UyyIrEPQD4WW9Semio2cUF8IFuWLaOvRCk+un7p53Q==

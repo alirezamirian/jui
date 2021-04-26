@@ -5,7 +5,7 @@ import { useSelectableItem } from "@react-aria/selection";
 import { usePress } from "@react-aria/interactions";
 import { TextRange } from "../TextRange";
 import { TextWithHighlights } from "../TextWithHighlights/TextWithHighlights";
-import { HighlightedTextValueContext } from "../CollectionSpeedSearch/HighlightedTextValue";
+import { HighlightedTextValueContext } from "../selection/CollectionSpeedSearch/HighlightedTextValue";
 import { StyledListItem } from "./StyledListItem";
 
 export function ListItem<T>({
@@ -16,7 +16,7 @@ export function ListItem<T>({
 }: {
   listFocused: boolean;
   item: Node<T>;
-  highlightedRanges: TextRange[] | null;
+  highlightedRanges?: TextRange[] | null;
   state: ListState<T>;
 }) {
   const ref = React.useRef(null);
@@ -39,7 +39,7 @@ export function ListItem<T>({
       {item.textValue}
     </TextWithHighlights>
   ) : (
-    item.textValue
+    <>{item.textValue}</>
   );
 
   return (

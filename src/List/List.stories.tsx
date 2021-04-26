@@ -2,7 +2,7 @@ import React from "react";
 import { Meta } from "@storybook/react";
 import { Item } from "@react-stately/collections";
 import { List } from "./List";
-import { HighlightedTextValue } from "../CollectionSpeedSearch/HighlightedTextValue";
+import { HighlightedTextValue } from "../selection/CollectionSpeedSearch/HighlightedTextValue";
 
 export default {
   title: "List",

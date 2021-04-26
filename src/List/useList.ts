@@ -7,7 +7,7 @@ import { ListState } from "@react-stately/list";
 import { HTMLProps, Key, RefObject, useState } from "react";
 import { mergeProps } from "@react-aria/utils";
 import { SpeedSearchPopupProps } from "../SpeedSearch/SpeedSearchPopup";
-import { useCollectionSpeedSearch } from "../CollectionSpeedSearch/useCollectionSpeedSearch";
+import { useCollectionSpeedSearch } from "../selection/CollectionSpeedSearch/useCollectionSpeedSearch";
 import { TextRange } from "../TextRange";
 import { useFocusWithin } from "@react-aria/interactions";
 
@@ -17,7 +17,7 @@ interface UseListProps
 }
 
 export function useList<T>(
-  { stickySearch }: UseListProps,
+  props: UseListProps,
   listState: ListState<T>,
   ref: RefObject<HTMLElement>
 ): {
@@ -26,6 +26,7 @@ export function useList<T>(
   focused: boolean;
   matches: Map<Key, TextRange[]>;
 } {
+  const { stickySearch } = props;
   const [focused, setFocused] = useState(false);
   const speedSearch = useSpeedSearchState({});
   const { matches } = useCollectionSpeedSearch({
@@ -33,7 +34,11 @@ export function useList<T>(
     speedSearch,
   });
   const { containerProps } = useSpeedSearch({ stickySearch }, speedSearch);
-  const { listProps } = useJList({ disallowTypeAhead: true }, listState, ref);
+  const { listProps } = useJList(
+    { ...props, disallowTypeAhead: true },
+    listState,
+    ref
+  );
 
   const { focusWithinProps } = useFocusWithin({
     onFocusWithinChange: setFocused,

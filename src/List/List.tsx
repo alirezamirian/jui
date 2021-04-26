@@ -1,13 +1,11 @@
-import { useListState } from "@react-stately/list";
-import React, { useRef, useState } from "react";
-import { useFocusWithin } from "@react-aria/interactions";
-import { mergeProps } from "@react-aria/utils";
+import React, { useRef } from "react";
 import { ListItem } from "./ListItem";
 import { StyledList } from "./StyledList";
 import { JListProps } from "./JList";
 import { useList } from "./useList";
 import { SpeedSearchContainer } from "../SpeedSearch/SpeedSearchContainer";
 import { SpeedSearchPopup } from "../SpeedSearch/SpeedSearchPopup";
+import { useListState } from "./useListState";
 
 interface ListProps<T extends object> extends JListProps<T> {
   stickySearch?: boolean;
@@ -22,7 +20,6 @@ const StyledListWithSpeedSearch = SpeedSearchContainer.withComponent(
  * TODO:
  *  - Support virtualization
  *  - Support custom rendering
- *  - Fix click behaviour when multiselect and selectOnFocus is true (which is even an option so far)
  *  -
  */
 export function List<T extends object>({
@@ -34,6 +31,7 @@ export function List<T extends object>({
   const props = { ...inputProps, disallowEmptySelection };
   const ref = useRef<HTMLUListElement>(null);
   const state = useListState(props);
+
   const { listProps, searchPopupProps, matches, focused } = useList(
     props,
     state,
