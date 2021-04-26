@@ -1,39 +1,61 @@
-import { useState } from "react";
-import { useSimulatedInput } from "./useSimulatedInput";
+import { useGhostInput } from "./useGhostInput";
 import { useFocusWithin, useKeyboard } from "@react-aria/interactions";
+import { useControlledState } from "@react-stately/utils";
+import { ControlledStateProps } from "../type-utils";
 
-export type SpeedSearchStateProps = ReturnType<typeof useSpeedSearchState>;
+export interface SpeedSearchState {
+  isSearchTermVisible: boolean;
+  setSearchTermVisible: (value: boolean) => void;
+  searchTerm: string;
+  setSearchTerm: (value: string) => void;
+}
 
-export function useSpeedSearchState() {
-  const [isSearchTermVisible, onSearchTermVisibleChange] = useState(false);
-  const [searchTerm, onSearchTermChange] = useState("");
+export interface SpeedSearchStateProps
+  extends ControlledStateProps<{
+    searchTerm: string;
+    searchTermVisible: boolean;
+  }> {}
+
+export function useSpeedSearchState(
+  props: SpeedSearchStateProps
+): SpeedSearchState {
+  const [isSearchTermVisible, setSearchTermVisible] = useControlledState(
+    props.searchTermVisible!,
+    props.defaultSearchTermVisible || false,
+    props.onSearchTermVisibleChange!
+  );
+  const [searchTerm, setSearchTerm] = useControlledState(
+    props.searchTerm!,
+    props.defaultSearchTerm || "",
+    props.onSearchTermChange!
+  );
 
   return {
     isSearchTermVisible,
     searchTerm,
-    onSearchTermVisibleChange,
-    onSearchTermChange,
+    setSearchTermVisible,
+    setSearchTerm,
   };
 }
 
+interface SpeedSearchProps {
+  stickySearch?: boolean;
+}
+
 export function useSpeedSearch(
-  {
-    searchTerm,
-    onSearchTermVisibleChange,
-    onSearchTermChange,
-  }: Omit<SpeedSearchStateProps, "isSearchTermVisible">,
-  { stickySearch }: { stickySearch: boolean }
+  { stickySearch }: SpeedSearchProps,
+  { searchTerm, setSearchTermVisible, setSearchTerm }: SpeedSearchState
 ) {
-  const { onKeyDown: simulatedInputKeydown } = useSimulatedInput({
+  const { onKeyDown: ghostInputKeydown } = useGhostInput({
     value: searchTerm,
     onChange: (value) => {
-      onSearchTermChange(value);
-      onSearchTermVisibleChange(true);
+      setSearchTerm(value);
+      setSearchTermVisible(true);
     },
   });
   const clear = () => {
-    onSearchTermChange("");
-    onSearchTermVisibleChange(false);
+    setSearchTerm("");
+    setSearchTermVisible(false);
   };
 
   const {
@@ -44,7 +66,7 @@ export function useSpeedSearch(
       if (e.key === "Escape") {
         clear();
       } else {
-        simulatedInputKeydown(e);
+        ghostInputKeydown(e);
       }
     },
   });

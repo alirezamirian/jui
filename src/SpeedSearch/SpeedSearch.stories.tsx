@@ -11,12 +11,12 @@ export default {
 } as Meta;
 
 export const Default = () => {
-  const { searchTerm, ...props } = useSpeedSearchState();
+  const [searchTerm, setSearchTerm] = useState("");
 
   return (
     <SpeedSearch
-      {...props}
       searchTerm={searchTerm}
+      onSearchTermChange={setSearchTerm}
       stickySearch
       containerProps={{
         style: { background: "#3b3f41", color: "#bbb", width: 400 },
@@ -25,7 +25,6 @@ export const Default = () => {
       <ul>
         <li>
           <SearchableText searchTerm={searchTerm}>Item one.</SearchableText>
-          <span contentEditable>content editable element</span>
         </li>
         <li>
           <SearchableText searchTerm={searchTerm}>Item two.</SearchableText>{" "}

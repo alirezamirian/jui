@@ -1,7 +1,11 @@
 import React, { HTMLProps } from "react";
 import { mergeProps } from "@react-aria/utils";
 import { SpeedSearchPopup } from "./SpeedSearchPopup";
-import { SpeedSearchStateProps, useSpeedSearch } from "./useSpeedSearch";
+import {
+  SpeedSearchStateProps,
+  useSpeedSearch,
+  useSpeedSearchState,
+} from "./useSpeedSearch";
 import { SpeedSearchContainer } from "./SpeedSearchContainer";
 
 interface Props extends SpeedSearchStateProps {
@@ -15,26 +19,23 @@ interface Props extends SpeedSearchStateProps {
 export function SpeedSearch({
   children,
   stickySearch = false,
-  searchTerm = "",
-  onSearchTermChange,
-  isSearchTermVisible,
-  onSearchTermVisibleChange,
   containerProps,
+  ...otherProps
 }: Props) {
+  const { searchTerm, searchTermVisible } = otherProps;
+  const speedSearchState = useSpeedSearchState(otherProps);
   const { containerProps: speedSearchContainerProps } = useSpeedSearch(
-    {
-      searchTerm,
-      onSearchTermChange,
-      onSearchTermVisibleChange,
-    },
-    { stickySearch }
+    { stickySearch },
+    speedSearchState
   );
 
   return (
     <SpeedSearchContainer
       {...mergeProps(containerProps, speedSearchContainerProps)}
     >
-      {isSearchTermVisible && <SpeedSearchPopup>{searchTerm}</SpeedSearchPopup>}
+      <SpeedSearchPopup active={searchTermVisible}>
+        {searchTerm}
+      </SpeedSearchPopup>
       {children}
     </SpeedSearchContainer>
   );

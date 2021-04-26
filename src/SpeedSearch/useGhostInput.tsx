@@ -23,7 +23,7 @@ function isTypeableElement(elem: HTMLElement): boolean {
  * TODO: add support for removing word by word by alt+backspace like native text fields.
  * TODO: add support for removing the whole content by command/ctrl+backspace.
  */
-export function useSimulatedInput({
+export function useGhostInput({
   value,
   onChange,
 }: {
