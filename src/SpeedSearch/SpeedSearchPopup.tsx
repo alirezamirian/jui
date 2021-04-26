@@ -7,6 +7,12 @@ export interface SpeedSearchPopupProps {
   active: boolean | undefined;
 }
 
+/**
+ * The little popup view shown at the top left corner of list, tree, etc., which shows the search
+ * query.
+ * TODO:
+ *  - add magnifier icon
+ */
 export const SpeedSearchPopup: React.FC<SpeedSearchPopupProps> = ({
   active,
   match,
