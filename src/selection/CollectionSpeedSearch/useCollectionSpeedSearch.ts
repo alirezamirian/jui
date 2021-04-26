@@ -30,6 +30,7 @@ export function useCollectionSpeedSearch<T>({
     );
 
     if (matchedKeys.length > 0 && noneOfTheMatchesAreSelected) {
+      selectionManager.setFocusedKey(matchedKeys[0]);
       selectionManager.replaceSelection(matchedKeys[0]);
     }
     return matches;
