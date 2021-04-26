@@ -6,7 +6,7 @@ import { TextWithHighlights } from "../TextWithHighlights/TextWithHighlights";
 import { useSpeedSearchState } from "./useSpeedSearch";
 
 export default {
-  title: "Searchable",
+  title: "SpeedSearch",
   component: SpeedSearch,
 } as Meta;
 

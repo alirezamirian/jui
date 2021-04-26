@@ -4,7 +4,7 @@ import { BasicList } from "./BasicList";
 import { Item } from "@react-stately/collections";
 
 export default {
-  title: "Basic List",
+  title: "BasicList",
   component: BasicList,
 } as Meta;
 
