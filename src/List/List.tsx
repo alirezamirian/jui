@@ -17,6 +17,14 @@ const StyledListWithSpeedSearch = SpeedSearchContainer.withComponent(
   StyledList
 );
 
+/**
+ * List view with speedSearch instead of default typeahead.
+ * TODO:
+ *  - Support virtualization
+ *  - Support custom rendering
+ *  - Fix click behaviour when multiselect and selectOnFocus is true (which is even an option so far)
+ *  -
+ */
 export function List<T extends object>({
   disallowEmptySelection = true,
   alwaysShowListAsFocused = false,
@@ -26,17 +34,16 @@ export function List<T extends object>({
   const props = { ...inputProps, disallowEmptySelection };
   const ref = useRef<HTMLUListElement>(null);
   const state = useListState(props);
-  const [focusWithin, setFocusWithin] = useState(false);
-  const { listProps, searchPopupProps, matches } = useList(props, state, ref);
-
-  const { focusWithinProps } = useFocusWithin({
-    onFocusWithinChange: setFocusWithin,
-  });
+  const { listProps, searchPopupProps, matches, focused } = useList(
+    props,
+    state,
+    ref
+  );
 
   return (
     <StyledListWithSpeedSearch
       fillAvailableSpace={fillAvailableSpace}
-      {...mergeProps(listProps, focusWithinProps)}
+      {...listProps}
       ref={ref}
     >
       <SpeedSearchPopup {...searchPopupProps} />
@@ -46,7 +53,7 @@ export function List<T extends object>({
           item={item}
           state={state}
           highlightedRanges={matches.get(item.key) || null}
-          listFocused={alwaysShowListAsFocused || focusWithin}
+          listFocused={alwaysShowListAsFocused || focused}
         />
       ))}
     </StyledListWithSpeedSearch>
