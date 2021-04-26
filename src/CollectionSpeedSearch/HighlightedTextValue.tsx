@@ -1,9 +1,11 @@
-import React, { useContext } from "react";
+import React, { ComponentProps, useContext } from "react";
+import { TextWithHighlights } from "../TextWithHighlights/TextWithHighlights";
 
-export const HighlightedTextValueContext = React.createContext<React.ReactNode>(
-  null
-);
+export const HighlightedTextValueContext = React.createContext<React.ReactElement<
+  ComponentProps<typeof TextWithHighlights>,
+  typeof TextWithHighlights
+> | null>(null);
 
-export const HighlightedTextValue: React.FC = () => {
-  return <>{useContext(HighlightedTextValueContext)}</>;
+export const HighlightedTextValue = () => {
+  return useContext(HighlightedTextValueContext);
 };
