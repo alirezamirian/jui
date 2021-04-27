@@ -1,18 +1,20 @@
 import { BasicListProps, useBasicList } from "../BasicList/useBasicList";
 import {
+  SpeedSearchState,
   useSpeedSearch,
   useSpeedSearchState,
 } from "../../SpeedSearch/useSpeedSearch";
 import { ListState } from "@react-stately/list";
-import { HTMLProps, Key, RefObject, useState } from "react";
+import React, { HTMLProps, Key, RefObject, useMemo, useState } from "react";
 import { mergeProps } from "@react-aria/utils";
 import { SpeedSearchPopupProps } from "../../SpeedSearch/SpeedSearchPopup";
 import { useCollectionSpeedSearch } from "../../selection/CollectionSpeedSearch/useCollectionSpeedSearch";
 import { TextRange } from "../../TextRange";
 import { useFocusWithin } from "@react-aria/interactions";
+import { SpeedSearchListKeyboardDelegate } from "./SpeedSearchListKeyboardDelegate";
 
 interface UseListProps
-  extends Omit<BasicListProps, "keyboardDelegate" | "disallowTypeAhead" | ""> {
+  extends Omit<BasicListProps, "keyboardDelegate" | "disallowTypeAhead"> {
   stickySearch?: boolean;
 }
 
@@ -34,8 +36,18 @@ export function useSpeedSearchList<T>(
     speedSearch,
   });
   const { containerProps } = useSpeedSearch({ stickySearch }, speedSearch);
+  const keyboardDelegate = useSpeedSearchListKeyboardDelegate(
+    listState,
+    ref,
+    speedSearch,
+    matches
+  );
   const { listProps } = useBasicList(
-    { ...props, disallowTypeAhead: true },
+    {
+      ...props,
+      disallowTypeAhead: true,
+      keyboardDelegate,
+    },
     listState,
     ref
   );
@@ -54,4 +66,28 @@ export function useSpeedSearchList<T>(
       children: speedSearch.searchTerm,
     },
   };
+}
+
+function useSpeedSearchListKeyboardDelegate<T>(
+  listState: ListState<T>,
+  ref: React.RefObject<HTMLElement>,
+  speedSearch: SpeedSearchState,
+  matches: Map<React.Key, TextRange[]>
+) {
+  return useMemo(
+    () =>
+      new SpeedSearchListKeyboardDelegate(
+        listState.collection,
+        listState.disabledKeys,
+        ref,
+        speedSearch.active ? matches : null
+      ),
+    [
+      listState.collection,
+      listState.disabledKeys,
+      ref,
+      matches,
+      speedSearch.active,
+    ]
+  );
 }
