@@ -36,6 +36,7 @@ export function useGhostInput({
     if (
       !event.ctrlKey &&
       !event.altKey &&
+      !event.metaKey &&
       (!(event.target instanceof HTMLElement) ||
         !isTypeableElement(event.target))
     ) {
