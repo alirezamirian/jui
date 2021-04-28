@@ -24,7 +24,7 @@ export function TextWithHighlights({
         const text = children.slice(from, to + 1);
         return (
           // TODO: key
-          <React.Fragment>
+          <React.Fragment key={`${from}_${to}`}>
             {highlighted ? <HighlightedMatch>{text}</HighlightedMatch> : text}
           </React.Fragment>
         );
