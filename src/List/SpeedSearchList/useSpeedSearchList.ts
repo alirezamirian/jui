@@ -12,6 +12,7 @@ import { useCollectionSpeedSearch } from "../../selection/CollectionSpeedSearch/
 import { TextRange } from "../../TextRange";
 import { useFocusWithin } from "@react-aria/interactions";
 import { SpeedSearchListKeyboardDelegate } from "./SpeedSearchListKeyboardDelegate";
+import { SpeedSearchSelectionManager } from "./SpeedSearchSelectionManager";
 
 interface UseListProps
   extends Omit<BasicListProps, "keyboardDelegate" | "disallowTypeAhead"> {
@@ -26,12 +27,14 @@ export function useSpeedSearchList<T>(
   listProps: HTMLProps<HTMLUListElement>;
   searchPopupProps: SpeedSearchPopupProps;
   focused: boolean;
+  selectionManager: SpeedSearchSelectionManager;
   matches: Map<Key, TextRange[]>;
 } {
   const { stickySearch } = props;
   const [focused, setFocused] = useState(false);
-  const speedSearch = useSpeedSearchState({});
-  const { matches } = useCollectionSpeedSearch({
+  const speedSearch = useSpeedSearchState({}); // maybe allow control over state via props?
+
+  const { matches, selectionManager } = useCollectionSpeedSearch({
     ...listState,
     speedSearch,
   });
@@ -48,7 +51,7 @@ export function useSpeedSearchList<T>(
       disallowTypeAhead: true,
       keyboardDelegate,
     },
-    listState,
+    { ...listState, selectionManager },
     ref
   );
 
@@ -60,6 +63,7 @@ export function useSpeedSearchList<T>(
     listProps: mergeProps(listProps, containerProps, focusWithinProps),
     matches,
     focused,
+    selectionManager,
     searchPopupProps: {
       active: speedSearch.active,
       match: matches.size > 0,

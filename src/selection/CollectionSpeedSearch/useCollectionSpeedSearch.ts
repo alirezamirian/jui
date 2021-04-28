@@ -4,6 +4,7 @@ import { SpeedSearchState } from "../../SpeedSearch/useSpeedSearch";
 import { TextRange } from "../../TextRange";
 import { Collection, Node } from "@react-types/shared";
 import { MultipleSelectionManager } from "@react-stately/selection";
+import { SpeedSearchSelectionManager } from "../../List/SpeedSearchList/SpeedSearchSelectionManager";
 
 export function useCollectionSpeedSearch<T>({
   collection,
@@ -14,8 +15,8 @@ export function useCollectionSpeedSearch<T>({
   selectionManager: MultipleSelectionManager;
   speedSearch: SpeedSearchState;
 }) {
-  const { searchTerm } = speedSearch;
-  const matches = useMemo(() => {
+  const { searchTerm, active } = speedSearch;
+  return useMemo(() => {
     const matches = new Map<Key, TextRange[]>();
     [...collection].forEach((item) => {
       const matchedRanges = minusculeMatch(item.textValue, searchTerm);
@@ -30,13 +31,18 @@ export function useCollectionSpeedSearch<T>({
     );
 
     if (matchedKeys.length > 0 && noneOfTheMatchesAreSelected) {
+      // TODO: the first match AFTER the first key in current selection should be selected.
       selectionManager.setFocusedKey(matchedKeys[0]);
       selectionManager.replaceSelection(matchedKeys[0]);
     }
-    return matches;
-  }, [searchTerm, collection]);
-
-  return {
-    matches,
-  };
+    return {
+      matches,
+      selectionManager: new SpeedSearchSelectionManager(
+        collection,
+        // @ts-expect-error SelectionManager.state is private :/
+        selectionManager.state,
+        active ? matches : null
+      ),
+    };
+  }, [searchTerm, collection, active]);
 }
