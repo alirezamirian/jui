@@ -13,16 +13,13 @@ import { Collection, Node } from "@react-types/shared";
 export class SpeedSearchListKeyboardDelegate<
   T
 > extends ListKeyboardDelegate<T> {
-  protected matches: Map<React.Key, TextRange[]> | null;
-
   constructor(
     collection: Collection<Node<T>>,
     disabledKeys: Set<Key>,
     ref: RefObject<HTMLElement>,
-    matches: Map<Key, TextRange[]> | null
+    protected matches: Map<Key, TextRange[]> | null
   ) {
     super(collection, disabledKeys, ref);
-    this.matches = matches;
   }
 
   // TODO: page up and down deactivate speed search. If we want that, we can pass the speedSearch
