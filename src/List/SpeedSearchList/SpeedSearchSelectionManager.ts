@@ -21,6 +21,8 @@ export class SpeedSearchSelectionManager extends SelectionManager {
           )
         )
       );
+    } else {
+      super.selectAll();
     }
   }
 }
