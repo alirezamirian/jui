@@ -1,26 +1,28 @@
 import React, { useMemo, useState } from "react";
-import { Story, Meta } from "@storybook/react";
+import { Meta } from "@storybook/react";
 import { SpeedSearch } from "./SpeedSearch";
 import { minusculeMatch } from "../minusculeMatch";
 import { TextWithHighlights } from "../TextWithHighlights/TextWithHighlights";
-import { useSpeedSearchState } from "./useSpeedSearch";
+import { styled } from "../styled";
 
 export default {
   title: "SpeedSearch",
   component: SpeedSearch,
 } as Meta;
 
+const SpeedSearchContainer = styled(SpeedSearch)`
+  width: 400px;
+  background: ${({ theme }) => theme.ui["*"].background};
+  color: ${({ theme }) => theme.ui["*"].textForeground};
+`;
 export const Default = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   return (
-    <SpeedSearch
+    <SpeedSearchContainer
       searchTerm={searchTerm}
       onSearchTermChange={setSearchTerm}
       stickySearch
-      containerProps={{
-        style: { background: "#3b3f41", color: "#bbb", width: 400 },
-      }}
     >
       <ul>
         <li>
@@ -45,7 +47,7 @@ export const Default = () => {
           <SearchableText searchTerm={searchTerm}>Item four</SearchableText>
         </li>
       </ul>
-    </SpeedSearch>
+    </SpeedSearchContainer>
   );
 };
 

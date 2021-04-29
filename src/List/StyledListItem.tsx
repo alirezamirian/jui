@@ -8,20 +8,22 @@ type Props = {
 
 export const StyledListItem = styled.li<Props>(
   ({ listFocused, selected, disabled, theme }) => {
+    const common = theme.ui["*"];
     let backgroundColor;
-    let color = disabled ? "#808080" : "#bbb";
+    let color = disabled
+      ? theme.ui.MenuItem.disabledForeground // couldn't find a better value
+      : common.textForeground;
     if (selected) {
       if (listFocused) {
-        color = "#fff";
-        backgroundColor = theme.ui["*"].selectionBackground["os.default"];
+        color = common.selectionForeground["os.mac"]; // why mac is different!
+        backgroundColor = common.selectionBackground["os.default"];
       } else {
-        backgroundColor = theme.ui["*"].selectionBackgroundInactive;
+        backgroundColor = common.selectionBackgroundInactive;
       }
     }
     return {
       backgroundColor,
       color,
-      height: 20,
       paddingLeft: 8,
       lineHeight: "20px",
       outline: "none",

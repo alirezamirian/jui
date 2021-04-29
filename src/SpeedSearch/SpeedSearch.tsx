@@ -11,7 +11,8 @@ import { SpeedSearchContainer } from "./SpeedSearchContainer";
 interface Props extends SpeedSearchStateProps {
   children: React.ReactNode;
   stickySearch?: boolean;
-  containerProps: Omit<HTMLProps<HTMLDivElement>, "as">;
+  className?: string;
+  containerProps?: Omit<HTMLProps<HTMLDivElement>, "as" | "ref">;
 }
 
 // Maybe no need for this component, now that almost everything is moved to hooks, and a couple of
@@ -19,7 +20,8 @@ interface Props extends SpeedSearchStateProps {
 export function SpeedSearch({
   children,
   stickySearch = false,
-  containerProps,
+  className,
+  containerProps = {},
   ...otherProps
 }: Props) {
   const { searchTerm, active } = otherProps;
@@ -31,7 +33,7 @@ export function SpeedSearch({
 
   return (
     <SpeedSearchContainer
-      {...mergeProps(containerProps, speedSearchContainerProps)}
+      {...mergeProps(containerProps, speedSearchContainerProps, { className })}
     >
       <SpeedSearchPopup active={active}>{searchTerm}</SpeedSearchPopup>
       {children}

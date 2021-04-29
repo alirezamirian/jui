@@ -1,13 +1,13 @@
-import styled from "@emotion/styled";
+import { styled } from "../styled";
 
-export const StyledList = styled.ul(
-  (props: { fillAvailableSpace: boolean }) => ({
+export const StyledList = styled.ul<{ fillAvailableSpace: boolean }>(
+  ({ fillAvailableSpace, theme }) => ({
     padding: 0,
     margin: 0,
-    flex: props.fillAvailableSpace ? "1" : undefined,
+    flex: fillAvailableSpace ? "1" : undefined,
     listStyle: "none",
-    color: "#bbb",
-    background: "#3b3f41",
+    color: theme.ui["*"].textForeground,
+    background: theme.ui["*"].background,
     // focus state is always hinted by different color of selected item(s) when focused.
     outline: "none",
   })

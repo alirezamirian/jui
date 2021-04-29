@@ -1,6 +1,6 @@
-import styled from "@emotion/styled";
 import React from "react";
 import { getAllRanges, TextRange } from "../TextRange";
+import { styled } from "../styled";
 
 const HighlightedMatch = styled.span`
   background: linear-gradient(#b3ab7a, #b69829);
