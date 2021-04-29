@@ -1,15 +1,21 @@
-import styled from "@emotion/styled";
+import { styled } from "../styled";
 
-export const StyledListItem = styled.li(
-  ({ listFocused, selected }: { listFocused: boolean; selected: boolean }) => {
+type Props = {
+  listFocused: boolean;
+  selected: boolean;
+  disabled: boolean;
+};
+
+export const StyledListItem = styled.li<Props>(
+  ({ listFocused, selected, disabled, theme }) => {
     let backgroundColor;
     let color = "#bbb";
     if (selected) {
       if (listFocused) {
         color = "#fff";
-        backgroundColor = "#1465D1";
+        backgroundColor = theme.ui["*"].selectionBackground["os.default"];
       } else {
-        backgroundColor = "#032b40";
+        backgroundColor = theme.ui["*"].selectionBackgroundInactive;
       }
     }
     return {
