@@ -37,6 +37,7 @@ export function BasicListItem<T>({
     <StyledListItem
       listFocused={listFocused}
       selected={selected}
+      disabled={disabled}
       aria-disabled={disabled}
       aria-selected={selected}
       {...pressProps}

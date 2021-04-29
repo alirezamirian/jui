@@ -13,7 +13,11 @@ const legends = [
   { name: "Paco de Lucia" },
   { name: "Vicente Amigo" },
   { name: "Gerardo Nunez" },
+  { name: "Paco Serrano" },
   { name: "Sabicas" },
+  { name: "Pepe Habichuela" },
+  { name: "El Amir" },
+  { name: "Paco Peña" },
 ];
 
 const renderCustomUI = (item: typeof legends[number]) => (
@@ -36,7 +40,7 @@ export const HighlightedByDefault = () => {
     <Pane>
       <SpeedSearchList
         selectionMode="multiple"
-        items={legends}
+        disabledKeys={["El Amir"]}
         fillAvailableSpace
       >
         {renderItemString}

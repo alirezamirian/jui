@@ -9,7 +9,7 @@ type Props = {
 export const StyledListItem = styled.li<Props>(
   ({ listFocused, selected, disabled, theme }) => {
     let backgroundColor;
-    let color = "#bbb";
+    let color = disabled ? "#808080" : "#bbb";
     if (selected) {
       if (listFocused) {
         color = "#fff";
