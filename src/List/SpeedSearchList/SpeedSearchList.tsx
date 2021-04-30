@@ -11,10 +11,6 @@ interface ListProps<T extends object> extends BasicListProps<T> {
   stickySearch?: boolean;
 }
 
-const StyledListWithSpeedSearch = SpeedSearchContainer.withComponent(
-  StyledList
-);
-
 /**
  * TODO:
  *  - Override keyboard navigation (arrows, ctrl+A, etc.) when speed search is active.
@@ -36,7 +32,8 @@ export function SpeedSearchList<T extends object>({
   );
 
   return (
-    <StyledListWithSpeedSearch
+    <SpeedSearchContainer
+      as={StyledList}
       fillAvailableSpace={fillAvailableSpace}
       {...listProps}
       ref={ref}
@@ -51,6 +48,6 @@ export function SpeedSearchList<T extends object>({
           listFocused={alwaysShowListAsFocused || focused}
         />
       ))}
-    </StyledListWithSpeedSearch>
+    </SpeedSearchContainer>
   );
 }
