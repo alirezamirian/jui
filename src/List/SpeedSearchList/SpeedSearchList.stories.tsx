@@ -1,7 +1,12 @@
 import React from "react";
 import { Meta } from "@storybook/react";
-import { Item } from "@react-stately/collections";
 import { SpeedSearchList } from "./SpeedSearchList";
+import { legends } from "../../../test-data";
+import {
+  itemRenderer,
+  renderItemCustomUI,
+  renderItemString,
+} from "../story-helpers";
 import { HighlightedTextValue } from "../../selection/CollectionSpeedSearch/HighlightedTextValue";
 
 export default {
@@ -9,41 +14,16 @@ export default {
   component: SpeedSearchList,
 } as Meta;
 
-const legends = [
-  { name: "Paco de Lucia" },
-  { name: "Vicente Amigo" },
-  { name: "Gerardo Nunez" },
-  { name: "Paco Serrano" },
-  { name: "Sabicas" },
-  { name: "Pepe Habichuela" },
-  { name: "El Amir" },
-  { name: "Paco Peña" },
-];
-
-const renderCustomUI = (item: typeof legends[number]) => (
-  <Item key={item.name} textValue={item.name}>
-    Name is:{" "}
-    <b>
-      <HighlightedTextValue />
-    </b>
-  </Item>
-);
-
-const renderItemString = (item: typeof legends[number]) => (
-  <Item key={item.name} textValue={item.name}>
-    {item.name}
-  </Item>
-);
-
 export const HighlightedByDefault = () => {
   return (
     <Pane>
       <SpeedSearchList
         selectionMode="multiple"
+        items={legends}
         disabledKeys={["El Amir"]}
         fillAvailableSpace
       >
-        {renderItemString}
+        {itemRenderer(renderItemString)}
       </SpeedSearchList>
     </Pane>
   );
@@ -57,7 +37,7 @@ export const HighlightInCustomUI = () => {
         items={legends}
         fillAvailableSpace
       >
-        {renderCustomUI}
+        {itemRenderer(renderItemCustomUI, <HighlightedTextValue />)}
       </SpeedSearchList>
     </Pane>
   );

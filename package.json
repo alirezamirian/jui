@@ -16,6 +16,7 @@
     "@react-aria/interactions": "3.3.4",
     "@react-aria/listbox": "3.2.4",
     "@react-aria/selection": "3.4.0",
+    "@react-aria/separator": "3.1.1",
     "@react-aria/utils": "3.7.0",
     "@react-stately/collections": "3.3.1",
     "@react-stately/list": "3.2.2",

@@ -1,31 +1,25 @@
 import React from "react";
 import { Meta } from "@storybook/react";
 import { BasicList } from "./BasicList";
-import { Item } from "@react-stately/collections";
+import { legends } from "../../../test-data";
+import {
+  itemRenderer,
+  renderItemCustomUI,
+  renderItemString,
+} from "../story-helpers";
+import { Item, Section } from "@react-stately/collections";
+import { Divider } from "../../Collections/Divider";
 
 export default {
   title: "BasicList",
   component: BasicList,
 } as Meta;
 
-const legends = [
-  { name: "Paco de Lucia" },
-  { name: "Vicente Amigo" },
-  { name: "Gerardo Nunez" },
-  { name: "Sabicas" },
-];
-
-const renderItem = (item: typeof legends[number]) => (
-  <Item key={item.name} textValue={item.name}>
-    Name is <b>{item.name}</b>
-  </Item>
-);
-
 export const Default = () => {
   return (
     <Pane>
       <BasicList selectionMode="single" items={legends} fillAvailableSpace>
-        {renderItem}
+        {itemRenderer(renderItemString)}
       </BasicList>
     </Pane>
   );
@@ -38,9 +32,25 @@ export const AlwaysShownAsFocused = () => {
         selectionMode="single"
         items={legends}
         fillAvailableSpace
-        alwaysShowListAsFocused
+        // alwaysShowListAsFocused
       >
-        {renderItem}
+        {itemRenderer(renderItemCustomUI)}
+      </BasicList>
+    </Pane>
+  );
+};
+
+export const WithStaticData = () => {
+  return (
+    <Pane>
+      <BasicList selectionMode="multiple" items={legends} fillAvailableSpace>
+        <Item>Paco de lucia</Item>
+        <Divider />
+        <Item>Vicente Amigo</Item>
+        <Section title="Other">
+          <Item>Gerardo Nunez</Item>
+          <Item>El Amir</Item>
+        </Section>
       </BasicList>
     </Pane>
   );
@@ -60,7 +70,7 @@ export const MultiSelect = ({
         shouldFocusWrap={shouldFocusWrap}
         alwaysShowListAsFocused={alwaysShowListAsFocused}
       >
-        {renderItem}
+        {itemRenderer(renderItemString)}
       </BasicList>
     </Pane>
   );

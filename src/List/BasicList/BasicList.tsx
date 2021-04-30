@@ -6,6 +6,7 @@ import { useBasicList } from "./useBasicList";
 import { BasicListItem } from "./BasicListItem";
 import { StyledList } from "../StyledList";
 import { useListState } from "../useListState";
+import { listItemRenderer } from "../listItemRenderer";
 
 export interface BasicListProps<T extends object> extends AriaListBoxProps<T> {
   /**
@@ -53,14 +54,18 @@ export function BasicList<T extends object>({
       {...mergeProps(listProps, focusWithinProps)}
       ref={ref}
     >
-      {[...state.collection].map((item) => (
-        <BasicListItem
-          key={item.key}
-          item={item}
-          state={state}
-          listFocused={alwaysShowListAsFocused || focusWithin}
-        />
-      ))}
+      {[...state.collection].map(
+        listItemRenderer({
+          item: (item) => (
+            <BasicListItem
+              key={item.key}
+              item={item}
+              state={state}
+              listFocused={alwaysShowListAsFocused || focusWithin}
+            />
+          ),
+        })
+      )}
     </StyledList>
   );
 }

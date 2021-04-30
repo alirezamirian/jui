@@ -6,6 +6,7 @@ import { SpeedSearchContainer } from "../../SpeedSearch/SpeedSearchContainer";
 import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
 import { useListState } from "../useListState";
 import { SpeedSearchListItem } from "./SpeedSearchListItem";
+import { listItemRenderer } from "../listItemRenderer";
 
 interface ListProps<T extends object> extends BasicListProps<T> {
   stickySearch?: boolean;
@@ -39,15 +40,19 @@ export function SpeedSearchList<T extends object>({
       ref={ref}
     >
       <SpeedSearchPopup {...searchPopupProps} />
-      {[...state.collection].map((item) => (
-        <SpeedSearchListItem
-          key={item.key}
-          item={item}
-          state={state}
-          highlightedRanges={matches.get(item.key) || null}
-          listFocused={alwaysShowListAsFocused || focused}
-        />
-      ))}
+      {[...state.collection].map(
+        listItemRenderer({
+          item: (item) => (
+            <SpeedSearchListItem
+              key={item.key}
+              item={item}
+              state={state}
+              highlightedRanges={matches.get(item.key) || null}
+              listFocused={alwaysShowListAsFocused || focused}
+            />
+          ),
+        })
+      )}
     </SpeedSearchContainer>
   );
 }
