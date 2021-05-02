@@ -11,12 +11,12 @@ export const StyledListItem = styled.li<Props>(
     const common = theme.ui["*"];
     let backgroundColor;
     let color = disabled
-      ? theme.ui.MenuItem.disabledForeground // couldn't find a better value
-      : common.textForeground;
+      ? theme.ui.colors?.disabledForeground || "#8C8C8C" // FIXME: fallbacks should not be inlined
+      : common.textForeground || common.foreground;
     if (selected) {
       if (listFocused) {
-        color = common.selectionForeground["os.mac"]; // why mac is different!
-        backgroundColor = common.selectionBackground["os.default"];
+        color = common.selectionForeground; // why mac is different!
+        backgroundColor = common.selectionBackground;
       } else {
         backgroundColor = common.selectionBackgroundInactive;
       }

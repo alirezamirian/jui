@@ -1,5 +1,6 @@
 import React from "react";
-import { styled, Theme } from "../styled";
+import { styled } from "../styled";
+import { Theme } from "../Theme/createTheme";
 
 export interface SpeedSearchPopupProps {
   children: string | undefined;
@@ -26,11 +27,11 @@ export const SpeedSearchPopup: React.FC<SpeedSearchPopupProps> = ({
 
 // TODO: these utils should go on theme
 function getTooltipForeground(theme: Theme) {
-  return theme.ui.ToolTip.foreground || (theme.dark ? "#bfbfbf" : "#000000");
+  return theme.ui.ToolTip?.foreground || (theme.dark ? "#bfbfbf" : "#000000");
 }
 
 function getTooltipBackground(theme: Theme) {
-  return theme.ui.ToolTip.foreground || (theme.dark ? "#3c3f41" : "#f2f2f2");
+  return theme.ui.ToolTip?.foreground || (theme.dark ? "#3c3f41" : "#f2f2f2");
 }
 
 function red(theme: Theme) {

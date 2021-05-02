@@ -1,8 +1,15 @@
 import baseStyled, { ThemedStyledInterface } from "styled-components";
 import darculaTheme from "../themes/darcula.theme.json";
+import intellijLaf from "../themes/intellijlaf.theme.json";
+import lightTheme from "../themes/Light.theme.json";
+import { Theme } from "./Theme/createTheme";
 
 // TODO: better typing?
-export type Theme = typeof darculaTheme & {
+export type ThemeJson = (
+  | typeof darculaTheme
+  | typeof intellijLaf
+  | typeof lightTheme
+) & {
   SpeedSearch?: {
     foreground?: string;
     borderColor?: string;

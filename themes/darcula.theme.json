@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/JetBrains/intellij-community/e3c7d96daba1d5d84d5650bde6c220aed225bfda/plugins/devkit/devkit-core/resources/schemes/theme.schema.json",
   "name": "Darcula",
   "dark": true,
   "author": "JetBrains",

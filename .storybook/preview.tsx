@@ -2,11 +2,24 @@ import { addDecorator } from "@storybook/react"; // <- or your storybook framewo
 // @ts-ignore
 import { withThemes } from "storybook-addon-themes/react";
 import React from "react";
-import darculaTheme from "../themes/darcula.theme.json";
 import "./global-styles.css";
 import { ThemeProvider } from "styled-components";
+import { createTheme } from "../src/Theme/createTheme";
+
+const requireTheme = require.context("../themes", false, /\.theme\.json$/);
 
 addDecorator(withThemes);
+
+const themes = requireTheme.keys().map((themeFile) => {
+  const themeJson = requireTheme(themeFile);
+  return {
+    name: themeJson.name,
+    theme: createTheme(themeJson),
+    color: themeJson.ui?.["*"]?.background,
+  };
+});
+
+console.log(themes);
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
@@ -17,7 +30,7 @@ export const parameters = {
     default: "Darcula",
     Decorator: Decorator,
     clearable: false,
-    list: [{ name: "Darcula", theme: darculaTheme, color: "#666" }],
+    list: themes,
   },
 };
 function Decorator(props: {

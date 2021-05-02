@@ -2,7 +2,8 @@ import { styled } from "./styled";
 import React from "react";
 
 export const StyledDivider = styled.hr(({ theme }) => ({
-  backgroundColor: theme.ui.Separator.separatorColor,
+  backgroundColor:
+    theme.ui.Separator?.separatorColor || theme.ui["*"].separatorColor,
   margin: 0,
   border: "none",
 }));

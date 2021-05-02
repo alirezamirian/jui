@@ -3,7 +3,10 @@ import { getAllRanges, TextRange } from "../TextRange";
 import { styled } from "../styled";
 
 const HighlightedMatch = styled.span`
-  background: linear-gradient(#b3ab7a, #b69829);
+  background: ${({ theme }) =>
+    `linear-gradient(${theme.ui.SearchMatch?.startBackground || "#ffeaa2b3"}, ${
+      theme.ui.SearchMatch?.endBackground || "#ffd042b3"
+    })`};
   color: #000;
   border-radius: 3px;
 `;
