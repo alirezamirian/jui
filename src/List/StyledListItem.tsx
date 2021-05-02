@@ -15,7 +15,7 @@ export const StyledListItem = styled.li<Props>(
       : common.textForeground || common.foreground;
     if (selected) {
       if (listFocused) {
-        color = common.selectionForeground; // why mac is different!
+        color = theme.colors?.selectionForeground || common.selectionForeground;
         backgroundColor = common.selectionBackground;
       } else {
         backgroundColor = common.selectionBackgroundInactive;
