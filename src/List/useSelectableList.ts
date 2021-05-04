@@ -10,17 +10,13 @@
  * governing permissions and limitations under the License.
  */
 
-import {
-  Collection,
-  FocusStrategy,
-  KeyboardDelegate,
-  Node,
-} from "@react-types/shared";
-import { HTMLAttributes, Key, RefObject, useEffect, useMemo } from "react";
+import { Collection, FocusStrategy, KeyboardDelegate, Node, } from "@react-types/shared";
+import { HTMLAttributes, Key, RefObject, useMemo } from "react";
 import { ListKeyboardDelegate } from "@react-aria/selection";
-import { MultipleSelectionManager } from "@react-stately/selection";
+import { MultipleSelectionManager, SelectionManager, } from "@react-stately/selection";
 import { useCollator } from "@react-aria/i18n";
 import { useSelectableCollection } from "../selection/useSelectableCollection";
+import { useCollectionAutoScroll } from "../Collections/useCollectionAutoScroll";
 
 interface SelectableListOptions {
   /**
@@ -32,7 +28,8 @@ interface SelectableListOptions {
    */
   collection: Collection<Node<unknown>>;
   /**
-   * The item keys that are disabled. These items cannot be selected, focused, or otherwise interacted with.
+   * The item keys that are disabled. These items cannot be selected, focused, or otherwise
+   * interacted with.
    */
   disabledKeys: Set<Key>;
   /**
@@ -120,19 +117,10 @@ export function useSelectableList(
       new ListKeyboardDelegate(collection, disabledKeys, ref, collator),
     [keyboardDelegate, collection, disabledKeys, ref, collator]
   );
-
-  // If not virtualized, scroll the focused element into view when the focusedKey changes.
-  // When virtualized, Virtualizer handles this internally.
-  useEffect(() => {
-    if (!isVirtualized && selectionManager.focusedKey && ref?.current) {
-      let element = ref.current.querySelector(
-        `[data-key="${selectionManager.focusedKey}"]`
-      ) as HTMLElement;
-      if (element) {
-        scrollIntoView(ref.current, element);
-      }
-    }
-  }, [isVirtualized, ref, selectionManager.focusedKey]);
+  useCollectionAutoScroll(
+    { isVirtualized, selectionManager: selectionManager as SelectionManager },
+    ref
+  );
 
   let { collectionProps } = useSelectableCollection({
     ref,
@@ -150,34 +138,4 @@ export function useSelectableList(
   return {
     listProps: collectionProps,
   };
-}
-
-/**
- * Scrolls `scrollView` so that `element` is visible.
- * Similar to `element.scrollIntoView({block: 'nearest'})` (not supported in Edge),
- * but doesn't affect parents above `scrollView`.
- */
-function scrollIntoView(scrollView: HTMLElement, element: HTMLElement) {
-  let offsetX = element.offsetLeft - scrollView.offsetLeft;
-  let offsetY = element.offsetTop - scrollView.offsetTop;
-  let width = element.offsetWidth;
-  let height = element.offsetHeight;
-  let x = scrollView.scrollLeft;
-  let y = scrollView.scrollTop;
-  let maxX = x + scrollView.offsetWidth;
-  let maxY = y + scrollView.offsetHeight;
-
-  if (offsetX <= x) {
-    x = offsetX;
-  } else if (offsetX + width > maxX) {
-    x += offsetX + width - maxX;
-  }
-  if (offsetY <= y) {
-    y = offsetY;
-  } else if (offsetY + height > maxY) {
-    y += offsetY + height - maxY;
-  }
-
-  scrollView.scrollLeft = x;
-  scrollView.scrollTop = y;
 }

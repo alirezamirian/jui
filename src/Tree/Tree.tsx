@@ -5,7 +5,7 @@ import { mergeProps } from "@react-aria/utils";
 import { StyledList } from "../List/StyledList";
 import { TreeNode } from "./TreeNode";
 import { useTreeState } from "./__tmp__useTreeState";
-import { useCollectionAutoScroll } from "../List/useCollectionAutoScroll";
+import { useCollectionAutoScroll } from "../Collections/useCollectionAutoScroll";
 import { SelectionManager } from "@react-stately/selection";
 import { useSelectableTree } from "./useSelectableTree";
 import { replaceSelectionManager } from "../selection/replaceSelectionManager";
@@ -26,7 +26,13 @@ export function Tree<T extends object>({
   });
 
   const { treeProps } = useSelectableTree(state, ref);
-
+  useCollectionAutoScroll(
+    {
+      isVirtualized: false,
+      selectionManager: state.selectionManager as SelectionManager,
+    },
+    ref
+  );
   return (
     <StyledList
       as="div"
