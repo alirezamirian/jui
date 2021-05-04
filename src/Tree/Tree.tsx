@@ -26,16 +26,18 @@ export function Tree<T extends object>({
       {...mergeProps(focusWithinProps)}
       tabIndex={-1} // FIXME remove when handled in useTree
     >
-      {[...state.collection].map((item) => {
-        return (
-          <TreeNode
-            key={item.key}
-            item={item}
-            state={state}
-            containerFocused={focused}
-          />
-        );
-      })}
+      {[...state.collection.getKeys()]
+        .map((key) => state.collection.getItem(key))
+        .map((item) => {
+          return (
+            <TreeNode
+              key={item.key}
+              item={item}
+              state={state}
+              containerFocused={focused}
+            />
+          );
+        })}
     </StyledList>
   );
 }

@@ -27,6 +27,15 @@ export function TreeNode<T>({
   const expanded = state.expandedKeys.has(item.key);
   const disabled = state.disabledKeys.has(item.key);
 
+  /**
+   * NOTE: TreeNode intentionally is not designed in a recursive way for two main reasons:
+   * - Performance
+   * - Better support for virtualization
+   * So instead of rendering TreeNode for childNodes, if the node is expanded, we expect parent
+   * to render children. It's not a layout issue since we don't need any nesting in terms of
+   * layout of nested items. In terms of layout, a tree will be rendered similar to a flat list,
+   * but with more indentation for nested nodes.
+   */
   return (
     <>
       <StyledTreeNode
@@ -40,15 +49,6 @@ export function TreeNode<T>({
         )}
         {item.rendered}
       </StyledTreeNode>
-      {expanded &&
-        [...item.childNodes].map((childItem) => (
-          <TreeNode
-            key={childItem.key}
-            item={childItem}
-            state={state}
-            containerFocused={containerFocused}
-          />
-        ))}
     </>
   );
 }
