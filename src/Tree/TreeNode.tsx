@@ -1,9 +1,11 @@
 import { Node } from "@react-types/shared";
 import { TreeState } from "@react-stately/tree";
 import { TREE_ICON_SIZE, TreeNodeIcon } from "./TreeNodeIcon";
-import React from "react";
+import React, { useRef } from "react";
 import { styled } from "../styled";
 import { StyledListItem } from "../List/StyledListItem";
+import { useSelectableItem } from "@react-aria/selection";
+import { usePress } from "@react-aria/interactions";
 
 type TreeNodeProps<T> = {
   item: Node<T>;
@@ -20,12 +22,24 @@ const StyledTreeNode = styled(StyledListItem).attrs({ as: "div" })<{
 
 export function TreeNode<T>({
   item,
-  state,
+  state: { selectionManager, expandedKeys, disabledKeys },
   containerFocused,
 }: TreeNodeProps<T>) {
-  const selected = state.selectionManager.isSelected(item.key);
-  const expanded = state.expandedKeys.has(item.key);
-  const disabled = state.disabledKeys.has(item.key);
+  const ref = useRef(null);
+  const selected = selectionManager.isSelected(item.key);
+  const expanded = expandedKeys.has(item.key);
+  const disabled = disabledKeys.has(item.key);
+  const { itemProps } = useSelectableItem({
+    key: item.key,
+    ref,
+    selectionManager,
+    isVirtualized: false,
+  });
+  let { pressProps } = usePress({
+    ...itemProps,
+    isDisabled: disabled,
+    preventFocusOnPress: false,
+  });
 
   /**
    * NOTE: TreeNode intentionally is not designed in a recursive way for two main reasons:
@@ -39,9 +53,13 @@ export function TreeNode<T>({
   return (
     <>
       <StyledTreeNode
+        ref={ref}
+        {...pressProps}
         containerFocused={containerFocused}
         disabled={disabled}
         selected={selected}
+        aria-disabled={disabled}
+        aria-selected={selected}
         level={item.level}
       >
         {item.hasChildNodes && (

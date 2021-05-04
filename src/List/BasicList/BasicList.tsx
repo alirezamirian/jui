@@ -5,8 +5,9 @@ import { mergeProps } from "@react-aria/utils";
 import { useBasicList } from "./useBasicList";
 import { BasicListItem } from "./BasicListItem";
 import { StyledList } from "../StyledList";
-import { useListState } from "../useListState";
 import { listItemRenderer } from "../listItemRenderer";
+import { replaceSelectionManager } from "../../selection/replaceSelectionManager";
+import { useListState } from "@react-stately/list";
 
 export interface BasicListProps<T extends object> extends AriaListBoxProps<T> {
   /**
@@ -40,7 +41,7 @@ export function BasicList<T extends object>({
 }: BasicListProps<T>) {
   const props = { ...inputProps, disallowEmptySelection };
   const ref = useRef<HTMLUListElement>(null);
-  const state = useListState(props);
+  const state = replaceSelectionManager(useListState(props));
   const [focusWithin, setFocusWithin] = useState(false);
   const { listProps } = useBasicList(props, state, ref);
 

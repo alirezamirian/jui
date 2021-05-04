@@ -5,7 +5,10 @@ import { mergeProps } from "@react-aria/utils";
 import { StyledList } from "../List/StyledList";
 import { TreeNode } from "./TreeNode";
 import { useTreeState } from "./__tmp__useTreeState";
+import { useCollectionAutoScroll } from "../List/useCollectionAutoScroll";
+import { SelectionManager } from "@react-stately/selection";
 import { useSelectableTree } from "./useSelectableTree";
+import { replaceSelectionManager } from "../selection/replaceSelectionManager";
 
 interface Props<T extends object> extends TreeProps<T> {
   fillAvailableSpace?: boolean;
@@ -15,7 +18,7 @@ export function Tree<T extends object>({
   fillAvailableSpace = false,
   ...props
 }: Props<T>) {
-  const state = useTreeState(props);
+  const state = replaceSelectionManager(useTreeState(props));
   const ref = useRef<HTMLDivElement>(null);
   const [focused, setFocused] = useState(false);
   const { focusWithinProps } = useFocusWithin({
