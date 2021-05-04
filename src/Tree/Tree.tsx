@@ -14,6 +14,10 @@ interface Props<T extends object> extends TreeProps<T> {
   fillAvailableSpace?: boolean;
 }
 
+/**
+ * TODO:
+ *  - virtualization
+ */
 export function Tree<T extends object>({
   fillAvailableSpace = false,
   ...props
