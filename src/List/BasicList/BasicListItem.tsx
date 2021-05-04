@@ -35,7 +35,7 @@ export function BasicListItem<T>({
 
   return (
     <StyledListItem
-      listFocused={listFocused}
+      containerFocused={listFocused}
       selected={selected}
       disabled={disabled}
       aria-disabled={disabled}

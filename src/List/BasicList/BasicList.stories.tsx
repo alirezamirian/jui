@@ -9,6 +9,7 @@ import {
 } from "../story-helpers";
 import { Item, Section } from "@react-stately/collections";
 import { Divider } from "../../Collections/Divider";
+import { Pane } from "../../story-utils";
 
 export default {
   title: "BasicList",
@@ -81,20 +82,5 @@ MultiSelect.argTypes = {
 MultiSelect.args = {
   shouldFocusWrap: { value: false },
 };
-
-function Pane({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        width: 400,
-        height: "calc(100vh - 25px)",
-      }}
-    >
-      {children}
-    </div>
-  );
-}
 
 Default.args = {};

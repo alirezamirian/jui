@@ -1,20 +1,20 @@
 import { styled } from "../styled";
 
-type Props = {
-  listFocused: boolean;
+export type StyledListItemProps = {
+  containerFocused: boolean;
   selected: boolean;
   disabled: boolean;
 };
 
-export const StyledListItem = styled.li<Props>(
-  ({ listFocused, selected, disabled, theme }) => {
+export const StyledListItem = styled.li<StyledListItemProps>(
+  ({ containerFocused, selected, disabled, theme }) => {
     const common = theme.ui["*"];
     let backgroundColor;
     let color = disabled
       ? theme.ui.colors?.disabledForeground || "#8C8C8C" // FIXME: fallbacks should not be inlined
       : common.textForeground || common.foreground;
     if (selected) {
-      if (listFocused) {
+      if (containerFocused) {
         color = theme.colors?.selectionForeground || common.selectionForeground;
         backgroundColor = common.selectionBackground;
       } else {
@@ -24,7 +24,8 @@ export const StyledListItem = styled.li<Props>(
     return {
       backgroundColor,
       color,
-      paddingLeft: 8,
+      position: "relative",
+      paddingLeft: 8, // themed?
       lineHeight: "20px",
       outline: "none",
       cursor: "default",
