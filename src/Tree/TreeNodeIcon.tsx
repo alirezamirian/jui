@@ -10,6 +10,7 @@ const StyledTreeNodeIcon = styled(Icon)`
 `;
 
 export function TreeNodeIcon({
+  selected,
   expanded,
 }: {
   selected: boolean;
@@ -19,16 +20,15 @@ export function TreeNodeIcon({
     const {
       expandedIcon = "/com/intellij/ide/ui/laf/icons/intellij/treeExpanded.svg",
       collapsedIcon = "/com/intellij/ide/ui/laf/icons/intellij/treeCollapsed.svg",
-      // it seems selected icons are not used. TODO: make sure.
-      // expandedSelectedIcon = "/com/intellij/ide/ui/laf/icons/intellij/treeExpandedSelected.svg",
-      // collapsedSelectedIcon = "/com/intellij/ide/ui/laf/icons/intellij/treeCollapsedSelected.svg",
+      expandedSelectedIcon = "/com/intellij/ide/ui/laf/icons/intellij/treeExpandedSelected.svg",
+      collapsedSelectedIcon = "/com/intellij/ide/ui/laf/icons/intellij/treeCollapsedSelected.svg",
     } = theme.ui?.Tree || {};
 
     if (expanded) {
-      return expandedIcon;
+      return selected ? expandedSelectedIcon : expandedIcon;
     }
     if (!expanded) {
-      return collapsedIcon;
+      return selected ? collapsedSelectedIcon : collapsedIcon;
     }
   };
   return <StyledTreeNodeIcon src={getIcon} size={TREE_ICON_SIZE} />;
