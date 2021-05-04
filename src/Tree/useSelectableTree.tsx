@@ -5,11 +5,13 @@ import { TreeKeyboardDelegate } from "./TreeKeyboardDelegate";
 import { KeyboardEvent } from "@react-types/shared";
 import { useKeyboard } from "@react-aria/interactions";
 import { mergeProps } from "@react-aria/utils";
+import { useCollator } from "@react-aria/i18n";
 
 export function useSelectableTree<T>(
   state: TreeState<T>,
   ref: RefObject<HTMLElement>
 ) {
+  const collator = useCollator({ usage: "search", sensitivity: "base" });
   const {
     collectionProps: {
       // preventDefault in onMouseDown prevents collection from getting focused.
@@ -23,7 +25,13 @@ export function useSelectableTree<T>(
     selectionManager: state.selectionManager,
     selectOnFocus: true,
     keyboardDelegate: useMemo(
-      () => new TreeKeyboardDelegate(state.collection, state.disabledKeys, ref),
+      () =>
+        new TreeKeyboardDelegate(
+          state.collection,
+          state.disabledKeys,
+          ref,
+          collator
+        ),
       [state.collection, state.disabledKeys]
     ),
   });

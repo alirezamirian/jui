@@ -6,9 +6,10 @@ export class TreeKeyboardDelegate<T> extends ListKeyboardDelegate<T> {
   constructor(
     private collection: Collection<Node<T>>,
     private disabledKeys: Set<Key>,
-    ref: RefObject<HTMLElement>
+    ref: RefObject<HTMLElement>,
+    collator?: Intl.Collator
   ) {
-    super(collection, disabledKeys, ref);
+    super(collection, disabledKeys, ref, collator);
   }
 
   getKeyLeftOf(key: React.Key): React.Key {
