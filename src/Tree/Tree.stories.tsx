@@ -13,7 +13,8 @@ export const Static = () => {
   return (
     <Pane>
       <Tree
-        selectionMode="single"
+        fillAvailableSpace
+        selectionMode="multiple"
         defaultExpandedKeys={["List", "Theme", "BasicList", "Foo"]}
         defaultSelectedKeys={["Theme", "index.ts"]}
       >
