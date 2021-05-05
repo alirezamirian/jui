@@ -1,14 +1,14 @@
 import { Theme } from "../Theme/createTheme";
-import React, { CSSProperties, useEffect, useState } from "react";
+import React, { CSSProperties, HTMLProps, useEffect, useState } from "react";
 import { useTheme } from "styled-components";
 import { styled } from "../styled";
 
-type IconProps = {
-  src: string | ((theme: Theme) => string);
+interface IconProps extends Omit<HTMLProps<HTMLSpanElement>, "ref" | "as"> {
+  icon: string | ((theme: Theme) => string);
   size?: 16; // more options may be added here
   style?: CSSProperties;
   className?: string;
-};
+}
 
 export type IconSize = 16;
 
@@ -22,10 +22,10 @@ const StyledIconWrapper = styled.span<{ size: IconSize }>`
   height: ${({ size }) => `${size}px`};
 `;
 
-export function Icon({ src, size = 16, style = {}, className }: IconProps) {
+export function Icon({ icon, size = 16, ...props }: IconProps) {
   const theme = useTheme();
   const [svg, setSvg] = useState("");
-  const srcValue = typeof src === "function" ? src(theme) : src;
+  const srcValue = typeof icon === "function" ? icon(theme) : icon;
   useEffect(() => {
     const fetchIcon = async () => {
       if (!srcValue) {
@@ -44,9 +44,8 @@ export function Icon({ src, size = 16, style = {}, className }: IconProps) {
   return (
     <StyledIconWrapper
       data-src={srcValue}
-      className={className}
       size={size}
-      style={style}
+      {...props}
       dangerouslySetInnerHTML={{ __html: svg }}
     />
   );

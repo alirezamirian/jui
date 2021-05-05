@@ -6,6 +6,7 @@ import { styled } from "../styled";
 import { StyledListItem } from "../List/StyledListItem";
 import { useSelectableItem } from "@react-aria/selection";
 import { usePress } from "@react-aria/interactions";
+import { useTreeNodeToggleButton } from "./useTreeNodeToggleButton";
 
 type TreeNodeProps<T> = {
   item: Node<T>;
@@ -22,21 +23,36 @@ const StyledTreeNode = styled(StyledListItem).attrs({ as: "div" })<{
 
 export function TreeNode<T>({
   item,
-  state: { selectionManager, expandedKeys, disabledKeys },
+  state: {
+    collection,
+    selectionManager,
+    expandedKeys,
+    disabledKeys,
+    toggleKey,
+  },
   containerFocused,
 }: TreeNodeProps<T>) {
   const ref = useRef(null);
   const selected = selectionManager.isSelected(item.key);
   const expanded = expandedKeys.has(item.key);
   const disabled = disabledKeys.has(item.key);
-  const { itemProps } = useSelectableItem({
-    key: item.key,
-    ref,
-    selectionManager,
-    isVirtualized: false,
+
+  const { pressProps: togglePressProps } = usePress({
+    ...useTreeNodeToggleButton({
+      key: item.key,
+      collection,
+      selectionManager,
+      toggleKey,
+    }).treeNodeToggleButtonProps,
+    isDisabled: disabled,
   });
-  let { pressProps } = usePress({
-    ...itemProps,
+  const { pressProps } = usePress({
+    ...useSelectableItem({
+      key: item.key,
+      ref,
+      selectionManager,
+      isVirtualized: false,
+    }).itemProps,
     isDisabled: disabled,
     preventFocusOnPress: false,
   });
@@ -63,7 +79,11 @@ export function TreeNode<T>({
         level={item.level}
       >
         {item.hasChildNodes && (
-          <TreeNodeIcon selected={selected} expanded={expanded} />
+          <TreeNodeIcon
+            selected={selected}
+            expanded={expanded}
+            {...togglePressProps}
+          />
         )}
         {item.rendered}
       </StyledTreeNode>

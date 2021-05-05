@@ -17,6 +17,14 @@ interface Props<T extends object> extends TreeProps<T> {
 /**
  * TODO:
  *  - virtualization
+ *  - Match select all behaviour. Currently, [getSelectAllKeys][1] in `SelectionManager` returns
+ * all
+ *    nested keys too. But it's not aligned with Tree implementation in Intellij Platform. And
+ * beside from that, it seems to be a little inconsistent in some edge cases where you select all,
+ * and then deselect a node. hen all of a sudden, all collapsed nested keys are no longer selected.
+ *
+ *  [1]:
+ * https://github.com/adobe/react-spectrum/blob/main/packages/@react-stately/selection/src/SelectionManager.ts#L303-L303
  */
 export function Tree<T extends object>({
   fillAvailableSpace = false,

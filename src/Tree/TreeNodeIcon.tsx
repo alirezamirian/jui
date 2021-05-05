@@ -1,6 +1,6 @@
 import { Theme } from "../Theme/createTheme";
 import { Icon } from "../Icon/Icon";
-import React from "react";
+import React, { ComponentProps } from "react";
 import { styled } from "../styled";
 
 export const TREE_ICON_SIZE = 16;
@@ -9,13 +9,16 @@ const StyledTreeNodeIcon = styled(Icon)`
   margin-right: 4px;
 `;
 
+type TreeNodeIconProps = ComponentProps<typeof StyledTreeNodeIcon> & {
+  selected: boolean;
+  expanded: boolean;
+};
+
 export function TreeNodeIcon({
   selected,
   expanded,
-}: {
-  selected: boolean;
-  expanded: boolean;
-}) {
+  ...props
+}: TreeNodeIconProps) {
   const getIcon = (theme: Theme) => {
     const {
       expandedIcon = "/com/intellij/ide/ui/laf/icons/intellij/treeExpanded.svg",
@@ -31,5 +34,5 @@ export function TreeNodeIcon({
       return selected ? collapsedSelectedIcon : collapsedIcon;
     }
   };
-  return <StyledTreeNodeIcon src={getIcon} size={TREE_ICON_SIZE} />;
+  return <StyledTreeNodeIcon icon={getIcon} size={TREE_ICON_SIZE} {...props} />;
 }
