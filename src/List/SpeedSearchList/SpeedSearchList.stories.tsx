@@ -7,7 +7,7 @@ import {
   renderItemCustomUI,
   renderItemString,
 } from "../story-helpers";
-import { HighlightedTextValue } from "../../selection/CollectionSpeedSearch/HighlightedTextValue";
+import { HighlightedTextValue } from "../../CollectionSpeedSearch/HighlightedTextValue";
 
 export default {
   title: "SpeedSearchList",

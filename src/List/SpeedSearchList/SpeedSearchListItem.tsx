@@ -2,7 +2,7 @@ import { TextWithHighlights } from "../../TextWithHighlights/TextWithHighlights"
 import React from "react";
 import { BasicListItem, BasicListItemProps } from "../BasicList/BasicListItem";
 import { TextRange } from "../../TextRange";
-import { HighlightedTextValueContext } from "../../selection/CollectionSpeedSearch/HighlightedTextValue";
+import { HighlightedTextValueContext } from "../../CollectionSpeedSearch/HighlightedTextValue";
 
 interface SpeedSearchListItemProps<T> extends BasicListItemProps<T> {
   highlightedRanges?: TextRange[] | null;

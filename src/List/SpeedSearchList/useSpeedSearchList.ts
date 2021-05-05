@@ -1,17 +1,18 @@
 import { BasicListProps, useBasicList } from "../BasicList/useBasicList";
+
+import { ListState } from "@react-stately/list";
+import { HTMLProps, Key, RefObject, useMemo, useState } from "react";
+import { mergeProps } from "@react-aria/utils";
+import { ListKeyboardDelegate } from "@react-aria/selection";
+import { useFocusWithin } from "@react-aria/interactions";
+import { SpeedSearchPopupProps } from "../../SpeedSearch/SpeedSearchPopup";
+import { useCollectionSpeedSearchResult } from "../../CollectionSpeedSearch/useCollectionSpeedSearchResult";
+import { TextRange } from "../../TextRange";
 import {
-  SpeedSearchState,
   useSpeedSearch,
   useSpeedSearchState,
 } from "../../SpeedSearch/useSpeedSearch";
-import { ListState } from "@react-stately/list";
-import React, { HTMLProps, Key, RefObject, useMemo, useState } from "react";
-import { mergeProps } from "@react-aria/utils";
-import { SpeedSearchPopupProps } from "../../SpeedSearch/SpeedSearchPopup";
-import { useCollectionSpeedSearch } from "../../selection/CollectionSpeedSearch/useCollectionSpeedSearch";
-import { TextRange } from "../../TextRange";
-import { useFocusWithin } from "@react-aria/interactions";
-import { SpeedSearchListKeyboardDelegate } from "./SpeedSearchListKeyboardDelegate";
+import { createSpeedSearchKeyboardDelegate } from "../../CollectionSpeedSearch/createSpeedSearchKeyboardDelegate";
 import { SpeedSearchSelectionManager } from "./SpeedSearchSelectionManager";
 
 interface UseListProps
@@ -34,16 +35,22 @@ export function useSpeedSearchList<T>(
   const [focused, setFocused] = useState(false);
   const speedSearch = useSpeedSearchState({}); // maybe allow control over state via props?
 
-  const { matches, selectionManager } = useCollectionSpeedSearch({
+  const { matches, selectionManager } = useCollectionSpeedSearchResult({
     ...listState,
     speedSearch,
   });
   const { containerProps } = useSpeedSearch({ stickySearch }, speedSearch);
-  const keyboardDelegate = useSpeedSearchListKeyboardDelegate(
-    listState,
-    ref,
-    speedSearch,
-    matches
+  const keyboardDelegate = useMemo(
+    () =>
+      createSpeedSearchKeyboardDelegate(
+        new ListKeyboardDelegate(
+          listState.collection,
+          listState.disabledKeys,
+          ref
+        ),
+        speedSearch.active ? matches : null
+      ),
+    [listState, ref, speedSearch, matches]
   );
   const { listProps } = useBasicList(
     {
@@ -70,28 +77,4 @@ export function useSpeedSearchList<T>(
       children: speedSearch.searchTerm,
     },
   };
-}
-
-function useSpeedSearchListKeyboardDelegate<T>(
-  listState: ListState<T>,
-  ref: React.RefObject<HTMLElement>,
-  speedSearch: SpeedSearchState,
-  matches: Map<React.Key, TextRange[]>
-) {
-  return useMemo(
-    () =>
-      new SpeedSearchListKeyboardDelegate(
-        listState.collection,
-        listState.disabledKeys,
-        ref,
-        speedSearch.active ? matches : null
-      ),
-    [
-      listState.collection,
-      listState.disabledKeys,
-      ref,
-      matches,
-      speedSearch.active,
-    ]
-  );
 }

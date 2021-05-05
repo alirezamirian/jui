@@ -1,5 +1,4 @@
-import React, { ComponentProps, useContext } from "react";
-import { TextWithHighlights } from "../../TextWithHighlights/TextWithHighlights";
+import React, { useContext } from "react";
 
 export const HighlightedTextValueContext = React.createContext<JSX.Element | null>(
   null
