@@ -3,8 +3,8 @@ import { minusculeMatch } from "../minusculeMatch";
 import { SpeedSearchState } from "../SpeedSearch/useSpeedSearch";
 import { TextRange } from "../TextRange";
 import { Collection, Node } from "@react-types/shared";
-import { MultipleSelectionManager } from "@react-stately/selection";
-import { SpeedSearchSelectionManager } from "../List/SpeedSearchList/SpeedSearchSelectionManager";
+import { SelectionManager } from "@react-stately/selection";
+import { createSpeedSearchSelectionManager } from "./createSpeedSearchSelectionManager";
 
 export function useCollectionSpeedSearchResult<T>({
   collection,
@@ -12,7 +12,7 @@ export function useCollectionSpeedSearchResult<T>({
   speedSearch,
 }: {
   collection: Collection<Node<T>>;
-  selectionManager: MultipleSelectionManager;
+  selectionManager: SelectionManager;
   speedSearch: SpeedSearchState;
 }) {
   const { searchTerm, active } = speedSearch;
@@ -44,10 +44,8 @@ export function useCollectionSpeedSearchResult<T>({
 
     return {
       matches,
-      selectionManager: new SpeedSearchSelectionManager(
-        collection,
-        // @ts-expect-error SelectionManager.state is private :/
-        selectionManager.state,
+      selectionManager: createSpeedSearchSelectionManager(
+        selectionManager,
         active ? matches : null
       ),
     };

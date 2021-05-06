@@ -13,7 +13,7 @@ import {
   useSpeedSearchState,
 } from "../../SpeedSearch/useSpeedSearch";
 import { createSpeedSearchKeyboardDelegate } from "../../CollectionSpeedSearch/createSpeedSearchKeyboardDelegate";
-import { SpeedSearchSelectionManager } from "./SpeedSearchSelectionManager";
+import { SelectionManager } from "@react-stately/selection";
 
 interface UseListProps
   extends Omit<BasicListProps, "keyboardDelegate" | "disallowTypeAhead"> {
@@ -28,7 +28,7 @@ export function useSpeedSearchList<T>(
   listProps: HTMLProps<HTMLUListElement>;
   searchPopupProps: SpeedSearchPopupProps;
   focused: boolean;
-  selectionManager: SpeedSearchSelectionManager;
+  selectionManager: SelectionManager;
   matches: Map<Key, TextRange[]>;
 } {
   const { stickySearch } = props;
