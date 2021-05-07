@@ -7,10 +7,10 @@ import { ListKeyboardDelegate } from "@react-aria/selection";
 import { SpeedSearchPopupProps } from "../../SpeedSearch/SpeedSearchPopup";
 import { TextRange } from "../../TextRange";
 import { useCollectionSpeedSearch } from "../../CollectionSpeedSearch/useCollectionSpeedSearch";
-import { BasicListProps, useBasicList } from "../BasicList/useBasicList";
+import { ListProps, useList } from "../useList";
 
 interface UseListProps
-  extends Omit<BasicListProps, "keyboardDelegate" | "disallowTypeAhead"> {
+  extends Omit<ListProps, "keyboardDelegate" | "disallowTypeAhead"> {
   stickySearch?: boolean;
 }
 
@@ -45,7 +45,7 @@ export function useSpeedSearchList<T>(
     ),
     stickySearch,
   });
-  const { listProps, focused } = useBasicList(
+  const { listProps, focused } = useList(
     {
       ...props,
       disallowTypeAhead: true,

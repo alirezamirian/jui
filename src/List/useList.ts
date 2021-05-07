@@ -1,11 +1,11 @@
 import { SelectableListOptions } from "@react-aria/selection";
 import { ListState } from "@react-stately/list";
 import React, { useEffect, useState } from "react";
-import { useSelectableList } from "../useSelectableList";
+import { useSelectableList } from "./useSelectableList";
 import { useFocusWithin } from "@react-aria/interactions";
 import { mergeProps } from "@react-aria/utils";
 
-export interface BasicListProps
+export interface ListProps
   extends Omit<
     SelectableListOptions,
     | "selectOnFocus"
@@ -18,8 +18,8 @@ export interface BasicListProps
 }
 // import { useSelectableList } from "@react-aria/selection";
 
-export function useBasicList<T>(
-  props: BasicListProps,
+export function useList<T>(
+  props: ListProps,
   state: ListState<T>,
   ref: React.RefObject<HTMLElement>
 ) {

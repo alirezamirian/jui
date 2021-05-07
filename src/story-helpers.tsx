@@ -1,7 +1,7 @@
-import { Legend, legends } from "../../test-data";
+import { Legend, legends } from "../test-data";
 import { Item, Section } from "@react-stately/collections";
 import React, { ReactNode } from "react";
-import { Divider, DividerItem } from "../Collections/Divider";
+import { Divider, DividerItem } from "./Collections/Divider";
 
 export const renderItemCustomUI = (item: Legend, content?: ReactNode) => (
   <Item key={item.name} textValue={item.name}>

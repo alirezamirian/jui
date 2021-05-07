@@ -1,27 +1,27 @@
 import React from "react";
 import { Meta } from "@storybook/react";
-import { BasicList } from "./BasicList";
-import { legends } from "../../../test-data";
+import { List } from "./List";
+import { legends } from "../../test-data";
 import {
   itemRenderer,
   renderItemCustomUI,
   renderItemString,
 } from "../story-helpers";
 import { Item, Section } from "@react-stately/collections";
-import { Divider } from "../../Collections/Divider";
-import { Pane } from "../../story-utils";
+import { Divider } from "../Collections/Divider";
+import { Pane } from "../story-utils";
 
 export default {
-  title: "BasicList",
-  component: BasicList,
+  title: "List/Basic",
+  component: List,
 } as Meta;
 
 export const Default = () => {
   return (
     <Pane>
-      <BasicList selectionMode="single" items={legends} fillAvailableSpace>
+      <List selectionMode="single" items={legends} fillAvailableSpace>
         {itemRenderer(renderItemString)}
-      </BasicList>
+      </List>
     </Pane>
   );
 };
@@ -29,14 +29,14 @@ export const Default = () => {
 export const AlwaysShownAsFocused = () => {
   return (
     <Pane>
-      <BasicList
+      <List
         selectionMode="single"
         items={legends}
         fillAvailableSpace
         // alwaysShowListAsFocused
       >
         {itemRenderer(renderItemCustomUI)}
-      </BasicList>
+      </List>
     </Pane>
   );
 };
@@ -44,7 +44,7 @@ export const AlwaysShownAsFocused = () => {
 export const WithStaticData = () => {
   return (
     <Pane>
-      <BasicList selectionMode="multiple" items={legends} fillAvailableSpace>
+      <List selectionMode="multiple" items={legends} fillAvailableSpace>
         <Item>Paco de lucia</Item>
         <Divider />
         <Item>Vicente Amigo</Item>
@@ -52,7 +52,7 @@ export const WithStaticData = () => {
           <Item>Gerardo Nunez</Item>
           <Item>El Amir</Item>
         </Section>
-      </BasicList>
+      </List>
     </Pane>
   );
 };
@@ -64,7 +64,7 @@ export const MultiSelect = ({
 }: any) => {
   return (
     <Pane>
-      <BasicList
+      <List
         selectionMode="multiple"
         items={legends}
         fillAvailableSpace={fillAvailableSpace}
@@ -72,7 +72,7 @@ export const MultiSelect = ({
         alwaysShowListAsFocused={alwaysShowListAsFocused}
       >
         {itemRenderer(renderItemString)}
-      </BasicList>
+      </List>
     </Pane>
   );
 };

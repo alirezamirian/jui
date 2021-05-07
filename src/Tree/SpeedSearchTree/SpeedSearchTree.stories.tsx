@@ -5,7 +5,7 @@ import { SpeedSearchTree } from "./SpeedSearchTree";
 import { Pane, SelectionLog } from "../../story-utils";
 
 export default {
-  title: "SpeedSearchTree",
+  title: "Tree/Speed search",
   Component: SpeedSearchTree,
 } as Meta;
 

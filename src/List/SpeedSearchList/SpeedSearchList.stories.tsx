@@ -6,12 +6,12 @@ import {
   itemRenderer,
   renderItemCustomUI,
   renderItemString,
-} from "../story-helpers";
+} from "../../story-helpers";
 import { HighlightedTextValue } from "../../CollectionSpeedSearch/HighlightedTextValue";
 import { Pane } from "../../story-utils";
 
 export default {
-  title: "SpeedSearchList",
+  title: "List/Speed search",
   component: SpeedSearchList,
 } as Meta;
 

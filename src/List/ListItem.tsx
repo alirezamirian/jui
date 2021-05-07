@@ -3,21 +3,21 @@ import { ListState } from "@react-stately/list";
 import React from "react";
 import { useSelectableItem } from "@react-aria/selection";
 import { usePress } from "@react-aria/interactions";
-import { StyledListItem } from "../StyledListItem";
+import { StyledListItem } from "./StyledListItem";
 
-export interface BasicListItemProps<T> {
+export interface ListItemProps<T> {
   listFocused: boolean;
   item: Node<T>;
   state: ListState<T>;
   children?: React.ReactNode;
 }
 
-export function BasicListItem<T>({
+export function ListItem<T>({
   listFocused,
   item,
   state,
   children,
-}: BasicListItemProps<T>) {
+}: ListItemProps<T>) {
   const ref = React.useRef(null);
   const disabled = state.disabledKeys.has(item.key);
   const selected = state.selectionManager.isSelected(item.key);

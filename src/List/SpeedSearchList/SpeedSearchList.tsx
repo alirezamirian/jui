@@ -1,14 +1,14 @@
 import React, { useRef } from "react";
 import { StyledList } from "../StyledList";
-import { BasicListProps } from "../BasicList/BasicList";
+import { ListProps } from "../List";
 import { useSpeedSearchList } from "./useSpeedSearchList";
 import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
 import { listItemRenderer } from "../listItemRenderer";
 import { useListState } from "../useListState";
-import { BasicListItem } from "../BasicList/BasicListItem";
+import { ListItem } from "../ListItem";
 import { CollectionSpeedSearchContainer } from "../../CollectionSpeedSearch/CollectionSpeedSearchContainer";
 
-interface ListProps<T extends object> extends BasicListProps<T> {
+interface SpeedSearchListProps<T extends object> extends ListProps<T> {
   stickySearch?: boolean;
 }
 
@@ -21,7 +21,7 @@ export function SpeedSearchList<T extends object>({
   alwaysShowListAsFocused = false,
   fillAvailableSpace = false,
   ...inputProps
-}: ListProps<T>) {
+}: SpeedSearchListProps<T>) {
   const props = { ...inputProps, disallowEmptySelection };
   const ref = useRef<HTMLUListElement>(null);
   const state = useListState(props);
@@ -44,7 +44,7 @@ export function SpeedSearchList<T extends object>({
         {[...state.collection].map(
           listItemRenderer({
             item: (item) => (
-              <BasicListItem
+              <ListItem
                 key={item.key}
                 item={getHighlightedItem(item)}
                 state={state}

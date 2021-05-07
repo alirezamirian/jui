@@ -1,12 +1,12 @@
 import { AriaListBoxProps } from "@react-types/listbox";
 import React, { useRef } from "react";
-import { useBasicList } from "./useBasicList";
-import { BasicListItem } from "./BasicListItem";
-import { StyledList } from "../StyledList";
-import { listItemRenderer } from "../listItemRenderer";
-import { useListState } from "../useListState";
+import { useList } from "./useList";
+import { ListItem } from "./ListItem";
+import { StyledList } from "./StyledList";
+import { listItemRenderer } from "./listItemRenderer";
+import { useListState } from "./useListState";
 
-export interface BasicListProps<T extends object> extends AriaListBoxProps<T> {
+export interface ListProps<T extends object> extends AriaListBoxProps<T> {
   /**
    * fills the available horizontal or vertical space, when rendered in a flex container.
    */
@@ -30,16 +30,16 @@ export interface BasicListProps<T extends object> extends AriaListBoxProps<T> {
  *  - Support custom rendering
  *  -
  */
-export function BasicList<T extends object>({
+export function List<T extends object>({
   disallowEmptySelection = true,
   alwaysShowListAsFocused = false,
   fillAvailableSpace = false,
   ...inputProps
-}: BasicListProps<T>) {
+}: ListProps<T>) {
   const props = { ...inputProps, disallowEmptySelection };
   const ref = useRef<HTMLUListElement>(null);
   const state = useListState(props);
-  const { listProps, focused } = useBasicList(props, state, ref);
+  const { listProps, focused } = useList(props, state, ref);
 
   return (
     <StyledList
@@ -50,7 +50,7 @@ export function BasicList<T extends object>({
       {[...state.collection].map(
         listItemRenderer({
           item: (item) => (
-            <BasicListItem
+            <ListItem
               key={item.key}
               item={item}
               state={state}
