@@ -13,12 +13,11 @@ export class TreeKeyboardDelegate<T> extends ListKeyboardDelegate<T> {
   }
 
   getKeyLeftOf(key: React.Key): React.Key {
-    // Typing in KeyboardDelegate is not strictNullChecks compatible
     const item = this.collection.getItem(key);
-    return item.parentKey || (item.prevKey as React.Key);
+    return item.parentKey || this.getKeyAbove(key);
   }
 
   getKeyRightOf(key: React.Key): React.Key {
-    return this.collection.getItem(key).nextKey as React.Key;
+    return this.getKeyBelow(key);
   }
 }
