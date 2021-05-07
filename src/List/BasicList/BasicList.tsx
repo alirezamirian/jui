@@ -1,13 +1,10 @@
 import { AriaListBoxProps } from "@react-types/listbox";
-import React, { useRef, useState } from "react";
-import { useFocusWithin } from "@react-aria/interactions";
-import { mergeProps } from "@react-aria/utils";
+import React, { useRef } from "react";
 import { useBasicList } from "./useBasicList";
 import { BasicListItem } from "./BasicListItem";
 import { StyledList } from "../StyledList";
 import { listItemRenderer } from "../listItemRenderer";
-import { replaceSelectionManager } from "../../selection/replaceSelectionManager";
-import { useListState } from "@react-stately/list";
+import { useListState } from "../useListState";
 
 export interface BasicListProps<T extends object> extends AriaListBoxProps<T> {
   /**
@@ -41,18 +38,13 @@ export function BasicList<T extends object>({
 }: BasicListProps<T>) {
   const props = { ...inputProps, disallowEmptySelection };
   const ref = useRef<HTMLUListElement>(null);
-  const state = replaceSelectionManager(useListState(props));
-  const [focusWithin, setFocusWithin] = useState(false);
-  const { listProps } = useBasicList(props, state, ref);
-
-  const { focusWithinProps } = useFocusWithin({
-    onFocusWithinChange: setFocusWithin,
-  });
+  const state = useListState(props);
+  const { listProps, focused } = useBasicList(props, state, ref);
 
   return (
     <StyledList
       fillAvailableSpace={fillAvailableSpace}
-      {...mergeProps(listProps, focusWithinProps)}
+      {...listProps}
       ref={ref}
     >
       {[...state.collection].map(
@@ -62,7 +54,7 @@ export function BasicList<T extends object>({
               key={item.key}
               item={item}
               state={state}
-              listFocused={alwaysShowListAsFocused || focusWithin}
+              listFocused={alwaysShowListAsFocused || focused}
             />
           ),
         })

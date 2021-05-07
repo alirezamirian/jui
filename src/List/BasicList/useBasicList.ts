@@ -1,6 +1,9 @@
 import { SelectableListOptions } from "@react-aria/selection";
 import { ListState } from "@react-stately/list";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useSelectableList } from "../useSelectableList";
+import { useFocusWithin } from "@react-aria/interactions";
+import { mergeProps } from "@react-aria/utils";
 
 export interface BasicListProps
   extends Omit<
@@ -13,7 +16,6 @@ export interface BasicListProps
   > {
   id?: string;
 }
-import { useSelectableList } from "../useSelectableList";
 // import { useSelectableList } from "@react-aria/selection";
 
 export function useBasicList<T>(
@@ -32,6 +34,11 @@ export function useBasicList<T>(
     // if selectOnFocus is gonna be an option (which is not in intellij UI), we should also conditionally show outline on items
     selectOnFocus: true,
   });
+  const [focused, setFocused] = useState(false);
+
+  const { focusWithinProps } = useFocusWithin({
+    onFocusWithinChange: setFocused,
+  });
 
   // auto select the first item, if selection is empty and disallowEmptySelection is true.
   useEffect(() => {
@@ -45,5 +52,8 @@ export function useBasicList<T>(
     }
   }, [props.disallowEmptySelection]);
 
-  return { listProps };
+  return {
+    listProps: mergeProps(listProps, focusWithinProps),
+    focused,
+  };
 }

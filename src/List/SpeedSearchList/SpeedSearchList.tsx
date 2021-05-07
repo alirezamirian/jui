@@ -6,8 +6,7 @@ import { SpeedSearchContainer } from "../../SpeedSearch/SpeedSearchContainer";
 import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
 import { SpeedSearchListItem } from "./SpeedSearchListItem";
 import { listItemRenderer } from "../listItemRenderer";
-import { useListState } from "@react-stately/list";
-import { replaceSelectionManager } from "../../selection/replaceSelectionManager";
+import { useListState } from "../useListState";
 
 interface ListProps<T extends object> extends BasicListProps<T> {
   stickySearch?: boolean;
@@ -25,7 +24,7 @@ export function SpeedSearchList<T extends object>({
 }: ListProps<T>) {
   const props = { ...inputProps, disallowEmptySelection };
   const ref = useRef<HTMLUListElement>(null);
-  const state = replaceSelectionManager(useListState(props));
+  const state = useListState(props);
 
   const { listProps, searchPopupProps, matches, focused } = useSpeedSearchList(
     props,

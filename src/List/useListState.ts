@@ -1,15 +1,12 @@
 import {
   ListProps,
+  ListState,
   useListState as originalUseListState,
 } from "@react-stately/list";
-import { SelectionManager } from "../selection/SelectionManager";
+import { replaceSelectionManager } from "../selection/replaceSelectionManager";
 
-export function useListState<T extends object>(props: ListProps<T>) {
-  const state = originalUseListState(props);
-  state.selectionManager = new SelectionManager(
-    state.collection,
-    // @ts-expect-error state is private. There might be better ways of creating a custom selection manager
-    state.selectionManager.state
-  );
-  return state;
+export function useListState<T extends object>(
+  props: ListProps<T>
+): ListState<T> {
+  return replaceSelectionManager(originalUseListState(props));
 }
