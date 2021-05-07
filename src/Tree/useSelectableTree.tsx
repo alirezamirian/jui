@@ -62,9 +62,10 @@ export function useSelectableTree<T>(
       focusedKey && props.collection.getItem(focusedKey).hasChildNodes;
     const expanded = focusedKey && props.expandedKeys.has(focusedKey);
     const shouldToggle =
-      event.key === "Enter" ||
-      (event.key === "ArrowLeft" && expanded) ||
-      (event.key === "ArrowRight" && !expanded);
+      !props.disabledKeys.has(focusedKey) &&
+      (event.key === "Enter" ||
+        (event.key === "ArrowLeft" && expanded) ||
+        (event.key === "ArrowRight" && !expanded));
     if (isExpandable && shouldToggle) {
       event.preventDefault();
       props.toggleKey(focusedKey);
