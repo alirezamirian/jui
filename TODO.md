@@ -1,4 +1,6 @@
 - SpeedSearchTree
+- list container overflow bug
+- nested item highlighting issue
 - Implement a Theme class:
   - themeJson is kept as a property on it
   - getValue method for accessing value based on path (e.g. "Slider.tickColor"). it resolves OS 

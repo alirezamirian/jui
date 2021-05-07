@@ -54,7 +54,7 @@ JUI is Intellij Platform UI implemented as a React.js library.
             <td>:x:</td>
         </tr>
         <tr>
-            <td rowspan="3">Tree</td>
+            <td rowspan="4">Tree</td>
         </tr>
         <tr>
             <td colspan="2">Base</td>
@@ -62,6 +62,10 @@ JUI is Intellij Platform UI implemented as a React.js library.
         </tr>
         <tr>
             <td colspan="2">Speed search</td>
+            <td>:x:</td>
+        </tr>
+        <tr>
+            <td colspan="2">Tree node checkboxes <sup>3</sup></td>
             <td>:x:</td>
         </tr>
         <tr>
@@ -151,7 +155,14 @@ JUI is Intellij Platform UI implemented as a React.js library.
 1. Not exactly a list feature. But more about checking feasibility of it
 2. It seems in Intellij UI, such menu lists are only used in popups. Maybe only 
    FlatSpeedSearchPopup
+3. Probably not a feature of Tree itself   
 
+
+### Intellij platform bugs
+These bugs are found in the original Intellij Platform UI, which doesn't exist in JUI:
+- in Tree with speed search, when toggling a node changes the matches, the speed search popup is
+  not updated accordingly. Here is an example, in which we have this invalid state, where there 
+  is a match but speed search popup is red: ![img.png](bug-1.png)
 
 
 [CommonShortcuts]: https://github.com/JetBrains/intellij-community/blob
