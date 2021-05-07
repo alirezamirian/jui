@@ -1,17 +1,20 @@
 import { TreeState } from "@react-stately/tree";
-import { RefObject, useMemo } from "react";
+import { RefObject, useMemo, useState } from "react";
 import { useSelectableCollection } from "../selection/useSelectableCollection";
 import { TreeKeyboardDelegate } from "./TreeKeyboardDelegate";
 import { KeyboardEvent } from "@react-types/shared";
-import { useKeyboard } from "@react-aria/interactions";
+import { useFocusWithin, useKeyboard } from "@react-aria/interactions";
 import { mergeProps } from "@react-aria/utils";
 import { useCollator } from "@react-aria/i18n";
+import { useCollectionAutoScroll } from "../Collections/useCollectionAutoScroll";
 
 export function useSelectableTree<T>(
-  state: TreeState<T>,
+  props: TreeState<T> & { isVirtualized?: boolean },
   ref: RefObject<HTMLElement>
 ) {
   const collator = useCollator({ usage: "search", sensitivity: "base" });
+
+  const [focused, setFocused] = useState(false);
   const {
     collectionProps: {
       // preventDefault in onMouseDown prevents collection from getting focused.
@@ -22,32 +25,43 @@ export function useSelectableTree<T>(
     },
   } = useSelectableCollection({
     ref,
-    selectionManager: state.selectionManager,
+    selectionManager: props.selectionManager,
     selectOnFocus: true,
     keyboardDelegate: useMemo(
       () =>
         new TreeKeyboardDelegate(
-          state.collection,
-          state.disabledKeys,
+          props.collection,
+          props.disabledKeys,
           ref,
           collator
         ),
-      [state.collection, state.disabledKeys]
+      [props.collection, props.disabledKeys]
     ),
   });
+  const { focusWithinProps } = useFocusWithin({
+    onFocusWithinChange: setFocused,
+  });
+
+  useCollectionAutoScroll(
+    {
+      isVirtualized: props.isVirtualized,
+      selectionManager: props.selectionManager,
+    },
+    ref
+  );
 
   const onKeyDown = (event: KeyboardEvent) => {
-    const focusedKey = state.selectionManager.focusedKey;
+    const focusedKey = props.selectionManager.focusedKey;
     const isExpandable =
-      focusedKey && state.collection.getItem(focusedKey).hasChildNodes;
-    const expanded = focusedKey && state.expandedKeys.has(focusedKey);
+      focusedKey && props.collection.getItem(focusedKey).hasChildNodes;
+    const expanded = focusedKey && props.expandedKeys.has(focusedKey);
     const shouldToggle =
       event.key === "Enter" ||
       (event.key === "ArrowLeft" && expanded) ||
       (event.key === "ArrowRight" && !expanded);
     if (isExpandable && shouldToggle) {
       event.preventDefault();
-      state.toggleKey(focusedKey);
+      props.toggleKey(focusedKey);
     } else {
       selectionKeyDown?.(event);
     }
@@ -57,6 +71,7 @@ export function useSelectableTree<T>(
   });
   return {
     // order of merging here is important. navigation handling should precede selection handling
-    treeProps: mergeProps(collectionProps, keyboardProps),
+    treeProps: mergeProps(focusWithinProps, collectionProps, keyboardProps),
+    focused,
   };
 }

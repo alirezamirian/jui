@@ -1,17 +1,14 @@
 import { TreeProps } from "@react-stately/tree";
-import React, { useRef, useState } from "react";
-import { useFocusWithin } from "@react-aria/interactions";
-import { mergeProps } from "@react-aria/utils";
+import React, { useRef } from "react";
 import { StyledList } from "../List/StyledList";
 import { TreeNode } from "./TreeNode";
 import { useTreeState } from "./__tmp__useTreeState";
-import { useCollectionAutoScroll } from "../Collections/useCollectionAutoScroll";
-import { SelectionManager } from "@react-stately/selection";
 import { useSelectableTree } from "./useSelectableTree";
 import { replaceSelectionManager } from "../selection/replaceSelectionManager";
 
 interface Props<T extends object> extends TreeProps<T> {
   fillAvailableSpace?: boolean;
+  isVirtualized?: boolean;
 }
 
 /**
@@ -28,20 +25,16 @@ interface Props<T extends object> extends TreeProps<T> {
  */
 export function Tree<T extends object>({
   fillAvailableSpace = false,
+  isVirtualized,
   ...props
 }: Props<T>) {
   const state = replaceSelectionManager(useTreeState(props));
   const ref = useRef<HTMLDivElement>(null);
-  const [focused, setFocused] = useState(false);
-  const { focusWithinProps } = useFocusWithin({
-    onFocusWithinChange: setFocused,
-  });
 
-  const { treeProps } = useSelectableTree(state, ref);
-  useCollectionAutoScroll(
+  const { treeProps, focused } = useSelectableTree(
     {
-      isVirtualized: false,
-      selectionManager: state.selectionManager as SelectionManager,
+      ...state,
+      isVirtualized,
     },
     ref
   );
@@ -50,7 +43,7 @@ export function Tree<T extends object>({
       as="div"
       ref={ref}
       fillAvailableSpace={fillAvailableSpace}
-      {...mergeProps(focusWithinProps, treeProps)}
+      {...treeProps}
     >
       {[...state.collection.getKeys()]
         .map((key) => state.collection.getItem(key))
