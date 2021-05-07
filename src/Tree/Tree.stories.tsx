@@ -21,6 +21,7 @@ export const Static = () => {
           selectionMode="multiple"
           defaultExpandedKeys={["List", "Theme", "BasicList", "Foo"]}
           selectedKeys={selectedKeys}
+          disabledKeys={["SpeedSearchList.tsx"]}
           onSelectionChange={setSelectedKeys}
         >
           <Item key="index.ts">index.ts</Item>
@@ -34,7 +35,7 @@ export const Static = () => {
 
             <Item title="SpeedSearchList" key="SpeedSearchList">
               <Item>SpeedSearchList.stories.tsx</Item>
-              <Item>SpeedSearchList.tsx</Item>
+              <Item key="SpeedSearchList.tsx">SpeedSearchList.tsx</Item>
               <Item>SpeedSearchListItem.tsx</Item>
               <Item>useSpeedSearchList.ts</Item>
             </Item>

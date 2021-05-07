@@ -46,15 +46,15 @@ export function TreeNode<T>({
     }).treeNodeToggleButtonProps,
     isDisabled: disabled,
   });
-  const { pressProps } = usePress({
-    ...useSelectableItem({
-      key: item.key,
-      ref,
-      selectionManager,
-      isVirtualized: false,
-    }).itemProps,
-    isDisabled: disabled,
-    preventFocusOnPress: false,
+  // We are not using usePress since it stops propagation of Enter key downs, but we need to handle
+  // it for toggling non-leaf nodes.
+  const {
+    itemProps: { onPressStart, ...itemProps },
+  } = useSelectableItem({
+    key: item.key,
+    ref,
+    selectionManager,
+    isVirtualized: false,
   });
 
   /**
@@ -70,7 +70,8 @@ export function TreeNode<T>({
     <>
       <StyledTreeNode
         ref={ref}
-        {...pressProps}
+        {...itemProps}
+        onMouseDown={(e) => !disabled && onPressStart?.(e as any)}
         containerFocused={containerFocused}
         disabled={disabled}
         selected={selected}
