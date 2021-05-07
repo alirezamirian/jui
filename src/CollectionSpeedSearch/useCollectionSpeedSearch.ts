@@ -66,6 +66,11 @@ export function useCollectionSpeedSearch<T>({
       searchTerm: speedSearch.searchTerm,
       matches,
     },
+    searchPopupProps: {
+      active: speedSearch.active,
+      match: matches.size > 0,
+      children: speedSearch.searchTerm,
+    },
     getHighlightedItem: (item: Node<T>) =>
       getHighlightedItem(item, matches.get(item.key) || null),
   };

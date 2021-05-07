@@ -43,17 +43,14 @@ export function SpeedSearchList<T extends object>({
       <SpeedSearchPopup {...searchPopupProps} />
       {[...state.collection].map(
         listItemRenderer({
-          item: (item) => {
-            const highlightedItem = getHighlightedItem(item);
-            return (
-              <BasicListItem
-                key={highlightedItem.key}
-                item={highlightedItem}
-                state={state}
-                listFocused={alwaysShowListAsFocused || focused}
-              />
-            );
-          },
+          item: (item) => (
+            <BasicListItem
+              key={item.key}
+              item={getHighlightedItem(item)}
+              state={state}
+              listFocused={alwaysShowListAsFocused || focused}
+            />
+          ),
         })
       )}
     </SpeedSearchContainer>

@@ -33,6 +33,7 @@ export function useSpeedSearchList<T>(
     selectionManager,
     keyboardDelegate,
     containerProps: speedSearchContainerProps,
+    searchPopupProps,
     getHighlightedItem,
   } = useCollectionSpeedSearch({
     collection: listState.collection,
@@ -60,10 +61,6 @@ export function useSpeedSearchList<T>(
     focused,
     selectionManager,
     getHighlightedItem,
-    searchPopupProps: {
-      active: speedSearch.active,
-      match: speedSearch.matches.size > 0,
-      children: speedSearch.searchTerm,
-    },
+    searchPopupProps,
   };
 }
