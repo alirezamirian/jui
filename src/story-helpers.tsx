@@ -21,7 +21,7 @@ export const itemRenderer = (
   if ("items" in item) {
     return (
       <Section items={item.items} key={item.title} title={item.title}>
-        {renderItem}
+        {(item) => renderItem(item, content)}
       </Section>
     );
   }

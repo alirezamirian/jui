@@ -1,4 +1,4 @@
-- nested item highlighting issue
+- refactor: matches in collection search speed should be nullable   
 - Implement a Theme class:
   - themeJson is kept as a property on it
   - getValue method for accessing value based on path (e.g. "Slider.tickColor"). it resolves OS 
