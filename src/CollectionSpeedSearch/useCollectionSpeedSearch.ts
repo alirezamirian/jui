@@ -8,6 +8,7 @@ import {
 import { useCollectionSpeedSearchResult } from "./useCollectionSpeedSearchResult";
 import { useMemo } from "react";
 import { createSpeedSearchKeyboardDelegate } from "./createSpeedSearchKeyboardDelegate";
+import { getHighlightedItem } from "./getHighlightedItem";
 
 /**
  * Given a `collection`, a `selectionManager` and a `keyboardDelegate`, it returns:
@@ -65,5 +66,7 @@ export function useCollectionSpeedSearch<T>({
       searchTerm: speedSearch.searchTerm,
       matches,
     },
+    getHighlightedItem: (item: Node<T>) =>
+      getHighlightedItem(item, matches.get(item.key) || null),
   };
 }

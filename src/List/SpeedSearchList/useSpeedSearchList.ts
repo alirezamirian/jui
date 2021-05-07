@@ -1,13 +1,13 @@
-import { BasicListProps, useBasicList } from "../BasicList/useBasicList";
-
+import { Node } from "@react-types/shared";
 import { ListState } from "@react-stately/list";
+import { SelectionManager } from "@react-stately/selection";
 import { HTMLProps, Key, RefObject } from "react";
 import { mergeProps } from "@react-aria/utils";
 import { ListKeyboardDelegate } from "@react-aria/selection";
 import { SpeedSearchPopupProps } from "../../SpeedSearch/SpeedSearchPopup";
 import { TextRange } from "../../TextRange";
-import { SelectionManager } from "@react-stately/selection";
 import { useCollectionSpeedSearch } from "../../CollectionSpeedSearch/useCollectionSpeedSearch";
+import { BasicListProps, useBasicList } from "../BasicList/useBasicList";
 
 interface UseListProps
   extends Omit<BasicListProps, "keyboardDelegate" | "disallowTypeAhead"> {
@@ -22,16 +22,18 @@ export function useSpeedSearchList<T>(
   listProps: HTMLProps<HTMLUListElement>;
   searchPopupProps: SpeedSearchPopupProps;
   focused: boolean;
+  getHighlightedItem: (item: Node<T>) => Node<T>;
   selectionManager: SelectionManager;
   matches: Map<Key, TextRange[]>;
 } {
   const { stickySearch } = props;
 
   const {
-    speedSearch: { matches, active, searchTerm },
+    speedSearch,
     selectionManager,
     keyboardDelegate,
     containerProps: speedSearchContainerProps,
+    getHighlightedItem,
   } = useCollectionSpeedSearch({
     collection: listState.collection,
     selectionManager: listState.selectionManager,
@@ -54,13 +56,14 @@ export function useSpeedSearchList<T>(
 
   return {
     listProps: mergeProps(listProps, speedSearchContainerProps),
-    matches,
+    matches: speedSearch.matches,
     focused,
     selectionManager,
+    getHighlightedItem,
     searchPopupProps: {
-      active: active,
-      match: matches.size > 0,
-      children: searchTerm,
+      active: speedSearch.active,
+      match: speedSearch.matches.size > 0,
+      children: speedSearch.searchTerm,
     },
   };
 }

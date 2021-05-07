@@ -4,9 +4,9 @@ import { BasicListProps } from "../BasicList/BasicList";
 import { useSpeedSearchList } from "./useSpeedSearchList";
 import { SpeedSearchContainer } from "../../SpeedSearch/SpeedSearchContainer";
 import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
-import { SpeedSearchListItem } from "./SpeedSearchListItem";
 import { listItemRenderer } from "../listItemRenderer";
 import { useListState } from "../useListState";
+import { BasicListItem } from "../BasicList/BasicListItem";
 
 interface ListProps<T extends object> extends BasicListProps<T> {
   stickySearch?: boolean;
@@ -26,11 +26,12 @@ export function SpeedSearchList<T extends object>({
   const ref = useRef<HTMLUListElement>(null);
   const state = useListState(props);
 
-  const { listProps, searchPopupProps, matches, focused } = useSpeedSearchList(
-    props,
-    state,
-    ref
-  );
+  const {
+    listProps,
+    searchPopupProps,
+    focused,
+    getHighlightedItem,
+  } = useSpeedSearchList(props, state, ref);
 
   return (
     <SpeedSearchContainer
@@ -42,15 +43,17 @@ export function SpeedSearchList<T extends object>({
       <SpeedSearchPopup {...searchPopupProps} />
       {[...state.collection].map(
         listItemRenderer({
-          item: (item) => (
-            <SpeedSearchListItem
-              key={item.key}
-              item={item}
-              state={state}
-              highlightedRanges={matches.get(item.key) || null}
-              listFocused={alwaysShowListAsFocused || focused}
-            />
-          ),
+          item: (item) => {
+            const highlightedItem = getHighlightedItem(item);
+            return (
+              <BasicListItem
+                key={highlightedItem.key}
+                item={highlightedItem}
+                state={state}
+                listFocused={alwaysShowListAsFocused || focused}
+              />
+            );
+          },
         })
       )}
     </SpeedSearchContainer>
