@@ -8,7 +8,7 @@ export function Pane({ children }: { children: React.ReactNode }) {
         display: "flex",
         flexDirection: "column",
         width: 400,
-        height: "calc(100vh - 25px)",
+        height: "calc(100vh - 50px)",
       }}
     >
       {children}

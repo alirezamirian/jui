@@ -19,7 +19,7 @@ export function useSpeedSearchList<T>(
   listState: ListState<T>,
   ref: RefObject<HTMLElement>
 ): {
-  listProps: HTMLProps<HTMLUListElement>;
+  listProps: Omit<HTMLProps<HTMLUListElement>, "as" | "ref">;
   searchPopupProps: SpeedSearchPopupProps;
   focused: boolean;
   getHighlightedItem: (item: Node<T>) => Node<T>;

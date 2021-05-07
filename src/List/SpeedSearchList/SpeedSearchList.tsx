@@ -2,11 +2,11 @@ import React, { useRef } from "react";
 import { StyledList } from "../StyledList";
 import { BasicListProps } from "../BasicList/BasicList";
 import { useSpeedSearchList } from "./useSpeedSearchList";
-import { SpeedSearchContainer } from "../../SpeedSearch/SpeedSearchContainer";
 import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
 import { listItemRenderer } from "../listItemRenderer";
 import { useListState } from "../useListState";
 import { BasicListItem } from "../BasicList/BasicListItem";
+import { CollectionSpeedSearchContainer } from "../../CollectionSpeedSearch/CollectionSpeedSearchContainer";
 
 interface ListProps<T extends object> extends BasicListProps<T> {
   stickySearch?: boolean;
@@ -34,25 +34,26 @@ export function SpeedSearchList<T extends object>({
   } = useSpeedSearchList(props, state, ref);
 
   return (
-    <SpeedSearchContainer
-      as={StyledList}
-      fillAvailableSpace={fillAvailableSpace}
-      {...listProps}
-      ref={ref}
-    >
+    <CollectionSpeedSearchContainer fillAvailableSpace={fillAvailableSpace}>
       <SpeedSearchPopup {...searchPopupProps} />
-      {[...state.collection].map(
-        listItemRenderer({
-          item: (item) => (
-            <BasicListItem
-              key={item.key}
-              item={getHighlightedItem(item)}
-              state={state}
-              listFocused={alwaysShowListAsFocused || focused}
-            />
-          ),
-        })
-      )}
-    </SpeedSearchContainer>
+      <StyledList
+        ref={ref}
+        fillAvailableSpace={fillAvailableSpace}
+        {...listProps}
+      >
+        {[...state.collection].map(
+          listItemRenderer({
+            item: (item) => (
+              <BasicListItem
+                key={item.key}
+                item={getHighlightedItem(item)}
+                state={state}
+                listFocused={alwaysShowListAsFocused || focused}
+              />
+            ),
+          })
+        )}
+      </StyledList>
+    </CollectionSpeedSearchContainer>
   );
 }

@@ -11,5 +11,6 @@ export const StyledList = styled.ul<{ fillAvailableSpace: boolean }>(
     // focus state is always hinted by different color of selected item(s) when focused.
     outline: "none",
     overflow: "auto",
+    maxHeight: "100%",
   })
 );

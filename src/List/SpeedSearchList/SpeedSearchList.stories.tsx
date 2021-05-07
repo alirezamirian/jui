@@ -8,6 +8,7 @@ import {
   renderItemString,
 } from "../story-helpers";
 import { HighlightedTextValue } from "../../CollectionSpeedSearch/HighlightedTextValue";
+import { Pane } from "../../story-utils";
 
 export default {
   title: "SpeedSearchList",
@@ -42,19 +43,3 @@ export const HighlightInCustomUI = () => {
     </Pane>
   );
 };
-
-function Pane({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      style={{
-        marginTop: 20,
-        display: "flex",
-        flexDirection: "column",
-        width: 400,
-        height: "calc(100vh - 25px)",
-      }}
-    >
-      {children}
-    </div>
-  );
-}
