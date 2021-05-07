@@ -2,14 +2,19 @@ import { TreeState } from "@react-stately/tree";
 import { RefObject, useMemo, useState } from "react";
 import { useSelectableCollection } from "../selection/useSelectableCollection";
 import { TreeKeyboardDelegate } from "./TreeKeyboardDelegate";
-import { KeyboardEvent } from "@react-types/shared";
+import { KeyboardDelegate, KeyboardEvent } from "@react-types/shared";
 import { useFocusWithin, useKeyboard } from "@react-aria/interactions";
 import { mergeProps } from "@react-aria/utils";
 import { useCollator } from "@react-aria/i18n";
 import { useCollectionAutoScroll } from "../Collections/useCollectionAutoScroll";
 
+export type SelectableTreeProps<T> = TreeState<T> & {
+  isVirtualized?: boolean;
+  keyboardDelegate?: KeyboardDelegate;
+};
+
 export function useSelectableTree<T>(
-  props: TreeState<T> & { isVirtualized?: boolean },
+  props: SelectableTreeProps<T>,
   ref: RefObject<HTMLElement>
 ) {
   const collator = useCollator({ usage: "search", sensitivity: "base" });
@@ -29,13 +34,14 @@ export function useSelectableTree<T>(
     selectOnFocus: true,
     keyboardDelegate: useMemo(
       () =>
+        props.keyboardDelegate ||
         new TreeKeyboardDelegate(
           props.collection,
           props.disabledKeys,
           ref,
           collator
         ),
-      [props.collection, props.disabledKeys]
+      [props.collection, props.disabledKeys, props.keyboardDelegate]
     ),
   });
   const { focusWithinProps } = useFocusWithin({

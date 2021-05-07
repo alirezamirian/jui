@@ -38,7 +38,7 @@ export function useSpeedSearchState(
   };
 }
 
-interface SpeedSearchProps {
+export interface SpeedSearchProps {
   stickySearch?: boolean;
 }
 
