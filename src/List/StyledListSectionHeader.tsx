@@ -6,5 +6,5 @@ export const StyledListSectionHeader = styled.li(({ theme }) => ({
   lineHeight: "20px",
   outline: "none",
   cursor: "default",
-  color: theme.ui["*"]?.textForeground || theme.ui["*"]?.foreground,
+  color: theme.color("*.textForeground", theme.color("*.foreground")),
 }));

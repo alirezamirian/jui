@@ -8,17 +8,19 @@ export type StyledListItemProps = {
 
 export const StyledListItem = styled.li<StyledListItemProps>(
   ({ containerFocused, selected, disabled, theme }) => {
-    const common = theme.ui["*"];
     let backgroundColor;
     let color = disabled
-      ? theme.ui.colors?.disabledForeground || "#8C8C8C" // FIXME: fallbacks should not be inlined
-      : common.textForeground || common.foreground;
+      ? theme.color("*.disabledForeground", "#8C8C8C") // FIXME: fallbacks should not be inlined
+      : theme.color("*.textForeground", theme.color("*.foreground"));
     if (selected) {
       if (containerFocused) {
-        color = theme.colors?.selectionForeground || common.selectionForeground;
-        backgroundColor = common.selectionBackground;
+        color = theme.color(
+          "*.selectionForeground",
+          theme.color("*.acceleratorSelectionForeground")
+        );
+        backgroundColor = theme.color("*.selectionBackground");
       } else {
-        backgroundColor = common.selectionBackgroundInactive;
+        backgroundColor = theme.color("*.selectionBackgroundInactive");
       }
     }
     return {

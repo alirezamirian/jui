@@ -13,11 +13,22 @@ import { isMac } from "@react-aria/utils";
  * TODO: decorate accessor methods with a cache decorator
  */
 export class Theme {
+  // using property initializer causes an error. the property initialization is run before
+  // constructor, and therefore this.themeJson is undefined. Could be a babel misconfiguration, but
+  // this workaround is used for now
+  commonColors: ReturnType<Theme["getCommonColors"]>;
+
   constructor(
-    protected themeJson: ThemeJson | any /*FIXME*/,
-    protected os: OS | null = detectOs(),
-    protected iconResolver: IconResolver = new GithubIconResolver()
-  ) {}
+    protected readonly themeJson: ThemeJson | any /*FIXME*/,
+    protected readonly os: OS | null = detectOs(),
+    protected readonly iconResolver: IconResolver = new GithubIconResolver()
+  ) {
+    this.commonColors = this.getCommonColors();
+  }
+
+  get dark(): boolean {
+    return Boolean(this.themeJson.dark);
+  }
 
   /**
    * - Resolves values that are references to theme.colors
@@ -42,14 +53,16 @@ export class Theme {
     path: string,
     fallback?: T
   ): Promise<undefined extends T ? string | undefined : string> {
-    const icon = this.value(path);
+    const icon = this.value(path) || fallback;
     if (typeof icon === "string") {
       // @ts-expect-error: the error doesn't seem to make sense.
       // string should be assignable to the conditional return type, which is effectively either
       // string or (undefined | string)
       return this.iconResolver.resolveThemeIcon(icon);
     }
-    throw fallback;
+    throw new Error(
+      `Could not find the icon "${path}" on the theme, and no fallback provided`
+    );
   }
 
   /**
@@ -64,6 +77,17 @@ export class Theme {
 
   private rawValue(path: string): ThemePropertyValue | OsDependentValue {
     return this.themeJson.ui[path] || resolvePath(path, this.themeJson.ui);
+  }
+
+  private getCommonColors() {
+    console.log("getCommonColors");
+    return {
+      tooltipForeground: this.color(
+        "Tooltip.foreground",
+        this.dark ? "#bfbfbf" : "#000000"
+      ),
+      red: this.dark ? "rgb(255,100,100)" : "rgb(255,0,0)",
+    };
   }
 }
 

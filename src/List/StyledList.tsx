@@ -6,8 +6,8 @@ export const StyledList = styled.ul<{ fillAvailableSpace: boolean }>(
     margin: 0,
     flex: fillAvailableSpace ? "1" : undefined,
     listStyle: "none",
-    color: theme.ui["*"].textForeground,
-    background: theme.ui["*"].background,
+    color: theme.color("*.textForeground"),
+    background: theme.color("*.background"),
     // focus state is always hinted by different color of selected item(s) when focused.
     outline: "none",
     overflow: "auto",

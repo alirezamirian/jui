@@ -12,8 +12,8 @@ export default {
 
 const SpeedSearchContainer = styled(SpeedSearch)`
   width: 400px;
-  background: ${({ theme }) => theme.ui["*"].background};
-  color: ${({ theme }) => theme.ui["*"].textForeground};
+  background: ${({ theme }) => theme.color("*.background")};
+  color: ${({ theme }) => theme.color("*.textForeground")};
 `;
 export const Default = () => {
   const [searchTerm, setSearchTerm] = useState("");

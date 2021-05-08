@@ -2,7 +2,7 @@ import baseStyled, { ThemedStyledInterface } from "styled-components";
 import darculaTheme from "../themes/darcula.theme.json";
 import intellijLaf from "../themes/intellijlaf.theme.json";
 import lightTheme from "../themes/Light.theme.json";
-import { Theme } from "./Theme/createTheme";
+import { Theme } from "./Theme/Theme";
 
 // TODO: better typing?
 export type ThemeJson = (

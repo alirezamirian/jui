@@ -1,10 +1,10 @@
-import { Theme } from "../Theme/createTheme";
 import React, { CSSProperties, HTMLProps, useEffect, useState } from "react";
 import { useTheme } from "styled-components";
 import { styled } from "../styled";
+import { Theme } from "../Theme/Theme";
 
 interface IconProps extends Omit<HTMLProps<HTMLSpanElement>, "ref" | "as"> {
-  icon: string | ((theme: Theme) => string);
+  themeIcon: string | { path: string; fallback: string };
   size?: 16; // more options may be added here
   style?: CSSProperties;
   className?: string;
@@ -22,28 +22,32 @@ const StyledIconWrapper = styled.span<{ size: IconSize }>`
   height: ${({ size }) => `${size}px`};
 `;
 
-export function Icon({ icon, size = 16, ...props }: IconProps) {
-  const theme = useTheme();
+export function Icon({ themeIcon, size = 16, ...props }: IconProps) {
+  const theme = useTheme() as Theme; // TODO: investigate why useTheme is typed like this
   const [svg, setSvg] = useState("");
-  const srcValue = typeof icon === "function" ? icon(theme) : icon;
   useEffect(() => {
     const fetchIcon = async () => {
-      if (!srcValue) {
-        console.error("invalid icon src", srcValue);
+      if (!themeIcon) {
+        console.error("invalid icon src", themeIcon);
         return;
       }
-      const url = !srcValue.startsWith("http")
-        ? `https://raw.githubusercontent.com/JetBrains/intellij-community/master/platform/platform-impl/src/${srcValue}`
-        : srcValue;
-      const response = await fetch(url);
-      setSvg(await response.text());
+      const path = typeof themeIcon === "object" ? themeIcon.path : themeIcon;
+      const fallback =
+        typeof themeIcon === "object" ? themeIcon.fallback : undefined;
+      const svg = await theme.icon(path, fallback);
+
+      if (svg) {
+        setSvg(svg);
+      } else {
+        console.error("Could not resolve icon:", themeIcon);
+      }
     };
     fetchIcon().catch(console.error);
-  }, [srcValue]);
+  }, [themeIcon]);
 
   return (
     <StyledIconWrapper
-      data-src={srcValue}
+      data-src={themeIcon}
       size={size}
       {...props}
       dangerouslySetInnerHTML={{ __html: svg }}

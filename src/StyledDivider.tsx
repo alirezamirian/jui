@@ -2,8 +2,11 @@ import { styled } from "./styled";
 import React from "react";
 
 export const StyledDivider = styled.hr(({ theme }) => ({
-  backgroundColor:
-    theme.ui.Separator?.separatorColor || theme.ui["*"].separatorColor,
+  backgroundColor: theme.color(
+    // if this kind of fallback to *.{theSameKey} is repeated a lot, it can be baked into Theme.color
+    "Separator.separatorColor",
+    theme.color("*.separatorColor")
+  ),
   margin: 0,
   border: "none",
 }));
