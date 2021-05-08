@@ -8,6 +8,7 @@ import {
 } from "./types";
 import { GithubIconResolver } from "./GithubIconResolver";
 import { isMac } from "@react-aria/utils";
+import { cache } from "./cache.decorator";
 
 /**
  * TODO: decorate accessor methods with a cache decorator
@@ -47,6 +48,7 @@ export class Theme<P extends string = string> {
    * Retrieves the theme property value and resolves it to the svg string for the icon.
    * by default it fetches the svg icon from Github, but there are other Theme implementations
    */
+  @cache
   async icon<T extends string | undefined>(
     path: P,
     fallback?: T
@@ -69,6 +71,7 @@ export class Theme<P extends string = string> {
    * - Supports both of these forms: {"x.y": "value"} and {x: {y: "value"}}
    * @example `theme.value("Menu.borderColor")`
    */
+  @cache
   value<T extends ThemePropertyValue>(path: P): T {
     return resolveOsDependentValue(this.rawValue(path), this.os) as T;
   }
