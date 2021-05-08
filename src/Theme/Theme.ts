@@ -73,11 +73,10 @@ export class Theme<P extends string = string> {
    */
   @cache
   value<T extends ThemePropertyValue>(path: P): T {
-    return resolveOsDependentValue(this.rawValue(path), this.os) as T;
-  }
-
-  private rawValue(path: P): ThemePropertyValue | OsDependentValue {
-    return this.themeJson.ui[path] || resolvePath(path, this.themeJson.ui);
+    return resolveOsDependentValue(
+      resolvePath(path, this.themeJson.ui),
+      this.os
+    ) as T;
   }
 
   private getCommonColors() {
@@ -116,6 +115,17 @@ function isOsDependentValue(value: any): value is OsDependentValue {
     (value["os.mac"] || value["os.linux"] || value["os.windows"])
   );
 }
-function resolvePath<T extends object>(path: string, obj: T) {
-  return path.split(".").reduce<any>((result, part) => result?.[part], obj);
+
+function resolvePath<T extends { [key: string]: any }>(
+  path: string,
+  obj: T
+): any | undefined {
+  if (!obj || !path) {
+    return undefined;
+  }
+  if (obj[path]) {
+    return obj[path];
+  }
+  const [firstPathPart, ...otherPathParts] = path.split(".");
+  return resolvePath(otherPathParts.join("."), obj[firstPathPart]);
 }

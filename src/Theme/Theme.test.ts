@@ -20,6 +20,7 @@ const themeJson: ThemeJson = {
         "os.linux": "linux",
       },
       prop4: "foreground",
+      "SubCmp.prop1": "nested",
     },
     "Cmp2.prop1": 3,
   },
@@ -28,6 +29,7 @@ describe(Theme, () => {
   it("supports both forms of keys", () => {
     expect(new Theme(themeJson).value("Cmp1.prop1")).toEqual("val1");
     expect(new Theme(themeJson).value("Cmp2.prop1")).toEqual(3);
+    expect(new Theme(themeJson).value("Cmp1.SubCmp.prop1")).toEqual("nested");
   });
 
   it("resolves os-dependent values based on os", () => {
