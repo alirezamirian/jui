@@ -1,9 +1,9 @@
-import { ThemeJson } from "../styled";
 import {
   IconResolver,
   OS,
   OsDependentValue,
   OsDependentValueKey,
+  ThemeJson,
   ThemePropertyValue,
 } from "./types";
 import { GithubIconResolver } from "./GithubIconResolver";
@@ -12,14 +12,14 @@ import { isMac } from "@react-aria/utils";
 /**
  * TODO: decorate accessor methods with a cache decorator
  */
-export class Theme {
+export class Theme<P extends string = string> {
   // using property initializer causes an error. the property initialization is run before
   // constructor, and therefore this.themeJson is undefined. Could be a babel misconfiguration, but
   // this workaround is used for now
-  commonColors: ReturnType<Theme["getCommonColors"]>;
+  commonColors: ReturnType<Theme<P>["getCommonColors"]>;
 
   constructor(
-    protected readonly themeJson: ThemeJson | any /*FIXME*/,
+    protected readonly themeJson: ThemeJson,
     protected readonly os: OS | null = detectOs(),
     protected readonly iconResolver: IconResolver = new GithubIconResolver()
   ) {
@@ -34,14 +34,12 @@ export class Theme {
    * - Resolves values that are references to theme.colors
    */
   color<T extends string | undefined>(
-    path: string,
+    path: P,
     fallback?: T
   ): undefined extends T ? string | undefined : string {
-    const value = this.value(path);
+    const value = this.value<string>(path);
     return (
-      (typeof value === "string" && this.themeJson.colors?.[value]) ||
-      value ||
-      fallback
+      (value && this.themeJson.colors?.[value]) || value || (fallback as any)
     );
   }
 
@@ -50,7 +48,7 @@ export class Theme {
    * by default it fetches the svg icon from Github, but there are other Theme implementations
    */
   async icon<T extends string | undefined>(
-    path: string,
+    path: P,
     fallback?: T
   ): Promise<undefined extends T ? string | undefined : string> {
     const icon = this.value(path) || fallback;
@@ -71,11 +69,11 @@ export class Theme {
    * - Supports both of these forms: {"x.y": "value"} and {x: {y: "value"}}
    * @example `theme.value("Menu.borderColor")`
    */
-  value(path: string): ThemePropertyValue {
-    return resolveOsDependentValue(this.rawValue(path), this.os);
+  value<T extends ThemePropertyValue>(path: P): T {
+    return resolveOsDependentValue(this.rawValue(path), this.os) as T;
   }
 
-  private rawValue(path: string): ThemePropertyValue | OsDependentValue {
+  private rawValue(path: P): ThemePropertyValue | OsDependentValue {
     return this.themeJson.ui[path] || resolvePath(path, this.themeJson.ui);
   }
 
@@ -83,7 +81,7 @@ export class Theme {
     console.log("getCommonColors");
     return {
       tooltipForeground: this.color(
-        "Tooltip.foreground",
+        "Tooltip.foreground" as P,
         this.dark ? "#bfbfbf" : "#000000"
       ),
       red: this.dark ? "rgb(255,100,100)" : "rgb(255,0,0)",

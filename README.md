@@ -70,7 +70,7 @@ JUI is Intellij Platform UI implemented as a React.js library.
         </tr>
         <tr>
             <td colspan="3">Theming</td>
-            <td>:construction:</td>
+            <td>:white_check_mark:</td>
         </tr>
         <tr>
             <td rowspan="3">MenuList <sup>2</sup></td>
@@ -165,5 +165,4 @@ These bugs are found in the original Intellij Platform UI, which doesn't exist i
   is a match but speed search popup is red: ![img.png](bug-1.png)
 
 
-[CommonShortcuts]: https://github.com/JetBrains/intellij-community/blob
-/e3c7d96daba1d5d84d5650bde6c220aed225bfda/platform/platform-api/src/com/intellij/openapi/actionSystem/CommonShortcuts.java#L56-L56
+[CommonShortcuts]: https://github.com/JetBrains/intellij-community/blob/e3c7d96daba1d5d84d5650bde6c220aed225bfda/platform/platform-api/src/com/intellij/openapi/actionSystem/CommonShortcuts.java#L56-L56

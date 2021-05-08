@@ -1,10 +1,14 @@
 import { Theme } from "./Theme";
+import { ThemeJson } from "./types";
 
-const themeJson = {
+const themeJson: ThemeJson = {
+  name: "test theme",
+  dark: false,
   colors: {
     foreground: "#000000",
   },
   ui: {
+    "*": {},
     Cmp1: {
       prop1: "val1",
       prop2: {
