@@ -81,7 +81,6 @@ export class Theme<P extends string = string> {
   }
 
   private getCommonColors() {
-    console.log("getCommonColors");
     return {
       tooltipForeground: this.color(
         "Tooltip.foreground" as P,

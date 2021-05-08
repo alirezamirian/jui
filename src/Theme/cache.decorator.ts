@@ -9,8 +9,11 @@ export const cache: TypedMethodDecorator = function (
 ) {
   const method = descriptor.value!;
 
-  const cacheObj: Record<string, any> = {};
   descriptor.value = function (this: any, ...args: any[]) {
+    const cacheKey = `__cache__${String(propertyName)}`;
+    this[cacheKey] = this[cacheKey] || {};
+    const cacheObj: Record<string, any> = this[cacheKey];
+
     const allArgsAreString = args.every((arg) => typeof arg === "string");
     if (allArgsAreString) {
       const key = args.join("_");
