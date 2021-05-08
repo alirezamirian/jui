@@ -9,7 +9,7 @@ import {
 } from "../story-helpers";
 import { Item, Section } from "@react-stately/collections";
 import { Divider } from "../Collections/Divider";
-import { Pane } from "../story-utils";
+import { Pane } from "../story-components";
 
 export default {
   title: "List/Basic",

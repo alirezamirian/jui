@@ -8,7 +8,7 @@ import {
   renderItemString,
 } from "../../story-helpers";
 import { HighlightedTextValue } from "../../CollectionSpeedSearch/HighlightedTextValue";
-import { Pane } from "../../story-utils";
+import { Pane } from "../../story-components";
 
 export default {
   title: "List/Speed search",

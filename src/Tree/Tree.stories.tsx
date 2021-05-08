@@ -2,7 +2,7 @@ import { Item } from "@react-stately/collections";
 import { Meta } from "@storybook/react";
 import React, { Key, useState } from "react";
 import { Tree } from "./Tree";
-import { Pane, SelectionLog } from "../story-utils";
+import { Pane, SelectionLog } from "../story-components";
 
 export default {
   title: "Tree/Basic",
