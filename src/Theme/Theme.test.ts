@@ -8,7 +8,9 @@ const themeJson: ThemeJson = {
     foreground: "#000000",
   },
   ui: {
-    "*": {},
+    "*": {
+      prop5: "globalValue5",
+    },
     Cmp1: {
       prop1: "val1",
       prop2: {
@@ -23,6 +25,9 @@ const themeJson: ThemeJson = {
       "SubCmp.prop1": "nested",
     },
     "Cmp2.prop1": 3,
+    Cmp2: {
+      prop2: "value2",
+    },
   },
 };
 describe(Theme, () => {
@@ -57,5 +62,10 @@ describe(Theme, () => {
     expect(new Theme(themeJsonWithoutColors).value("Cmp1.prop1")).toEqual(
       "val1"
     );
+  });
+
+  it("should fallback to *.property if Component.property doesn't exist", () => {
+    expect(new Theme(themeJson).value("Cmp2.prop2")).toEqual("value2");
+    expect(new Theme(themeJson).color("Cmp2.prop5")).toEqual("globalValue5");
   });
 });

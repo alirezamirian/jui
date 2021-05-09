@@ -1,5 +1,6 @@
 import {
   IconResolver,
+  KnownThemePropertyPath,
   OS,
   OsDependentValue,
   OsDependentValueKey,
@@ -11,7 +12,7 @@ import { isMac } from "@react-aria/utils";
 import { cache } from "./cache.decorator";
 
 /**
- * TODO: decorate accessor methods with a cache decorator
+ * TODO: flattening the map once seems like a reasonable refactoring.
  */
 export class Theme<P extends string = string> {
   // using property initializer causes an error. the property initialization is run before
@@ -38,10 +39,19 @@ export class Theme<P extends string = string> {
     path: P,
     fallback?: T
   ): undefined extends T ? string | undefined : string {
-    const value = this.value<string>(path);
-    return (
-      (value && this.themeJson.colors?.[value]) || value || (fallback as any)
-    );
+    // There is a fallback mechanism that uses *.prop key if some key that ends with .prop
+    // doesn't exist in the theme. In Intellij Platform implementation, all such fallback keys
+    // are generated in the theme initialization and added to the theme default lookup table.
+    // here we read it on the fly with `getFallbackFromStar`.
+    // More info: https://github.com/JetBrains/intellij-community/blob/58dbd93e9ea527987466072fa0bfbf70864cd35f/platform/platform-impl/src/com/intellij/ide/ui/UITheme.java#L371-L371
+    // NOTE: Maybe this fallback to *.{prop} is something we should have for any type of property, not
+    // only colors. Can be refactored if it turned out to be the case.
+    const maybeReferencedValue =
+      this.value<string>(path) || (this.getFallbackFromStar(path) as string);
+    const value =
+      maybeReferencedValue &&
+      (this.themeJson.colors?.[maybeReferencedValue] || maybeReferencedValue);
+    return value || (fallback as any);
   }
 
   /**
@@ -79,13 +89,24 @@ export class Theme<P extends string = string> {
     ) as T;
   }
 
+  private getFallbackFromStar(path: P) {
+    // FIXME: after refactoring about flattening themeJson.ui properties are done, this should also
+    //  be changed.
+    return Object.entries(this.themeJson.ui["*"] || {}).find(([key]) =>
+      path.endsWith(`.${key}` /* strip first star*/)
+    )?.[1];
+  }
+
   private getCommonColors() {
+    // Rooms for improvement. e.g. common colors creator can be an input to theme constructor
+    const theme = this as Theme<KnownThemePropertyPath>;
     return {
-      tooltipForeground: this.color(
-        "Tooltip.foreground" as P,
-        this.dark ? "#bfbfbf" : "#000000"
+      tooltipForeground: theme.color(
+        "ToolTip.foreground",
+        theme.dark ? "#bfbfbf" : "#000000"
       ),
-      red: this.dark ? "rgb(255,100,100)" : "rgb(255,0,0)",
+      panelBackground: theme.color("Panel.background") || "#fff",
+      red: theme.dark ? "rgb(255,100,100)" : "rgb(255,0,0)",
     };
   }
 }

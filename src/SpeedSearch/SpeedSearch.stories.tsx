@@ -12,7 +12,7 @@ export default {
 
 const SpeedSearchContainer = styled(SpeedSearch)`
   width: 400px;
-  background: ${({ theme }) => theme.color("*.background")};
+  background: ${({ theme }) => theme.color("Panel.background")};
   color: ${({ theme }) => theme.color("*.textForeground")};
 `;
 export const Default = () => {
