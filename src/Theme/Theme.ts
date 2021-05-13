@@ -51,6 +51,9 @@ export class Theme<P extends string = string> {
     const value =
       maybeReferencedValue &&
       (this.themeJson.colors?.[maybeReferencedValue] || maybeReferencedValue);
+    // we could return Color object and it works because of overridden toString. but there
+    // will be ts type errors because color css properties expect the value to be string.
+    // Of course we can call .toString() on each usage but doesn't seem nice.
     return value || (fallback as any);
   }
 

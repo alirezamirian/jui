@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "type-check": "tsc",
     "storybook": "start-storybook -p 6008",
     "build-storybook": "build-storybook"
   },
