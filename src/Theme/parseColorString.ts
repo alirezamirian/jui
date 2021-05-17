@@ -1,3 +1,13 @@
+// language=JSRegexp
+const numberPattern = "[0-9]{0,3}.?[0-9]*";
+
+const parseComponent = (componentStr: string, index: number) =>
+  componentStr
+    ? index < 3
+      ? parseInt(componentStr)
+      : Math.round(Math.min(parseFloat(componentStr), 1) * 255)
+    : undefined;
+
 const parseHexRgba = (str: string) =>
   str
     .match(/^#?([0-9A-F]{2})([0-9A-F]{2})([0-9A-F]{2})([0-9A-F]{2})?$/i)
@@ -10,16 +20,22 @@ const parseShorthandHex = (str: string) =>
     .map((i) => (i ? parseInt(i + i, 16) : undefined));
 const parseRgb = (str: string) =>
   str
-    .match(/^rgb\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\)$/)
+    .match(
+      new RegExp(
+        `^rgb\\(\\s*(${numberPattern})\\s*,\\s*(${numberPattern})\\s*,\\s*(${numberPattern}\\s*)\\)$`
+      )
+    )
     ?.slice(1, 5)
-    .map((i) => (i ? parseInt(i) : undefined));
+    .map(parseComponent);
 const parseRgba = (str: string) =>
   str
     .match(
-      /^rgba?\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\)$/
+      new RegExp(
+        `^rgba\\(\\s*(${numberPattern})\\s*,\\s*(${numberPattern})\\s*,\\s*(${numberPattern})\\s*,\\s*(${numberPattern}\\s*)\\)$`
+      )
     )
     ?.slice(1, 5)
-    .map((i) => (i ? parseInt(i) : undefined));
+    .map(parseComponent);
 
 /**
  * parses a color string into rgba components.

@@ -15,7 +15,7 @@ describe(Color, () => {
 
   it("initializes from rgb", () => {
     expectRgba(new Color("rgb(10,20,30)"), [10, 20, 30, 255]);
-    expectRgba(new Color("rgba(10,20,30,40)"), [10, 20, 30, 40]);
+    expectRgba(new Color("rgba(10,20,30,40)"), [10, 20, 30, 255]);
   });
 
   it("initializes from rgba components", () => {
