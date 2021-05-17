@@ -2,6 +2,7 @@ import { Legend, legends } from "../test-data";
 import { Item, Section } from "@react-stately/collections";
 import React, { ReactNode } from "react";
 import { Divider, DividerItem } from "./Collections/Divider";
+import { ArgTypes } from "@storybook/react";
 
 export const renderItemCustomUI = (item: Legend, content?: ReactNode) => (
   <Item key={item.name} textValue={item.name}>
@@ -32,3 +33,15 @@ export const renderItemString = (item: Legend) => (
     {item.name}
   </Item>
 );
+export const styledComponentsControlsExclude = [
+  "theme",
+  "as",
+  "forwardedAs",
+  "ref",
+];
+
+// we could have accept component type instead of prop type, but this way refactoring
+// in component props interface is handled better
+export type ComponentArgTypes<P> = {
+  [key in keyof P]?: ArgTypes[string];
+};

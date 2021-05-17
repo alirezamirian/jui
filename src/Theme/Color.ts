@@ -70,6 +70,19 @@ export class Color {
     return new Color(color).brighter().toString();
   }
 
+  blend(color: Color) {
+    const getBlendedValue = (component: "r" | "g" | "b") =>
+      Math.round(
+        (color.a / 255) * color[component] +
+          (this.a / 255) * (1 - color.a / 255) * this[component]
+      );
+    return new Color(
+      getBlendedValue("r"),
+      getBlendedValue("g"),
+      getBlendedValue("b")
+    );
+  }
+
   toString() {
     const toString = (component: number) =>
       Number.isNaN(component) ? "" : component.toString(16);
