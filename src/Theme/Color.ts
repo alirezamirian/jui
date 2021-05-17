@@ -71,10 +71,12 @@ export class Color {
   }
 
   toString() {
-    const r = this.r.toString(16);
-    const g = this.g.toString(16);
-    const b = this.b.toString(16);
-    const a = this.a === 255 ? "" : this.a.toString(16);
+    const toString = (component: number) =>
+      Number.isNaN(component) ? "" : component.toString(16);
+    const r = toString(this.r);
+    const g = toString(this.g);
+    const b = toString(this.b);
+    const a = this.a === 255 ? "" : toString(this.a);
     return `#${r}${g}${b}${a}`;
   }
 }
