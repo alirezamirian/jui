@@ -25,6 +25,7 @@ export type UseMoveOptions = {
 //      Also onMoveStart doesn't give the initial position, so it's not possible to even calculate
 //
 // TODO: disable text selection when move starts and restore it when finished.
+// TODO: move should be finished by pressing Escape
 /**
  * Similar to https://react-spectrum.adobe.com/react-aria/useMove.html, with slightly different
  * features and API.

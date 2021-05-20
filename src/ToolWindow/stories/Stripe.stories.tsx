@@ -1,8 +1,5 @@
-import React, { ComponentProps } from "react";
-import {
-  StyledToolWindowStripe,
-  StyledToolWindowStripeProps,
-} from "../StyledToolWindowStripe";
+import React from "react";
+import { StyledToolWindowStripeProps } from "../StyledToolWindowStripe";
 import {
   ComponentArgTypes,
   styledComponentsControlsExclude,
@@ -14,17 +11,28 @@ import { Item } from "@react-stately/collections";
 export default {
   title: "ToolWindow",
 } as Meta;
-export const Stripe = (
-  props: ComponentProps<typeof StyledToolWindowStripe>
-) => {
+export const Stripe = (props: StyledToolWindowStripeProps) => {
   const { anchor = "bottom" } = props;
+  const paddingProp = ({
+    right: "paddingLeft",
+    left: "paddingRight",
+    bottom: "paddingTop",
+    top: "paddingBottom",
+  } as const)[anchor];
   return (
-    <div style={{ height: "calc(100vh - 50px)" }}>
+    <div
+      style={{
+        height: "calc(100vh - 50px)",
+        [paddingProp]: 50,
+      }}
+    >
       <ToolWindowStripe anchor={anchor}>
         <Item>Project</Item>
         <Item>Structure</Item>
         <SplitItems>
-          <Item>Favorites</Item>
+          <Item>
+            <div data-key="$.1">Favorites</div>
+          </Item>
           <Item>npm</Item>
         </SplitItems>
       </ToolWindowStripe>

@@ -2,7 +2,8 @@ import { useMove, UseMoveOptions, XY } from "./useMove";
 import { RefObject } from "react";
 import { findEffectiveBackgroundColor } from "./findEffectiveBackgroundColor";
 
-type UseElementMoveOptions = Omit<UseMoveOptions, "onMoveStart"> & {
+export interface UseElementMoveOptions
+  extends Omit<UseMoveOptions, "onMoveStart"> {
   ref: RefObject<HTMLElement>;
   /**
    * if true a clone of the element is created and used as ghost.
@@ -16,7 +17,7 @@ type UseElementMoveOptions = Omit<UseMoveOptions, "onMoveStart"> & {
     onMove: (args: { from: ClientRect; to: ClientRect; movement: XY }) => void;
     onMoveEnd: () => void;
   };
-};
+}
 
 /**
  * Provides necessary event handling props to be applied on an element to make it movable.
