@@ -85,7 +85,7 @@ export class Color {
 
   toString() {
     const toString = (component: number) =>
-      Number.isNaN(component) ? "" : component.toString(16);
+      Number.isNaN(component) ? "" : component.toString(16).padStart(2, "0");
     const r = toString(this.r);
     const g = toString(this.g);
     const b = toString(this.b);

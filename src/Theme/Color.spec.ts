@@ -45,6 +45,7 @@ describe(Color, () => {
 
   it("overrides toString to render hex value", () => {
     expect(`${new Color("#22FFAA")}`).toBe("#22ffaa");
+    expect(`${new Color("#00FF00")}`).toBe("#00ff00");
   });
 
   it("it brightens color exactly like java.awt.Color#brighter()", () => {
