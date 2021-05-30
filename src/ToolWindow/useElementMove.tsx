@@ -2,8 +2,8 @@ import { useMove, UseMoveOptions, XY } from "./useMove";
 import { RefObject } from "react";
 import { findEffectiveBackgroundColor } from "./findEffectiveBackgroundColor";
 
-export interface UseElementMoveOptions
-  extends Omit<UseMoveOptions, "onMoveStart"> {
+export interface UseElementMoveOptions<S>
+  extends Omit<UseMoveOptions<S>, "onMoveStart" | "onMove"> {
   ref: RefObject<HTMLElement>;
   /**
    * if true a clone of the element is created and used as ghost.
@@ -11,12 +11,14 @@ export interface UseElementMoveOptions
    * different one.
    */
   ghost?: boolean | ((defaultGhost: HTMLElement) => HTMLElement);
-  onMoveStart: (args: {
+
+  onMoveStart: (args: { from: ClientRect }) => S;
+  onMove: (args: {
     from: ClientRect;
-  }) => {
-    onMove: (args: { from: ClientRect; to: ClientRect; movement: XY }) => void;
-    onMoveEnd: () => void;
-  };
+    to: ClientRect;
+    movement: XY;
+    startState: S;
+  }) => void;
 }
 
 /**
@@ -38,12 +40,14 @@ export interface UseElementMoveOptions
  * delaying the call to setDragImage, but it needs more investigation. Also, not sure if opacity of
  * the ghost is something you can control when using setDragImage.
  **/
-export function useElementMove({
+export function useElementMove<S>({
   ref,
   onMoveStart,
+  onMove,
+  onMoveEnd,
   ghost: ghostOption,
   ...otherOptions
-}: UseElementMoveOptions) {
+}: UseElementMoveOptions<S>) {
   return useMove({
     ...otherOptions,
     onMoveStart: () => {
@@ -71,25 +75,31 @@ export function useElementMove({
         document.body.append(ghost);
         updateGhostPosition(from);
       }
-      const { onMove, onMoveEnd } = onMoveStart({ from });
       return {
-        onMove: ({ movement }) => {
-          const to: ClientRect = {
-            left: from.left + movement.x,
-            right: from.right + movement.x,
-            top: from.top + movement.y,
-            bottom: from.bottom + movement.y,
-            height: from.height,
-            width: from.width,
-          };
-          updateGhostPosition(to);
-          onMove({ from, to, movement });
-        },
-        onMoveEnd: () => {
-          ghost?.remove();
-          onMoveEnd();
-        },
+        ghost,
+        from,
+        updateGhostPosition,
+        startState: onMoveStart({ from }),
       };
+    },
+    onMove: ({
+      movement,
+      startState: { from, updateGhostPosition, startState },
+    }) => {
+      const to: ClientRect = {
+        left: from.left + movement.x,
+        right: from.right + movement.x,
+        top: from.top + movement.y,
+        bottom: from.bottom + movement.y,
+        height: from.height,
+        width: from.width,
+      };
+      updateGhostPosition(to);
+      onMove({ from, to, movement, startState });
+    },
+    onMoveEnd: ({ startState: { ghost, startState } }) => {
+      ghost?.remove();
+      onMoveEnd({ startState });
     },
   });
 }

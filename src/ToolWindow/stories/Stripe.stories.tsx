@@ -26,7 +26,7 @@ export const Stripe = (props: StyledToolWindowStripeProps) => {
         [paddingProp]: 50,
       }}
     >
-      <ToolWindowStripe anchor={anchor}>
+      <ToolWindowStripe anchor={anchor} onItemDropped={console.log}>
         <Item>Project</Item>
         <Item>Structure</Item>
         <SplitItems>

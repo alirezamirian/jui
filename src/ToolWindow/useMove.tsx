@@ -1,19 +1,17 @@
 import React from "react";
+import { useLatest } from "../utils/useLatest";
 
 export type XY = { x: number; y: number };
-export type UseMoveOptions = {
+export type UseMoveOptions<S> = {
   /**
    * the amount of movement (in pixels) after which the move should start. It prevents interference
    * with simple click (or more generally, press) events, and provides better UX.
    * @default 0
    */
   dragThreshold?: number;
-  onMoveStart: (args: {
-    from: XY;
-  }) => {
-    onMove: (args: { from: XY; to: XY; movement: XY }) => void;
-    onMoveEnd: () => void;
-  };
+  onMoveStart: (args: { from: XY }) => S;
+  onMove: (args: { from: XY; to: XY; movement: XY; startState: S }) => void;
+  onMoveEnd: (args: { startState: S }) => void;
 };
 
 // TODO: cleanup if unmount happens during drag.
@@ -29,19 +27,30 @@ export type UseMoveOptions = {
 /**
  * Similar to https://react-spectrum.adobe.com/react-aria/useMove.html, with slightly different
  * features and API.
- * NOTE: the API is intentionally designed in a way that onMove and onMove end callbacks are
- * returned from onMoveStart callback, instead of being directly passed in the options.
- * This enables capturing the initial state of each move transaction, by defining whatever variable
- * in onMoveStart and closing over them by onMove and onMoveEnd.
+ * NOTE: initially the API was designed in a way that onMove and onMove end callbacks were
+ * returned from onMoveStart, instead of being directly passed in the options.
+ * This would enabled capturing the initial state of each move transaction, by defining whatever
+ * variable in onMoveStart and closing over them by onMove and onMoveEnd.
+ * The problem with this approach was that although you could capture the initial state of the
+ * movement, by closure, any other variable in the outer scopes was also closed over, and you were
+ * stuck with the values from the particular render in which the movement was started.
+ * Of course you could workaround it by using refs, but it would be non-intuitive.
+ * So because of that issue, it's redesigned to have onMoveStart, onMove, and onMoveEnd all
+ * directly passed as options, but you can return anything from `onMoveStart` which will be passed
+ * to onMove and onMoveEnd as `startState`.
  */
-export function useMove({ dragThreshold = 0, onMoveStart }: UseMoveOptions) {
+export function useMove<S>({
+  dragThreshold = 0,
+  onMoveStart,
+  onMove,
+  onMoveEnd,
+}: UseMoveOptions<S>) {
+  const handlersRef = useLatest({ onMove, onMoveEnd });
+
   const onMouseDown = (event: React.MouseEvent) => {
     const from = { x: event.pageX, y: event.pageY };
     let dragStarted = false;
-    let handlers: ReturnType<typeof onMoveStart> = {
-      onMove: () => {},
-      onMoveEnd: () => {},
-    };
+    let startState: S;
 
     const onMouseMove = (event: MouseEvent) => {
       const { pageX: x, pageY: y } = event;
@@ -51,13 +60,14 @@ export function useMove({ dragThreshold = 0, onMoveStart }: UseMoveOptions) {
         Math.abs(movement.y) >= dragThreshold;
       if (isDraggedEnough && !dragStarted) {
         dragStarted = true;
-        handlers = onMoveStart({ from });
+        startState = onMoveStart({ from });
       }
       if (dragStarted) {
-        handlers.onMove({
+        handlersRef.current.onMove({
           from,
           to: { x: from.x + movement.x, y: from.y + movement.y },
           movement,
+          startState,
         });
       }
     };
@@ -66,7 +76,7 @@ export function useMove({ dragThreshold = 0, onMoveStart }: UseMoveOptions) {
     document.addEventListener(
       "mouseup",
       () => {
-        handlers.onMoveEnd();
+        handlersRef.current.onMoveEnd({ startState });
         document.removeEventListener("mousemove", onMouseMove);
       },
       { once: true }
