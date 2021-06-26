@@ -1,32 +1,22 @@
 import { Anchor, isHorizontal } from "./utils";
 import React, { CSSProperties, Key, useRef, useState } from "react";
-import { Collection, Node } from "@react-types/shared";
 import { StyledSpacer, StyledToolWindowStripe } from "./StyledToolWindowStripe";
-import { Section, useCollection } from "@react-stately/collections";
-import { ListCollection } from "@react-stately/list";
 import { StyledToolWindowStripeButton } from "./StyledToolWindowStripeButton";
 import { useElementMove, UseElementMoveOptions } from "./useElementMove";
 import { createGetDropPosition, DropPosition } from "./createGetDropPosition";
-import { CollectionBase } from "@react-types/shared/src/collections";
 
-export type OnMoveArgs<T extends object> = {
-  /**
-   * Collection from which the item is moved. Useful for moving between stripes
-   */
-  collection: Collection<Node<T>>;
-  /**
-   * The key of the moved item
-   */
-  key: Key;
-  /**
-   * Position the dragging item is moved to.
-   */
-  position: DropPosition;
+export type OnItemDroppedArgs<T extends object> = {
+  items: T[];
+  splitItems: T[];
 };
 
-interface ToolWindowStripeProps<T extends object> extends CollectionBase<T> {
+interface ToolWindowStripeProps<T extends object> {
   anchor: Anchor;
-  onItemDropped?: (args: OnMoveArgs<T>) => void;
+  onItemDropped?: (args: OnItemDroppedArgs<T>) => void;
+  items: T[];
+  splitItems?: T[];
+  getKey: (item: T) => Key;
+  renderItem: (item: T) => React.ReactNode;
 }
 
 /**
@@ -38,24 +28,16 @@ interface ToolWindowStripeProps<T extends object> extends CollectionBase<T> {
  */
 export function ToolWindowStripe<T extends object>({
   anchor,
-  children,
   onItemDropped,
-  items: itemsProp,
-  disabledKeys,
+  items: mainItems,
+  renderItem: render,
+  splitItems = [],
+  getKey,
 }: ToolWindowStripeProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dropPosition, setDropPosition] = useState<DropPosition | null>(null);
   const [draggingKey, setDraggingKey] = useState<Key | null>(null);
   const [draggingRect, setDraggingRect] = useState<ClientRect | null>(null);
-  const items = useCollection<T>(
-    { children, items: itemsProp, disabledKeys: disabledKeys },
-    (nodes) => new ListCollection(nodes)
-  );
-  const mainItems = [...items].filter((item) => item.type === "item");
-  // Maybe a warning when more than one SplitItems (section) is rendered?
-  const splitItems = [
-    ...([...items].find((item) => item.type === "section")?.childNodes || []),
-  ];
 
   const onMoveEnd = () => {
     setDraggingKey(null);
@@ -63,10 +45,22 @@ export function ToolWindowStripe<T extends object>({
     setDraggingRect(null);
 
     if (onItemDropped && draggingKey && dropPosition) {
+      const draggingItem = mainItems
+        .concat(splitItems)
+        .find((item) => getKey(item) === draggingKey);
+      if (!draggingItem) {
+        return;
+      }
+      const newSplitItems = splitItems.filter((item) => item !== draggingItem);
+      const newItems = mainItems.filter((item) => item !== draggingItem);
+      (dropPosition.split ? newSplitItems : newItems).splice(
+        dropPosition.index,
+        0,
+        draggingItem
+      );
       onItemDropped({
-        collection: items,
-        key: draggingKey,
-        position: dropPosition,
+        items: newItems,
+        splitItems: newSplitItems,
       });
     }
   };
@@ -83,7 +77,8 @@ export function ToolWindowStripe<T extends object>({
     setDropPosition(getDropPosition(to));
   };
 
-  const renderItem = (item: Node<T>) => {
+  const renderItem = (item: T) => {
+    const key = getKey(item);
     const onMoveStart = () => {
       const stripeElement = containerRef.current!;
       const getItemRect = (key: Key) =>
@@ -91,14 +86,16 @@ export function ToolWindowStripe<T extends object>({
           .querySelector(`[data-key="${key}"]`)! // FIXME
           .getBoundingClientRect();
 
-      setDraggingRect(getItemRect(item.key).toJSON());
-      setDraggingKey(item.key);
+      setDraggingRect(getItemRect(key).toJSON());
+      setDraggingKey(key);
 
+      const isNotCurrentItem = (anItem: T) => anItem !== item;
       return {
         getDropPosition: createGetDropPosition({
-          stripeElement,
-          mainItems: mainItems.filter(({ key }) => key !== item.key),
-          splitItems: splitItems.filter(({ key }) => key !== item.key),
+          stripeElement: stripeElement,
+          mainItems: mainItems.filter(isNotCurrentItem),
+          splitItems: splitItems.filter(isNotCurrentItem),
+          getKey,
           anchor,
           getItemRect,
         }),
@@ -108,21 +105,23 @@ export function ToolWindowStripe<T extends object>({
     return (
       <ToolWindowStripeButton
         anchor={anchor}
-        key={item.key}
+        key={key}
+        data-key={key}
         style={{
           ...getStripeButtonStyles({
-            key: item.key,
+            key,
             dropPosition,
             anchor,
             draggingRect,
             draggingKey,
           }),
         }}
-        item={item}
         onMoveStart={onMoveStart}
         onMove={onMove}
         onMoveEnd={onMoveEnd}
-      />
+      >
+        {render(item)}
+      </ToolWindowStripeButton>
     );
   };
   return (
@@ -156,18 +155,22 @@ function getStripeButtonStyles({
   const styles: CSSProperties = {
     // transition: "margin 100ms", // maybe only when drag is in progress, if unwanted transition at drop
   };
-  if (dropPosition?.key === key && draggingRect) {
+  if (dropPosition?.relative?.key === key && draggingRect) {
     const marginValue = isHorizontal(anchor)
       ? draggingRect.width
       : draggingRect.height;
 
     if (isHorizontal(anchor)) {
       styles[
-        dropPosition.placement === "before" ? "marginLeft" : "marginRight"
+        dropPosition.relative.placement === "before"
+          ? "marginLeft"
+          : "marginRight"
       ] = marginValue;
     } else {
       styles[
-        dropPosition.placement === "before" ? "marginTop" : "marginBottom"
+        dropPosition.relative.placement === "before"
+          ? "marginTop"
+          : "marginBottom"
       ] = marginValue;
     }
   }
@@ -178,14 +181,14 @@ function getStripeButtonStyles({
 }
 
 function ToolWindowStripeButton<T, S>({
-  item,
+  children,
   anchor,
   onMoveStart,
   onMove,
   onMoveEnd,
   ...otherProps
 }: {
-  item: Node<T>;
+  children: React.ReactNode;
   anchor: Anchor;
   style: CSSProperties;
   onMoveStart: UseElementMoveOptions<S>["onMoveStart"];
@@ -209,11 +212,8 @@ function ToolWindowStripeButton<T, S>({
       {...otherProps}
       {...props}
       ref={ref}
-      data-key={item.key}
     >
-      {item.rendered}
+      {children}
     </StyledToolWindowStripeButton>
   );
 }
-
-export const SplitItems = Section;

@@ -1,24 +1,33 @@
 import { Anchor, isHorizontal } from "./utils";
 import { Key } from "react";
-import { Node } from "@react-types/shared";
 
 export interface DropPosition {
-  placement: "before" | "after";
-  key: Key;
+  index: number;
+  split: boolean;
+
+  relative?: {
+    placement: "before" | "after";
+    key: Key;
+  };
 }
 
-export const createGetDropPosition = ({
+/**
+ * TODO: Add a few words about what this function do.
+ */
+export const createGetDropPosition = <T extends any>({
   anchor,
   stripeElement,
   splitItems,
   mainItems,
   getItemRect,
+  getKey,
 }: {
   stripeElement: HTMLElement;
   anchor: Anchor;
   getItemRect: (key: Key) => ClientRect;
-  mainItems: Node<unknown>[];
-  splitItems: Node<unknown>[];
+  getKey: (key: T) => Key;
+  mainItems: T[];
+  splitItems: T[];
 }): ((draggedRect: ClientRect) => DropPosition | null) => {
   const stripeRect = stripeElement.getBoundingClientRect();
   const getCanDrop = (draggingRect: ClientRect) =>
@@ -32,9 +41,10 @@ export const createGetDropPosition = ({
   const end = (rect: ClientRect) =>
     isHorizontal(anchor) ? rect.right : rect.bottom;
 
-  const getKeyToOffsets = (items: Node<unknown>[]) => {
+  const getKeyToOffsets = (items: T[]) => {
     const keyToOffsets: Record<Key, { start: number; end: number }> = {};
-    items.forEach(({ key }) => {
+    items.forEach((item) => {
+      const key = getKey(item);
       const boundingRect = getItemRect(key);
       keyToOffsets[key] = {
         start: start(boundingRect),
@@ -44,26 +54,33 @@ export const createGetDropPosition = ({
     return keyToOffsets;
   };
 
-  const getDropPositions = (items: Node<unknown>[], split = false) =>
-    items.flatMap<DropPosition & { score: (rect: ClientRect) => number }>(
-      ({ key }) => {
-        const getRef = split ? end : start;
-        return [
-          {
-            placement: "before",
-            key,
-            score: (draggingRect: ClientRect) =>
-              Math.abs(getRef(draggingRect) - keyToOffsets[key].start),
-          },
-          {
-            placement: "after",
-            key,
-            score: (draggingRect: ClientRect) =>
-              Math.abs(getRef(draggingRect) - keyToOffsets[key].end),
-          },
-        ];
-      }
-    );
+  const getDropPositions = (items: T[], split = false) => {
+    if (items.length === 0) {
+      // if the section is empty, we should still allow adding to it.
+    }
+    return items.flatMap<
+      DropPosition & { score: (rect: ClientRect) => number }
+    >((item, index) => {
+      const key = getKey(item);
+      const getRef = split ? end : start;
+      return [
+        {
+          index,
+          split,
+          relative: { key, placement: "before" },
+          score: (draggingRect: ClientRect) =>
+            Math.abs(getRef(draggingRect) - keyToOffsets[key].start),
+        },
+        {
+          index: index + 1,
+          split,
+          relative: { key, placement: "after" },
+          score: (draggingRect: ClientRect) =>
+            Math.abs(getRef(draggingRect) - keyToOffsets[key].end),
+        },
+      ];
+    });
+  };
 
   const keyToOffsets = getKeyToOffsets([...mainItems, ...splitItems]);
 
@@ -77,34 +94,32 @@ export const createGetDropPosition = ({
     if (!getCanDrop(draggingRect)) {
       return null;
     }
-    const { placement, key } =
-      dropPositions.reduce(
-        (bestMatch, candidate) => {
-          const score = candidate.score(draggingRect);
-          if (!bestMatch || score < bestMatch.score) {
-            return {
-              score,
-              key: candidate.key,
-              placement: candidate.placement,
-            };
-          }
-          return bestMatch;
-        },
-        null as
-          | null
-          | (DropPosition & {
-              score: number;
-            })
-      ) || {};
+    const result = dropPositions.reduce(
+      (bestMatch, candidate) => {
+        const score = candidate.score(draggingRect);
+        if (!bestMatch || score < bestMatch.score) {
+          return {
+            ...candidate,
+            score,
+          };
+        }
+        return bestMatch;
+      },
+      null as
+        | null
+        | (DropPosition & {
+            score: number;
+          })
+    );
 
-    if (!placement || !key) {
+    if (!result) {
       return null;
     }
     if (
-      placement !== lastDropPosition?.placement ||
-      key !== lastDropPosition?.key
+      result.split !== lastDropPosition?.split ||
+      result.index !== lastDropPosition?.index
     ) {
-      lastDropPosition = { key, placement };
+      lastDropPosition = result;
     }
     return lastDropPosition;
   };

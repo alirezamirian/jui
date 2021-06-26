@@ -1,12 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyledToolWindowStripeProps } from "../StyledToolWindowStripe";
 import {
   ComponentArgTypes,
   styledComponentsControlsExclude,
 } from "../../story-helpers";
 import { Meta } from "@storybook/react";
-import { SplitItems, ToolWindowStripe } from "../ToolWindowStripe";
-import { Item } from "@react-stately/collections";
+import { ToolWindowStripe } from "../ToolWindowStripe";
 
 export default {
   title: "ToolWindow",
@@ -19,6 +18,15 @@ export const Stripe = (props: StyledToolWindowStripeProps) => {
     bottom: "paddingTop",
     top: "paddingBottom",
   } as const)[anchor];
+  const [items, setItems] = useState([
+    { name: "Projects" },
+    { name: "Structure" },
+  ]);
+  const [splitItems, setSplitItems] = useState([
+    { name: "Favourites" },
+    { name: "npm" },
+  ]);
+
   return (
     <div
       style={{
@@ -26,16 +34,17 @@ export const Stripe = (props: StyledToolWindowStripeProps) => {
         [paddingProp]: 50,
       }}
     >
-      <ToolWindowStripe anchor={anchor} onItemDropped={console.log}>
-        <Item>Project</Item>
-        <Item>Structure</Item>
-        <SplitItems>
-          <Item>
-            <div data-key="$.1">Favorites</div>
-          </Item>
-          <Item>npm</Item>
-        </SplitItems>
-      </ToolWindowStripe>
+      <ToolWindowStripe
+        anchor={anchor}
+        onItemDropped={({ items, splitItems }) => {
+          setItems(items);
+          setSplitItems(splitItems);
+        }}
+        items={items}
+        splitItems={splitItems}
+        getKey={(item) => item.name}
+        renderItem={(item) => item.name}
+      />
     </div>
   );
 };
