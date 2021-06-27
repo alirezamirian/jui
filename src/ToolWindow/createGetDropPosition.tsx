@@ -54,15 +54,25 @@ export const createGetDropPosition = <T extends any>({
     return keyToOffsets;
   };
 
-  const getDropPositions = (items: T[], split = false) => {
+  const getDropPositions = (
+    items: T[],
+    split = false
+    // FIXME: score is a bad name. it's quite the opposite! the less means the higher score.
+  ): Array<DropPosition & { score: (rect: ClientRect) => number }> => {
+    const getRef = split ? end : start;
     if (items.length === 0) {
       // if the section is empty, we should still allow adding to it.
+      return [
+        {
+          index: 0,
+          split,
+          score: (draggingRect: ClientRect) =>
+            Math.abs(getRef(draggingRect) - getRef(stripeRect)),
+        },
+      ];
     }
-    return items.flatMap<
-      DropPosition & { score: (rect: ClientRect) => number }
-    >((item, index) => {
+    return items.flatMap((item, index) => {
       const key = getKey(item);
-      const getRef = split ? end : start;
       return [
         {
           index,

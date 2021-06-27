@@ -22,9 +22,6 @@ interface ToolWindowStripeProps<T extends object> {
 /**
  * findings:
  * - Stripe priority: top, left, bottom right
- *
- * current issues:
- * - It's not possible to move items to split section, if it's empty.
  */
 export function ToolWindowStripe<T extends object>({
   anchor,
