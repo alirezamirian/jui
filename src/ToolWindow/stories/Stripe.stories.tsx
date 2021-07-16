@@ -18,15 +18,10 @@ export const Stripe = (props: StyledToolWindowStripeProps) => {
     bottom: "paddingTop",
     top: "paddingBottom",
   } as const)[anchor];
-  const [items, setItems] = useState([
-    { name: "Projects" },
-    { name: "Structure" },
-  ]);
-  const [splitItems, setSplitItems] = useState([
-    { name: "Favourites" },
-    { name: "npm" },
-  ]);
-
+  const [items, setItems] = useState({
+    main: [{ name: "Projects" }, { name: "Structure" }],
+    split: [{ name: "Favourites" }, { name: "npm" }],
+  });
   return (
     <div
       style={{
@@ -37,11 +32,10 @@ export const Stripe = (props: StyledToolWindowStripeProps) => {
       <ToolWindowStripe
         anchor={anchor}
         onItemDropped={({ items, splitItems }) => {
-          setItems(items);
-          setSplitItems(splitItems);
+          setItems({ main: items, split: splitItems });
         }}
-        items={items}
-        splitItems={splitItems}
+        items={items.main}
+        splitItems={items.split}
         getKey={(item) => item.name}
         renderItem={(item) => item.name}
       />
@@ -49,11 +43,11 @@ export const Stripe = (props: StyledToolWindowStripeProps) => {
   );
 };
 
-const newVar: ComponentArgTypes<StyledToolWindowStripeProps> = {
+const argTypes: ComponentArgTypes<StyledToolWindowStripeProps> = {
   anchor: { defaultValue: "left" },
 };
 
-Stripe.argTypes = newVar;
+Stripe.argTypes = argTypes;
 
 Stripe.parameters = {
   controls: { exclude: styledComponentsControlsExclude },
