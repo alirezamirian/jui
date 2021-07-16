@@ -9,12 +9,10 @@ const anchorStyles = ({ anchor }: { anchor: Anchor }) =>
     ? css`
         flex-direction: row;
         width: 100%;
-        padding: 0 20px;
       `
     : css`
         flex-direction: column;
         height: 100%;
-        padding: 20px 0;
       `;
 const borderStyle = ({ anchor, theme }: { anchor: Anchor; theme: Theme }) =>
   css`border-${theOtherSide(anchor)}: 1px solid ${theme.color(
