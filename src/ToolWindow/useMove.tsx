@@ -76,7 +76,9 @@ export function useMove<S>({
     document.addEventListener(
       "mouseup",
       () => {
-        handlersRef.current.onMoveEnd({ startState });
+        if (dragStarted) {
+          handlersRef.current.onMoveEnd({ startState });
+        }
         document.removeEventListener("mousemove", onMouseMove);
       },
       { once: true }
