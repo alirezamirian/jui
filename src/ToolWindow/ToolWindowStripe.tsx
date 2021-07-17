@@ -76,26 +76,31 @@ export function ToolWindowStripe<T extends object>({
 
   const renderItem = (item: T) => {
     const key = getKey(item);
-    const onMoveStart = () => {
+    const onMoveStart = ({ from }: { from: ClientRect }) => {
       const stripeElement = containerRef.current!;
       const getItemRect = (key: Key) =>
         stripeElement
           .querySelector(`[data-key="${key}"]`)! // FIXME
           .getBoundingClientRect();
 
+      const isNotCurrentItem = (anItem: T) => anItem !== item;
+      const getDropPosition = createGetDropPosition({
+        stripeElement: stripeElement,
+        mainItems: mainItems.filter(isNotCurrentItem),
+        splitItems: splitItems.filter(isNotCurrentItem),
+        getKey,
+        anchor,
+        getItemRect,
+      });
+      // Note: drop position should be set initially to prevent potentially emptied stripe from
+      // collapsing. It's important to call it before setting dragging rect and key, since they
+      // immediately affect the layout.
+      setDropPosition(getDropPosition(from));
       setDraggingRect(getItemRect(key).toJSON());
       setDraggingKey(key);
 
-      const isNotCurrentItem = (anItem: T) => anItem !== item;
       return {
-        getDropPosition: createGetDropPosition({
-          stripeElement: stripeElement,
-          mainItems: mainItems.filter(isNotCurrentItem),
-          splitItems: splitItems.filter(isNotCurrentItem),
-          getKey,
-          anchor,
-          getItemRect,
-        }),
+        getDropPosition,
       };
     };
 
@@ -125,7 +130,8 @@ export function ToolWindowStripe<T extends object>({
     <>
       <StyledToolWindowStripe
         anchor={anchor}
-        // acceptsDrop={Boolean(dropPosition)}
+        preventCollapse={Boolean(dropPosition)}
+        // highlighted={Boolean(dropPosition) /* && dragging item is from another stripe */}
         ref={containerRef}
       >
         {mainItems.map(renderItem)}

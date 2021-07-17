@@ -1,4 +1,4 @@
-import React, { ComponentProps } from "react";
+import React from "react";
 import {
   StyledSpacer,
   StyledToolWindowStripe,
@@ -11,35 +11,41 @@ import {
 } from "../../story-helpers";
 import { Meta } from "@storybook/react";
 
+// ComponentProps<typeof StyledToolWindowStripe> doesn't work as expected :(
+type StoryProps = StyledToolWindowStripeProps & { empty: boolean };
+
 export default {
   title: "ToolWindow",
 } as Meta;
-export const StyledStripe = (
-  props: ComponentProps<typeof StyledToolWindowStripe>
-) => {
-  const { anchor = "bottom" } = props;
+export const StyledStripe = (props: StoryProps) => {
+  const { anchor, empty } = props;
   return (
     <div style={{ height: "calc(100vh - 50px)" }}>
-      <StyledToolWindowStripe anchor={anchor} acceptsDrop={props.acceptsDrop}>
-        <StyledToolWindowStripeButton active anchor={anchor}>
-          {anchor} - Active
-        </StyledToolWindowStripeButton>
-        <StyledToolWindowStripeButton anchor={anchor}>
-          {anchor} - Inactive
-        </StyledToolWindowStripeButton>
-        <StyledSpacer />
-        <StyledToolWindowStripeButton active anchor={anchor}>
-          {anchor} - Split 1
-        </StyledToolWindowStripeButton>
-        <StyledToolWindowStripeButton anchor={anchor}>
-          {anchor} - Split 2
-        </StyledToolWindowStripeButton>
+      <StyledToolWindowStripe {...props}>
+        {!empty && (
+          <>
+            <StyledToolWindowStripeButton active anchor={anchor}>
+              {anchor} - Active
+            </StyledToolWindowStripeButton>
+            <StyledToolWindowStripeButton anchor={anchor}>
+              {anchor} - Inactive
+            </StyledToolWindowStripeButton>
+            <StyledSpacer />
+            <StyledToolWindowStripeButton active anchor={anchor}>
+              {anchor} - Split 1
+            </StyledToolWindowStripeButton>
+            <StyledToolWindowStripeButton anchor={anchor}>
+              {anchor} - Split 2
+            </StyledToolWindowStripeButton>
+          </>
+        )}
       </StyledToolWindowStripe>
     </div>
   );
 };
 
-const newVar: ComponentArgTypes<StyledToolWindowStripeProps> = {
+const newVar: ComponentArgTypes<StoryProps> = {
+  empty: { type: "boolean" },
   anchor: { defaultValue: "left" },
 };
 
