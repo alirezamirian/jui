@@ -29,12 +29,20 @@ export const createGetDropPosition = <T extends any>({
   mainItems: T[];
   splitItems: T[];
 }): ((draggedRect: ClientRect) => DropPosition | null) => {
-  const stripeRect = stripeElement.getBoundingClientRect();
-  const getCanDrop = (draggingRect: ClientRect) =>
-    draggingRect.right > stripeRect.left - stripeRect.width &&
-    draggingRect.left < stripeRect.right &&
-    draggingRect.bottom > stripeRect.top - stripeRect.height &&
-    draggingRect.top < stripeRect.bottom;
+  // Note: It may be tempting to calculate stripe element boundaries just once
+  // here, since it's not supposed to change during a drag session, but it
+  // can change due to getting empty when the only button is being dragged out.
+  const getStripeRect = () => stripeElement.getBoundingClientRect();
+
+  const getCanDrop = (draggingRect: ClientRect) => {
+    const stripeRect = getStripeRect();
+    return (
+      draggingRect.right > stripeRect.left - stripeRect.width &&
+      draggingRect.left < stripeRect.right &&
+      draggingRect.bottom > stripeRect.top - stripeRect.height &&
+      draggingRect.top < stripeRect.bottom
+    );
+  };
 
   const start = (rect: ClientRect) =>
     isHorizontal(anchor) ? rect.left : rect.top;
@@ -67,7 +75,7 @@ export const createGetDropPosition = <T extends any>({
           index: 0,
           split,
           score: (draggingRect: ClientRect) =>
-            Math.abs(getRef(draggingRect) - getRef(stripeRect)),
+            Math.abs(getRef(draggingRect) - getRef(getStripeRect())),
         },
       ];
     }

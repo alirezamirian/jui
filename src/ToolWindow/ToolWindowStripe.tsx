@@ -83,6 +83,12 @@ export function ToolWindowStripe<T extends object>({
           .querySelector(`[data-key="${key}"]`)! // FIXME
           .getBoundingClientRect();
 
+      // Running the following two state setters immediately affect the layout
+      // in a way that is necessary for drop position calculation, so the order
+      // is important
+      setDraggingRect(getItemRect(key).toJSON());
+      setDraggingKey(key);
+
       const isNotCurrentItem = (anItem: T) => anItem !== item;
       const getDropPosition = createGetDropPosition({
         stripeElement: stripeElement,
@@ -92,12 +98,9 @@ export function ToolWindowStripe<T extends object>({
         anchor,
         getItemRect,
       });
-      // Note: drop position should be set initially to prevent potentially emptied stripe from
-      // collapsing. It's important to call it before setting dragging rect and key, since they
-      // immediately affect the layout.
+      // Note: drop position should be set initially to prevent potentially
+      // emptied stripe from collapsing.
       setDropPosition(getDropPosition(from));
-      setDraggingRect(getItemRect(key).toJSON());
-      setDraggingKey(key);
 
       return {
         getDropPosition,

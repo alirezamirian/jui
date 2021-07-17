@@ -19,8 +19,8 @@ export const Stripe = (props: StyledToolWindowStripeProps) => {
     top: "paddingBottom",
   } as const)[anchor];
   const [items, setItems] = useState({
-    main: [{ name: "Projects" }, { name: "Structure" }],
-    split: [{ name: "Favourites" }, { name: "npm" }],
+    main: [{ name: "Commit" }, { name: "Projects" }, { name: "Structure" }],
+    split: [{ name: "Favourites" }, { name: "npm" }, { name: "TODO" }],
   });
   return (
     <div

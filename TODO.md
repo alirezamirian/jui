@@ -1,4 +1,6 @@
 - ToolWindow:
+  - [x] drop index doesn't work fine when dragging the first item enough to 
+    be moved to second place. Maybe a regression
   - [x] Stripe collapses when moving the single button in it.
   - [x] bug: click a stripe button. move mouse, it drags the button, even though mouse is not down.
   - [x] start and end padding in Stripe don't seem to be necessary. it's gonna be handled in 
