@@ -1,3 +1,5 @@
+- Resize:
+  - [ ] There is a glitch new min size
 - ToolWindow:
   - [x] drop index doesn't work fine when dragging the first item enough to 
     be moved to second place. Maybe a regression
