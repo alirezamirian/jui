@@ -27,13 +27,15 @@ export interface ResizerProps {
   background?: CSSProperties["background"];
   /**
    * Visible and space-occupying part of the resize handle. Total grab-able
-   * width will be `width` + `outerPadding`
+   * width will be `size` + `outerPadding`
+   * @default 0
    */
   size?: number;
   /**
    * Length of the extra grab-able zone around the resize handle.
    * For example, if set to 10 there will be an area of length 5 pixels in each
    * side of the handle which still can be used for resizing.
+   * @default 10
    */
   outerPadding?: number;
 
