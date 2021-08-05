@@ -1,4 +1,8 @@
 import React from "react";
+import {
+  disableTextSelection,
+  restoreTextSelection,
+} from "../utils/interaction-utils/textSelection";
 import { useLatest } from "../utils/useLatest";
 
 export type XY = { x: number; y: number };
@@ -48,6 +52,7 @@ export function useMove<S>({
   const handlersRef = useLatest({ onMove, onMoveEnd });
 
   const onMouseDown = (event: React.MouseEvent) => {
+    disableTextSelection();
     const from = { x: event.pageX, y: event.pageY };
     let dragStarted = false;
     let startState: S;
@@ -76,6 +81,7 @@ export function useMove<S>({
     document.addEventListener(
       "mouseup",
       () => {
+        restoreTextSelection();
         if (dragStarted) {
           handlersRef.current.onMoveEnd({ startState });
         }
