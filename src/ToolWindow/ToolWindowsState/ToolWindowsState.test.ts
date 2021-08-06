@@ -16,18 +16,18 @@ const windows = {
   l6: toolWindowState({ viewMode: "window", isVisible: true }),
   l7: toolWindowState({ viewMode: "undock", isVisible: true }),
   l1: toolWindowState({ order: 2, isVisible: true }),
-  // ---
+
   l8: toolWindowState({ isSplit: true }),
   l9: toolWindowState({ isSplit: true, isVisible: true }),
-
+  // -------------------------------------------------------------------------------------------------- //
   r1: toolWindowState({ anchor: "right", isVisible: true, weight: 0.3 }),
   r2: toolWindowState({ anchor: "right" }),
-  // ---
+
   r3: toolWindowState({ anchor: "right", isSplit: true }),
   r4: toolWindowState({ anchor: "right", isSplit: true }),
-
+  // -------------------------------------------------------------------------------------------------- //
   b1: toolWindowState({ anchor: "bottom" }),
-  // ---
+
   b2: toolWindowState({
     anchor: "bottom",
     viewMode: "undock",
@@ -35,8 +35,8 @@ const windows = {
     isVisible: true,
     weight: 0.4,
   }),
-
-  t1: toolWindowState({ anchor: "top" }),
+  // -------------------------------------------------------------------------------------------------- //
+  t1: toolWindowState({ anchor: "top", isVisible: true }),
 };
 const state = new ToolWindowsState(windows);
 
@@ -209,6 +209,46 @@ describe("tool window actions", () => {
     expect(newState.windows.r1.isVisible).toBe(true);
     expect(newState.windows.r2.isVisible).toBe(false);
   });
+
+  test("resizeDock updates weight of the currently visible docked window in that anchor", () => {
+    expectChanges(state.resizeDock("left", 100, { width: 200, height: 400 }), {
+      l1: { weight: 0.5 },
+      l9: { weight: 0.5 },
+    });
+    expectChanges(state.resizeDock("right", 100, { width: 200, height: 400 }), {
+      r1: { weight: 0.5 },
+    });
+    expectChanges(state.resizeDock("top", 100, { width: 200, height: 400 }), {
+      t1: { weight: 0.25 },
+    });
+    expectNoChanges(
+      state.resizeDock("bottom", 100, { width: 200, height: 400 })
+    );
+  });
+
+  test("resizeUndock updates weight of the currently visible undock window in that anchor", () => {
+    expectChanges(
+      state.resizeUndock("left", 100, { width: 200, height: 400 }),
+      {
+        l7: { weight: 0.5 },
+      }
+    );
+    expectNoChanges(
+      state.resizeUndock("right", 100, { width: 200, height: 400 })
+    );
+    expectNoChanges(
+      state.resizeUndock("top", 100, { width: 200, height: 400 })
+    );
+    expectChanges(
+      state.resizeUndock("bottom", 100, { width: 200, height: 400 }),
+      {
+        b2: { weight: 0.25 },
+      }
+    );
+  });
+
+  // TODO: add a test for this: when a window in split section of an anchor becomes visible while there is a window open
+  //  in main view, the one in split view should get the weight of the one in main view.
 });
 
 const expectOrderInSide = (
@@ -241,4 +281,8 @@ function expectChanges(
       updates
     ),
   });
+}
+
+function expectNoChanges(newState: ToolWindowsState) {
+  return expectChanges(newState, {});
 }

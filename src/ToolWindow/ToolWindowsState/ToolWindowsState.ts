@@ -1,6 +1,6 @@
 import { curry, fromPairs, insert, map, mapObjIndexed, move } from "ramda";
 import { Key } from "react";
-import { Anchor } from "../utils";
+import { Anchor, isHorizontal } from "../utils";
 
 export type ViewMode =
   | "docked_pinned"
@@ -238,6 +238,47 @@ export class ToolWindowsState {
         (value, key) => newTargetSideWindows[key] || value,
         this.windows
       )
+    );
+  }
+
+  resizeDock(
+    anchor: Anchor,
+    size: number,
+    containerBounds: { width: number; height: number }
+  ): ToolWindowsState {
+    return this.resizeSide(true, anchor, size, containerBounds);
+  }
+
+  resizeUndock(
+    anchor: Anchor,
+    size: number,
+    containerBounds: { width: number; height: number }
+  ): ToolWindowsState {
+    return this.resizeSide(false, anchor, size, containerBounds);
+  }
+
+  private resizeSide(
+    dock: boolean,
+    anchor: Anchor,
+    size: number,
+    containerBounds: { width: number; height: number }
+  ): ToolWindowsState {
+    return new ToolWindowsState(
+      map((window) => {
+        const isInResizingView = dock
+          ? isDocked(window)
+          : window.viewMode === "undock";
+        if (window.anchor === anchor && isInResizingView && window.isVisible) {
+          const containerSize = !isHorizontal(anchor)
+            ? containerBounds.width
+            : containerBounds.height;
+          return {
+            ...window,
+            weight: size / containerSize,
+          };
+        }
+        return window;
+      }, this.windows)
     );
   }
 }
