@@ -11,6 +11,8 @@ const toolWindow = (inputs: Partial<ToolWindowState>): ToolWindowState => ({
   ...inputs,
 });
 
+const containerSize = { width: 1000, height: 400 };
+
 describe("getToolWindowLayoutState", () => {
   test("docked and undocked view of sides", () => {
     const state = new ToolWindowsState({
@@ -23,7 +25,7 @@ describe("getToolWindowLayoutState", () => {
       w7: toolWindow({ anchor: "top", isVisible: true, viewMode: "float" }),
       w8: toolWindow({ anchor: "bottom", isVisible: true, viewMode: "undock" }),
     });
-    const layoutState = getToolWindowsLayoutState(state);
+    const layoutState = getToolWindowsLayoutState(state, containerSize);
     expect(layoutState.left.docked).not.toBeNull(); // has visible docked windows, so it should be open
     expect(layoutState.left.undocked).toBeNull(); // no visible undocked windows, so it should be closed
     expect(layoutState.right.docked).toBeNull();
@@ -45,7 +47,7 @@ describe("getToolWindowLayoutState", () => {
       t1: toolWindow({ anchor: "top", isSplit: false, order: 1 }),
       t2: toolWindow({ anchor: "top", isSplit: false, order: 2 }),
     });
-    const layoutState = getToolWindowsLayoutState(state);
+    const layoutState = getToolWindowsLayoutState(state, containerSize);
 
     expect(layoutState.left.stripes.main).toEqual(["l2", "l3", "l1"]);
     expect(layoutState.left.stripes.split).toEqual(["l5", "l4"]);
@@ -64,7 +66,7 @@ describe("getToolWindowLayoutState", () => {
         w1: toolWindow({ anchor: "left", viewMode: "undock", isVisible: true }),
         w2: toolWindow({ anchor: "left", viewMode: "undock", isVisible: true }),
       });
-      getToolWindowsLayoutState(state);
+      getToolWindowsLayoutState(state, containerSize);
     }).toThrow();
 
     expect(() => {
@@ -72,7 +74,7 @@ describe("getToolWindowLayoutState", () => {
         w1: toolWindow({ anchor: "left", isVisible: true }),
         w2: toolWindow({ anchor: "left", isVisible: true }),
       });
-      getToolWindowsLayoutState(state);
+      getToolWindowsLayoutState(state, containerSize);
     }).toThrow();
 
     // Valid states
@@ -81,7 +83,7 @@ describe("getToolWindowLayoutState", () => {
         w1: toolWindow({ anchor: "left", viewMode: "float", isVisible: true }),
         w2: toolWindow({ anchor: "left", viewMode: "float", isVisible: true }),
       });
-      getToolWindowsLayoutState(state);
+      getToolWindowsLayoutState(state, containerSize);
     }).not.toThrow();
 
     expect(() => {
@@ -90,14 +92,14 @@ describe("getToolWindowLayoutState", () => {
         w2: toolWindow({ anchor: "left", isVisible: true }),
         w3: toolWindow({ anchor: "left", isSplit: true, isVisible: true }),
       });
-      getToolWindowsLayoutState(state);
+      getToolWindowsLayoutState(state, containerSize);
     }).not.toThrow();
     expect(() => {
       const state = new ToolWindowsState({
         w1: toolWindow({ anchor: "left", viewMode: "window", isVisible: true }),
         w2: toolWindow({ anchor: "left", viewMode: "window", isVisible: true }),
       });
-      getToolWindowsLayoutState(state);
+      getToolWindowsLayoutState(state, containerSize);
     }).not.toThrow();
   });
 });
