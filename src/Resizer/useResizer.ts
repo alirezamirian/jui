@@ -6,8 +6,15 @@ type UseResizerProps = Pick<
   "onResize" | "onResizeEnd" | "onResizeStarted"
 >;
 
+export type ResizerViewProps = Omit<
+  ResizerProps,
+  "onResize" | "onResizeEnd" | "onResizeStarted"
+> &
+  ReturnType<typeof useResizer>;
+
 const useResizer = (
   orientation: "horizontal" | "vertical",
+  invert: boolean,
   { onResizeStarted, onResize, onResizeEnd }: UseResizerProps
 ) => {
   const props = useMove({
@@ -15,19 +22,29 @@ const useResizer = (
     onMoveStart: () => onResizeStarted() || 0,
     onMoveEnd: () => onResizeEnd?.(),
     onMove: ({ movement, startState }) =>
-      onResize(startState + movement[orientation === "horizontal" ? "x" : "y"]),
+      onResize(
+        startState +
+          (invert ? -1 : +1) *
+            movement[orientation === "horizontal" ? "x" : "y"]
+      ),
   });
   return {
     resizerProps: props,
   };
 };
 
-// if useResizer was curried: const useHorizontalResizer = useResizer('horizontal');
-export const useHorizontalResizer = (props: UseResizerProps) => {
-  return useResizer("horizontal", props);
+export const useLeftResizer = (props: UseResizerProps) => {
+  return useResizer("horizontal", false, props);
 };
 
-// if useResizer was curried: const useVerticalResizer = useResizer('vertical');
-export const useVerticalResizer = (props: UseResizerProps) => {
-  return useResizer("vertical", props);
+export const useRightResizer = (props: UseResizerProps) => {
+  return useResizer("horizontal", true, props);
+};
+
+export const useTopResizer = (props: UseResizerProps) => {
+  return useResizer("vertical", false, props);
+};
+
+export const useBottomResizer = (props: UseResizerProps) => {
+  return useResizer("vertical", true, props);
 };

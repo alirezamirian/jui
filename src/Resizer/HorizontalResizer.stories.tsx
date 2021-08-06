@@ -5,10 +5,10 @@ import {
   ComponentArgTypes,
   styledComponentsControlsExclude,
 } from "../story-helpers";
-import { HorizontalResizer } from "./HorizontalResizer";
 import { styled } from "../styled";
+import { LeftResizer } from "./LeftResizer";
 import { ResizerProps } from "./ResizerProps";
-import { VerticalResizer } from "./VerticalResizer";
+import { TopResizer } from "./TopResizer";
 import { css } from "styled-components";
 
 const meta: Meta = {
@@ -16,7 +16,7 @@ const meta: Meta = {
   parameters: {
     layout: "fullscreen",
     controls: { exclude: styledComponentsControlsExclude },
-    component: HorizontalResizer,
+    component: LeftResizer,
   },
   argTypes: {
     orientation: {
@@ -74,14 +74,14 @@ const getComponentsAndProps = (
         Container: HorizontalContainer,
         FirstSide: LeftSide,
         SecondSide: RightSide,
-        Resizer: HorizontalResizer,
+        Resizer: LeftResizer,
         sizeStyles: { width: size },
       }
     : {
         Container: VerticalContainer,
         FirstSide: TopSize,
         SecondSide: BottomSide,
-        Resizer: VerticalResizer,
+        Resizer: TopResizer,
         sizeStyles: { height: size },
       };
 };

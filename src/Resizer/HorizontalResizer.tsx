@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { useHorizontalResizer } from "./useResizer";
-import { ResizerProps } from "./ResizerProps";
+import { ResizerViewProps } from "./useResizer";
 
 const StyledHorizontalResizer = styled.div`
   height: 100%;
@@ -24,15 +23,13 @@ const StyledHorizontalResizerArea = styled.div<{
  * movement event and calls onResize with the new size. It has nothing to do
  * with actually applying the size.
  */
-export const HorizontalResizer: React.FC<ResizerProps> = ({
+export const HorizontalResizer: React.FC<ResizerViewProps> = ({
   outerPadding = 10,
   background,
   size = 0,
   children,
-  ...otherProps
+  resizerProps,
 }) => {
-  const { resizerProps } = useHorizontalResizer(otherProps);
-
   return (
     <StyledHorizontalResizer
       {...resizerProps}

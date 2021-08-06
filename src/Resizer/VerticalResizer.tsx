@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { useVerticalResizer } from "./useResizer";
-import { ResizerProps } from "./ResizerProps";
+import { ResizerViewProps } from "./useResizer";
 
 const StyledVerticalResizer = styled.div`
   width: 100%;
@@ -24,21 +23,15 @@ const StyledVerticalResizerArea = styled.div<{
  * movement event and calls onResize with the new size. It has nothing to do
  * with actually applying the size.
  */
-export const VerticalResizer: React.FC<ResizerProps> = ({
+export const VerticalResizer: React.FC<ResizerViewProps> = ({
   outerPadding = 10,
   background,
   size = 0,
+  resizerProps,
   children,
-  ...otherProps
-}) => {
-  const { resizerProps } = useVerticalResizer(otherProps);
-  return (
-    <StyledVerticalResizer
-      {...resizerProps}
-      style={{ background, height: size }}
-    >
-      {children}
-      <StyledVerticalResizerArea handleSize={outerPadding} />
-    </StyledVerticalResizer>
-  );
-};
+}) => (
+  <StyledVerticalResizer {...resizerProps} style={{ background, height: size }}>
+    {children}
+    <StyledVerticalResizerArea handleSize={outerPadding} />
+  </StyledVerticalResizer>
+);
