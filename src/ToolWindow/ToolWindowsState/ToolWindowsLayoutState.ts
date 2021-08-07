@@ -11,12 +11,27 @@ export interface StripesState {
   activeKeys: Key[];
 }
 
-// potential improvement might be to avoid null type and have it like { open: false} | {open: true, ...relevantProps}
+/**
+ * Represents UI state of the split view (aka secondary or side view) within a docked view at one of the four sides.
+ */
+type SideDockedSplitState = {
+  key: Key;
+  /**
+   * relative size of the split view inside a docked view. Note that this is intentionally a fraction size (0≤size<1),
+   * based on the expected behaviour. split views inside a docked view are not fixed sized and resizing the window
+   * affect their size. This is not the case for the docked views themselves inside the main layout, which have fixed
+   * size which is not affected by window resizing.
+   */
+  sizeFraction: number;
+};
+
+// A potential improvement for this and similar nullable types like SideDockedState.split might be to avoid null type
+// and have it like { open: false} | {open: true, ...relevantProps}
 // Not sure if it's really preferred in terms of usage in the react component.
 export type SideDockedState = null | {
   size: number;
-  main: Key | null;
-  split: Key | null;
+  mainKey: Key;
+  split: SideDockedSplitState | null;
 };
 
 export type SideUnDockedState = null | {
@@ -98,8 +113,16 @@ const getDocked = (
   if (mains[0] || splits[0]) {
     const weight = mains[0]?.weight || splits[0]?.weight;
     return {
-      main: mains[0]?.key || null,
-      split: splits[0]?.key || null,
+      mainKey: mains[0]?.key || splits[0]?.key,
+      split:
+        mains[0]?.key && splits[0]?.key
+          ? {
+              key: splits[0].key,
+              sizeFraction: mains[0].weight
+                ? 1 - mains[0].sideWeight
+                : splits[0].sideWeight,
+            }
+          : null,
       size: weight * getSizeInAnchor(containerSize, anchor),
     };
   }
@@ -157,7 +180,7 @@ export function getToolWindowsLayoutState(
     top: getSideState("top", containerSize, top),
     right: getSideState("right", containerSize, right),
     bottom: getSideState("bottom", containerSize, bottom),
-    windows: [], // FIXME
-    floatedWindows: [], // FIXME
+    windows: [], // TODO
+    floatedWindows: [], // TODO
   };
 }

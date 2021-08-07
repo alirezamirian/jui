@@ -29,6 +29,7 @@ export interface ToolWindowState {
    */
   isVisible: boolean;
   weight: number;
+  sideWeight: number;
   anchor: Anchor;
   /**
    * if the tool window should be shown in the split view, when rendered not in
@@ -257,6 +258,20 @@ export class ToolWindowsState {
     return this.resizeSide(false, anchor, size, containerBounds);
   }
 
+  resizeDockSplitView(anchor: Anchor, weight: number): ToolWindowsState {
+    return new ToolWindowsState(
+      map((window) => {
+        if (window.anchor === anchor && window.isVisible && isDocked(window)) {
+          return {
+            ...window,
+            sideWeight: window.isSplit ? weight : 1 - weight,
+          };
+        }
+        return window;
+      }, this.windows)
+    );
+  }
+
   private resizeSide(
     dock: boolean,
     anchor: Anchor,
@@ -291,6 +306,7 @@ export const toolWindowState = (
   viewMode: "docked_pinned",
   order: 1,
   weight: 0.2,
+  sideWeight: 0.5,
   isVisible: false,
   ...inputs,
 });

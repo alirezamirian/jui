@@ -15,12 +15,12 @@ const windows = {
   l5: toolWindowState({ viewMode: "undock" }),
   l6: toolWindowState({ viewMode: "window", isVisible: true }),
   l7: toolWindowState({ viewMode: "undock", isVisible: true }),
-  l1: toolWindowState({ order: 2, isVisible: true }),
+  l1 /*👁*/: toolWindowState({ order: 2, isVisible: true }),
 
   l8: toolWindowState({ isSplit: true }),
-  l9: toolWindowState({ isSplit: true, isVisible: true }),
+  l9 /*👁*/: toolWindowState({ isSplit: true, isVisible: true }),
   // -------------------------------------------------------------------------------------------------- //
-  r1: toolWindowState({ anchor: "right", isVisible: true, weight: 0.3 }),
+  r1 /*👁*/: toolWindowState({ anchor: "right", isVisible: true, weight: 0.3 }),
   r2: toolWindowState({ anchor: "right" }),
 
   r3: toolWindowState({ anchor: "right", isSplit: true }),
@@ -36,7 +36,7 @@ const windows = {
     weight: 0.4,
   }),
   // -------------------------------------------------------------------------------------------------- //
-  t1: toolWindowState({ anchor: "top", isVisible: true }),
+  t1 /*👁*/: toolWindowState({ anchor: "top", isVisible: true }),
 };
 const state = new ToolWindowsState(windows);
 
@@ -246,6 +246,19 @@ describe("tool window actions", () => {
       }
     );
   });
+
+  test("resize split view in a side sets sideWeight for both docked windows", () => {
+    expectChanges(state.resizeDockSplitView("left", 0.3), {
+      l1: { sideWeight: 0.7 },
+      l9: { sideWeight: 0.3 },
+    });
+  });
+
+  // TODO: make sure if opening a tool window in docked view should in any way set the sideWeight of some of the
+  //  windows. It seems the current implementation of ToolWindowState and ToolWindowLayoutState works exactly
+  //  like Intellij Platform, and there is no need for adding that complication. Make sure about it.
+  //  observation: It seems when windows are switched, the sideWeight for the previously open one (on the other side)
+  //  is set.
 
   // TODO: add a test for this: when a window in split section of an anchor becomes visible while there is a window open
   //  in main view, the one in split view should get the weight of the one in main view.
