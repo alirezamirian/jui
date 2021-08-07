@@ -50,7 +50,9 @@ export const StyledOuterLayout = ({
           anchor="left"
         />
       </StyledToolWindowOuterLayout.LeftStripe>
-      <div style={{ gridArea: "main" }}>main area</div>
+      <StyledToolWindowOuterLayout.MainView>
+        main area
+      </StyledToolWindowOuterLayout.MainView>
     </StyledToolWindowOuterLayout.Shell>
   );
 };

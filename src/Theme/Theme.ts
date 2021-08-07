@@ -110,6 +110,10 @@ export class Theme<P extends string = string> {
       ),
       panelBackground: theme.color("Panel.background") || "#fff",
       red: theme.dark ? "rgb(255,100,100)" : "rgb(255,0,0)",
+      contrastBorder: theme.color(
+        "Borders.ContrastBorderColor",
+        theme.dark ? "#323232" : "#c9c9c9"
+      ),
     };
   }
 }

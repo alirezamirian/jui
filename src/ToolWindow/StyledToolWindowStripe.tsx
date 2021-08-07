@@ -20,10 +20,9 @@ const anchorStyles = ({
         min-width: ${preventCollapse ? "calc(1.155em + 6px)" : undefined};
       `;
 const borderStyle = ({ anchor, theme }: { anchor: Anchor; theme: Theme }) =>
-  css`border-${theOtherSide(anchor)}: 1px solid ${theme.color(
-    "Borders.ContrastBorderColor",
-    theme.dark ? "#323232" : "#c9c9c9"
-  )}`;
+  css`border-${theOtherSide(anchor)}: 1px solid ${
+    theme.commonColors.contrastBorder
+  }`;
 
 export interface StyledToolWindowStripeProps {
   anchor: Anchor;

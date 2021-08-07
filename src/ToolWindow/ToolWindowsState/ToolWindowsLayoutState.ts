@@ -164,7 +164,7 @@ const getSideState = (
 });
 
 export function getToolWindowsLayoutState(
-  state: ToolWindowsState,
+  state: Readonly<ToolWindowsState>,
   containerSize: ContainerSize
 ): ToolWindowsLayoutState {
   const toolWindows = Object.keys(state.windows).map((key) => ({

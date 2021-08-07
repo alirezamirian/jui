@@ -1,5 +1,5 @@
 import React, { CSSProperties, useRef, useState } from "react";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 import {
   BottomResizer,
   LeftResizer,
@@ -7,6 +7,7 @@ import {
   TopResizer,
 } from "../Resizer";
 import { ResizerProps } from "../Resizer/ResizerProps";
+import { Theme } from "../Theme/Theme";
 
 /**
  * Props are named mostly based on ThreeComponentsSplitter in Intellij Platform.
@@ -64,7 +65,7 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
   lastSize,
   onFirstResize,
   onLastResize,
-  resizerProps = {},
+  resizerProps: resizerPropsOverrides = {},
   innerView,
   ...containerProps
 }: ThreeViewSplitterProps): React.ReactElement => {
@@ -77,6 +78,13 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
   const SecondResizer =
     orientation === "horizontal" ? RightResizer : BottomResizer;
   const sizeStyleProp = orientation === "horizontal" ? "width" : "height";
+
+  const theme = useTheme() as Theme;
+  const resizerProps: ThreeViewSplitterProps["resizerProps"] = {
+    background: theme.commonColors.contrastBorder,
+    size: 1,
+    ...resizerPropsOverrides,
+  };
 
   const isFractionSize = (size: number) => size < 1;
 

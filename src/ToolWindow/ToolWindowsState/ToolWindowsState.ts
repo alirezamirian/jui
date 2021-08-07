@@ -78,7 +78,9 @@ const getViewModeType = (viewMode: ViewMode) => {
  */
 export class ToolWindowsState {
   constructor(
-    public readonly windows: Readonly<{ [key: string]: ToolWindowState }>
+    public readonly windows: Readonly<{
+      [key: string]: Readonly<ToolWindowState>;
+    }>
   ) {}
 
   hide(targetKey: Key): ToolWindowsState {

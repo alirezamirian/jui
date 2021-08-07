@@ -1,34 +1,49 @@
-import { Anchor, isHorizontal } from "./utils";
+import { mergeProps } from "@react-aria/utils";
 import React, { CSSProperties, Key, useRef, useState } from "react";
+import { createGetDropPosition, DropPosition } from "./createGetDropPosition";
 import { StyledSpacer, StyledToolWindowStripe } from "./StyledToolWindowStripe";
 import { StyledToolWindowStripeButton } from "./StyledToolWindowStripeButton";
 import { useElementMove, UseElementMoveOptions } from "./useElementMove";
-import { createGetDropPosition, DropPosition } from "./createGetDropPosition";
+import { Anchor, isHorizontal } from "./utils";
 
-export type OnItemDroppedArgs<T extends object> = {
+export type OnItemDroppedArgs<T> = {
   items: T[];
   splitItems: T[];
+  key: Key;
+  from: {
+    anchor: Anchor;
+    split: boolean;
+    index: number;
+  };
+  to: {
+    index: number;
+    split: boolean;
+  };
 };
 
-interface ToolWindowStripeProps<T extends object> {
+interface ToolWindowStripeProps<T> {
   anchor: Anchor;
   onItemDropped?: (args: OnItemDroppedArgs<T>) => void;
   items: T[];
   splitItems?: T[];
   getKey: (item: T) => Key;
   renderItem: (item: T) => React.ReactNode;
+  selectedKeys?: Key[];
+  onItemPress?: (key: Key) => void;
 }
 
 /**
  * findings:
  * - Stripe priority: top, left, bottom right
  */
-export function ToolWindowStripe<T extends object>({
+export function ToolWindowStripe<T>({
   anchor,
   onItemDropped,
   items: mainItems,
   renderItem: render,
   splitItems = [],
+  selectedKeys = [],
+  onItemPress,
   getKey,
 }: ToolWindowStripeProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -48,16 +63,31 @@ export function ToolWindowStripe<T extends object>({
       if (!draggingItem) {
         return;
       }
-      const newSplitItems = splitItems.filter((item) => item !== draggingItem);
       const newItems = mainItems.filter((item) => item !== draggingItem);
+      const newSplitItems = splitItems.filter((item) => item !== draggingItem);
       (dropPosition.split ? newSplitItems : newItems).splice(
         dropPosition.index,
         0,
         draggingItem
       );
+      const indexOfDraggingItemInSplit = splitItems.indexOf(draggingItem);
+      const index =
+        indexOfDraggingItemInSplit > -1
+          ? indexOfDraggingItemInSplit
+          : mainItems.indexOf(draggingItem);
       onItemDropped({
         items: newItems,
         splitItems: newSplitItems,
+        key: draggingKey,
+        from: {
+          anchor,
+          split: indexOfDraggingItemInSplit > -1,
+          index: index,
+        },
+        to: {
+          split: dropPosition.split,
+          index: dropPosition.index,
+        },
       });
     }
   };
@@ -123,6 +153,8 @@ export function ToolWindowStripe<T extends object>({
         }}
         onMoveStart={onMoveStart}
         onMove={onMove}
+        active={selectedKeys.includes(key)}
+        onPress={() => onItemPress?.(key)}
         onMoveEnd={onMoveEnd}
       >
         {render(item)}
@@ -192,17 +224,24 @@ function ToolWindowStripeButton<T, S>({
   onMoveStart,
   onMove,
   onMoveEnd,
+  onPress,
   ...otherProps
 }: {
   children: React.ReactNode;
   anchor: Anchor;
   style: CSSProperties;
+  active: boolean;
+  onPress: () => void;
   onMoveStart: UseElementMoveOptions<S>["onMoveStart"];
   onMove: UseElementMoveOptions<S>["onMove"];
   onMoveEnd: UseElementMoveOptions<S>["onMoveEnd"];
 }) {
   const ref = useRef<HTMLElement>(null);
 
+  // for some reason, usePress and useMove (used in useElementMove) are not compatible.
+  // it seems onMouseDown in useMove is not called, even when handlers are merged by mergeProps.
+  // FIXME: fix compatibility of useMove and usePress, and switch to usePress({ onPress })
+  const { pressProps } = { pressProps: { onClick: onPress } }; //usePress({ onPress });
   const props = useElementMove({
     ref,
     dragThreshold: 7,
@@ -215,8 +254,7 @@ function ToolWindowStripeButton<T, S>({
   return (
     <StyledToolWindowStripeButton
       anchor={anchor}
-      {...otherProps}
-      {...props}
+      {...mergeProps(otherProps, pressProps, props)}
       ref={ref}
     >
       {children}

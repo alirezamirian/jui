@@ -13,6 +13,9 @@ const LeftStripe = styled.div`
 const RightStripe = styled.div`
   grid-area: rs;
 `;
+const MainView = styled.div`
+  grid-area: main;
+`;
 
 /**
  * The container which renders top,bottom,left and right stripes with a centered content.
@@ -50,4 +53,5 @@ export const StyledToolWindowOuterLayout = {
   BottomStripe,
   LeftStripe,
   RightStripe,
+  MainView,
 };
