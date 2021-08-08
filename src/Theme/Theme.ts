@@ -65,16 +65,23 @@ export class Theme<P extends string = string> {
   async icon<T extends string | undefined>(
     path: P,
     fallback?: T
-  ): Promise<undefined extends T ? string | undefined : string> {
+  ): Promise<string> {
     const icon = this.value(path) || fallback;
     if (typeof icon === "string") {
-      // @ts-expect-error: the error doesn't seem to make sense.
-      // string should be assignable to the conditional return type, which is effectively either
-      // string or (undefined | string)
       return this.iconResolver.resolveThemeIcon(icon);
     }
     throw new Error(
       `Could not find the icon "${path}" on the theme, and no fallback provided`
+    );
+  }
+  /**
+   * Resolves platform icon name to svg.
+   * by default it fetches the svg icon from Github, but there are other Theme implementations
+   */
+  @cache
+  async platformIcon(name: string): Promise<string> {
+    return this.iconResolver.resolvePlatformIcon(
+      !name.endsWith(".svg") ? `${name}.svg` : name
     );
   }
 

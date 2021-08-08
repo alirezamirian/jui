@@ -1,9 +1,9 @@
-import { Icon } from "../Icon/Icon";
+import { ThemeIcon } from "../Icon/ThemeIcon";
 import React, { ComponentProps } from "react";
 import { styled } from "../styled";
 
 export const TREE_ICON_SIZE = 16;
-const StyledTreeNodeIcon = styled(Icon)`
+const StyledTreeNodeIcon = styled(ThemeIcon)`
   margin-left: -20px;
   margin-right: 4px;
 `;
@@ -46,7 +46,7 @@ export function TreeNodeIcon({
 }: TreeNodeIconProps) {
   return (
     <StyledTreeNodeIcon
-      themeIcon={getIcon(selected, expanded)}
+      icon={getIcon(selected, expanded)}
       size={TREE_ICON_SIZE}
       {...props}
     />

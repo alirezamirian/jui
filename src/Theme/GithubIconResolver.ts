@@ -9,7 +9,7 @@ export class GithubIconResolver implements IconResolver {
 
   async resolvePlatformIcon(srcRelativeIconPath: string): Promise<string> {
     return resolve(
-      `//https://raw.githubusercontent.com/JetBrains/intellij-community/master/platform/icons/src/${srcRelativeIconPath}`
+      `https://raw.githubusercontent.com/JetBrains/intellij-community/master/platform/icons/src/${srcRelativeIconPath}`
     );
   }
 }
