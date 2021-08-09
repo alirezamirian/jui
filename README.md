@@ -94,7 +94,7 @@ JUI is Intellij Platform UI implemented as a React.js library.
         </tr>
         <tr>
             <td colspan="3">Button</td>
-            <td>:construction:</td>
+            <td>:x:</td>
         </tr>
         <tr>
             <td colspan="3">Action Button</td>
