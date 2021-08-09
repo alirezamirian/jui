@@ -20,6 +20,7 @@ const StyledActionButton = styled.button<{ minSize: number }>`
   min-height: ${({ minSize }) => `${minSize}px`};
   min-width: ${({ minSize }) => `${minSize}px`};
   padding: 0;
+  margin: 0;
   &:hover,
   &:focus /* in intellij platform, the button doesn't grab the focus after being active. This is not the case in web,
   for better accessibility. But there is no existing UI spec for it in intellij platform obviously. So for now, we
