@@ -89,11 +89,11 @@ export const Default = (
       toolWindowsState={state}
       onToolWindowStateChange={setState}
       renderToolbarButton={(id) => (
-        <span style={{ display: "flex", alignItems: "center" }}>
+        <>
           <PlatformIcon icon={windowById[id].icon} />
           &nbsp;
           {windowById[id].title}
-        </span>
+        </>
       )}
       renderWindow={(id) => (
         <DefaultToolWindow
@@ -108,7 +108,7 @@ export const Default = (
             )
           }
         >
-          {/*<Static />*/}
+          {null}
         </DefaultToolWindow>
       )}
     >

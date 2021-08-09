@@ -26,7 +26,7 @@ const anchorStyles = ({ anchor }: { anchor: Anchor }) => {
 
 export const StyledToolWindowStripeButton = styled.span<StyledToolWindowStripeButtonProps>`
   box-sizing: border-box;
-  display: inline-block;
+  display: flex; // to allow icon and text alignment by default;
   cursor: default;
   user-select: none;
   overflow: hidden;
