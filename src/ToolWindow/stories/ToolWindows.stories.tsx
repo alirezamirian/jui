@@ -1,6 +1,9 @@
 import { Meta } from "@storybook/react";
 import React, { useState } from "react";
+import { ActionButton } from "../../ActionButton/ActionButton";
+import { PlatformIcon } from "../../Icon/PlatformIcon";
 import { styledComponentsControlsExclude } from "../../story-helpers";
+import { DefaultToolWindow } from "../DefaultToolWindow";
 import { ToolWindows, ToolWindowsProps } from "../ToolWindows";
 import {
   ToolWindowsState,
@@ -37,9 +40,18 @@ export const Default = (
       onToolWindowStateChange={setState}
       renderToolbarButton={(id) => id}
       renderWindow={(id) => (
-        <div style={{ borderBottom: "1px solid rgba(0,0,0,.3)", padding: 4 }}>
-          {id}
-        </div>
+        <DefaultToolWindow
+          title={id}
+          additionalActions={
+            <>
+              <ActionButton>
+                <PlatformIcon icon="actions/expandall" />
+              </ActionButton>
+            </>
+          }
+        >
+          {/*<Static />*/}
+        </DefaultToolWindow>
       )}
     >
       <div style={{ padding: 8 }}>Main</div>

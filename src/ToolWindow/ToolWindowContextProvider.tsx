@@ -4,6 +4,7 @@ import { ToolWindowState } from "./ToolWindowsState/ToolWindowsState";
 
 const ToolWindowContext = React.createContext<{
   state: Readonly<ToolWindowState>;
+  hide: () => void;
 } | null>(null);
 
 export const useToolWindowContext = () => {

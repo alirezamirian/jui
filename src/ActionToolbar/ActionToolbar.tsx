@@ -27,7 +27,13 @@ const StyledVerticalActionToolbar = styled(StyledActionToolbar)`
   }
 `;
 
-// Maybe not needed
+/**
+ * Remaining features:
+ * - overflow behaviour:
+ *   - wrap. like main action toolbar.
+ *   - hidden, shown by arrow. Similar to actions in Git->Log. Note that the behaviour for horizontal and vertical
+ *     modes are different apparently.
+ */
 export const ActionToolbar: React.FC<ActionToolbarProps> = ({
   orientation = "horizontal",
   children,

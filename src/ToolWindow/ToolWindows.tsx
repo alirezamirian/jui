@@ -43,6 +43,11 @@ export interface ToolWindowsProps {
  * @constructor
  *
  * Corresponding to ToolWindowPane in Intellij Platform
+ *
+ * TODO:
+ * - Add support for tool windows with viewMode === 'undocked'
+ * - Add support for tool windows with viewMode === 'float'
+ * - Add support for tool windows with viewMode === 'window'
  */
 export const ToolWindows: React.FC<ToolWindowsProps> = ({
   hideToolWindowBars = false,

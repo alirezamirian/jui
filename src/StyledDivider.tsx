@@ -1,21 +1,20 @@
 import { styled } from "./styled";
 import React from "react";
 
-export const StyledDivider = styled.hr(({ theme }) => ({
+const StyledDivider = styled.hr(({ theme }) => ({
   backgroundColor: theme.color(
-    // if this kind of fallback to *.{theSameKey} is repeated a lot, it can be baked into Theme.color
     "Separator.separatorColor",
-    theme.color("*.separatorColor")
+    theme.dark ? "#cdcdcd" : "#515151"
   ),
   margin: 0,
   border: "none",
 }));
 
 export const StyledHorizontalDivider = styled(StyledDivider)`
-  height: 100%;
+  height: inherit;
   width: 1px;
 `;
 export const StyledVerticalDivider = styled(StyledDivider)`
   height: 1px;
-  width: 100%;
+  width: inherit;
 `;

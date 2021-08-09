@@ -1,8 +1,8 @@
 import { Meta } from "@storybook/react";
 import React from "react";
 import { styledComponentsControlsExclude } from "../../story-helpers";
-import { ToolWindowStripe } from "../ToolWindowStripe";
 import { StyledToolWindowOuterLayout } from "../StyledToolWindowOuterLayout";
+import { ToolWindowStripe } from "../ToolWindowStripe";
 
 export default {
   title: "ToolWindow",
