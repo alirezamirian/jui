@@ -2,9 +2,11 @@ import { styled } from "../styled";
 import { css } from "styled-components";
 
 const TopStripe = styled.div`
+  display: flex; // default display, which is block causes an unwanted minimum height
   grid-area: ts;
 `;
 const BottomStripe = styled.div`
+  display: flex; // default display, which is block causes an unwanted minimum height
   grid-area: bs;
 `;
 const LeftStripe = styled.div`
