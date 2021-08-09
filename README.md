@@ -23,7 +23,7 @@ JUI is Intellij Platform UI implemented as a React.js library.
         </tr>
         <tr>
             <td colspan="2">Divider</td>
-            <td>:construction:</td>
+            <td>:white_check_mark:</td>
         </tr>
         <tr>
             <td colspan="2">Disabled</td>
@@ -89,6 +89,10 @@ JUI is Intellij Platform UI implemented as a React.js library.
             <td>:white_check_mark:</td>
         </tr>
         <tr>
+            <td colspan="3">Checkbox with label</td>
+            <td>:x:</td>
+        </tr>
+        <tr>
             <td colspan="3">Button</td>
             <td>:construction:</td>
         </tr>
@@ -118,7 +122,7 @@ JUI is Intellij Platform UI implemented as a React.js library.
             <td>:x:</td>
         </tr>
         <tr>
-            <td colspan="2">[Common shortcuts][CommonShortcuts]</td>
+            <td colspan="2"><a href="https://github.com/JetBrains/intellij-community/blob/e3c7d96daba1d5d84d5650bde6c220aed225bfda/platform/platform-api/src/com/intellij/openapi/actionSystem/CommonShortcuts.java#L56-L56">Common shortcuts</a></td>
             <td>:x:</td>
         </tr>
         <tr>
