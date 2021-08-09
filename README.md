@@ -108,34 +108,46 @@ JUI is Intellij Platform UI implemented as a React.js library.
             <td>:x:</td>
         </tr>
         <tr>
-            <td rowspan="1" colspan="3">SplitView</td>
-            <td>:x:</td>
+            <td rowspan="1" colspan="3">ThreeViewSplitter</td>
+            <td>:white_check_mark:</td>
         </tr>
         <tr>
-            <td rowspan="10">ToolWindow</td>
+            <td rowspan="16">ToolWindow</td>
         </tr>
         <tr>
             <td colspan="2">Basic functionality</td>
-            <td>:x:</td></tr>
+            <td>:white_check_mark:</td></tr>
         <tr>
-            <td colspan="2">Moving windows</td>
+            <td colspan="2">Reordering windows</td>
+            <td>:white_check_mark:</td>
+        </tr>
+        <tr>
+            <td colspan="2">Moving windows between anchors</td>
             <td>:x:</td>
         </tr>
         <tr>
-            <td colspan="2">Minimize</td>
+            <td colspan="2">Widescreen layout</td>
+            <td>:white_check_mark:</td>
+        </tr>
+        <tr>
+            <td colspan="2">Side by side layout on left or right</td>
             <td>:x:</td>
+        </tr>
+        <tr>
+            <td colspan="2">toggling tool window bars</td>
+            <td>:white_check_mark:</td>
+        </tr>
+        <tr>
+            <td colspan="2">Hide action</td>
+            <td>:white_check_mark:</td>
         </tr>
         <tr>
             <td colspan="2">Resize</td>
-            <td>:x:</td>
+            <td>:white_check_mark:</td>
         </tr>
         <tr>
-            <td colspan="2">Moving windows</td>
-            <td>:x:</td>
-        </tr>
-        <tr>
-            <td colspan="2">Start and end tool windows</td>
-            <td>:x:</td>
+            <td colspan="2">View Mode - Dock pin</td>
+            <td>:white_check_mark:</td>
         </tr>
         <tr>
             <td colspan="2">View Mode - Dock unpin</td>
@@ -147,6 +159,18 @@ JUI is Intellij Platform UI implemented as a React.js library.
         </tr>
         <tr>
             <td colspan="2">View Mode - Float</td>
+            <td>:x:</td>
+        </tr>
+        <tr>
+            <td colspan="2">View Mode - Window</td>
+            <td>:x:</td>
+        </tr>
+        <tr>
+            <td colspan="2">Multiple content view with tab/dropdown switcher in the header</td>
+            <td>:x:</td>
+        </tr>
+        <tr>
+            <td colspan="2">Gear icon actions</td>
             <td>:x:</td>
         </tr>
     </tbody>
