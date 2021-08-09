@@ -48,6 +48,10 @@ export interface ToolWindowsProps {
  * - Add support for tool windows with viewMode === 'undocked'
  * - Add support for tool windows with viewMode === 'float'
  * - Add support for tool windows with viewMode === 'window'
+ *
+ * Known issues:
+ * - in Firefox and Safari, left and right toolbars are not properly shown. Seems like a nasty bug, since adding and
+ * then removing some min-width: fit-content style fixes it.
  */
 export const ToolWindows: React.FC<ToolWindowsProps> = ({
   hideToolWindowBars = false,
