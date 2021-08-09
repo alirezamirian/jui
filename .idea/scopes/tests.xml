@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="tests" pattern="file[jui]:src//*.spec.ts||file[jui]:src//*.spec.tsx" />
+</component>

@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="themes" pattern="file[jui]:themes//*" />
+</component>
