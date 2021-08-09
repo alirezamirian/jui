@@ -2,7 +2,10 @@ import { styled } from "../styled";
 
 export type IconSize = 16;
 const DEFAULT_ICON_SIZE: IconSize = 16;
-export const StyledIconWrapper = styled.span<{ size?: IconSize }>`
+export const StyledIconWrapper = styled.span<{
+  size?: IconSize;
+  useCurrentColor?: boolean;
+}>`
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
@@ -16,6 +19,7 @@ export const StyledIconWrapper = styled.span<{ size?: IconSize }>`
   svg rect,
   svg path,
   svg polygon {
-    fill: currentColor;
+    fill: ${({ theme, useCurrentColor }) =>
+      useCurrentColor ? "currentColor" : theme.dark ? "#AFB1B3" : "#6E6E6E"};
   }
 `;
