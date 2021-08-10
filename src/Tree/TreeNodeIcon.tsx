@@ -1,5 +1,5 @@
 import { ThemeIcon } from "../Icon/ThemeIcon";
-import React, { ComponentProps } from "react";
+import React, { ComponentProps, useMemo } from "react";
 import { styled } from "../styled";
 
 export const TREE_ICON_SIZE = 16;
@@ -44,9 +44,11 @@ export function TreeNodeIcon({
   expanded,
   ...props
 }: TreeNodeIconProps) {
+  const icon = useMemo(() => getIcon(selected, expanded), [selected, expanded]);
   return (
     <StyledTreeNodeIcon
-      icon={getIcon(selected, expanded)}
+      iconPath={icon?.path}
+      fallbackIcon={icon?.fallback}
       size={TREE_ICON_SIZE}
       {...props}
     />

@@ -6,11 +6,18 @@ import { StyledIconWrapper } from "./StyledIconWrapper";
 
 interface PlatformIconProps extends IconProps {
   icon: string;
+  darkIcon?: string;
 }
 
-function usePlatformIcon(iconName: string) {
+export const getDarkPath = (path: string, darkPath?: string) => {
+  const [name, ext] = path.split(".");
+  return darkPath || `${name}_dark${ext ? `.${ext}` : ""}`;
+};
+
+function usePlatformIcon(path: string, darkPath?: string) {
   const theme = useTheme() as Theme; // TODO: investigate why useTheme is typed like this
   const [svg, setSvg] = useState("");
+  const iconName = theme.dark ? getDarkPath(path, darkPath) : path;
   useEffect(() => {
     const fetchIcon = async () => {
       if (!iconName) {
@@ -37,8 +44,13 @@ function usePlatformIcon(iconName: string) {
  * @example <PlatformIcon icon="toolbar/pin" />
  * @example <PlatformIcon icon="toolbar/pin.svg" />
  */
-export function PlatformIcon({ icon, size, ...props }: PlatformIconProps) {
-  const svg = usePlatformIcon(icon);
+export function PlatformIcon({
+  icon,
+  darkIcon,
+  size,
+  ...props
+}: PlatformIconProps) {
+  const svg = usePlatformIcon(icon, darkIcon);
   return (
     <StyledIconWrapper {...props} dangerouslySetInnerHTML={{ __html: svg }} />
   );
