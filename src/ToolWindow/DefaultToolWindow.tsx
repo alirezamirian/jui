@@ -1,7 +1,8 @@
-import { useFocusWithin } from "@react-aria/interactions";
-import React, { useState } from "react";
+import React, { useRef } from "react";
 import { styled } from "../styled";
+import { FocusScope } from "./FocusScope";
 import { ToolWindowHeader } from "./ToolWindowHeader";
+import { useToolWindow } from "./useToolWindow";
 
 export interface DefaultToolWindowProps {
   /**
@@ -37,19 +38,29 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
   children,
   additionalActions,
 }) => {
-  const [focusWithin, setFocusWithin] = useState(false);
-  const { focusWithinProps } = useFocusWithin({
-    onFocusWithinChange: setFocusWithin,
-  });
+  const contentRef = useRef<HTMLDivElement>(null);
+  const focusableContentRef = useRef<{ focus: () => void }>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const {
+    toolWindowProps,
+    toolWindowHeaderProps,
+    toolWindowContentProps,
+  } = useToolWindow(contentRef, focusableContentRef);
+
   return (
-    <StyledToolWindowContainer {...focusWithinProps} tabIndex={-1}>
+    <StyledToolWindowContainer {...toolWindowProps}>
       <ToolWindowHeader
-        toolWindowFocused={focusWithin}
         additionalActions={additionalActions}
+        {...toolWindowHeaderProps}
       >
         {title}
       </ToolWindowHeader>
-      <StyledToolWindowContent>{children}</StyledToolWindowContent>
+      <StyledToolWindowContent ref={contentRef} {...toolWindowContentProps}>
+        <FocusScope ref={focusableContentRef} autoFocus contain>
+          {children}
+          <textarea ref={textareaRef} />
+        </FocusScope>
+      </StyledToolWindowContent>
     </StyledToolWindowContainer>
   );
 };

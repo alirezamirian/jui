@@ -42,6 +42,14 @@ export interface SpeedSearchProps {
   stickySearch?: boolean;
 }
 
+/**
+ * TODO: description
+ * IMPORTANT: making the container element focusable is not a part of this hook. But it's a prerequisite for it to work.
+ * Previously, a tabIndex:-1 was passed as a container prop, but it turns out it's not that simple. For collections for
+ * example we usually want tab index to be 0 once it's not focused and then when an item is focused, we want it to be
+ * -1, and such kind of logics are handled in their respective hooks. So, making the container focusable and how to do
+ * it is NOT this hook's responsibility anymore.
+ */
 export function useSpeedSearch(
   { stickySearch }: SpeedSearchProps,
   { searchTerm, setActive, setSearchTerm }: SpeedSearchState
@@ -87,7 +95,6 @@ export function useSpeedSearch(
       onBlur,
       onKeyDown,
       onKeyUp,
-      tabIndex: -1,
     },
   };
 }

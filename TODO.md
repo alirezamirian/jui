@@ -1,6 +1,10 @@
-- Resize:
+- Resizer:
   - [ ] There is a glitch new min size
-- ToolWindow:
+  
+- ToolWindows:
+  - [x] DefaultToolWindow: focus after open
+  - [ ] refactor to ToolWindowState to ToolWindowManager
+  - [x] how to preserve focus on resize
   - [x] drop index doesn't work fine when dragging the first item enough to 
     be moved to second place. Maybe a regression
   - [x] Stripe collapses when moving the single button in it.

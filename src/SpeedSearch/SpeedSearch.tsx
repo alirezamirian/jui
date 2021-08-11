@@ -1,12 +1,12 @@
-import React, { HTMLProps } from "react";
 import { mergeProps } from "@react-aria/utils";
+import React, { HTMLProps } from "react";
+import { SpeedSearchContainer } from "./SpeedSearchContainer";
 import { SpeedSearchPopup } from "./SpeedSearchPopup";
 import {
   SpeedSearchStateProps,
   useSpeedSearch,
   useSpeedSearchState,
 } from "./useSpeedSearch";
-import { SpeedSearchContainer } from "./SpeedSearchContainer";
 
 interface Props extends SpeedSearchStateProps {
   children: React.ReactNode;
@@ -32,6 +32,8 @@ export function SpeedSearch({
 
   return (
     <SpeedSearchContainer
+      /* We might as well use useFocusable. The return type was troublesome in the first try. */
+      tabIndex={-1}
       {...mergeProps(containerProps, speedSearchContainerProps, { className })}
     >
       <SpeedSearchPopup active={speedSearchState.active}>

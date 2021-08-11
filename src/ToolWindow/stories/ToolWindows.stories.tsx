@@ -3,7 +3,9 @@ import { indexBy, map } from "ramda";
 import React, { useState } from "react";
 import { ActionButton } from "../../ActionButton/ActionButton";
 import { PlatformIcon } from "../../Icon/PlatformIcon";
+import { SpeedSearchTreeSample } from "../../story-components";
 import { styledComponentsControlsExclude } from "../../story-helpers";
+import { Static } from "../../Tree/SpeedSearchTree/SpeedSearchTree.stories";
 import { DefaultToolWindow } from "../DefaultToolWindow";
 import { ToolWindows, ToolWindowsProps } from "../ToolWindows";
 import {
@@ -21,7 +23,7 @@ const windows = [
     id: "project",
     title: "Project",
     icon: "toolwindows/toolWindowProject",
-    component: SampleToolWindowContent,
+    component: SpeedSearchTreeSample,
     initialState: toolWindowState({ isVisible: true }),
   },
   {
@@ -70,7 +72,7 @@ const windows = [
     id: "commit",
     title: "Commit",
     icon: "toolwindows/toolWindowCommit",
-    component: SampleToolWindowContent,
+    component: Static,
     initialState: toolWindowState({ anchor: "right" }),
   },
 ];
@@ -95,22 +97,26 @@ export const Default = (
           {windowById[id].title}
         </>
       )}
-      renderWindow={(id) => (
-        <DefaultToolWindow
-          title={windowById[id].title}
-          additionalActions={
-            id === "project" && (
-              <>
-                <ActionButton>
-                  <PlatformIcon icon="actions/expandall" />
-                </ActionButton>
-              </>
-            )
-          }
-        >
-          {null}
-        </DefaultToolWindow>
-      )}
+      renderWindow={(id) => {
+        const Component = windowById[id].component;
+        return (
+          <DefaultToolWindow
+            key={id} /*FIXME: this shouldn't be necessary */
+            title={windowById[id].title}
+            additionalActions={
+              id === "project" && (
+                <>
+                  <ActionButton>
+                    <PlatformIcon icon="actions/expandall" />
+                  </ActionButton>
+                </>
+              )
+            }
+          >
+            {<Component />}
+          </DefaultToolWindow>
+        );
+      }}
     >
       <div style={{ padding: 8 }}>Main</div>
     </ToolWindows>

@@ -1,3 +1,4 @@
+import { FocusScope } from "@react-aria/focus";
 import React, {
   CSSProperties,
   Key,
@@ -229,7 +230,10 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
           <ThreeViewSplitter
             {...outerSplitterProps}
             innerView={
-              <ThreeViewSplitter innerView={children} {...innerSplitterProps} />
+              <ThreeViewSplitter
+                innerView={<FocusScope>{children}</FocusScope>}
+                {...innerSplitterProps}
+              />
             }
           />
         </StyledToolWindowOuterLayout.MainView>
