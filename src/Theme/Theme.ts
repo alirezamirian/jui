@@ -12,6 +12,14 @@ import { isMac } from "@react-aria/utils";
 import { cache } from "./cache.decorator";
 
 /**
+ * Just to able locate all keys that are not yet typed and maybe fix them later at some point.
+ */
+export type UnknownThemeProp = any;
+
+const defaultValues: { [key in KnownThemePropertyPath]?: string } = {
+  "*.disabledForeground": "#8C8C8C",
+};
+/**
  * TODO: flattening the map once seems like a reasonable refactoring.
  */
 export class Theme<P extends string = string> {
@@ -26,10 +34,21 @@ export class Theme<P extends string = string> {
     protected readonly iconResolver: IconResolver = new GithubIconResolver()
   ) {
     this.commonColors = this.getCommonColors();
+    Object.entries(defaultValues).forEach(([key, value]) => {
+      if (value) {
+        this.setDefault(key as P, value);
+      }
+    });
   }
 
   get dark(): boolean {
     return Boolean(this.themeJson.dark);
+  }
+
+  private setDefault(path: P, value: string) {
+    if (this.value(path) !== value) {
+      this.themeJson.ui[path] = value;
+    }
   }
 
   /**
@@ -102,9 +121,10 @@ export class Theme<P extends string = string> {
   private getFallbackFromStar(path: P) {
     // FIXME: after refactoring about flattening themeJson.ui properties are done, this should also
     //  be changed.
-    return Object.entries(this.themeJson.ui["*"] || {}).find(([key]) =>
+    const fallbackKey = Object.keys(this.themeJson.ui["*"] || {}).find((key) =>
       path.endsWith(`.${key}` /* strip first star*/)
-    )?.[1];
+    );
+    return fallbackKey ? this.value(`*.${fallbackKey}` as P) : null;
   }
 
   private getCommonColors() {

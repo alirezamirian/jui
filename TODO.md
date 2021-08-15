@@ -2,6 +2,7 @@
   - [ ] There is a glitch new min size
   
 - ToolWindows:
+  - [ ] Resize of the split view doesn't work properly. Styles need to be revisited
   - [x] DefaultToolWindow: focus after open
   - [ ] refactor to ToolWindowState to ToolWindowManager
   - [x] how to preserve focus on resize
