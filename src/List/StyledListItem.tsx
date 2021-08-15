@@ -10,7 +10,7 @@ export const StyledListItem = styled.li<StyledListItemProps>(
   ({ containerFocused, selected, disabled, theme }) => {
     let backgroundColor;
     let color = disabled
-      ? theme.color("*.disabledForeground", "#8C8C8C") // FIXME: fallbacks should not be inlined
+      ? theme.color("*.disabledForeground")
       : theme.color("*.textForeground", theme.color("*.foreground"));
     if (selected) {
       if (containerFocused) {

@@ -11,10 +11,10 @@ const StyledDivider = styled.hr(({ theme }) => ({
 }));
 
 export const StyledHorizontalDivider = styled(StyledDivider)`
-  height: inherit;
+  height: inherit; // should it be auto?
   width: 1px;
 `;
 export const StyledVerticalDivider = styled(StyledDivider)`
   height: 1px;
-  width: inherit;
+  width: auto;
 `;
