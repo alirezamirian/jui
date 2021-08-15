@@ -1,6 +1,6 @@
+import React from "react";
 import { useMenu } from "@react-aria/menu";
 import { AriaMenuProps } from "@react-types/menu";
-import React from "react";
 import { ListDivider } from "../List/ListDivider";
 import { styled } from "../styled";
 import { StyledVerticalDivider } from "../StyledDivider";
@@ -62,6 +62,11 @@ export function Menu<T extends object>(props: MenuProps<T>) {
                 state={state}
                 onAction={props.onAction}
               />
+            );
+          case "section":
+            // Maybe something like "Branches" menu needs titled sections.
+            throw new Error(
+              "Section in menu is not supported yet. You can use Divider though."
             );
           case "divider":
             return <ListDivider />;

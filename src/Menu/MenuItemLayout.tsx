@@ -10,6 +10,7 @@ interface MenuItemLayoutProps {
 const StyledMenuItemLayout = styled.div`
   display: flex;
   align-items: center;
+  flex: 1; // to make sure it takes as much space as available in the menu item row, so that the suffix (shortcut) is pushed to the right
 `;
 const Content = styled.span`
   flex: 1;

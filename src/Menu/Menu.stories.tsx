@@ -1,7 +1,7 @@
 import { Item } from "@react-stately/collections";
 import { Meta } from "@storybook/react";
 import React from "react";
-import { Divider } from "../Collections/Divider";
+import { Divider, DividerItem } from "../Collections/Divider";
 import { PlatformIcon } from "../Icon/PlatformIcon";
 import { styledComponentsControlsExclude } from "../story-helpers";
 import { Menu } from "./Menu";
@@ -18,21 +18,21 @@ export default {
 export const Static = () => {
   return (
     <Menu disabledKeys={["jumpToExternalEditor"]}>
-      <Item>
+      <Item textValue="Cut">
         <MenuItemLayout
           icon={<PlatformIcon icon={"actions/menu-cut"} />}
           content="Cut"
           shortcut={"⌘X"}
         />
       </Item>
-      <Item>
+      <Item textValue="Copy">
         <MenuItemLayout
           icon={<PlatformIcon icon={"actions/copy"} />}
           content="Copy"
           shortcut={"⌘C"}
         />
       </Item>
-      <Item>
+      <Item textValue="Paste">
         <MenuItemLayout
           icon={<PlatformIcon icon={"actions/menu-paste"} />}
           content="Paste"
@@ -41,23 +41,70 @@ export const Static = () => {
       </Item>
       <Divider />
       <Item>Reformat Code</Item>
-      <Item>
+      <Item textValue="Optimize Imports">
         <MenuItemLayout content="Optimize Imports" shortcut={"⌃⌥O"} />
       </Item>
-      <Item>
+      <Item textValue="Delete">
         <MenuItemLayout content="Delete" shortcut={"⌫"} />
       </Item>
       <Divider />
-      <Item>
+      <Item textValue="Compare with...">
         <MenuItemLayout
           icon={<PlatformIcon icon={"actions/diff"} />}
           content="Compare with..."
         />
       </Item>
       <Divider />
-      <Item key="jumpToExternalEditor">
+      <Item key="jumpToExternalEditor" textValue="Jump to external editor">
         <MenuItemLayout content="Jump to external editor" shortcut={"⌥⌘F4"} />
       </Item>
     </Menu>
   );
+};
+
+type MenuItem = {
+  title: string;
+  icon?: string;
+  shortcut?: string;
+  subItems?: MenuItem[];
+};
+const items: Array<MenuItem | DividerItem> = [
+  {
+    title: "View Mode",
+    subItems: [
+      {
+        title: "Dock Pinned",
+      },
+      {
+        title: "Dock Unpinned",
+      },
+      {
+        title: "Dock Undock",
+      },
+      {
+        title: "Float",
+      },
+      {
+        title: "Window",
+      },
+    ],
+  },
+  new DividerItem(),
+  {
+    title: "Group tabs",
+  },
+];
+
+export const Nested = () => {
+  const renderItem = (item: MenuItem | DividerItem) => {
+    if (item instanceof DividerItem) {
+      return <Divider key={item.key} />;
+    }
+    return (
+      <Item key={item.title} childItems={item.subItems?.map(renderItem)}>
+        <MenuItemLayout content={item.title} />
+      </Item>
+    );
+  };
+  return <Menu items={items}>{renderItem}</Menu>;
 };
