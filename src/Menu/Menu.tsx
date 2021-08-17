@@ -1,6 +1,7 @@
-import React from "react";
 import { useMenu } from "@react-aria/menu";
 import { AriaMenuProps } from "@react-types/menu";
+import { Node } from "@react-types/shared";
+import React, { Key } from "react";
 import { ListDivider } from "../List/ListDivider";
 import { styled } from "../styled";
 import { StyledVerticalDivider } from "../StyledDivider";
@@ -8,10 +9,23 @@ import { UnknownThemeProp } from "../Theme/Theme";
 import { useTreeState } from "../Tree/__tmp__useTreeState";
 import { MenuItem } from "./MenuItem";
 
-export interface MenuProps<T> extends AriaMenuProps<T> {}
+export interface MenuProps<T> extends AriaMenuProps<T> {
+  /**
+   * Indicates currently expanded menu item (controlled).
+   */
+  expandedKey?: Key;
+  /**
+   * Called when expanded menu item is changed by user interaction, which can be either hovering over the menu item
+   * if `expandOn` is "focus", or clicking on the menu item (when `expandOn` is "press").
+   */
+  onExpandedKeyChange?: (expandedKey: Key) => void;
+  defaultExpandedKey?: Key;
+  expandOn?: "hover" | "press"; // hover delay doesn't seem to be needed as an option
+}
 
-const StyledMenu = styled.ul`
+export const StyledMenu = styled.ul`
   padding: 5px 0;
+  outline: none;
   list-style: none;
   width: fit-content;
   min-width: 200px;
@@ -41,10 +55,37 @@ const StyledMenu = styled.ul`
  *        shortcut={"⌘C"} />
  *    </Item>
  *  </Menu>
+ *
+ *  Current issues and limitations:
+ *  - Divider in sub-menu's is not supported. because of a constraint in @react-stately/collections, which results in
+ *    this error: Unsupported type <Divider> in <Item>. Only <Item> is supported. Maybe supporting section would
+ *    be a workaround for it.
+ *  - when a parent menu item which has an open submenu is hovered, it gets focus.
+ *
+ *  TODO:
+ *  - show selection
+ *  - menu shown as an overlay with a trigger
+ *  - [Least important] pass aria props to icon, keyboard shortcut, and content part of menu item. Maybe a context
+ *    can be provided for it from menu item, which also exposes state like selected.
  */
-export function Menu<T extends object>(props: MenuProps<T>) {
+export function Menu<T extends object>({
+  expandOn = "hover",
+  ...props
+}: MenuProps<T>) {
+  if (expandOn === "press") {
+    // The only discovered use case so far is in "Branches" menu. Perhaps it's not even implemented as a Menu
+    // in Intellij Platform, but it seems it very well can be, by supporting expand on press.
+    throw new Error("expanding menu items only on press is not supported yet.");
+  }
   // Create state based on the incoming props
-  let state = useTreeState({ ...props });
+  let state = useTreeState({
+    ...props,
+    expandedKeys: props.expandedKey ? [props.expandedKey] : undefined,
+    onExpandedChange: ([firstKey]) => props?.onExpandedKeyChange?.(firstKey),
+    defaultExpandedKeys: props.defaultExpandedKey
+      ? [props.defaultExpandedKey]
+      : undefined,
+  });
 
   // Get props for the menu element
   let ref = React.useRef<HTMLUListElement>(null);
@@ -52,7 +93,7 @@ export function Menu<T extends object>(props: MenuProps<T>) {
 
   return (
     <StyledMenu {...menuProps} ref={ref}>
-      {[...state.collection].map((item) => {
+      {[...state.collection].map((item: Node<T>) => {
         switch (item.type) {
           case "item":
             return (
@@ -60,6 +101,7 @@ export function Menu<T extends object>(props: MenuProps<T>) {
                 key={item.key}
                 item={item}
                 state={state}
+                expandOn={expandOn}
                 onAction={props.onAction}
               />
             );
@@ -69,7 +111,7 @@ export function Menu<T extends object>(props: MenuProps<T>) {
               "Section in menu is not supported yet. You can use Divider though."
             );
           case "divider":
-            return <ListDivider />;
+            return <ListDivider key={item.key} />;
         }
       })}
     </StyledMenu>

@@ -18,6 +18,7 @@
     "@react-aria/interactions": "^3.3.4",
     "@react-aria/listbox": "^3.3.1",
     "@react-aria/menu": "^3.2.3",
+    "@react-aria/overlays": "^3.7.2",
     "@react-aria/selection": "^3.5.1",
     "@react-aria/separator": "^3.1.1",
     "@react-aria/utils": "^3.7.0",

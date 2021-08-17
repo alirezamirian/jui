@@ -73,14 +73,20 @@ const items: Array<MenuItem | DividerItem> = [
     title: "View Mode",
     subItems: [
       {
-        title: "Dock Pinned",
+        title: "Undock",
       },
       {
-        title: "Dock Unpinned",
+        title: "Docked",
+        subItems: [
+          {
+            title: "Pinned",
+          },
+          {
+            title: "UnPinned",
+          },
+        ],
       },
-      {
-        title: "Dock Undock",
-      },
+
       {
         title: "Float",
       },
@@ -92,6 +98,7 @@ const items: Array<MenuItem | DividerItem> = [
   new DividerItem(),
   {
     title: "Group tabs",
+    icon: "toolwindows/documentation",
   },
 ];
 
@@ -101,8 +108,12 @@ export const Nested = () => {
       return <Divider key={item.key} />;
     }
     return (
-      <Item key={item.title} childItems={item.subItems?.map(renderItem)}>
-        <MenuItemLayout content={item.title} />
+      <Item key={item.title} childItems={item.subItems}>
+        <MenuItemLayout
+          icon={item.icon && <PlatformIcon icon={item.icon} />}
+          content={item.title}
+          shortcut={item.shortcut}
+        />
       </Item>
     );
   };
