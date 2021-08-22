@@ -1,9 +1,9 @@
 import React from "react";
 import { styled } from "../styled";
 import {
-  StyledHorizontalDivider,
-  StyledVerticalDivider,
-} from "../StyledDivider";
+  StyledHorizontalSeparator,
+  StyledVerticalSeparator,
+} from "../StyledSeparator";
 
 interface ActionToolbarProps {
   orientation?: "vertical" | "horizontal";
@@ -14,7 +14,7 @@ const StyledActionToolbar = styled.div`
 
 const StyledHorizontalActionToolbar = styled(StyledActionToolbar)`
   padding: 2px 0;
-  ${StyledHorizontalDivider} {
+  ${StyledHorizontalSeparator} {
     margin: 1px 4px;
   }
 `;
@@ -22,7 +22,7 @@ const StyledHorizontalActionToolbar = styled(StyledActionToolbar)`
 const StyledVerticalActionToolbar = styled(StyledActionToolbar)`
   flex-direction: column;
   padding: 0 2px;
-  ${StyledVerticalDivider} {
+  ${StyledVerticalSeparator} {
     margin: 4px 1px;
   }
 `;

@@ -1,10 +1,10 @@
 import React from "react";
-import { StyledVerticalDivider } from "../StyledDivider";
+import { StyledVerticalSeparator } from "../StyledSeparator";
 import { useSeparator } from "@react-aria/separator";
 
 export const ListDivider: React.FC = () => {
   return (
-    <StyledVerticalDivider
+    <StyledVerticalSeparator
       as={"li"}
       {...useSeparator({ orientation: "vertical" })}
     />

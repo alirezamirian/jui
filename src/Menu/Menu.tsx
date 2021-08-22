@@ -4,7 +4,7 @@ import { Node } from "@react-types/shared";
 import React, { Key, useEffect } from "react";
 import { ListDivider } from "../List/ListDivider";
 import { styled } from "../styled";
-import { StyledVerticalDivider } from "../StyledDivider";
+import { StyledVerticalSeparator } from "../StyledSeparator";
 import { UnknownThemeProp } from "../Theme/Theme";
 import { useTreeState } from "../Tree/__tmp__useTreeState";
 import { MenuItem } from "./MenuItem";
@@ -37,8 +37,15 @@ export const StyledMenu = styled.ul`
   color: ${({ theme }) =>
     theme.color("PopupMenu.foreground" as UnknownThemeProp)};
 
-  ${StyledVerticalDivider} {
-    margin: 4px 0;
+  ${StyledVerticalSeparator} {
+    background-color: ${({ theme }) =>
+      theme.color("Menu.separatorColor" as UnknownThemeProp)};
+    height: ${({ theme }) =>
+      `${theme.value("PopupMenuSeparator.height" as UnknownThemeProp) ?? 3}px`};
+    padding: ${({ theme }) =>
+      `${
+        theme.value("PopupMenuSeparator.stripeIndent" as UnknownThemeProp) ?? 1
+      }px 0`};
   }
 `;
 
