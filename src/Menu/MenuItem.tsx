@@ -111,7 +111,7 @@ export function MenuItem<T>({
   let { overlayProps: positionProps } = useOverlayPosition({
     targetRef: ref,
     overlayRef: nestedMenuRef,
-    placement: "right",
+    placement: "right top",
     shouldFlip: true,
     offset: 1,
     isOpen: isExpanded,
