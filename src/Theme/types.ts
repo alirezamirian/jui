@@ -19,10 +19,10 @@ type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<
     [K in Keys]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<Keys, K>>>;
   }[Keys];
 
-export interface IconResolver {
-  resolveThemeIcon(icon: string): Promise<string>;
+type SvgString = string;
 
-  resolvePlatformIcon(srcRelativeIconPath: string): Promise<string>;
+export interface IconResolver {
+  resolve(iconPath: string): Promise<SvgString>;
 }
 
 type ThemeProperties = Record<string, ThemePropertyRawValue>;

@@ -1,9 +1,9 @@
-import { ThemeIcon } from "../Icon/ThemeIcon";
+import { LafIcon } from "../Icon/LafIcon";
 import React, { ComponentProps, useMemo } from "react";
 import { styled } from "../styled";
 
 export const TREE_ICON_SIZE = 16;
-const StyledTreeNodeIcon = styled(ThemeIcon)`
+const StyledTreeNodeIcon = styled(LafIcon)`
   margin-left: -20px;
   margin-right: 4px;
 `;
@@ -13,29 +13,18 @@ type TreeNodeIconProps = ComponentProps<typeof StyledTreeNodeIcon> & {
   expanded: boolean;
 };
 const getIcon = (selected: boolean, expanded: boolean) => {
+  const modifiers = { Selected: selected };
   if (expanded) {
-    return selected
-      ? {
-          path: "Tree.expandedSelectedIcon",
-          fallback:
-            "/com/intellij/ide/ui/laf/icons/intellij/treeExpandedSelected.svg",
-        }
-      : {
-          path: "Tree.expandedIcon",
-          fallback: "/com/intellij/ide/ui/laf/icons/intellij/treeExpanded.svg",
-        };
+    return {
+      themePath: selected ? "Tree.expandedSelectedIcon" : "Tree.expandedIcon",
+      iconPath: { name: "treeExpanded", modifiers },
+    };
   }
   if (!expanded) {
-    return selected
-      ? {
-          path: "Tree.collapsedSelectedIcon",
-          fallback:
-            "/com/intellij/ide/ui/laf/icons/intellij/treeCollapsedSelected.svg",
-        }
-      : {
-          path: "Tree.collapsedIcon",
-          fallback: "/com/intellij/ide/ui/laf/icons/intellij/treeCollapsed.svg",
-        };
+    return {
+      themePath: selected ? "Tree.collapsedSelectedIcon" : "Tree.collapsedIcon",
+      iconPath: { name: "treeCollapsed", modifiers },
+    };
   }
 };
 
@@ -47,8 +36,8 @@ export function TreeNodeIcon({
   const icon = useMemo(() => getIcon(selected, expanded), [selected, expanded]);
   return (
     <StyledTreeNodeIcon
-      iconPath={icon?.path}
-      fallbackIcon={icon?.fallback}
+      icon={icon?.iconPath}
+      themePath={icon?.themePath}
       size={TREE_ICON_SIZE}
       {...props}
     />

@@ -51,6 +51,10 @@ export class Theme<P extends string = string> {
     }
   }
 
+  isUnderDarcula() {
+    return this.themeJson.name.includes("Darcula");
+  }
+
   /**
    * - Resolves values that are references to theme.colors
    */
@@ -77,30 +81,13 @@ export class Theme<P extends string = string> {
   }
 
   /**
-   * Retrieves the theme property value and resolves it to the svg string for the icon.
+   * Resolves platform icon path to svg.
    * by default it fetches the svg icon from Github, but there are other Theme implementations
    */
   @cache
-  async icon<T extends string | undefined>(
-    path: P,
-    fallback?: T
-  ): Promise<string> {
-    const icon = this.value(path) || fallback;
-    if (typeof icon === "string") {
-      return this.iconResolver.resolveThemeIcon(icon);
-    }
-    throw new Error(
-      `Could not find the icon "${path}" on the theme, and no fallback provided`
-    );
-  }
-  /**
-   * Resolves platform icon name to svg.
-   * by default it fetches the svg icon from Github, but there are other Theme implementations
-   */
-  @cache
-  async platformIcon(name: string): Promise<string> {
-    return this.iconResolver.resolvePlatformIcon(
-      !name.endsWith(".svg") ? `${name}.svg` : name
+  async getSvgIcon(path: string): Promise<string> {
+    return this.iconResolver.resolve(
+      !path.endsWith(".svg") ? `${path}.svg` : path
     );
   }
 
