@@ -1,6 +1,6 @@
 import { useHover, useKeyboard } from "@react-aria/interactions";
 import { useMenuItem } from "@react-aria/menu";
-import { OverlayContainer, useOverlayPosition } from "@react-aria/overlays";
+import { useOverlayPosition } from "@react-aria/overlays";
 import { mergeProps } from "@react-aria/utils";
 import { Item } from "@react-stately/collections";
 import { TreeState } from "@react-stately/tree";
@@ -141,24 +141,29 @@ export function MenuItem<T>({
         )}
       </StyledMenuItem>
       {isExpanded && (
-        <OverlayContainer>
-          <div ref={nestedMenuRef} {...mergeProps(positionProps, subMenuProps)}>
-            <Menu items={item.childNodes} autoFocus>
-              {(childItem) => {
-                // FIXME: This is not complete and doesn't support section and divider
-                return (
-                  <Item
-                    childItems={childItem.childNodes}
-                    hasChildItems={childItem.hasChildNodes}
-                    textValue={childItem.textValue}
-                  >
-                    {childItem.rendered}
-                  </Item>
-                );
-              }}
-            </Menu>
-          </div>
-        </OverlayContainer>
+        <div ref={nestedMenuRef} {...mergeProps(positionProps, subMenuProps)}>
+          <Menu
+            aria-label={item["aria-label"] || item.textValue}
+            items={item.childNodes}
+            disabledKeys={state.disabledKeys}
+            selectedKeys={state.selectionManager.selectedKeys}
+            onAction={onAction}
+            autoFocus
+          >
+            {(childItem) => {
+              // FIXME: This is not complete and doesn't support section and divider
+              return (
+                <Item
+                  childItems={childItem.childNodes}
+                  hasChildItems={childItem.hasChildNodes}
+                  textValue={childItem.textValue}
+                >
+                  {childItem.rendered}
+                </Item>
+              );
+            }}
+          </Menu>
+        </div>
       )}
     </>
   );
