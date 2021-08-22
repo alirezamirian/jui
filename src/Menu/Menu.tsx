@@ -1,7 +1,7 @@
 import { useMenu } from "@react-aria/menu";
 import { AriaMenuProps } from "@react-types/menu";
 import { Node } from "@react-types/shared";
-import React, { Key } from "react";
+import React, { Key, useEffect } from "react";
 import { ListDivider } from "../List/ListDivider";
 import { styled } from "../styled";
 import { StyledVerticalDivider } from "../StyledDivider";
