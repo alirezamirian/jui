@@ -9,7 +9,13 @@ import { UnknownThemeProp } from "../Theme/Theme";
 import { useTreeState } from "../Tree/__tmp__useTreeState";
 import { MenuItem } from "./MenuItem";
 
-export interface MenuProps<T> extends AriaMenuProps<T> {
+export interface MenuProps<T>
+  extends Omit<
+    AriaMenuProps<T>,
+    // selection is not properly supported for nested menus. Plus, it's not even that meaningful for a nested menu
+    // at least the way it's implemented now.
+    "onSelectionChange" | "defaultSelection" | "selectionMode"
+  > {
   /**
    * Indicates currently expanded menu item (controlled).
    */

@@ -109,7 +109,11 @@ const items: Array<MenuItem> = [
 ];
 
 export const Nested = () => {
-  return <Menu items={items}>{renderItem}</Menu>;
+  return (
+    <Menu items={items} selectedKeys={["Pinned"]}>
+      {renderItem}
+    </Menu>
+  );
 };
 
 export const Position = () => {
