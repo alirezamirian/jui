@@ -174,7 +174,7 @@ const useSubmenu = ({ onClose }: { onClose: () => void }) => {
     onKeyDown: (e) => {
       if (e.key === "ArrowLeft" || e.key === "Escape") {
         onClose();
-      } else {
+      } else if (!["ArrowUp", "ArrowDown"].includes(e.key)) {
         e.continuePropagation();
       }
     },
