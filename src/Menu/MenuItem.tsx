@@ -8,6 +8,7 @@ import { Node } from "@react-types/shared";
 import React, { Key } from "react";
 import { css } from "styled-components";
 import { PlatformIcon } from "../Icon/PlatformIcon";
+import { LafIcon } from "../Icon/LafIcon";
 
 import { styled } from "../styled";
 import { UnknownThemeProp } from "../Theme/Theme";
@@ -56,12 +57,21 @@ const StyledMenuItem = styled.li<{ isDisabled: boolean; isActive: boolean }>`
   line-height: 1.65; // to make the item have the right height
 `;
 
-const StyledNestedArrow = styled.span`
+const iconWrapperStyle = css`
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  right: 7px;
   display: inline-flex; // to make it not take more height than the icon
+`;
+
+const StyledNestedArrow = styled.span`
+  right: 7px;
+  ${iconWrapperStyle}
+`;
+
+const StyledSelectedMark = styled.span`
+  left: 4px;
+  ${iconWrapperStyle}
 `;
 
 export function MenuItem<T>({
@@ -75,6 +85,7 @@ export function MenuItem<T>({
   const nestedMenuRef = React.useRef<HTMLDivElement>(null);
   const isDisabled = state.disabledKeys.has(item.key);
   const isExpanded = state.expandedKeys.has(item.key);
+  const isSelected = state.selectionManager.selectedKeys.has(item.key);
   const isFocused = state.selectionManager.focusedKey === item.key;
 
   const { menuItemProps } = useMenuItem(
@@ -139,6 +150,16 @@ export function MenuItem<T>({
         isActive={isFocused}
         ref={ref}
       >
+        {isSelected && (
+          <StyledSelectedMark>
+            <LafIcon
+              icon={{
+                name: "checkmark",
+                modifiers: { Selected: isFocused },
+              }}
+            />
+          </StyledSelectedMark>
+        )}
         {item.rendered}
         {item.hasChildNodes && (
           <StyledNestedArrow>

@@ -38,7 +38,9 @@ function Decorator(props: {
   theme: { theme: Theme };
 }) {
   useEffect(() => {
-    document.body.style.background = props.theme.theme.color("*.background");
+    // maybe just black and white based on theme.theme.dark?
+    document.body.style.background =
+      props.theme.theme.color("*.background") ?? "";
   });
   return (
     <ThemeProvider theme={props.theme.theme}>{props.children}</ThemeProvider>
