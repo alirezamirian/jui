@@ -75,7 +75,7 @@ export function MenuItem<T>({
     {
       key: item.key,
       isDisabled,
-      onAction,
+      onAction: !item.hasChildNodes ? onAction : undefined,
     },
     state,
     ref
