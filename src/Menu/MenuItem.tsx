@@ -53,25 +53,24 @@ const StyledMenuItem = styled.li<{ isDisabled: boolean; isActive: boolean }>`
   //&:focus-visible {
   //  border-left: 3px solid rgba(255, 255, 255, 0.1);
   //}
-  padding: 0 17px 0 27px;
+  padding: 0 20px 0 27px;
   line-height: 1.65; // to make the item have the right height
-`;
-
-const iconWrapperStyle = css`
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  display: inline-flex; // to make it not take more height than the icon
+  display: flex;
+  align-items: center;
 `;
 
 const StyledNestedArrow = styled.span`
-  right: 7px;
-  ${iconWrapperStyle}
+  margin-right: -11px;
+  margin-left: 11px;
+  display: inline-flex; // to make it not take more height than the icon
 `;
 
 const StyledSelectedMark = styled.span`
+  position: absolute;
   left: 4px;
-  ${iconWrapperStyle}
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex; // to make it not take more height than the icon
 `;
 
 export function MenuItem<T>({

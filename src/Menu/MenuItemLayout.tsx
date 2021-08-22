@@ -38,7 +38,7 @@ export const MenuItemLayout = ({
     <StyledMenuItemLayout>
       <Icon>{icon}</Icon>
       <Content>{content}</Content>
-      <Shortcut>{shortcut}</Shortcut>
+      {shortcut && <Shortcut>{shortcut}</Shortcut>}
     </StyledMenuItemLayout>
   );
 };
