@@ -1,8 +1,9 @@
 import { PressProps, usePress } from "@react-aria/interactions";
-import React from "react";
+import React, { ForwardedRef } from "react";
 import { styled } from "../styled";
 
 interface ActionButtonProps extends PressProps {
+  children?: React.ReactNode;
   minSize?: number;
 }
 
@@ -40,11 +41,11 @@ const StyledActionButton = styled.button<{ minSize: number }>`
   }
 `;
 
-export const ActionButton: React.FC<ActionButtonProps> = ({
-  minSize = DEFAULT_MINIMUM_BUTTON_SIZE,
-  ...otherProps
-}) => {
+export const ActionButton = React.forwardRef(function ActionButton(
+  { minSize = DEFAULT_MINIMUM_BUTTON_SIZE, ...otherProps }: ActionButtonProps,
+  ref: ForwardedRef<HTMLButtonElement>
+) {
   const { pressProps } = usePress(otherProps);
 
-  return <StyledActionButton {...pressProps} minSize={minSize} />;
-};
+  return <StyledActionButton {...pressProps} minSize={minSize} ref={ref} />;
+});

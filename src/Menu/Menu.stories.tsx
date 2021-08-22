@@ -1,11 +1,14 @@
 import { Item } from "@react-stately/collections";
 import { Meta } from "@storybook/react";
 import React from "react";
+import { ActionButton } from "../ActionButton/ActionButton";
+import { ActionToolbar } from "../ActionToolbar/ActionToolbar";
 import { Divider, DividerItem } from "../Collections/Divider";
 import { PlatformIcon } from "../Icon/PlatformIcon";
 import { styledComponentsControlsExclude } from "../story-helpers";
 import { Menu } from "./Menu";
 import { MenuItemLayout } from "./MenuItemLayout";
+import { MenuTrigger } from "./MenuTrigger";
 
 export default {
   title: "Menu",
@@ -62,38 +65,41 @@ export const Static = () => {
   );
 };
 
-type MenuItem = {
-  title: string;
-  icon?: string;
-  shortcut?: string;
-  subItems?: MenuItem[];
-};
-const items: Array<MenuItem | DividerItem> = [
+type MenuItem =
+  | {
+      title: string;
+      icon?: string;
+      shortcut?: string;
+      subItems?: MenuItem[];
+    }
+  | DividerItem;
+const viewModeItems: Array<MenuItem> = [
   {
-    title: "View Mode",
+    title: "Undock",
+  },
+  {
+    title: "Docked",
     subItems: [
       {
-        title: "Undock",
+        title: "Pinned",
       },
       {
-        title: "Docked",
-        subItems: [
-          {
-            title: "Pinned",
-          },
-          {
-            title: "UnPinned",
-          },
-        ],
-      },
-
-      {
-        title: "Float",
-      },
-      {
-        title: "Window",
+        title: "UnPinned",
       },
     ],
+  },
+
+  {
+    title: "Float",
+  },
+  {
+    title: "Window",
+  },
+];
+const items: Array<MenuItem> = [
+  {
+    title: "View Mode",
+    subItems: viewModeItems,
   },
   new DividerItem(),
   {
@@ -103,19 +109,55 @@ const items: Array<MenuItem | DividerItem> = [
 ];
 
 export const Nested = () => {
-  const renderItem = (item: MenuItem | DividerItem) => {
-    if (item instanceof DividerItem) {
-      return <Divider key={item.key} />;
-    }
-    return (
-      <Item key={item.title} childItems={item.subItems}>
-        <MenuItemLayout
-          icon={item.icon && <PlatformIcon icon={item.icon} />}
-          content={item.title}
-          shortcut={item.shortcut}
-        />
-      </Item>
-    );
-  };
   return <Menu items={items}>{renderItem}</Menu>;
+};
+
+export const Position = () => {
+  return (
+    <div style={{ paddingLeft: "calc(100% - 250px)" }}>
+      <Menu items={viewModeItems}>{renderItem}</Menu>
+    </div>
+  );
+};
+
+export const MenuWithTrigger = () => {
+  return (
+    <ActionToolbar>
+      <MenuTrigger
+        renderMenu={({ menuProps, close }) => (
+          <Menu
+            items={viewModeItems}
+            {...menuProps}
+            onAction={(key) => {
+              console.log(key);
+              close();
+            }}
+          >
+            {renderItem}
+          </Menu>
+        )}
+      >
+        {(props, ref) => (
+          <ActionButton {...props} ref={ref}>
+            <PlatformIcon icon={"general/gearPlain"} />
+          </ActionButton>
+        )}
+      </MenuTrigger>
+    </ActionToolbar>
+  );
+};
+
+const renderItem = (item: MenuItem) => {
+  if (item instanceof DividerItem) {
+    return <Divider key={item.key} />;
+  }
+  return (
+    <Item key={item.title} childItems={item.subItems}>
+      <MenuItemLayout
+        icon={item.icon && <PlatformIcon icon={item.icon} />}
+        content={item.title}
+        shortcut={item.shortcut}
+      />
+    </Item>
+  );
 };
