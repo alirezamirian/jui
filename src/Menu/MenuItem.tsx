@@ -120,8 +120,8 @@ export function MenuItem<T>({
   const { subMenuProps } = useSubmenu({
     onClose: () => {
       state.toggleKey(item.key);
-      state.selectionManager.setFocused(true);
-      state.selectionManager.setFocusedKey(item.key);
+      // setting focus with selection manager didn't work. Perhaps because of patchy implementation of nested menus
+      ref.current?.focus();
     },
   });
 

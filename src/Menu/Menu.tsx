@@ -91,6 +91,15 @@ export function Menu<T extends object>({
   let ref = React.useRef<HTMLUListElement>(null);
   let { menuProps } = useMenu(props, state, ref);
 
+  useEffect(() => {
+    if (props.autoFocus) {
+      setTimeout(() => {
+        // we need this hack until the nested menu is properly supported. That's because when the element is hovered
+        // it sets the focus key, which will move focus to that item.
+        ref.current?.focus();
+      });
+    }
+  }, [props.autoFocus]);
   return (
     <StyledMenu {...menuProps} ref={ref}>
       {[...state.collection].map((item: Node<T>) => {

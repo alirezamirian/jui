@@ -1,7 +1,7 @@
 import { addDecorator } from "@storybook/react"; // <- or your storybook framework
 // @ts-expect-error missing type definition
 import { withThemes } from "storybook-addon-themes/react";
-import React from "react";
+import React, { useEffect } from "react";
 import "./global-styles.css";
 import { ThemeProvider } from "styled-components";
 import { Theme } from "../src/Theme/Theme";
@@ -35,8 +35,11 @@ export const parameters = {
 };
 function Decorator(props: {
   children: React.ReactNode;
-  theme: { theme: any };
+  theme: { theme: Theme };
 }) {
+  useEffect(() => {
+    document.body.style.background = props.theme.theme.color("*.background");
+  });
   return (
     <ThemeProvider theme={props.theme.theme}>{props.children}</ThemeProvider>
   );
