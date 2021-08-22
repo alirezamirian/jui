@@ -24,7 +24,9 @@ const Icon = styled.span`
 `;
 
 const Shortcut = styled.kbd`
-  font-family: sans-serif;
+  font-family: system-ui, sans-serif;
+  margin-left: 30px;
+  color: ${({ theme }) => theme.color("MenuItem.acceleratorForeground")};
 `;
 
 export const MenuItemLayout = ({

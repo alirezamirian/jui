@@ -25,6 +25,7 @@ const StyledMenuItem = styled.li<{ isDisabled: boolean; isActive: boolean }>`
   position: relative; // for being able to position arrow icon absolutely
   outline: none;
   cursor: default;
+  white-space: nowrap;
   color: ${({ isActive, isDisabled, theme }) => {
     if (isDisabled) {
       return theme.color("MenuItem.disabledForeground");
@@ -46,7 +47,12 @@ const StyledMenuItem = styled.li<{ isDisabled: boolean; isActive: boolean }>`
         filter: brightness(2);
       }
     `}
-  padding: 0 19px 0 27px;
+  // would be nice to have a visual clue for focus visible state, but it's not like that in intellij platform
+  //border-left: 3px solid transparent;
+  //&:focus-visible {
+  //  border-left: 3px solid rgba(255, 255, 255, 0.1);
+  //}
+  padding: 0 17px 0 27px;
   line-height: 1.65; // to make the item have the right height
 `;
 

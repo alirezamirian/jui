@@ -24,11 +24,13 @@ export interface MenuProps<T> extends AriaMenuProps<T> {
 }
 
 export const StyledMenu = styled.ul`
+  font-size: 0.92rem;
+  margin: 0;
   padding: 5px 0;
   outline: none;
   list-style: none;
   width: fit-content;
-  min-width: 200px;
+  min-width: 100px;
   border: 1px solid ${({ theme }) => theme.color("Menu.borderColor")};
   background: ${({ theme }) =>
     theme.color("PopupMenu.background" as UnknownThemeProp)};
