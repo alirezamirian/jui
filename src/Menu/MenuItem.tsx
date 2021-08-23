@@ -54,7 +54,7 @@ const StyledMenuItem = styled.li<{ isDisabled: boolean; isActive: boolean }>`
   //  border-left: 3px solid rgba(255, 255, 255, 0.1);
   //}
   padding: 0 20px 0 27px;
-  line-height: 1.65; // to make the item have the right height
+  line-height: 1.35; // to make the item have the right height
   display: flex;
   align-items: center;
 `;
