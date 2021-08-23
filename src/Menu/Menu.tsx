@@ -1,11 +1,13 @@
 import { useMenu } from "@react-aria/menu";
+import { isMac } from "@react-aria/utils";
 import { AriaMenuProps } from "@react-types/menu";
 import { Node } from "@react-types/shared";
 import React, { Key, useEffect } from "react";
+import { css } from "styled-components";
 import { ListDivider } from "../List/ListDivider";
 import { styled } from "../styled";
 import { StyledVerticalSeparator } from "../StyledSeparator";
-import { UnknownThemeProp } from "../Theme/Theme";
+import { Theme, UnknownThemeProp } from "../Theme/Theme";
 import { useTreeState } from "../Tree/__tmp__useTreeState";
 import { MenuItem } from "./MenuItem";
 
@@ -38,6 +40,12 @@ export const StyledMenu = styled.ul`
   width: fit-content;
   min-width: 100px;
   border: 1px solid ${({ theme }) => theme.color("Menu.borderColor")};
+  ${isMac() &&
+  css<{ theme: Theme }>`
+    box-shadow: 0 5px 15px rgb(0 0 0 / 30%);
+    border-color: ${({ theme }) =>
+      theme.dark ? "rgba(0, 0, 0, 0.15)" : undefined};
+  `}
   background: ${({ theme }) =>
     theme.color("PopupMenu.background" as UnknownThemeProp)};
   color: ${({ theme }) =>
