@@ -32,6 +32,7 @@ export const StyledToolWindowStripeButton = styled.span<StyledToolWindowStripeBu
   overflow: hidden;
   direction: ltr;
   flex-shrink: 0;
+  font-size: 0.7rem;
   white-space: nowrap;
   color: ${({ theme, active }) =>
     active
