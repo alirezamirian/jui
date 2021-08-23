@@ -1,5 +1,4 @@
 import { Item } from "@react-stately/collections";
-import { useControlledState } from "@react-stately/utils";
 import { Selection } from "@react-types/shared";
 import React, { Key } from "react";
 import { SpeedSearchTree } from "./Tree/SpeedSearchTree/SpeedSearchTree";
@@ -33,7 +32,7 @@ export function SelectionLog({ selection }: { selection: Selection }) {
 
 type SelectedKeysType = "all" | Set<Key>;
 export const SpeedSearchTreeSample = ({
-  selectedKeys: selectedKeysProp,
+  selectedKeys,
   defaultSelectedKeys,
   onSelectedKeysChange,
 }: {
@@ -41,19 +40,14 @@ export const SpeedSearchTreeSample = ({
   defaultSelectedKeys?: SelectedKeysType;
   onSelectedKeysChange?: (selectedKeys: SelectedKeysType) => void;
 }): React.ReactElement => {
-  const [selectedKeys, setSelectedKeys] = useControlledState<SelectedKeysType>(
-    selectedKeysProp!,
-    defaultSelectedKeys!,
-    onSelectedKeysChange!
-  );
-
   return (
     <SpeedSearchTree
       fillAvailableSpace
       selectionMode="multiple"
       defaultExpandedKeys={["List", "Theme", "BasicList", "Foo"]}
       selectedKeys={selectedKeys}
-      onSelectionChange={setSelectedKeys}
+      defaultSelectedKeys={defaultSelectedKeys}
+      onSelectionChange={onSelectedKeysChange}
     >
       <Item key="index.ts">index.ts</Item>
       <Item title="List" key="List">
