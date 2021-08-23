@@ -73,6 +73,15 @@ const StyledSelectedMark = styled.span`
   display: inline-flex; // to make it not take more height than the icon
 `;
 
+interface MenuItemContext {
+  isSelected: boolean;
+  isFocused: boolean;
+  isDisabled: boolean;
+}
+export const MenuItemContext = React.createContext<MenuItemContext | null>(
+  null
+);
+
 export function MenuItem<T>({
   item,
   state,
@@ -159,7 +168,9 @@ export function MenuItem<T>({
             />
           </StyledSelectedMark>
         )}
-        {item.rendered}
+        <MenuItemContext.Provider value={{ isDisabled, isFocused, isSelected }}>
+          {item.rendered}
+        </MenuItemContext.Provider>
         {item.hasChildNodes && (
           <StyledNestedArrow>
             <PlatformIcon icon="icons/ide/menuArrow" />
