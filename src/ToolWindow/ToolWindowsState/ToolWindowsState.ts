@@ -46,7 +46,7 @@ export interface ToolWindowState {
   /**
    * Boundaries of the tool window, when rendered in "float" or "window" modes.
    */
-  floatingBounds?: ClientRect;
+  floatingBounds?: Omit<ClientRect, "right" | "bottom">;
 }
 
 const isDocked = (toolWindow: ToolWindowState) =>
@@ -156,6 +156,7 @@ export class ToolWindowsState {
     );
   }
 
+  // TODO: initiate floatingBound when changing viewMode to float or window and there is no previous floatingBound
   changeViewMode(targetKey: Key, viewMode: ViewMode): ToolWindowsState {
     const target = this.windows[targetKey];
     if (!target) {
@@ -244,6 +245,63 @@ export class ToolWindowsState {
     );
   }
 
+  stretchWidth(
+    targetKey: Key,
+    value: number,
+    containerBounds: { width: number; height: number }
+  ): ToolWindowsState {
+    return this.stretch(targetKey, value, containerBounds, "width");
+  }
+
+  stretchHeight(
+    targetKey: Key,
+    value: number,
+    containerBounds: { width: number; height: number }
+  ): ToolWindowsState {
+    return this.stretch(targetKey, value, containerBounds, "height");
+  }
+
+  private stretch(
+    targetKey: Key,
+    value: number,
+    containerBounds: { width: number; height: number },
+    property: "width" | "height"
+  ): ToolWindowsState {
+    const target = this.windows[targetKey];
+    if (!target) {
+      return this;
+    }
+    const viewModeType = getViewModeType(target.viewMode);
+    if (viewModeType === "float") {
+      return new ToolWindowsState(
+        map((window) => {
+          if (window === target) {
+            const currentFloatingBound = window.floatingBounds!;
+            return {
+              ...window,
+              floatingBounds: {
+                ...currentFloatingBound,
+                [property]: currentFloatingBound[property] + value,
+              },
+            };
+          }
+          return window;
+        }, this.windows)
+      );
+    }
+    const expectedProperty = isHorizontal(target.anchor) ? "height" : "width";
+    if (expectedProperty !== property) {
+      return this;
+    }
+    const containerSize = containerBounds[property];
+    const newValue = containerSize * target.weight + value;
+    if (viewModeType === "docked") {
+      return this.resizeDock(target.anchor, newValue, containerBounds);
+    } else {
+      return this.resizeUndock(target.anchor, newValue, containerBounds);
+    }
+  }
+
   resizeDock(
     anchor: Anchor,
     size: number,
@@ -300,15 +358,25 @@ export class ToolWindowsState {
   }
 }
 
-export const toolWindowState = (
-  inputs: Partial<ToolWindowState> = {}
-): ToolWindowState => ({
+export const toolWindowState = ({
+  viewMode = "docked_pinned",
+  ...inputs
+}: Partial<ToolWindowState> = {}): ToolWindowState => ({
   anchor: "left",
   isSplit: false,
-  viewMode: "docked_pinned",
+  viewMode: viewMode,
   order: 1,
   weight: 0.2,
   sideWeight: 0.5,
   isVisible: false,
+  floatingBounds:
+    getViewModeType(viewMode) === "float"
+      ? {
+          left: 100,
+          top: 100,
+          width: 200,
+          height: 400,
+        }
+      : undefined,
   ...inputs,
 });

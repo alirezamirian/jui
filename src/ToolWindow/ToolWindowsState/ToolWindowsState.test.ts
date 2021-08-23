@@ -1,4 +1,4 @@
-import { mapObjIndexed, sortBy } from "ramda";
+import { mapObjIndexed, mergeDeepRight, sortBy } from "ramda";
 import { Key } from "react";
 import {
   areInSameSection,
@@ -40,7 +40,7 @@ const windows = {
 };
 const state = new ToolWindowsState(windows);
 
-describe("tool window actions", () => {
+describe("tool window state", () => {
   test("hide or show return the same state if the key doesn't exist in the state", () => {
     const state = new ToolWindowsState({ w1: toolWindowState() });
     expect(state.hide("w2")).toEqual(state);
@@ -254,6 +254,42 @@ describe("tool window actions", () => {
     });
   });
 
+  test("stretch width sets the weight if in docked mode, and width property of floatingBounds if in window or float mode", () => {
+    expectChanges(state.stretchWidth("l1", 10, { width: 200, height: 400 }), {
+      l1: { weight: windows.l1.weight + 10 / 200 },
+      l9: { weight: windows.l9.weight + 10 / 200 },
+    });
+    expectChanges(state.stretchWidth("l7", -10, { width: 200, height: 400 }), {
+      l7: { weight: round(windows.l7.weight - 10 / 200) },
+    });
+    expectChanges(state.stretchWidth("l4", 10, { width: 200, height: 400 }), {
+      l4: { floatingBounds: { width: windows.l4.floatingBounds!.width + 10 } },
+    });
+    expectChanges(state.stretchWidth("l6", -10, { width: 200, height: 400 }), {
+      l6: { floatingBounds: { width: windows.l6.floatingBounds!.width - 10 } },
+    });
+  });
+
+  test("stretch height sets the weight if in docked mode, and height property of floatingBounds if in window or float mode", () => {
+    expectChanges(state.stretchHeight("b2", 10, { width: 200, height: 400 }), {
+      b2: { weight: round(windows.b2.weight + 10 / 400) },
+    });
+
+    expectChanges(state.stretchHeight("t1", -10, { width: 200, height: 400 }), {
+      t1: { weight: round(windows.t1.weight - 10 / 400) },
+    });
+    expectChanges(state.stretchHeight("l4", 10, { width: 200, height: 400 }), {
+      l4: {
+        floatingBounds: { height: windows.l4.floatingBounds!.height + 10 },
+      },
+    });
+    expectChanges(state.stretchHeight("l6", -10, { width: 200, height: 400 }), {
+      l6: {
+        floatingBounds: { height: windows.l6.floatingBounds!.height - 10 },
+      },
+    });
+  });
+
   // TODO: make sure if opening a tool window in docked view should in any way set the sideWeight of some of the
   //  windows. It seems the current implementation of ToolWindowState and ToolWindowLayoutState works exactly
   //  like Intellij Platform, and there is no need for adding that complication. Make sure about it.
@@ -280,21 +316,25 @@ const expectOrderInSide = (
   ).toEqual(expectedOrder);
 };
 
+type DeepPartial<T> = {
+  [P in keyof T]?: DeepPartial<T[P]>;
+};
+
 function expectChanges(
   newState: ToolWindowsState,
-  updates: { [key in keyof typeof state.windows]?: Partial<ToolWindowState> }
+  updates: {
+    [key in keyof typeof state.windows]?: DeepPartial<ToolWindowState>;
+  }
 ) {
   expect(newState.windows).toEqual({
     ...state.windows,
     ...mapObjIndexed(
-      (value, key) => ({
-        ...state.windows[key],
-        ...value,
-      }),
+      (value, key) => mergeDeepRight(state.windows[key], value || {}),
       updates
     ),
   });
 }
+const round = (num: number) => parseFloat(num.toFixed(5));
 
 function expectNoChanges(newState: ToolWindowsState) {
   return expectChanges(newState, {});
