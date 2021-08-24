@@ -1,3 +1,4 @@
+import { StyledIconWrapper } from "../Icon/StyledIconWrapper";
 import { styled } from "../styled";
 import React from "react";
 import { css } from "styled-components";
@@ -21,6 +22,11 @@ const anchorStyles = ({ anchor }: { anchor: Anchor }) => {
         writing-mode: vertical-lr;
         // writing-mode: sideways-lr is not supported anywhere other than FF, so, we need to rotate
         transform: ${anchor === "left" ? "rotateZ(180deg)" : undefined};
+
+        // icons are not rotated like text in Intellij Platform implementation. It kind of makes sense.
+        ${StyledIconWrapper} {
+          transform: rotate(180deg);
+        }
       `;
 };
 
