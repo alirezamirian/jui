@@ -2,9 +2,12 @@ import React from "react";
 import { ActionButton } from "../ActionButton/ActionButton";
 import { ActionToolbar } from "../ActionToolbar/ActionToolbar";
 import { PlatformIcon } from "../Icon/PlatformIcon";
+import { MenuTrigger } from "../Menu/MenuTrigger";
 import { styled } from "../styled";
-import { StyledHorizontalDivider } from "../StyledDivider";
+import { StyledHorizontalSeparator } from "../StyledSeparator";
+import { UnknownThemeProp } from "../Theme/Theme";
 import { useToolWindowContext } from "./ToolWindowContextProvider";
+import { ToolWindowSettingsIconMenu } from "./ToolWindowSettingsIconMenu";
 
 export interface ToolWindowHeaderProps {
   toolWindowFocused?: boolean;
@@ -17,13 +20,15 @@ const StyledToolWindowHeader = styled.div<{ active: boolean }>`
   padding: 0 2px 0 7px;
   border-bottom: 1px solid
     ${({ theme }) =>
-      theme.color("ToolWindow.Header.borderColor" as any) ||
-      theme.color("DefaultTabs.borderColor" as any) ||
+      theme.color("ToolWindow.Header.borderColor" as UnknownThemeProp) ||
+      theme.color("DefaultTabs.borderColor" as UnknownThemeProp) ||
       theme.commonColors.contrastBorder};
   background: ${({ theme, active }) =>
     active
       ? theme.color("ToolWindow.Header.background") ||
-        theme.color("ToolWindow.header.active.background" as any) ||
+        theme.color(
+          "ToolWindow.header.active.background" as UnknownThemeProp
+        ) ||
         "#E2E6EC"
       : theme.color("ToolWindow.Header.inactiveBackground") ||
         theme.color("ToolWindow.Header.background") ||
@@ -33,6 +38,7 @@ const StyledToolWindowHeaderActions = styled.div``;
 const StyledToolWindowHeaderContent = styled.div`
   flex: 1;
 `;
+
 export const ToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
   children,
   additionalActions,
@@ -47,9 +53,25 @@ export const ToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
           {additionalActions && (
             <>
               {additionalActions}
-              <StyledHorizontalDivider />
+              <StyledHorizontalSeparator />
             </>
           )}
+          <MenuTrigger
+            renderMenu={({ close, menuProps }) => {
+              return (
+                <ToolWindowSettingsIconMenu
+                  close={close}
+                  menuProps={menuProps}
+                />
+              );
+            }}
+          >
+            {(props, ref) => (
+              <ActionButton {...props} ref={ref}>
+                <PlatformIcon icon="general/gearPlain" />
+              </ActionButton>
+            )}
+          </MenuTrigger>
           <ActionButton onPress={hide}>
             <PlatformIcon icon="general/hideToolWindow" />
           </ActionButton>

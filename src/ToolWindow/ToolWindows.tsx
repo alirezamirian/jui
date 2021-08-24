@@ -121,6 +121,7 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
         innerView={
           <ToolWindowContextProvider
             id={state.mainKey}
+            containerRef={containerRef}
             toolWindowsState={toolWindowsState}
             onToolWindowStateChange={onToolWindowStateChange}
           >
@@ -131,6 +132,7 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
           state.split && (
             <ToolWindowContextProvider
               id={state.split.key}
+              containerRef={containerRef}
               toolWindowsState={toolWindowsState}
               onToolWindowStateChange={onToolWindowStateChange}
             >

@@ -5,7 +5,6 @@ import { ActionButton } from "../../ActionButton/ActionButton";
 import { PlatformIcon } from "../../Icon/PlatformIcon";
 import { SpeedSearchTreeSample } from "../../story-components";
 import { styledComponentsControlsExclude } from "../../story-helpers";
-import { Static } from "../../Tree/SpeedSearchTree/SpeedSearchTree.stories";
 import { DefaultToolWindow } from "../DefaultToolWindow";
 import { ToolWindows, ToolWindowsProps } from "../ToolWindows";
 import {
@@ -72,7 +71,7 @@ const windows = [
     id: "commit",
     title: "Commit",
     icon: "toolwindows/toolWindowCommit",
-    component: Static,
+    component: SpeedSearchTreeSample,
     initialState: toolWindowState({ anchor: "right" }),
   },
 ];
@@ -118,7 +117,9 @@ export const Default = (
         );
       }}
     >
-      <div style={{ padding: 8 }}>Main</div>
+      <div style={{ padding: 8 }}>
+        <textarea />
+      </div>
     </ToolWindows>
   );
 };

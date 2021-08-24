@@ -1,11 +1,19 @@
-import React, { Key, useContext, useMemo } from "react";
+import React, { Key, RefObject, useContext, useMemo } from "react";
 import { ToolWindowsProps } from "./ToolWindows";
-import { ToolWindowState } from "./ToolWindowsState/ToolWindowsState";
+import { ToolWindowState, ViewMode } from "./ToolWindowsState/ToolWindowsState";
+import { Anchor } from "./utils";
 
-const ToolWindowContext = React.createContext<{
+type ToolWindowContextValue = {
   state: Readonly<ToolWindowState>;
   hide: () => void;
-} | null>(null);
+  moveToSide: (args: { anchor: Anchor; isSplit: boolean }) => void;
+  changeViewMode: (viewMode: ViewMode) => void;
+  stretchWidth: (value: number) => void;
+  stretchHeight: (value: number) => void;
+};
+const ToolWindowContext = React.createContext<ToolWindowContextValue | null>(
+  null
+);
 
 export const useToolWindowContext = () => {
   const context = useContext(ToolWindowContext);
@@ -18,17 +26,55 @@ export const useToolWindowContext = () => {
 };
 
 export const ToolWindowContextProvider: React.FC<
-  { id: Key } & Pick<
+  { id: Key; containerRef: RefObject<HTMLElement> } & Pick<
     ToolWindowsProps,
     "toolWindowsState" | "onToolWindowStateChange"
   >
-> = ({ toolWindowsState, onToolWindowStateChange, id, children }) => {
+> = ({
+  toolWindowsState,
+  containerRef,
+  onToolWindowStateChange,
+  id,
+  children,
+}) => {
   const state = toolWindowsState.windows[id];
-  const contextValue = useMemo(() => {
+  const contextValue = useMemo((): ToolWindowContextValue => {
     return {
       state,
       hide: () => {
         onToolWindowStateChange(toolWindowsState.hide(id));
+      },
+      moveToSide: (side) => {
+        onToolWindowStateChange(toolWindowsState.move(id, side));
+      },
+      changeViewMode: (viewMode: ViewMode) => {
+        onToolWindowStateChange(toolWindowsState.changeViewMode(id, viewMode));
+      },
+      stretchWidth: (value: number) => {
+        const container = containerRef.current;
+        if (!container) {
+          throw new Error("Couldn't resize since the container is not present");
+        }
+        onToolWindowStateChange(
+          toolWindowsState.stretchWidth(
+            id,
+            value,
+            container.getBoundingClientRect()
+          )
+        );
+      },
+      stretchHeight: (value: number) => {
+        const container = containerRef.current;
+        if (!container) {
+          throw new Error("Couldn't resize since the container is not present");
+        }
+        onToolWindowStateChange(
+          toolWindowsState.stretchHeight(
+            id,
+            value,
+            container.getBoundingClientRect()
+          )
+        );
       },
     };
   }, [toolWindowsState, state]);
