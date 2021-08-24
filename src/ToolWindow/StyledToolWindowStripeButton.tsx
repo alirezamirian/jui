@@ -39,6 +39,7 @@ export const StyledToolWindowStripeButton = styled.span<StyledToolWindowStripeBu
   direction: ltr;
   flex-shrink: 0;
   font-size: 0.7rem;
+  line-height: 1rem; // absolute value seems to be problematic when the base font size is changed
   white-space: nowrap;
   color: ${({ theme, active }) =>
     active
