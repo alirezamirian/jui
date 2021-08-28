@@ -7,6 +7,7 @@ import React, {
   useState,
 } from "react";
 import { ThreeViewSplitter } from "../ThreeViewSplitter/ThreeViewSplitter";
+import { MovableToolWindowStripeProvider } from "./MovableToolWindowStripeProvider";
 import { StyledToolWindowOuterLayout } from "./StyledToolWindowOuterLayout";
 import { ToolWindowContextProvider } from "./ToolWindowContextProvider";
 import {
@@ -93,15 +94,6 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
         onToolWindowStateChange(toolWindowsState.toggle(key))
       }
       selectedKeys={state.activeKeys}
-      onItemDropped={({ to, key }) =>
-        onToolWindowStateChange(
-          toolWindowsState.move(
-            key,
-            { anchor: anchor, isSplit: to.split },
-            to.index
-          )
-        )
-      }
     />
   );
 
@@ -199,31 +191,44 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
          * ToolWindow bars, aka Stripes. Order of children is irrelevant.
          * layout is handled by `StyledToolWindowOuterLayout`
          */}
-        <StyledToolWindowOuterLayout.LeftStripe>
-          {renderStripe({
-            anchor: "left",
-            state: layoutState["left"].stripes,
-          })}
-        </StyledToolWindowOuterLayout.LeftStripe>
-        <StyledToolWindowOuterLayout.TopStripe>
-          {renderStripe({
-            anchor: "top",
-            state: layoutState["top"].stripes,
-          })}
-        </StyledToolWindowOuterLayout.TopStripe>
-        <StyledToolWindowOuterLayout.RightStripe>
-          {renderStripe({
-            anchor: "right",
-            state: layoutState["right"].stripes,
-          })}
-        </StyledToolWindowOuterLayout.RightStripe>
-        <StyledToolWindowOuterLayout.BottomStripe>
-          {renderStripe({
-            anchor: "bottom",
-            state: layoutState["bottom"].stripes,
-          })}
-        </StyledToolWindowOuterLayout.BottomStripe>
-
+        <MovableToolWindowStripeProvider
+          onMove={({ to, from }) => {
+            onToolWindowStateChange(
+              toolWindowsState.move(
+                layoutState[from.anchor].stripes[
+                  from.isSplit ? "split" : "main"
+                ][from.index],
+                { anchor: to.anchor, isSplit: to.isSplit },
+                to.index
+              )
+            );
+          }}
+        >
+          <StyledToolWindowOuterLayout.LeftStripe>
+            {renderStripe({
+              anchor: "left",
+              state: layoutState["left"].stripes,
+            })}
+          </StyledToolWindowOuterLayout.LeftStripe>
+          <StyledToolWindowOuterLayout.TopStripe>
+            {renderStripe({
+              anchor: "top",
+              state: layoutState["top"].stripes,
+            })}
+          </StyledToolWindowOuterLayout.TopStripe>
+          <StyledToolWindowOuterLayout.RightStripe>
+            {renderStripe({
+              anchor: "right",
+              state: layoutState["right"].stripes,
+            })}
+          </StyledToolWindowOuterLayout.RightStripe>
+          <StyledToolWindowOuterLayout.BottomStripe>
+            {renderStripe({
+              anchor: "bottom",
+              state: layoutState["bottom"].stripes,
+            })}
+          </StyledToolWindowOuterLayout.BottomStripe>
+        </MovableToolWindowStripeProvider>
         {/**
          * The inner layout of the ToolWindow, including four tool windows and
          * a main content in the center.

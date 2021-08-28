@@ -13,6 +13,7 @@ export type UseMoveOptions<S> = {
    * @default 0
    */
   dragThreshold?: number;
+  disabled?: boolean;
   onMoveStart: (args: { from: XY }) => S;
   onMove: (args: { from: XY; to: XY; movement: XY; startState: S }) => void;
   onMoveEnd: (args: { startState: S }) => void;
@@ -45,6 +46,7 @@ export type UseMoveOptions<S> = {
  */
 export function useMove<S>({
   dragThreshold = 0,
+  disabled,
   onMoveStart,
   onMove,
   onMoveEnd,
@@ -90,5 +92,5 @@ export function useMove<S>({
       { once: true }
     );
   };
-  return { onMouseDown };
+  return disabled ? {} : { onMouseDown };
 }

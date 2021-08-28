@@ -155,7 +155,7 @@ JUI is Intellij Platform UI implemented as a React.js library.
         </tr>
         <tr>
             <td colspan="2">Moving windows between anchors</td>
-            <td>:x:</td>
+            <td>:white_check_mark:</td>
         </tr>
         <tr>
             <td colspan="2">Widescreen layout</td>
@@ -203,7 +203,7 @@ JUI is Intellij Platform UI implemented as a React.js library.
         </tr>
         <tr>
             <td colspan="2">Gear icon actions</td>
-            <td>:x:</td>
+            <td>:white_check_mark:<sup>4</sup></td>
         </tr>
     </tbody>
 </table>
@@ -212,7 +212,8 @@ JUI is Intellij Platform UI implemented as a React.js library.
 2. It seems in Intellij UI, such menu lists are only used in popups. Maybe only 
    FlatSpeedSearchPopup
 3. Probably not a feature of Tree itself   
-
+4. Keyboard shortcuts for resizing windows depend on action system implementation and not done yet.
+   Also "Remove from sidebar" doesn't fit with how tool windows is implemented at the moment.
 
 ### Intellij platform bugs
 These bugs are found in the original Intellij Platform UI, which doesn't exist in JUI:

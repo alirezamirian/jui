@@ -1,29 +1,14 @@
 import { mergeProps } from "@react-aria/utils";
-import React, { CSSProperties, Key, useRef, useState } from "react";
+import React, { CSSProperties, Key, useRef } from "react";
 import { createGetDropPosition, DropPosition } from "./createGetDropPosition";
+import { useMovableStripeButtons } from "./MovableToolWindowStripeProvider";
 import { StyledSpacer, StyledToolWindowStripe } from "./StyledToolWindowStripe";
 import { StyledToolWindowStripeButton } from "./StyledToolWindowStripeButton";
 import { useElementMove, UseElementMoveOptions } from "./useElementMove";
 import { Anchor, isHorizontal } from "./utils";
 
-export type OnItemDroppedArgs<T> = {
-  items: T[];
-  splitItems: T[];
-  key: Key;
-  from: {
-    anchor: Anchor;
-    split: boolean;
-    index: number;
-  };
-  to: {
-    index: number;
-    split: boolean;
-  };
-};
-
 interface ToolWindowStripeProps<T> {
   anchor: Anchor;
-  onItemDropped?: (args: OnItemDroppedArgs<T>) => void;
   items: T[];
   splitItems?: T[];
   getKey: (item: T) => Key;
@@ -33,12 +18,12 @@ interface ToolWindowStripeProps<T> {
 }
 
 /**
+ * TODO: refactor to remove the key based interface.
  * findings:
  * - Stripe priority: top, left, bottom right
  */
 export function ToolWindowStripe<T>({
   anchor,
-  onItemDropped,
   items: mainItems,
   renderItem: render,
   splitItems = [],
@@ -47,80 +32,26 @@ export function ToolWindowStripe<T>({
   getKey,
 }: ToolWindowStripeProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [dropPosition, setDropPosition] = useState<DropPosition | null>(null);
-  const [draggingKey, setDraggingKey] = useState<Key | null>(null);
-  const [draggingRect, setDraggingRect] = useState<ClientRect | null>(null);
 
-  const onMoveEnd = () => {
-    setDraggingKey(null);
-    setDropPosition(null);
-    setDraggingRect(null);
-
-    if (onItemDropped && draggingKey && dropPosition) {
-      const draggingItem = mainItems
-        .concat(splitItems)
-        .find((item) => getKey(item) === draggingKey);
-      if (!draggingItem) {
-        return;
-      }
-      const newItems = mainItems.filter((item) => item !== draggingItem);
-      const newSplitItems = splitItems.filter((item) => item !== draggingItem);
-      (dropPosition.split ? newSplitItems : newItems).splice(
-        dropPosition.index,
-        0,
-        draggingItem
-      );
-      const indexOfDraggingItemInSplit = splitItems.indexOf(draggingItem);
-      const index =
-        indexOfDraggingItemInSplit > -1
-          ? indexOfDraggingItemInSplit
-          : mainItems.indexOf(draggingItem);
-      onItemDropped({
-        items: newItems,
-        splitItems: newSplitItems,
-        key: draggingKey,
-        from: {
-          anchor,
-          split: indexOfDraggingItemInSplit > -1,
-          index: index,
-        },
-        to: {
-          split: dropPosition.split,
-          index: dropPosition.index,
-        },
-      });
-    }
-  };
-
-  const onMove = ({
-    to,
-    startState: { getDropPosition },
-  }: {
-    to: ClientRect;
-    startState: {
-      getDropPosition: (draggedRect: ClientRect) => DropPosition | null;
-    };
-  }) => {
-    setDropPosition(getDropPosition(to));
-  };
-
-  const renderItem = (item: T) => {
-    const key = getKey(item);
-    const onMoveStart = ({ from }: { from: ClientRect }) => {
+  const {
+    getProps,
+    draggingRect,
+    draggingKey,
+    dropPosition,
+  } = useMovableStripeButtons({
+    stripeElRef: containerRef,
+    getKey,
+    anchor,
+    mainItems,
+    splitItems,
+    createGetDropPosition: (key: Key) => {
+      const isNotCurrentItem = (anItem: T) => getKey(anItem) !== key;
       const stripeElement = containerRef.current!;
       const getItemRect = (key: Key) =>
         stripeElement
           .querySelector(`[data-key="${key}"]`)! // FIXME
           .getBoundingClientRect();
-
-      // Running the following two state setters immediately affect the layout
-      // in a way that is necessary for drop position calculation, so the order
-      // is important
-      setDraggingRect(getItemRect(key).toJSON());
-      setDraggingKey(key);
-
-      const isNotCurrentItem = (anItem: T) => anItem !== item;
-      const getDropPosition = createGetDropPosition({
+      return createGetDropPosition({
         stripeElement: stripeElement,
         mainItems: mainItems.filter(isNotCurrentItem),
         splitItems: splitItems.filter(isNotCurrentItem),
@@ -128,14 +59,16 @@ export function ToolWindowStripe<T>({
         anchor,
         getItemRect,
       });
-      // Note: drop position should be set initially to prevent potentially
-      // emptied stripe from collapsing.
-      setDropPosition(getDropPosition(from));
+    },
+  });
 
-      return {
-        getDropPosition,
-      };
-    };
+  const highlighted =
+    dropPosition != null &&
+    draggingKey != null &&
+    [...mainItems, ...splitItems].every((item) => getKey(item) !== draggingKey);
+
+  const renderItem = (item: T) => {
+    const key = getKey(item);
 
     return (
       <ToolWindowStripeButton
@@ -151,11 +84,9 @@ export function ToolWindowStripe<T>({
             draggingKey,
           }),
         }}
-        onMoveStart={onMoveStart}
-        onMove={onMove}
+        {...getProps(key)}
         active={selectedKeys.includes(key)}
         onPress={() => onItemPress?.(key)}
-        onMoveEnd={onMoveEnd}
       >
         {render(item)}
       </ToolWindowStripeButton>
@@ -166,7 +97,7 @@ export function ToolWindowStripe<T>({
       <StyledToolWindowStripe
         anchor={anchor}
         preventCollapse={Boolean(dropPosition)}
-        // highlighted={Boolean(dropPosition) /* && dragging item is from another stripe */}
+        highlighted={highlighted}
         ref={containerRef}
       >
         {mainItems.map(renderItem)}
@@ -225,6 +156,7 @@ function ToolWindowStripeButton<T, S>({
   onMove,
   onMoveEnd,
   onPress,
+  moveDisabled,
   ...otherProps
 }: {
   children: React.ReactNode;
@@ -232,6 +164,7 @@ function ToolWindowStripeButton<T, S>({
   style: CSSProperties;
   active: boolean;
   onPress: () => void;
+  moveDisabled?: boolean;
   onMoveStart: UseElementMoveOptions<S>["onMoveStart"];
   onMove: UseElementMoveOptions<S>["onMove"];
   onMoveEnd: UseElementMoveOptions<S>["onMoveEnd"];
@@ -244,6 +177,7 @@ function ToolWindowStripeButton<T, S>({
   const { pressProps } = { pressProps: { onClick: onPress } }; //usePress({ onPress });
   const props = useElementMove({
     ref,
+    disabled: moveDisabled,
     dragThreshold: 7,
     ghost: true,
     onMoveStart,
