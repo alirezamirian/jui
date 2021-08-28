@@ -1,9 +1,17 @@
+import {
+  STRIPE_BUTTON_CROSS_PADDING,
+  STRIPE_BUTTON_LINE_HEIGHT,
+} from "./StyledToolWindowStripeButton";
 import { Anchor, isHorizontal, theOtherSide } from "./utils";
 import { css } from "styled-components";
 import { Theme } from "../Theme/Theme";
 import { styled } from "../styled";
 import { Color } from "../Theme/Color";
 
+const minHeight = `calc(${STRIPE_BUTTON_LINE_HEIGHT} + ${
+  2 * STRIPE_BUTTON_CROSS_PADDING + 1 /*border*/
+}px)`;
+console.log(minHeight);
 const anchorStyles = ({
   anchor,
   preventCollapse,
@@ -12,12 +20,12 @@ const anchorStyles = ({
     ? css`
         flex-direction: row;
         width: 100%;
-        min-height: ${preventCollapse ? "calc(1.155em + 6px)" : undefined};
+        min-height: ${preventCollapse ? minHeight : "fit-content"};
       `
     : css`
         flex-direction: column;
         height: 100%;
-        min-width: ${preventCollapse ? "calc(1.155em + 6px)" : undefined};
+        min-width: ${preventCollapse ? minHeight : "fit-content"};
       `;
 const borderStyle = ({ anchor, theme }: { anchor: Anchor; theme: Theme }) =>
   css`border-${theOtherSide(anchor)}: 1px solid ${

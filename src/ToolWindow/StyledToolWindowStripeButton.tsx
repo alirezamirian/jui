@@ -9,16 +9,19 @@ export interface StyledToolWindowStripeButtonProps {
   active?: boolean;
 }
 
+export const STRIPE_BUTTON_CROSS_PADDING = 2.5;
+export const STRIPE_BUTTON_LINE_HEIGHT = "1rem";
+
 const anchorStyles = ({ anchor }: { anchor: Anchor }) => {
   const orientation =
     anchor === "left" || anchor === "right" ? "vertical" : "horizontal";
 
   return orientation === "horizontal"
     ? css`
-        padding: 2.5px 10px;
+        padding: ${STRIPE_BUTTON_CROSS_PADDING}px 10px;
       `
     : css`
-        padding: 10px 2.5px;
+        padding: 10px ${STRIPE_BUTTON_CROSS_PADDING}px;
         writing-mode: vertical-lr;
         // writing-mode: sideways-lr is not supported anywhere other than FF, so, we need to rotate
         transform: ${anchor === "left" ? "rotateZ(180deg)" : undefined};
@@ -33,13 +36,14 @@ const anchorStyles = ({ anchor }: { anchor: Anchor }) => {
 export const StyledToolWindowStripeButton = styled.span<StyledToolWindowStripeButtonProps>`
   box-sizing: border-box;
   display: flex; // to allow icon and text alignment by default;
+  align-items: center;
   cursor: default;
   user-select: none;
   overflow: hidden;
   direction: ltr;
   flex-shrink: 0;
   font-size: 0.7rem;
-  line-height: 1rem; // absolute value seems to be problematic when the base font size is changed
+  line-height: ${STRIPE_BUTTON_LINE_HEIGHT}; // absolute value seems to be problematic when the base font size is changed
   white-space: nowrap;
   color: ${({ theme, active }) =>
     active
