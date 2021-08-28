@@ -19,8 +19,6 @@ interface ToolWindowStripeProps<T> {
 
 /**
  * TODO: refactor to remove the key based interface.
- * findings:
- * - Stripe priority: top, left, bottom right
  */
 export function ToolWindowStripe<T>({
   anchor,

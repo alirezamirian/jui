@@ -204,6 +204,7 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
             );
           }}
         >
+          {/* Order is important for priority of tool windows in move actions*/}
           <StyledToolWindowOuterLayout.LeftStripe>
             {renderStripe({
               anchor: "left",

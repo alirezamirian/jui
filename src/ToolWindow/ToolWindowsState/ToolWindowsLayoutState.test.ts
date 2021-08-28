@@ -1,15 +1,8 @@
 import { getToolWindowsLayoutState } from "./ToolWindowsLayoutState";
-import { ToolWindowsState, ToolWindowState } from "./ToolWindowsState";
-
-const toolWindow = (inputs: Partial<ToolWindowState>): ToolWindowState => ({
-  anchor: "left",
-  isSplit: false,
-  viewMode: "docked_pinned",
-  order: 1,
-  weight: 0.2,
-  isVisible: false,
-  ...inputs,
-});
+import {
+  ToolWindowsState,
+  toolWindowState as toolWindow,
+} from "./ToolWindowsState";
 
 const containerSize = { width: 1000, height: 400 };
 

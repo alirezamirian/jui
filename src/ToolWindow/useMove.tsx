@@ -27,8 +27,7 @@ export type UseMoveOptions<S> = {
 //    - the API is not great in a sense that it only gives the diff in last movement.
 //      Also onMoveStart doesn't give the initial position, so it's not possible to even calculate
 //
-// TODO: disable text selection when move starts and restore it when finished.
-// TODO: move should be finished by pressing Escape
+// TODO: move should be finished by pressing Escape. onMoveCancel maybe?
 /**
  * Similar to https://react-spectrum.adobe.com/react-aria/useMove.html, with slightly different
  * features and API.
