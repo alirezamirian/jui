@@ -251,10 +251,17 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
                 <UndockSide
                   key={anchor}
                   anchor={anchor}
-                  containerRef={containerRef}
                   state={state}
-                  toolWindowsState={toolWindowsState}
-                  onToolWindowStateChange={onToolWindowStateChange}
+                  onResize={(size) => {
+                    containerRef.current &&
+                      onToolWindowStateChange(
+                        toolWindowsState.resizeUndock(
+                          anchor,
+                          size,
+                          containerRef.current.getBoundingClientRect()
+                        )
+                      );
+                  }}
                 >
                   {renderToolWindow(state.key)}
                 </UndockSide>

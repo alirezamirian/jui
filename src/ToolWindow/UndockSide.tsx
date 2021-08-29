@@ -1,9 +1,8 @@
-import React, { RefObject } from "react";
+import React from "react";
 import { css } from "styled-components";
 import { ResizableView } from "../ResizableView";
 import { styled } from "../styled";
 import { SideUnDockedState } from "./ToolWindowsState/ToolWindowsLayoutState";
-import { ToolWindowsState } from "./ToolWindowsState/ToolWindowsState";
 import { Anchor, isHorizontal } from "./utils";
 
 export const StyledUndockSide = styled.div<{ anchor: Anchor }>`
@@ -30,16 +29,12 @@ export function UndockSide({
   state,
   anchor,
   children,
-  containerRef,
-  toolWindowsState,
-  onToolWindowStateChange,
+  onResize,
 }: {
   state: Exclude<SideUnDockedState, null>;
   anchor: Anchor;
   children: React.ReactNode;
-  containerRef: RefObject<HTMLElement>;
-  toolWindowsState: Readonly<ToolWindowsState>;
-  onToolWindowStateChange: (newState: ToolWindowsState) => void;
+  onResize: (size: number) => void;
 }) {
   return (
     state && (
@@ -50,16 +45,7 @@ export function UndockSide({
             anchor === "left" || anchor === "top" ? "after" : "before"
           }
           size={state.size}
-          onResize={(size) => {
-            containerRef.current &&
-              onToolWindowStateChange(
-                toolWindowsState.resizeUndock(
-                  anchor,
-                  size,
-                  containerRef.current.getBoundingClientRect()
-                )
-              );
-          }}
+          onResize={onResize}
         >
           {children}
         </ResizableView>
