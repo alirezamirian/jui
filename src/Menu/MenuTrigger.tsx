@@ -52,8 +52,7 @@ export const MenuTrigger: React.FC<Props> = ({
   let { buttonProps } = useButton(triggerProps, triggerRef);
   let { overlayProps } = useOverlay(
     {
-      onClose() {
-        console.log("overlay on close");
+      onClose: () => {
         return state.close();
       },
       shouldCloseOnBlur: false,

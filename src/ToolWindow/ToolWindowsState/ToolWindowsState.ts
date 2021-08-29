@@ -53,6 +53,16 @@ const isDocked = (toolWindow: ToolWindowState) =>
   toolWindow.viewMode === "docked_unpinned" ||
   toolWindow.viewMode === "docked_pinned";
 
+/**
+ * Determines whether the tool window should hide on focus. In the java implementation, it's a field on window
+ * info instead of being a calculated field. We changed that to match viewMode with the 5 view modes that are possible
+ * to choose from the UI, eliminating the combinations that are never allowed. If from UX perspective, having window
+ * or float mode with autoHide feature is considered valid at some point, we may need to change the implementation
+ * to something similar to the original implementation where isAutoHide and viewMode are separate.
+ */
+export const isAutoHide = (toolWindow: ToolWindowState) =>
+  toolWindow.viewMode === "docked_unpinned" || toolWindow.viewMode === "undock";
+
 export type SideInfo = Pick<ToolWindowState, "anchor" | "isSplit">;
 export const areInSameSection = curry(
   (window1: SideInfo, window2: SideInfo) =>

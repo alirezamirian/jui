@@ -10,7 +10,7 @@ import { useToolWindowState } from "./ToolWindowsState/ToolWindowStateProvider";
 import { ToolWindowSettingsIconMenu } from "./ToolWindowSettingsIconMenu";
 
 export interface ToolWindowHeaderProps {
-  toolWindowFocused?: boolean;
+  contentHasFocus?: boolean;
   additionalActions?: React.ReactNode;
 }
 
@@ -42,11 +42,11 @@ const StyledToolWindowHeaderContent = styled.div`
 export const ToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
   children,
   additionalActions,
-  toolWindowFocused = false,
+  contentHasFocus = false,
 }) => {
   const { hide } = useToolWindowState();
   return (
-    <StyledToolWindowHeader active={toolWindowFocused}>
+    <StyledToolWindowHeader active={contentHasFocus}>
       <StyledToolWindowHeaderContent>{children}</StyledToolWindowHeaderContent>
       <StyledToolWindowHeaderActions>
         <ActionToolbar>

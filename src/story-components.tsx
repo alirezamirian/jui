@@ -33,7 +33,7 @@ export function SelectionLog({ selection }: { selection: Selection }) {
 type SelectedKeysType = "all" | Set<Key>;
 export const SpeedSearchTreeSample = ({
   selectedKeys,
-  defaultSelectedKeys,
+  defaultSelectedKeys = new Set(["BasicList"]),
   onSelectedKeysChange,
 }: {
   selectedKeys?: SelectedKeysType;

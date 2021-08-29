@@ -42,8 +42,10 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
   const focusableContentRef = useRef<{ focus: () => void }>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const {
+    // NOTE: we might as well use :focus-within and target StyledToolWindowHeader to set the background, but it's not
+    // a clear improvement.
+    contentHasFocus,
     toolWindowProps,
-    toolWindowHeaderProps,
     toolWindowContentProps,
   } = useToolWindow(contentRef, focusableContentRef);
 
@@ -51,7 +53,7 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
     <StyledToolWindowContainer {...toolWindowProps}>
       <ToolWindowHeader
         additionalActions={additionalActions}
-        {...toolWindowHeaderProps}
+        contentHasFocus={contentHasFocus}
       >
         {title}
       </ToolWindowHeader>

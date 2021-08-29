@@ -84,7 +84,7 @@ export const ToolWindowStateProvider: React.FC<
         );
       },
     };
-  }, [toolWindowsState]);
+  }, [toolWindowsState, id]);
   return (
     <ToolWindowStateContext.Provider value={contextValue}>
       {children}

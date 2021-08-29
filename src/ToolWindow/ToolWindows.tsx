@@ -54,6 +54,15 @@ export interface ToolWindowsProps {
  * Known issues:
  * - in Firefox and Safari, left and right toolbars are not properly shown. Seems like a nasty bug, since adding and
  * then removing some min-width: fit-content style fixes it.
+ * - in the dock view of a side, open only a window from the split ones. then open a window from main ones.
+ *   focus is not moved to the just opened window. The reason is we rely on auto focusing and because the react tree
+ *   changes for both windows, even the split one which was open will be unmounted and mounted again, and since it's
+ *   placed after the main one, and hence mounted later, it will get the focus again. This becomes a bigger issue
+ *   if the main one is unpinned, because it immediately gets closed after opening.
+ *   Possible solutions:
+ *   - make sure the split one won't unmount and mount again in such scenario.
+ *   - decouple focusing logic from mounting logic, and only focus windows somehow, when the `isVisible` is changed
+ *     from false to true, not when mounted.
  */
 export const ToolWindows: React.FC<ToolWindowsProps> = ({
   hideToolWindowBars = false,
