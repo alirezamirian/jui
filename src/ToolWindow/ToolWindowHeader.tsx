@@ -6,7 +6,7 @@ import { MenuTrigger } from "../Menu/MenuTrigger";
 import { styled } from "../styled";
 import { StyledHorizontalSeparator } from "../StyledSeparator";
 import { UnknownThemeProp } from "../Theme/Theme";
-import { useToolWindowContext } from "./ToolWindowContextProvider";
+import { useToolWindowState } from "./ToolWindowsState/ToolWindowStateProvider";
 import { ToolWindowSettingsIconMenu } from "./ToolWindowSettingsIconMenu";
 
 export interface ToolWindowHeaderProps {
@@ -44,7 +44,7 @@ export const ToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
   additionalActions,
   toolWindowFocused = false,
 }) => {
-  const { hide } = useToolWindowContext();
+  const { hide } = useToolWindowState();
   return (
     <StyledToolWindowHeader active={toolWindowFocused}>
       <StyledToolWindowHeaderContent>{children}</StyledToolWindowHeaderContent>

@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 import { Divider, DividerItem } from "../Collections/Divider";
 import { PlatformIcon } from "../Icon/PlatformIcon";
 import { Item, Menu, MenuItemLayout } from "../Menu";
-import { useToolWindowContext } from "./ToolWindowContextProvider";
+import { useToolWindowState } from "./ToolWindowsState/ToolWindowStateProvider";
 import { ViewMode } from "./ToolWindowsState/ToolWindowsState";
 import { Anchor, isHorizontal } from "./utils";
 
@@ -88,7 +88,7 @@ export function ToolWindowSettingsIconMenu({
     moveToSide,
     stretchWidth,
     stretchHeight,
-  } = useToolWindowContext();
+  } = useToolWindowState();
 
   const viewModeActions: Action[] = viewModes.map((viewMode) => ({
     id: `viewMode ${viewModeToString[viewMode]}`,

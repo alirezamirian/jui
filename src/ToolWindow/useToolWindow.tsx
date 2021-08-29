@@ -1,12 +1,6 @@
 import { useFocusWithin } from "@react-aria/interactions";
 import { mergeProps } from "@react-aria/utils";
-import React, {
-  FocusEventHandler,
-  RefObject,
-  useEffect,
-  useState,
-} from "react";
-import { useToolWindowContext } from "./ToolWindowContextProvider";
+import React, { FocusEventHandler, RefObject, useState } from "react";
 
 export function useToolWindow(
   contentRef: RefObject<Element>,
@@ -16,18 +10,10 @@ export function useToolWindow(
   const { focusWithinProps } = useFocusWithin({
     onFocusWithinChange: setFocusWithin,
   });
-  const context = useToolWindowContext();
   const { focusDelegatorProps } = useFocusDelegator(
     focusableContentRef,
     contentRef
   );
-  const visible = context?.state.isVisible;
-
-  useEffect(() => {
-    if (visible) {
-      // ref.current?.focus();
-    }
-  }, [visible]);
 
   return {
     toolWindowContentProps: mergeProps(focusWithinProps),

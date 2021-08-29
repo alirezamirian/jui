@@ -1,9 +1,9 @@
 import React, { Key, RefObject, useContext, useMemo } from "react";
-import { ToolWindowsProps } from "./ToolWindows";
-import { ToolWindowState, ViewMode } from "./ToolWindowsState/ToolWindowsState";
-import { Anchor } from "./utils";
+import { ToolWindowsProps } from "../ToolWindows";
+import { ToolWindowState, ViewMode } from "./ToolWindowsState";
+import { Anchor } from "../utils";
 
-type ToolWindowContextValue = {
+type ToolWindowStateContextValue = {
   state: Readonly<ToolWindowState>;
   hide: () => void;
   moveToSide: (args: { anchor: Anchor; isSplit: boolean }) => void;
@@ -11,12 +11,15 @@ type ToolWindowContextValue = {
   stretchWidth: (value: number) => void;
   stretchHeight: (value: number) => void;
 };
-const ToolWindowContext = React.createContext<ToolWindowContextValue | null>(
+const ToolWindowStateContext = React.createContext<ToolWindowStateContextValue | null>(
   null
 );
 
-export const useToolWindowContext = () => {
-  const context = useContext(ToolWindowContext);
+/**
+ * Used in a tool window's UI tree, to get access to the tool window state and actions for changing it.
+ */
+export const useToolWindowState = () => {
+  const context = useContext(ToolWindowStateContext);
   if (!context) {
     throw new Error(
       "useToolWindowContext is meant to be used inside a tool window."
@@ -25,7 +28,11 @@ export const useToolWindowContext = () => {
   return context;
 };
 
-export const ToolWindowContextProvider: React.FC<
+/**
+ * Used in ToolWindows to provide tool window state and necessary actions as a context, which will be accessible
+ * within the tool window content tree, via {@link useToolWindowState}
+ */
+export const ToolWindowStateProvider: React.FC<
   { id: Key; containerRef: RefObject<HTMLElement> } & Pick<
     ToolWindowsProps,
     "toolWindowsState" | "onToolWindowStateChange"
@@ -37,8 +44,8 @@ export const ToolWindowContextProvider: React.FC<
   id,
   children,
 }) => {
-  const state = toolWindowsState.windows[id];
-  const contextValue = useMemo((): ToolWindowContextValue => {
+  const contextValue = useMemo((): ToolWindowStateContextValue => {
+    const state = toolWindowsState.windows[id];
     return {
       state,
       hide: () => {
@@ -77,10 +84,10 @@ export const ToolWindowContextProvider: React.FC<
         );
       },
     };
-  }, [toolWindowsState, state]);
+  }, [toolWindowsState]);
   return (
-    <ToolWindowContext.Provider value={contextValue}>
+    <ToolWindowStateContext.Provider value={contextValue}>
       {children}
-    </ToolWindowContext.Provider>
+    </ToolWindowStateContext.Provider>
   );
 };

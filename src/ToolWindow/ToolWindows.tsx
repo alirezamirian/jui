@@ -9,7 +9,7 @@ import React, {
 import { ThreeViewSplitter } from "../ThreeViewSplitter/ThreeViewSplitter";
 import { MovableToolWindowStripeProvider } from "./MovableToolWindowStripeProvider";
 import { StyledToolWindowOuterLayout } from "./StyledToolWindowOuterLayout";
-import { ToolWindowContextProvider } from "./ToolWindowContextProvider";
+import { ToolWindowStateProvider } from "./ToolWindowsState/ToolWindowStateProvider";
 import {
   getToolWindowsLayoutState,
   SideDockedState,
@@ -111,25 +111,25 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
     return (
       <ThreeViewSplitter
         innerView={
-          <ToolWindowContextProvider
+          <ToolWindowStateProvider
             id={state.mainKey}
             containerRef={containerRef}
             toolWindowsState={toolWindowsState}
             onToolWindowStateChange={onToolWindowStateChange}
           >
             {renderWindow(state.mainKey)}
-          </ToolWindowContextProvider>
+          </ToolWindowStateProvider>
         }
         lastView={
           state.split && (
-            <ToolWindowContextProvider
+            <ToolWindowStateProvider
               id={state.split.key}
               containerRef={containerRef}
               toolWindowsState={toolWindowsState}
               onToolWindowStateChange={onToolWindowStateChange}
             >
               {renderWindow(state.split.key)}
-            </ToolWindowContextProvider>
+            </ToolWindowStateProvider>
           )
         }
         lastSize={state.split?.sizeFraction}
@@ -187,10 +187,6 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
 
     return (
       <>
-        {/**
-         * ToolWindow bars, aka Stripes. Order of children is irrelevant.
-         * layout is handled by `StyledToolWindowOuterLayout`
-         */}
         <MovableToolWindowStripeProvider
           onMove={({ to, from }) => {
             onToolWindowStateChange(
@@ -204,7 +200,11 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
             );
           }}
         >
-          {/* Order is important for priority of tool windows in move actions*/}
+          {/**
+           * ToolWindow bars, aka Stripes. Order of stripes is irrelevant for layout but relevant for
+           * priority when stripe buttons are moved across stripes.
+           * layout is handled by `StyledToolWindowOuterLayout`.
+           */}
           <StyledToolWindowOuterLayout.LeftStripe>
             {renderStripe({
               anchor: "left",
