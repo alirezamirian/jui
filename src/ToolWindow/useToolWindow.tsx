@@ -78,6 +78,7 @@ function useAutoHide() {
     onFocusWithin: () => {
       if (hideTimeoutId.current !== null) {
         clearTimeout(hideTimeoutId.current);
+        hideTimeoutId.current = null;
       }
     },
   });

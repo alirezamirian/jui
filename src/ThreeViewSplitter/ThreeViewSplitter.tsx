@@ -148,7 +148,7 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
           />
         </>
       )}
-      <div style={{ flex: 1 }}>{innerView}</div>
+      {innerView && <div style={{ flex: 1 }}>{innerView}</div>}
       {lastView && (
         <>
           <SecondResizer

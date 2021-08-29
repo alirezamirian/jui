@@ -9,7 +9,6 @@ import React, {
 import { ThreeViewSplitter } from "../ThreeViewSplitter/ThreeViewSplitter";
 import { MovableToolWindowStripeProvider } from "./MovableToolWindowStripeProvider";
 import { StyledToolWindowOuterLayout } from "./StyledToolWindowOuterLayout";
-import { ToolWindowStateProvider } from "./ToolWindowsState/ToolWindowStateProvider";
 import {
   getToolWindowsLayoutState,
   SideDockedState,
@@ -17,7 +16,9 @@ import {
   ToolWindowsLayoutState,
 } from "./ToolWindowsState/ToolWindowsLayoutState";
 import { ToolWindowsState } from "./ToolWindowsState/ToolWindowsState";
+import { ToolWindowStateProvider } from "./ToolWindowsState/ToolWindowStateProvider";
 import { ToolWindowStripe } from "./ToolWindowStripe";
+import { UndockSide } from "./UndockSide";
 import { Anchor, isHorizontal } from "./utils";
 
 export interface ToolWindowsProps {
@@ -106,6 +107,16 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
     />
   );
 
+  const renderToolWindow = (key: Key) => (
+    <ToolWindowStateProvider
+      id={key}
+      containerRef={containerRef}
+      toolWindowsState={toolWindowsState}
+      onToolWindowStateChange={onToolWindowStateChange}
+    >
+      {renderWindow(key)}
+    </ToolWindowStateProvider>
+  );
   // TODO: extract component candidate
   const renderSideDockedView = ({
     anchor,
@@ -119,28 +130,8 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
     }
     return (
       <ThreeViewSplitter
-        innerView={
-          <ToolWindowStateProvider
-            id={state.mainKey}
-            containerRef={containerRef}
-            toolWindowsState={toolWindowsState}
-            onToolWindowStateChange={onToolWindowStateChange}
-          >
-            {renderWindow(state.mainKey)}
-          </ToolWindowStateProvider>
-        }
-        lastView={
-          state.split && (
-            <ToolWindowStateProvider
-              id={state.split.key}
-              containerRef={containerRef}
-              toolWindowsState={toolWindowsState}
-              onToolWindowStateChange={onToolWindowStateChange}
-            >
-              {renderWindow(state.split.key)}
-            </ToolWindowStateProvider>
-          )
-        }
+        innerView={renderToolWindow(state.mainKey)}
+        lastView={state.split && renderToolWindow(state.split.key)}
         lastSize={state.split?.sizeFraction}
         onLastResize={(newSize) => {
           onToolWindowStateChange(
@@ -253,6 +244,23 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
               />
             }
           />
+          {(["left", "top", "right", "bottom"] as const).map((anchor) => {
+            const state = layoutState[anchor].undocked;
+            return (
+              state && (
+                <UndockSide
+                  key={anchor}
+                  anchor={anchor}
+                  containerRef={containerRef}
+                  state={state}
+                  toolWindowsState={toolWindowsState}
+                  onToolWindowStateChange={onToolWindowStateChange}
+                >
+                  {renderToolWindow(state.key)}
+                </UndockSide>
+              )
+            );
+          })}
         </StyledToolWindowOuterLayout.MainView>
       </>
     );

@@ -16,7 +16,7 @@ export default {
   title: "ToolWindow",
 } as Meta;
 
-const SampleToolWindowContent = () => null;
+const SampleToolWindowContent = () => <textarea />;
 const windows = [
   {
     id: "project",
@@ -58,7 +58,11 @@ const windows = [
     title: "Messages",
     icon: "toolwindows/toolWindowMessages",
     component: SampleToolWindowContent,
-    initialState: toolWindowState({ anchor: "bottom" }),
+    initialState: toolWindowState({
+      anchor: "bottom",
+      viewMode: "undock",
+      weight: 0.15,
+    }),
   },
   {
     id: "events",

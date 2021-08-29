@@ -187,7 +187,7 @@ JUI is Intellij Platform UI implemented as a React.js library.
         </tr>
         <tr>
             <td colspan="2">View Mode - Undock</td>
-            <td>:x:</td>
+            <td>:white_check_mark:</td>
         </tr>
         <tr>
             <td colspan="2">View Mode - Float</td>

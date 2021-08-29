@@ -13,6 +13,7 @@ export interface DefaultToolWindowProps {
 }
 
 const StyledToolWindowContainer = styled.div`
+  outline: none;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -40,7 +41,6 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
 }) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const focusableContentRef = useRef<{ focus: () => void }>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const {
     // NOTE: we might as well use :focus-within and target StyledToolWindowHeader to set the background, but it's not
     // a clear improvement.
@@ -60,7 +60,6 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
       <StyledToolWindowContent ref={contentRef} {...toolWindowContentProps}>
         <FocusScope ref={focusableContentRef} autoFocus contain>
           {children}
-          <textarea ref={textareaRef} />
         </FocusScope>
       </StyledToolWindowContent>
     </StyledToolWindowContainer>

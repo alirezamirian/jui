@@ -6,6 +6,7 @@ const StyledHorizontalResizer = styled.div`
   height: 100%;
   width: 0;
   position: relative;
+  z-index: 1; // to keep resizer on top of sibling views, in case they are non-static
 `;
 
 const StyledHorizontalResizerArea = styled.div<{

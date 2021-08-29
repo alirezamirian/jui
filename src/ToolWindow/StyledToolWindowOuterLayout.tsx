@@ -17,7 +17,9 @@ const RightStripe = styled.div`
 `;
 const MainView = styled.div`
   grid-area: main;
-  min-height: 0; // necessary to prevent overflow
+  min-height: 0; // necessary to prevent overflow;
+  position: relative; // necessary for undock views which are absolute positioned
+  background: inherit;
 `;
 
 /**
