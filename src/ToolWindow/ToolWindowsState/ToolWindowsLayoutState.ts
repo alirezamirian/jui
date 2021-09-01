@@ -1,7 +1,11 @@
-import { compose, filter, groupBy, map, prop, sortBy } from "ramda";
+import { compose, filter, groupBy, map, pipe, prop, sortBy } from "ramda";
 import { Key } from "react";
 import { Anchor, isHorizontal } from "../utils";
-import { ToolWindowsState, ToolWindowState } from "./ToolWindowsState";
+import {
+  ToolWindowsState,
+  ToolWindowState,
+  ViewMode,
+} from "./ToolWindowsState";
 
 type ToolWindowStateWithKey = { key: Key } & ToolWindowState;
 
@@ -45,8 +49,9 @@ export interface SideState {
   stripes: StripesState;
 }
 
-export interface WindowState {
-  bounds: ClientRect;
+export interface FloatWindowState {
+  key: Key;
+  bounds: Exclude<ToolWindowState["floatingBounds"], undefined>;
 }
 
 /**
@@ -58,8 +63,8 @@ export interface ToolWindowsLayoutState {
   top: SideState;
   right: SideState;
   bottom: SideState;
-  floatedWindows: Array<WindowState>;
-  windows: Array<WindowState>;
+  floatWindows: Array<FloatWindowState>;
+  windows: Array<FloatWindowState>;
 }
 
 interface ContainerSize {
@@ -82,20 +87,16 @@ const getMains = compose(sortAndMapToKey, filterMains);
 const filterSplits = filter<ToolWindowStateWithKey, "array">(
   ({ isSplit }: ToolWindowStateWithKey) => isSplit
 );
+const filterVisible = (expectedViewMode: ViewMode | ViewMode[] = []) =>
+  filter<ToolWindowStateWithKey, "array">(
+    ({ viewMode, isVisible }: ToolWindowStateWithKey) =>
+      isVisible &&
+      ([] as ViewMode[]).concat(expectedViewMode).includes(viewMode)
+  );
 const getSplits = compose(sortAndMapToKey, filterSplits);
 
-const filterVisibleDocked = compose(
-  filter<ToolWindowStateWithKey, "array">(
-    ({ viewMode, isVisible }) =>
-      isVisible &&
-      (viewMode === "docked_unpinned" || viewMode === "docked_pinned")
-  )
-);
-const filterVisibleUnDocked = compose(
-  filter<ToolWindowStateWithKey, "array">(
-    ({ viewMode, isVisible }) => isVisible && viewMode === "undock"
-  )
-);
+const filterVisibleDocked = filterVisible(["docked_unpinned", "docked_pinned"]);
+const filterVisibleUnDocked = filterVisible("undock");
 
 const getDocked = (
   anchor: Anchor,
@@ -163,6 +164,30 @@ const getSideState = (
   docked: getDocked(anchor, containerSize, toolWindows),
 });
 
+const DEFAULT_HEIGHT = 300;
+const DEFAULT_WIDTH = 400;
+const getFloatWindowState = (containerSize: ContainerSize) => ({
+  floatingBounds: bounds = {
+    top: containerSize.height / 2 - DEFAULT_HEIGHT / 2,
+    left: containerSize.width / 2 - DEFAULT_WIDTH / 2,
+    height: DEFAULT_HEIGHT,
+    width: DEFAULT_WIDTH,
+  },
+  key,
+}: ToolWindowStateWithKey): FloatWindowState => ({ bounds, key });
+
+const getFloatWindowsState = (
+  viewMode: "float" | "window",
+  containerSize: ContainerSize,
+  toolWindows: ToolWindowStateWithKey[]
+) =>
+  pipe(
+    filterVisible(viewMode),
+    map<ToolWindowStateWithKey, FloatWindowState>(
+      getFloatWindowState(containerSize)
+    )
+  )(toolWindows);
+
 export function getToolWindowsLayoutState(
   state: Readonly<ToolWindowsState>,
   containerSize: ContainerSize
@@ -180,7 +205,7 @@ export function getToolWindowsLayoutState(
     top: getSideState("top", containerSize, top),
     right: getSideState("right", containerSize, right),
     bottom: getSideState("bottom", containerSize, bottom),
-    windows: [], // TODO
-    floatedWindows: [], // TODO
+    windows: getFloatWindowsState("window", containerSize, toolWindows),
+    floatWindows: getFloatWindowsState("float", containerSize, toolWindows),
   };
 }

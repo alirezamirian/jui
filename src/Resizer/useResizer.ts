@@ -6,8 +6,8 @@ type UseResizerProps = Pick<
   "onResize" | "onResizeEnd" | "onResizeStarted"
 >;
 
-export type ResizerViewProps = Omit<
-  ResizerProps,
+export type ResizerViewProps<O = "horizontal" | "vertical"> = Omit<
+  ResizerProps<O>,
   "onResize" | "onResizeEnd" | "onResizeStarted"
 > &
   ReturnType<typeof useResizer>;
@@ -34,17 +34,17 @@ const useResizer = (
 };
 
 export const useLeftResizer = (props: UseResizerProps) => {
-  return useResizer("horizontal", false, props);
-};
-
-export const useRightResizer = (props: UseResizerProps) => {
   return useResizer("horizontal", true, props);
 };
 
+export const useRightResizer = (props: UseResizerProps) => {
+  return useResizer("horizontal", false, props);
+};
+
 export const useTopResizer = (props: UseResizerProps) => {
-  return useResizer("vertical", false, props);
+  return useResizer("vertical", true, props);
 };
 
 export const useBottomResizer = (props: UseResizerProps) => {
-  return useResizer("vertical", true, props);
+  return useResizer("vertical", false, props);
 };

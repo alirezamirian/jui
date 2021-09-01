@@ -51,7 +51,7 @@ const windows = [
     title: "Debug",
     icon: "toolwindows/toolWindowDebugger",
     component: SampleToolWindowContent,
-    initialState: toolWindowState({ anchor: "bottom" }),
+    initialState: toolWindowState({ anchor: "bottom", viewMode: "float" }),
   },
   {
     id: "messages",

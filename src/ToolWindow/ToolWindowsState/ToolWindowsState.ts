@@ -9,6 +9,8 @@ export type ViewMode =
   | "float"
   | "window";
 
+export type WindowBounds = Omit<ClientRect, "right" | "bottom">;
+
 /**
  * Data structure for keeping the state of a single tool window. very similar to WindowInfo in Intellij Platform
  *
@@ -46,7 +48,7 @@ export interface ToolWindowState {
   /**
    * Boundaries of the tool window, when rendered in "float" or "window" modes.
    */
-  floatingBounds?: Omit<ClientRect, "right" | "bottom">;
+  floatingBounds?: WindowBounds;
 }
 
 const isDocked = (toolWindow: ToolWindowState) =>
@@ -271,6 +273,32 @@ export class ToolWindowsState {
     return this.stretch(targetKey, value, containerBounds, "height");
   }
 
+  setFloatingBound(targetKey: Key, floatingBounds: WindowBounds) {
+    return this.update(targetKey, "floatingBounds", floatingBounds);
+  }
+
+  private update<K extends keyof ToolWindowState>(
+    targetKey: Key,
+    key: K,
+    value: ToolWindowState[K]
+  ) {
+    const target = this.windows[targetKey];
+    if (!target) {
+      return this;
+    }
+    return new ToolWindowsState(
+      map((window) => {
+        if (window === target) {
+          return {
+            ...window,
+            [key]: value,
+          };
+        }
+        return window;
+      }, this.windows)
+    );
+  }
+
   private stretch(
     targetKey: Key,
     value: number,
@@ -382,10 +410,10 @@ export const toolWindowState = ({
   floatingBounds:
     getViewModeType(viewMode) === "float"
       ? {
-          left: 100,
-          top: 100,
-          width: 200,
-          height: 400,
+          left: 300,
+          top: 300,
+          width: 600,
+          height: 300,
         }
       : undefined,
   ...inputs,

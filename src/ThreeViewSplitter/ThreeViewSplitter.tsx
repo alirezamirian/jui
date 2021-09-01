@@ -74,9 +74,10 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
   const lastViewRef = useRef<HTMLDivElement>(null);
   const [firstSizeState, setFirstSizeState] = useState<number | null>(null);
   const [lastSizeState, setLastSizeState] = useState<number | null>(null);
-  const FirstResizer = orientation === "horizontal" ? LeftResizer : TopResizer;
-  const SecondResizer =
+  const FirstResizer: React.ComponentType<ResizerProps> =
     orientation === "horizontal" ? RightResizer : BottomResizer;
+  const SecondResizer: React.ComponentType<ResizerProps> =
+    orientation === "horizontal" ? LeftResizer : TopResizer;
   const sizeStyleProp = orientation === "horizontal" ? "width" : "height";
 
   const theme = useTheme() as Theme;

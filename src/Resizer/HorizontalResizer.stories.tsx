@@ -1,15 +1,15 @@
-import React, { CSSProperties, useState } from "react";
-
 import { Meta } from "@storybook/react";
+import React, { CSSProperties, useState } from "react";
+import { css } from "styled-components";
 import {
   ComponentArgTypes,
   styledComponentsControlsExclude,
 } from "../story-helpers";
 import { styled } from "../styled";
+import { BottomResizer } from "./BottomResizer";
 import { LeftResizer } from "./LeftResizer";
 import { ResizerProps } from "./ResizerProps";
-import { TopResizer } from "./TopResizer";
-import { css } from "styled-components";
+import { RightResizer } from "./RightResizer";
 
 const meta: Meta = {
   title: "HorizontalResizer",
@@ -63,7 +63,9 @@ const BottomSide = styled.div`
   flex: 1;
 `;
 
-type StoryProps = ResizerProps & { orientation: "horizontal" | "vertical" };
+type StoryProps = Omit<ResizerProps, "cursor"> & {
+  orientation: "horizontal" | "vertical";
+};
 
 const getComponentsAndProps = (
   orientation: "horizontal" | "vertical",
@@ -74,14 +76,14 @@ const getComponentsAndProps = (
         Container: HorizontalContainer,
         FirstSide: LeftSide,
         SecondSide: RightSide,
-        Resizer: LeftResizer,
+        Resizer: RightResizer,
         sizeStyles: { width: size },
       }
     : {
         Container: VerticalContainer,
         FirstSide: TopSize,
         SecondSide: BottomSide,
-        Resizer: TopResizer,
+        Resizer: BottomResizer,
         sizeStyles: { height: size },
       };
 };

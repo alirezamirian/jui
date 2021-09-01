@@ -4,9 +4,10 @@ import { ResizerProps } from "./ResizerProps";
 import { useLeftResizer } from "./useResizer";
 
 /**
- * Handle for resizing views in a horizontal layout, where the resizing view is the left one.
+ * Handle for resizing views in a horizontal layout, where the resizer is at the left side of the resizable view. i.e.
+ * moving mouse to right/left will decrease/increase the width
  */
-export const LeftResizer: React.FC<ResizerProps> = ({
+export const LeftResizer: React.FC<ResizerProps<"horizontal">> = ({
   onResize,
   onResizeEnd,
   onResizeStarted,

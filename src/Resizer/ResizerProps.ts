@@ -3,7 +3,7 @@ import React, { CSSProperties } from "react";
 /**
  * Props are kind of based on ThreeComponentsSplitter in Intellij Platform.
  */
-export interface ResizerProps {
+export interface ResizerProps<Orientation = "horizontal" | "vertical"> {
   /**
    * Called when the resize starts by a move action. The callback can optionally
    * return the initial width of the view for which the resize handle
@@ -40,9 +40,30 @@ export interface ResizerProps {
   outerPadding?: number;
 
   /**
+   * Resizer cursor.
+   */
+  cursor?: Orientation extends "horizontal"
+    ? "col" | "ew" | "e" | "w"
+    : "row" | "ns" | "n" | "s";
+
+  /**
    * Any arbitrary content for customizing look and feel of the resizer.
    * For example for showing a rounded handle kind of thing in the middle,
    * or showing shadows, etc.
    */
   children?: React.ReactNode;
+
+  /**
+   * styles passed to the root resizer element. `width` and `background` is not allowed and will be overridden.
+   * NOTE: it's added to allow use case of absolutely positioned resizers in float tool windows. Might be a better
+   * idea to add a `absolute` instead option and apply the necessary style based on it, if it can be seen as a re-usable
+   * and legit feature.
+   */
+  style?: Omit<
+    CSSProperties,
+    (Orientation extends "horizontal" ? "width" : "height") | "background"
+  >;
 }
+
+export type HorizontalResizerProps = ResizerProps<"horizontal">;
+export type VerticalResizerProps = ResizerProps<"vertical">;

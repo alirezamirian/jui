@@ -4,9 +4,10 @@ import { useTopResizer } from "./useResizer";
 import { VerticalResizer } from "./VerticalResizer";
 
 /**
- * Handle for resizing views in a vertical layout, where the resizing view is the top one.
+ * Handle for resizing views in a vertical layout, where the resizer is at the top side of the resizable view. i.e.
+ * moving mouse to bottom/top will decrease/increase the height
  */
-export const TopResizer: React.FC<ResizerProps> = ({
+export const TopResizer: React.FC<ResizerProps<"vertical">> = ({
   onResize,
   onResizeEnd,
   onResizeStarted,

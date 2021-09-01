@@ -7,6 +7,7 @@ import React, {
   useState,
 } from "react";
 import { ThreeViewSplitter } from "../ThreeViewSplitter/ThreeViewSplitter";
+import { FloatView } from "./FloatView";
 import { MovableToolWindowStripeProvider } from "./MovableToolWindowStripeProvider";
 import { StyledToolWindowOuterLayout } from "./StyledToolWindowOuterLayout";
 import {
@@ -185,6 +186,44 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
       ? [horizontalSplitterProps, verticalSplitterProps]
       : [verticalSplitterProps, horizontalSplitterProps];
 
+    const undockLayers = (["left", "top", "right", "bottom"] as const).map(
+      (anchor) => {
+        const state = layoutState[anchor].undocked;
+        return (
+          state && (
+            <UndockSide
+              key={anchor}
+              anchor={anchor}
+              state={state}
+              onResize={(size) => {
+                containerRef.current &&
+                  onToolWindowStateChange(
+                    toolWindowsState.resizeUndock(
+                      anchor,
+                      size,
+                      containerRef.current.getBoundingClientRect()
+                    )
+                  );
+              }}
+            >
+              {renderToolWindow(state.key)}
+            </UndockSide>
+          )
+        );
+      }
+    );
+    const floatWindows = layoutState.floatWindows.map((toolWindow) => (
+      <FloatView
+        state={toolWindow}
+        onBoundsChange={(bounds) =>
+          onToolWindowStateChange(
+            toolWindowsState.setFloatingBound(toolWindow.key, bounds)
+          )
+        }
+      >
+        {renderToolWindow(toolWindow.key)}
+      </FloatView>
+    ));
     return (
       <>
         <MovableToolWindowStripeProvider
@@ -244,30 +283,8 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
               />
             }
           />
-          {(["left", "top", "right", "bottom"] as const).map((anchor) => {
-            const state = layoutState[anchor].undocked;
-            return (
-              state && (
-                <UndockSide
-                  key={anchor}
-                  anchor={anchor}
-                  state={state}
-                  onResize={(size) => {
-                    containerRef.current &&
-                      onToolWindowStateChange(
-                        toolWindowsState.resizeUndock(
-                          anchor,
-                          size,
-                          containerRef.current.getBoundingClientRect()
-                        )
-                      );
-                  }}
-                >
-                  {renderToolWindow(state.key)}
-                </UndockSide>
-              )
-            );
-          })}
+          {undockLayers}
+          {floatWindows}
         </StyledToolWindowOuterLayout.MainView>
       </>
     );

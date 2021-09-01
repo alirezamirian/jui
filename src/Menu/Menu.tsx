@@ -5,6 +5,7 @@ import { Node } from "@react-types/shared";
 import React, { Key, useEffect } from "react";
 import { css } from "styled-components";
 import { ListDivider } from "../List/ListDivider";
+import { MAC_WINDOW_SHADOW } from "../style-constants";
 import { styled } from "../styled";
 import { StyledVerticalSeparator } from "../StyledSeparator";
 import { Theme, UnknownThemeProp } from "../Theme/Theme";
@@ -42,7 +43,7 @@ export const StyledMenu = styled.ul`
   border: 1px solid ${({ theme }) => theme.color("Menu.borderColor")};
   ${isMac() &&
   css<{ theme: Theme }>`
-    box-shadow: 0 5px 15px rgb(0 0 0 / 30%);
+    box-shadow: ${MAC_WINDOW_SHADOW};
     border-color: ${({ theme }) =>
       theme.dark ? "rgba(0, 0, 0, 0.15)" : undefined};
   `}
