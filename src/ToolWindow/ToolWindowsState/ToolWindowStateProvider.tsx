@@ -1,6 +1,6 @@
 import React, { Key, RefObject, useContext, useMemo } from "react";
 import { ToolWindowsProps } from "../ToolWindows";
-import { ToolWindowState, ViewMode } from "./ToolWindowsState";
+import { ToolWindowState, ViewMode, WindowBounds } from "./ToolWindowsState";
 import { Anchor } from "../utils";
 
 type ToolWindowStateContextValue = {
@@ -10,6 +10,7 @@ type ToolWindowStateContextValue = {
   changeViewMode: (viewMode: ViewMode) => void;
   stretchWidth: (value: number) => void;
   stretchHeight: (value: number) => void;
+  setFloatingBounds: (bounds: WindowBounds) => void;
 };
 const ToolWindowStateContext = React.createContext<ToolWindowStateContextValue | null>(
   null
@@ -82,6 +83,9 @@ export const ToolWindowStateProvider: React.FC<
             container.getBoundingClientRect()
           )
         );
+      },
+      setFloatingBounds: (bounds: WindowBounds) => {
+        onToolWindowStateChange(toolWindowsState.setFloatingBound(id, bounds));
       },
     };
   }, [toolWindowsState, id]);

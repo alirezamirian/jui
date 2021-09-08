@@ -1,4 +1,4 @@
-import React from "react";
+import React, { HTMLProps } from "react";
 import { ActionButton } from "../ActionButton/ActionButton";
 import { ActionToolbar } from "../ActionToolbar/ActionToolbar";
 import { PlatformIcon } from "../Icon/PlatformIcon";
@@ -9,7 +9,8 @@ import { UnknownThemeProp } from "../Theme/Theme";
 import { useToolWindowState } from "./ToolWindowsState/ToolWindowStateProvider";
 import { ToolWindowSettingsIconMenu } from "./ToolWindowSettingsIconMenu";
 
-export interface ToolWindowHeaderProps {
+export interface ToolWindowHeaderProps
+  extends Omit<HTMLProps<HTMLDivElement>, "ref" | "as"> {
   contentHasFocus?: boolean;
   additionalActions?: React.ReactNode;
 }
@@ -43,10 +44,11 @@ export const ToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
   children,
   additionalActions,
   contentHasFocus = false,
+  ...otherProps
 }) => {
   const { hide } = useToolWindowState();
   return (
-    <StyledToolWindowHeader active={contentHasFocus}>
+    <StyledToolWindowHeader active={contentHasFocus} {...otherProps}>
       <StyledToolWindowHeaderContent>{children}</StyledToolWindowHeaderContent>
       <StyledToolWindowHeaderActions>
         <ActionToolbar>

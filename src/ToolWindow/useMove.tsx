@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MouseEventHandler } from "react";
 import {
   disableTextSelection,
   restoreTextSelection,
@@ -49,7 +49,7 @@ export function useMove<S>({
   onMoveStart,
   onMove,
   onMoveEnd,
-}: UseMoveOptions<S>) {
+}: UseMoveOptions<S>): { onMouseDown?: MouseEventHandler } {
   const handlersRef = useLatest({ onMove, onMoveEnd });
 
   const onMouseDown = (event: React.MouseEvent) => {

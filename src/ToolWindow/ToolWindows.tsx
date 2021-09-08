@@ -214,6 +214,7 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
     );
     const floatWindows = layoutState.floatWindows.map((toolWindow) => (
       <FloatView
+        key={toolWindow.key}
         state={toolWindow}
         onBoundsChange={(bounds) =>
           onToolWindowStateChange(

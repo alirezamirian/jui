@@ -47,6 +47,7 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
     contentHasFocus,
     toolWindowProps,
     toolWindowContentProps,
+    toolWindowHeaderProps,
   } = useToolWindow(contentRef, focusableContentRef);
 
   return (
@@ -54,6 +55,7 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
       <ToolWindowHeader
         additionalActions={additionalActions}
         contentHasFocus={contentHasFocus}
+        {...toolWindowHeaderProps}
       >
         {title}
       </ToolWindowHeader>

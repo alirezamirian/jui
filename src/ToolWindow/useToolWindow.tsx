@@ -3,6 +3,7 @@ import { mergeProps } from "@react-aria/utils";
 import React, { FocusEventHandler, RefObject, useRef, useState } from "react";
 import { isAutoHide } from "./ToolWindowsState/ToolWindowsState";
 import { useToolWindowState } from "./ToolWindowsState/ToolWindowStateProvider";
+import { useToolWindowMoveHandle } from "./useToolWindowMoveHandle";
 
 export function useToolWindow(
   contentRef: RefObject<Element>,
@@ -39,6 +40,7 @@ export function useToolWindow(
     focusableContentRef,
     contentRef
   );
+  const { moveHandleProps } = useToolWindowMoveHandle();
 
   return {
     contentHasFocus,
@@ -46,6 +48,7 @@ export function useToolWindow(
       tabIndex: -1,
     }),
     toolWindowContentProps: contentFocusWithinProps,
+    toolWindowHeaderProps: moveHandleProps,
   };
 }
 
