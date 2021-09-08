@@ -7,7 +7,10 @@ import { styled } from "../styled";
 import { StyledHorizontalSeparator } from "../StyledSeparator";
 import { UnknownThemeProp } from "../Theme/Theme";
 import { useToolWindowState } from "./ToolWindowsState/ToolWindowStateProvider";
-import { ToolWindowSettingsIconMenu } from "./ToolWindowSettingsIconMenu";
+import {
+  anchors,
+  ToolWindowSettingsIconMenu,
+} from "./ToolWindowSettingsIconMenu";
 
 export interface ToolWindowHeaderProps
   extends Omit<HTMLProps<HTMLDivElement>, "ref" | "as"> {
@@ -46,7 +49,7 @@ export const ToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
   contentHasFocus = false,
   ...otherProps
 }) => {
-  const { hide } = useToolWindowState();
+  const { hide, state, changeViewMode } = useToolWindowState();
   return (
     <StyledToolWindowHeader active={contentHasFocus} {...otherProps}>
       <StyledToolWindowHeaderContent>{children}</StyledToolWindowHeaderContent>
@@ -57,6 +60,18 @@ export const ToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
               {additionalActions}
               <StyledHorizontalSeparator />
             </>
+          )}
+          {state.viewMode === "float" && (
+            <ActionButton onPress={() => changeViewMode("docked_pinned")}>
+              <PlatformIcon
+                icon={`actions/${
+                  anchors.find(
+                    ({ anchor, isSplit }) =>
+                      anchor === state.anchor && isSplit === state.isSplit
+                  )?.id
+                }`}
+              />
+            </ActionButton>
           )}
           <MenuTrigger
             renderMenu={({ close, menuProps }) => {

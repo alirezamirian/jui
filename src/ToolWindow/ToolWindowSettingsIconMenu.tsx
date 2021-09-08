@@ -13,7 +13,11 @@ const viewModes: ViewMode[] = [
   "float",
   "window",
 ];
-const anchors: Array<{ anchor: Anchor; isSplit: boolean; id: string }> = [
+export const anchors: Array<{
+  anchor: Anchor;
+  isSplit: boolean;
+  id: string;
+}> = [
   { id: "moveToLeftTop", anchor: "left", isSplit: false },
   { id: "moveToLeftBottom", anchor: "left", isSplit: true },
   { id: "moveToBottomLeft", anchor: "bottom", isSplit: false },
@@ -23,6 +27,7 @@ const anchors: Array<{ anchor: Anchor; isSplit: boolean; id: string }> = [
   { id: "moveToTopRight", anchor: "top", isSplit: true },
   { id: "moveToTopLeft", anchor: "top", isSplit: false },
 ];
+
 const getAnchorName = ({
   anchor,
   isSplit,
