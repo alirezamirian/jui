@@ -111,8 +111,10 @@ export function ToolWindowSettingsIconMenu({
     },
   }));
 
-  const resizeActions: Action[] = isHorizontal(state.anchor)
-    ? [
+  const resizeActions: Action[] = [];
+  if (state.viewMode !== "float" && state.viewMode !== "window") {
+    if (isHorizontal(state.anchor)) {
+      resizeActions.push(
         {
           id: "ResizeToolWindowTop",
           title: "Stretch to top",
@@ -134,9 +136,10 @@ export function ToolWindowSettingsIconMenu({
                 : HEIGHT_RESIZE_STEP
             );
           },
-        },
-      ]
-    : [
+        }
+      );
+    } else {
+      resizeActions.push(
         {
           id: "ResizeToolWindowLeft",
           title: "Stretch to left",
@@ -156,8 +159,10 @@ export function ToolWindowSettingsIconMenu({
               state.anchor === "right" ? -WIDTH_RESIZE_STEP : WIDTH_RESIZE_STEP
             );
           },
-        },
-      ];
+        }
+      );
+    }
+  }
   resizeActions.push({
     id: "MaximizeToolWindow",
     title: "Maximize Tool Window",
