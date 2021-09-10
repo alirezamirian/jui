@@ -6,6 +6,7 @@ import { Anchor } from "../utils";
 type ToolWindowStateContextValue = {
   state: Readonly<ToolWindowState>;
   hide: () => void;
+  blur: () => void;
   moveToSide: (args: { anchor: Anchor; isSplit: boolean }) => void;
   changeViewMode: (viewMode: ViewMode) => void;
   stretchWidth: (value: number) => void;
@@ -51,6 +52,9 @@ export const ToolWindowStateProvider: React.FC<
       state,
       hide: () => {
         onToolWindowStateChange(toolWindowsState.hide(id));
+      },
+      blur: () => {
+        onToolWindowStateChange(toolWindowsState.blur(id));
       },
       moveToSide: (side) => {
         onToolWindowStateChange(toolWindowsState.move(id, side));

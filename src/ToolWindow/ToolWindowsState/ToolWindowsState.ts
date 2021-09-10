@@ -62,7 +62,7 @@ const isDocked = (toolWindow: ToolWindowState) =>
  * or float mode with autoHide feature is considered valid at some point, we may need to change the implementation
  * to something similar to the original implementation where isAutoHide and viewMode are separate.
  */
-export const isAutoHide = (toolWindow: ToolWindowState) =>
+const isAutoHide = (toolWindow: ToolWindowState) =>
   toolWindow.viewMode === "docked_unpinned" || toolWindow.viewMode === "undock";
 
 export type SideInfo = Pick<ToolWindowState, "anchor" | "isSplit">;
@@ -149,10 +149,7 @@ export class ToolWindowsState {
 
   blur(targetKey: Key): ToolWindowsState {
     const target = this.windows[targetKey];
-    if (
-      target?.viewMode !== "docked_unpinned" &&
-      target?.viewMode !== "undock"
-    ) {
+    if (!target || !isAutoHide(target)) {
       return this;
     }
     return new ToolWindowsState(

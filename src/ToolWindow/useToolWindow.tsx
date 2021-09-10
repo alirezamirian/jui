@@ -1,7 +1,6 @@
 import { useFocusWithin } from "@react-aria/interactions";
 import { mergeProps } from "@react-aria/utils";
 import React, { FocusEventHandler, RefObject, useRef, useState } from "react";
-import { isAutoHide } from "./ToolWindowsState/ToolWindowsState";
 import { useToolWindowState } from "./ToolWindowsState/ToolWindowStateProvider";
 import { useToolWindowMoveHandle } from "./useToolWindowMoveHandle";
 
@@ -62,7 +61,7 @@ export function useToolWindow(
  * less focus-related edge cases.
  */
 function useAutoHide() {
-  const { state, hide } = useToolWindowState();
+  const { blur } = useToolWindowState();
   const hideTimeoutId = useRef<number | null>(null);
   const { focusWithinProps: windowFocusWithinProps } = useFocusWithin({
     onBlurWithin: (e) => {
@@ -73,8 +72,8 @@ function useAutoHide() {
         // area is clicked. We mitigate it by ignoring blur events where nothing is focused. It's not a problem
         // at least with `DefaultToolWindow` implementation that uses a FocusScope.
         const isSomethingElseFocused = e.relatedTarget;
-        if (isAutoHide(state) && isSomethingElseFocused) {
-          hide();
+        if (isSomethingElseFocused) {
+          blur();
         }
       });
     },

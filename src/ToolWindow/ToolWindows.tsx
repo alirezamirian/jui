@@ -48,11 +48,6 @@ export interface ToolWindowsProps {
  *
  * Corresponding to ToolWindowPane in Intellij Platform
  *
- * TODO:
- * - Add support for tool windows with viewMode === 'undocked'
- * - Add support for tool windows with viewMode === 'float'
- * - Add support for tool windows with viewMode === 'window'
- *
  * Known issues:
  * - in Firefox and Safari, left and right toolbars are not properly shown. Seems like a nasty bug, since adding and
  * then removing some min-width: fit-content style fixes it.
@@ -65,6 +60,9 @@ export interface ToolWindowsProps {
  *   - make sure the split one won't unmount and mount again in such scenario.
  *   - decouple focusing logic from mounting logic, and only focus windows somehow, when the `isVisible` is changed
  *     from false to true, not when mounted.
+ * - related to previous issue: open a tool window in split section of a side. set view mode for a tool window in main
+ *   section of the same side to docked_unpinned. try to open the unpinned one while the split one is open. it doesn't
+ *   work.
  */
 export const ToolWindows: React.FC<ToolWindowsProps> = ({
   hideToolWindowBars = false,
