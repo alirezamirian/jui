@@ -1,21 +1,35 @@
 import {
   FocusManager,
+  focusSafely,
   FocusScope as WrappedFocusScope,
   FocusScopeProps,
   useFocusManager,
 } from "@react-aria/focus";
-import React, { ForwardedRef, useImperativeHandle, useRef } from "react";
+import React, {
+  ForwardedRef,
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+} from "react";
 
+type BetterFocusScopeProps = FocusScopeProps & {
+  /**
+   *
+   */
+  forceRestoreFocus?: boolean;
+};
 /**
  * A version of FocusScope which also allows for imperatively moving focus to the scope.
+ * and has tiny patches/improvements
  * It's useful for
  */
 export const FocusScope = React.forwardRef(function BetterFocusScope(
-  { children, ...otherProps }: FocusScopeProps,
+  { children, forceRestoreFocus, ...otherProps }: BetterFocusScopeProps,
   ref: ForwardedRef<{ focus: () => void }>
 ) {
   const directChildRef = useRef<HTMLSpanElement>(null);
   const focusManagerRef = useRef<FocusManager>(null);
+  useForceRestoreFocus(forceRestoreFocus);
   useImperativeHandle(
     ref,
     () => ({
@@ -56,3 +70,27 @@ const GetFocusManager = React.forwardRef(function FocusScopeHandle(
   useImperativeHandle(ref, () => focusManager, [focusManager]);
   return null;
 });
+
+/**
+ * Kind of a patchy solution for focus restoration when currently focused element is in a different focus scope, but
+ * we still want focus restoration to work. So far the only use case is in nested menu, which is rendered as a separate
+ * overlay with a focus scope. If focus is within that submenu, when the menu is closed, the default `restoreFocus`
+ * doesn't work because there is a check in useRestoreFocus, which requires the currently focused element to be in
+ * the focus scope, to do the focus restoration:
+ * https://github.com/adobe/react-spectrum/blob/e14523fedd93ac1a4ede355aed70988af572ae74/packages/%40react-aria/focus/src/FocusScope.tsx#L460
+ */
+function useForceRestoreFocus(restoreFocus?: boolean) {
+  useLayoutEffect(() => {
+    let nodeToRestore = document.activeElement as HTMLElement;
+
+    return () => {
+      if (restoreFocus && nodeToRestore) {
+        requestAnimationFrame(() => {
+          if (document.body.contains(nodeToRestore)) {
+            focusSafely(nodeToRestore);
+          }
+        });
+      }
+    };
+  }, [restoreFocus]);
+}

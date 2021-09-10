@@ -1,9 +1,11 @@
 - Candidates for unit test in real browser by Cypress (prioritized)
   - Overlay menu (MenuTrigger) focus behaviour:
-    - [ ] It should restore the focus when menu is closed, both when a submenu is open or not.
+    - [ ] It should restore the focus when menu is closed by clicking outside or pressing escape, both when a submenu is open or not.
     - [ ] It should move focus to submenu when it's opened so that up/down arrows would navigate submenu items. 
       It should behave the same both when opened by mouse or keyboard.
     - [ ] It should move focus back to the opener menu item, when a submenu is closed, either by escape or arrows
+    - [ ] Sub-menu should also adjust its position if not fitted in viewport. opening a submenu close to bottom of the 
+          page should not hide menu (because of introducing scrollbar and a scroll event)
 
 - Resizer:
   - [ ] There is a glitch new min size
