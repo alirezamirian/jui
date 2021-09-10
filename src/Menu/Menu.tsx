@@ -87,8 +87,6 @@ export const StyledMenu = styled.ul`
  *  - when a parent menu item which has an open submenu is hovered, it gets focus.
  *
  *  TODO:
- *  - show selection
- *  - menu shown as an overlay with a trigger
  *  - [Least important] pass aria props to icon, keyboard shortcut, and content part of menu item. Maybe a context
  *    can be provided for it from menu item, which also exposes state like selected.
  */

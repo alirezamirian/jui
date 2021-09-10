@@ -142,7 +142,6 @@ export function ToolWindowSettingsIconMenu({
           title: "Stretch to left",
           shortcut: "⇧⌘←",
           perform: () => {
-            console.log("stretch to left");
             stretchWidth(
               state.anchor === "left" ? -WIDTH_RESIZE_STEP : WIDTH_RESIZE_STEP
             );
@@ -153,7 +152,6 @@ export function ToolWindowSettingsIconMenu({
           title: "Stretch to right",
           shortcut: "⇧⌘→",
           perform: () => {
-            console.log("stretch to right");
             stretchWidth(
               state.anchor === "right" ? -WIDTH_RESIZE_STEP : WIDTH_RESIZE_STEP
             );
@@ -199,7 +197,6 @@ export function ToolWindowSettingsIconMenu({
           removeFromSideBarAction,
         ];
         const action = allActions.find(({ id }) => id === key);
-        console.log("action", action);
         action?.perform();
         close();
       }}
