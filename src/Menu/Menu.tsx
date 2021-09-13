@@ -1,16 +1,11 @@
 import { useMenu } from "@react-aria/menu";
-import { isMac } from "@react-aria/utils";
 import { AriaMenuProps } from "@react-types/menu";
 import { Node } from "@react-types/shared";
 import React, { Key, useEffect } from "react";
-import { css } from "styled-components";
 import { ListDivider } from "../List/ListDivider";
-import { MAC_WINDOW_SHADOW } from "../style-constants";
-import { styled } from "../styled";
-import { StyledVerticalSeparator } from "../StyledSeparator";
-import { Theme, UnknownThemeProp } from "../Theme/Theme";
 import { useTreeState } from "../Tree/__tmp__useTreeState";
 import { MenuItem } from "./MenuItem";
+import { StyledMenu } from "./StyledMenu";
 
 export interface MenuProps<T>
   extends Omit<
@@ -31,38 +26,6 @@ export interface MenuProps<T>
   defaultExpandedKey?: Key;
   expandOn?: "hover" | "press"; // hover delay doesn't seem to be needed as an option
 }
-
-export const StyledMenu = styled.ul`
-  font-size: 0.92rem;
-  margin: 0;
-  padding: 5px 0;
-  outline: none;
-  list-style: none;
-  width: fit-content;
-  min-width: 100px;
-  border: 1px solid ${({ theme }) => theme.color("Menu.borderColor")};
-  ${isMac() &&
-  css<{ theme: Theme }>`
-    box-shadow: ${MAC_WINDOW_SHADOW};
-    border-color: ${({ theme }) =>
-      theme.dark ? "rgba(0, 0, 0, 0.15)" : undefined};
-  `}
-  background: ${({ theme }) =>
-    theme.color("PopupMenu.background" as UnknownThemeProp)};
-  color: ${({ theme }) =>
-    theme.color("PopupMenu.foreground" as UnknownThemeProp)};
-
-  ${StyledVerticalSeparator} {
-    background-color: ${({ theme }) =>
-      theme.color("Menu.separatorColor" as UnknownThemeProp)};
-    height: ${({ theme }) =>
-      `${theme.value("PopupMenuSeparator.height" as UnknownThemeProp) ?? 3}px`};
-    padding: ${({ theme }) =>
-      `${
-        theme.value("PopupMenuSeparator.stripeIndent" as UnknownThemeProp) ?? 1
-      }px 0`};
-  }
-`;
 
 /**
  * UI for menus which are normally shown in a popover. Being rendered as an overlay is not handled here.
