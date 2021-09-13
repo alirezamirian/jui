@@ -27,6 +27,7 @@ export const StyledListItem = styled.li<StyledListItemProps>(
       backgroundColor,
       color,
       position: "relative",
+      whiteSpace: "nowrap",
       paddingLeft: 8, // themed?
       lineHeight: "20px",
       outline: "none",
