@@ -137,6 +137,7 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
     return (
       <ThreeViewSplitter
         innerView={renderToolWindow(state.mainKey)}
+        innerViewMinSize={50}
         lastView={state.split && renderToolWindow(state.split.key)}
         lastSize={state.split?.sizeFraction}
         onLastResize={(newSize) => {

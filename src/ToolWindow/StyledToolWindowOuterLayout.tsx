@@ -20,6 +20,7 @@ const MainView = styled.div`
   min-height: 0; // necessary to prevent overflow;
   position: relative; // necessary for undock views which are absolute positioned
   background: inherit;
+  min-width: 0; // very important for layout. If not set, resizing tool windows can cause weird scrollbar inside tool windows pane.
 `;
 
 /**
