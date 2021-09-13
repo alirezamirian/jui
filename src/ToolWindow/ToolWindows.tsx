@@ -40,6 +40,12 @@ export interface ToolWindowsProps {
    */
   useWidescreenLayout?: boolean;
 
+  /**
+   * min width applied to the main content (children).
+   * @default 50
+   */
+  mainContentMinWidth?: number;
+
   height?: CSSProperties["height"];
 }
 
@@ -73,6 +79,7 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
   renderToolbarButton,
   renderWindow,
   children,
+  mainContentMinWidth = 50,
 }): React.ReactElement => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [layoutState, setLayoutState] = useState<ToolWindowsLayoutState>();
@@ -264,6 +271,7 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
             {...outerSplitterProps}
             innerView={
               <ThreeViewSplitter
+                innerViewMinSize={mainContentMinWidth}
                 innerView={<FocusScope>{children}</FocusScope>}
                 {...innerSplitterProps}
               />
