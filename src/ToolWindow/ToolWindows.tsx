@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 import { ThreeViewSplitter } from "../ThreeViewSplitter/ThreeViewSplitter";
-import { FloatView } from "./FloatView";
+import { FloatToolWindows } from "./FloatToolWindows";
 import { MovableToolWindowStripeProvider } from "./MovableToolWindowStripeProvider";
 import { StyledToolWindowOuterLayout } from "./StyledToolWindowOuterLayout";
 import {
@@ -172,7 +172,6 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
       onLastResize: onDockResize(secondAnchor),
     };
   };
-
   const renderInnerLayout = (layoutState: ToolWindowsLayoutState) => {
     const horizontalSplitterProps = getSplitViewProps(
       layoutState,
@@ -210,19 +209,7 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
         );
       }
     );
-    const floatWindows = layoutState.floatWindows.map((toolWindow) => (
-      <FloatView
-        key={toolWindow.key}
-        state={toolWindow}
-        onBoundsChange={(bounds) =>
-          onToolWindowStateChange(
-            toolWindowsState.setFloatingBound(toolWindow.key, bounds)
-          )
-        }
-      >
-        {renderToolWindow(toolWindow.key)}
-      </FloatView>
-    ));
+
     return (
       <>
         <MovableToolWindowStripeProvider
@@ -283,7 +270,17 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
             }
           />
           {undockLayers}
-          {floatWindows}
+          {
+            <FloatToolWindows
+              floatWindows={layoutState?.floatWindows}
+              renderToolWindow={renderToolWindow}
+              onBoundsChange={(key, bounds) =>
+                onToolWindowStateChange(
+                  toolWindowsState.setFloatingBound(key, bounds)
+                )
+              }
+            />
+          }
         </StyledToolWindowOuterLayout.MainView>
       </>
     );

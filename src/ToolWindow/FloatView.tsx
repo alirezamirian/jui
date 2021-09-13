@@ -1,5 +1,5 @@
 import { isMac } from "@react-aria/utils";
-import React, { useContext, useState } from "react";
+import React, { HTMLProps, useContext, useState } from "react";
 import { css } from "styled-components";
 import { MAC_WINDOW_SHADOW } from "../style-constants";
 import { styled } from "../styled";
@@ -63,10 +63,17 @@ const StyledFloatView = styled.div`
  * @param onBoundsChange
  * @constructor
  */
-export const FloatView: React.FC<{
-  state: FloatWindowState;
-  onBoundsChange: (bounds: WindowBounds) => void;
-}> = ({ children, state: { bounds: boundsProp }, onBoundsChange }) => {
+export const FloatView: React.FC<
+  {
+    state: FloatWindowState;
+    onBoundsChange: (bounds: WindowBounds) => void;
+  } & Omit<HTMLProps<HTMLDivElement>, "ref" | "as">
+> = ({
+  children,
+  state: { bounds: boundsProp },
+  onBoundsChange,
+  ...otherProps
+}) => {
   // local state of bounds for when window is in a UI interaction, like movement or resize with mouse.
   // We don't want to update toolWindowsState repeatedly in such transactions and we just want to trigger one
   // update when the UI interaction is done.
@@ -89,7 +96,10 @@ export const FloatView: React.FC<{
   };
 
   return (
-    <StyledFloatView style={effectiveBounds}>
+    <StyledFloatView
+      {...otherProps}
+      style={{ ...otherProps.style, ...effectiveBounds }}
+    >
       <WindowInteractionHandlerContext.Provider value={boundsContextValue}>
         <WindowResizeHandles />
         {children}
