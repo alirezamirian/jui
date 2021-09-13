@@ -20,7 +20,7 @@ export const StyledMenu = styled.ul`
     ${({ theme }) => theme.color("Menu.borderColor")};
   ${isMac() &&
   css<{ theme: Theme }>`
-    box-shadow: ${MAC_WINDOW_SHADOW};
+    ${MAC_WINDOW_SHADOW};
     border-color: ${({ theme }) =>
       theme.dark ? "rgba(0, 0, 0, 0.15)" : undefined};
   `}
