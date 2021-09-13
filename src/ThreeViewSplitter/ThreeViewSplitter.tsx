@@ -18,6 +18,7 @@ export interface ThreeViewSplitterProps {
     Omit<ResizerProps, "onResize" | "onResizeStarted" | "onResizeEnd">
   >;
   innerView?: React.ReactNode;
+  innerViewMinSize?: number;
   firstView?: React.ReactNode;
   firstSize?: number | null;
   lastView?: React.ReactNode;
@@ -38,6 +39,15 @@ const StyledSplitterContainer = styled.div<{
   flex-direction: ${({ orientation }) =>
     orientation === "vertical" ? "column" : "row"};
 `;
+
+const StyledSplitterInnerView = styled.div`
+  // The default overflow visible should be changed obviously. Not sure if there is any layout implication
+  // in using 'auto' instead of hidden, to provide scroll behaviour by default, but even if we realize later
+  // that we need to set overflow to hidden here, we can have scrollable content inside the inner view via an
+  // intermediate element inside the inner view, with overflow set to auto and width set to 100%.
+  overflow: auto;
+  flex: 1;
+`;
 /**
  * Corresponding to
  * [ThreeComponentsSplitter](https://github.com/JetBrains/intellij-community/blob/58dbd93e9ea527987466072fa0bfbf70864cd35f/platform/platform-api/src/com/intellij/openapi/ui/ThreeComponentsSplitter.java#L40-L40)
@@ -55,7 +65,6 @@ const StyledSplitterContainer = styled.div<{
  * - Change handling only when resize is done.
  *
  * TODO: max and min size not implemented
- * TODO: bug in edge cases when resizing too much
  */
 export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
   orientation = "horizontal",
@@ -67,6 +76,7 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
   onLastResize,
   resizerProps: resizerPropsOverrides = {},
   innerView,
+  innerViewMinSize,
   ...containerProps
 }: ThreeViewSplitterProps): React.ReactElement => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -74,13 +84,22 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
   const lastViewRef = useRef<HTMLDivElement>(null);
   const [firstSizeState, setFirstSizeState] = useState<number | null>(null);
   const [lastSizeState, setLastSizeState] = useState<number | null>(null);
-  const FirstResizer: React.ComponentType<ResizerProps> =
-    orientation === "horizontal" ? RightResizer : BottomResizer;
-  const SecondResizer: React.ComponentType<ResizerProps> =
-    orientation === "horizontal" ? LeftResizer : TopResizer;
-  const sizeStyleProp = orientation === "horizontal" ? "width" : "height";
-
   const theme = useTheme() as Theme;
+
+  const value = <T1, T2>(horizontalValue: T1, verticalValue: T2) =>
+    orientation === "horizontal" ? horizontalValue : verticalValue;
+
+  const FirstResizer: React.ComponentType<ResizerProps> = value(
+    RightResizer,
+    BottomResizer
+  );
+  const SecondResizer: React.ComponentType<ResizerProps> = value(
+    LeftResizer,
+    TopResizer
+  );
+  const sizeStyleProp = value("width", "height");
+  const minSizeStyleProp = value("minWidth", "minHeight");
+
   const resizerProps: ThreeViewSplitterProps["resizerProps"] = {
     background: theme.commonColors.contrastBorder,
     size: 1,
@@ -95,7 +114,7 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
     size != null && isFractionSize(size) ? `${size * 100}%` : size ?? undefined;
 
   const getSize = (elem: HTMLElement): number =>
-    orientation === "horizontal" ? elem.offsetWidth : elem.offsetHeight;
+    value(elem.offsetWidth, elem.offsetHeight);
 
   const getNewSize = (currentSize: number, newSize: number) => {
     if (currentSize != null && isFractionSize(currentSize)) {
@@ -104,16 +123,30 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
           "ThreeViewSplitter: Could not locate container to calculate fraction size"
         );
       }
-      const containerSize =
-        orientation === "horizontal"
-          ? containerRef.current.offsetWidth
-          : containerRef.current.offsetHeight;
+      const containerSize = value(
+        containerRef.current.offsetWidth,
+        containerRef.current.offsetHeight
+      );
       const newFractionSize = newSize / containerSize;
       return newFractionSize < 1 ? newFractionSize : currentSize;
     } else {
       return Math.max(newSize, 1);
     }
   };
+
+  const getActualSize = (viewElem: HTMLElement | null): number | null => {
+    if (!containerRef.current || !viewElem) {
+      return null;
+    }
+    const actualSize = getSize(viewElem);
+    if (viewElem.style[sizeStyleProp]?.includes("%")) {
+      return actualSize / getSize(containerRef.current);
+    }
+    return actualSize;
+  };
+
+  const currentLastSize = normalizeSize(lastSizeState ?? lastSize);
+  const currentFirstSize = normalizeSize(firstSizeState ?? firstSize);
   return (
     <StyledSplitterContainer
       ref={containerRef}
@@ -125,7 +158,12 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
           <div
             ref={firstViewRef}
             style={{
-              [sizeStyleProp]: normalizeSize(firstSizeState ?? firstSize),
+              [sizeStyleProp]: currentFirstSize,
+              // if other side is resizing, minWidth/minHeight is set so that this side is not get affected.
+              // It may make sense to allow opting out of this behaviour, if it's considered a feature to be able to
+              // "push" the other side too when expanding one side.
+              [minSizeStyleProp]:
+                lastSizeState !== null ? currentFirstSize : undefined,
             }}
           >
             {firstView}
@@ -142,20 +180,31 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
               }
             }}
             onResizeEnd={() => {
-              onFirstResize?.(firstSizeState!);
+              const actualSize = getActualSize(firstViewRef.current);
+              if (actualSize !== null) {
+                onFirstResize?.(actualSize);
+              }
               setFirstSizeState(null);
             }}
             {...resizerProps}
           />
         </>
       )}
-      {innerView && <div style={{ flex: 1 }}>{innerView}</div>}
+      {innerView && (
+        <StyledSplitterInnerView
+          style={{
+            [value("minWidth", "minHeight")]: innerViewMinSize,
+          }}
+        >
+          {innerView}
+        </StyledSplitterInnerView>
+      )}
       {lastView && (
         <>
           <SecondResizer
             onResizeStarted={() => {
               const size = getSize(lastViewRef.current!);
-              setLastSizeState(size);
+              setLastSizeState(lastSize ?? size);
               return size;
             }}
             onResize={(newSize) => {
@@ -164,7 +213,10 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
               }
             }}
             onResizeEnd={() => {
-              onLastResize?.(lastSizeState!);
+              const actualSize = getActualSize(lastViewRef.current);
+              if (actualSize !== null) {
+                onLastResize?.(actualSize);
+              }
               setLastSizeState(null);
             }}
             {...resizerProps}
@@ -172,7 +224,12 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
           <div
             ref={lastViewRef}
             style={{
-              [sizeStyleProp]: normalizeSize(lastSizeState ?? lastSize),
+              [sizeStyleProp]: currentLastSize,
+              // if other side is resizing, minWidth/minHeight is set so that this side is not get affected.
+              // It may make sense to allow opting out of this behaviour, if it's considered a feature to be able to
+              // "push" the other side too when expanding one side.
+              [minSizeStyleProp]:
+                firstSizeState !== null ? currentLastSize : undefined,
             }}
           >
             {lastView}

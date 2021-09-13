@@ -90,6 +90,7 @@ const argTypes: ComponentArgTypes<ThreeViewSplitterProps> = {
       "vertical",
     ] as ThreeViewSplitterProps["orientation"][],
   },
+  innerViewMinSize: { defaultValue: 50, type: "number" },
   firstView: { defaultValue: "First view", type: "string" },
   innerView: { defaultValue: "Inner view", type: "string" },
   lastView: { defaultValue: "Last view", type: "string" },
