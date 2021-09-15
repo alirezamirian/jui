@@ -4,11 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "type-check": "tsc",
-    "storybook": "start-storybook -p 6008",
-    "build-storybook": "build-storybook"
+    "start": "yarn run storybook:start",
+    "test": "yarn run jest && yarn run cypress",
+    "type-check": "tsc && yarn run cypress:type-check",
+    "jest": "jest",
+    "jest:watch": "jest --watch",
+    "cypress": "cypress run-ct --browser=chrome",
+    "cypress:open": "cypress open-ct",
+    "cypress:type-check": "tsc --project tsconfig.cypress.json",
+    "storybook:start": "start-storybook -p 6008",
+    "storybook:build": "build-storybook",
+    "postinstall": "patch-package"
   },
   "keywords": [],
   "author": "",
@@ -39,17 +45,28 @@
   "devDependencies": {
     "@babel/core": "^7.13.15",
     "@babel/preset-typescript": "7.13.0",
+    "@cypress/react": "^5.10.0",
+    "@cypress/webpack-dev-server": "^1.6.0",
     "@react-types/listbox": "3.1.1",
     "@storybook/addon-actions": "^6.2.7",
     "@storybook/addon-essentials": "^6.2.7",
     "@storybook/addon-links": "^6.2.7",
     "@storybook/react": "^6.2.7",
+    "@storybook/testing-react": "^0.0.22",
     "@types/jest": "26.0.22",
+    "@types/node": "^16.9.1",
     "@types/ramda": "^0.27.44",
     "@types/styled-components": "5.1.9",
     "babel-loader": "^8.2.2",
+    "cypress": "^8.4.0",
+    "cypress-plugin-snapshots": "^1.4.4",
+    "cypress-real-events": "^1.5.1",
+    "patch-package": "^6.4.7",
+    "postinstall-postinstall": "^2.1.0",
     "prettier": "2.2.1",
     "storybook-addon-themes": "6.1.0",
-    "typescript": "4.2.4"
+    "ts-loader": "8",
+    "typescript": "4.2.4",
+    "webpack-dev-server": "3"
   }
 }

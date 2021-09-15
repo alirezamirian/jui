@@ -1,0 +1,22 @@
+/// <reference types="cypress" />
+// ***********************************************************
+// This example plugins/index.ts can be used to load plugins
+//
+// You can change the location of this file or turn off loading
+// the plugins file with the 'pluginsFile' configuration option.
+//
+// You can read more here:
+// https://on.cypress.io/plugins-guide
+// ***********************************************************
+
+// This function is called when a project is opened or re-opened (e.g. due to
+// the project's config changing)
+
+const injectDevServer = require("@cypress/react/plugins/load-webpack");
+const { initPlugin } = require("cypress-plugin-snapshots/plugin");
+
+module.exports = ((on, config) => {
+  injectDevServer(on, config, { webpackFilename: "cypress/webpack.config.js" }); // cypress component testing requirement
+  initPlugin(on, config);
+  return config;
+}) as Cypress.PluginConfig;

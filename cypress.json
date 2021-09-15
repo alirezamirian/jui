@@ -1,0 +1,6 @@
+{
+  "component": {
+    "testFiles": "**/*.cy-test.{js,ts,jsx,tsx}",
+    "componentFolder": "src"
+  }
+}

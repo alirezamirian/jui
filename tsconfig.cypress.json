@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["cypress", "cypress-real-events"]
+  },
+  "include": [
+    "**/*.cy-test.tsx",
+    "cypress/cypress-plugin-snapshots-types.d.ts"
+  ],
+  "exclude": []
+}

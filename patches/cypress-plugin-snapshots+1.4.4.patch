@@ -1,0 +1,13 @@
+diff --git a/node_modules/cypress-plugin-snapshots/src/utils/tasks/imageSnapshots.js b/node_modules/cypress-plugin-snapshots/src/utils/tasks/imageSnapshots.js
+index d1d5dfa..bef4de8 100644
+--- a/node_modules/cypress-plugin-snapshots/src/utils/tasks/imageSnapshots.js
++++ b/node_modules/cypress-plugin-snapshots/src/utils/tasks/imageSnapshots.js
+@@ -106,7 +106,7 @@ function compareImages(expected, actual, diffFilename, config) {
+ 
+     const imageConfig = merge({}, DEFAULT_IMAGE_CONFIG, config);
+     const pixelmatchConfig = {
+-      threshold: 0.01,
++      threshold: 0.1,
+     };
+ 
+     const imageWidth = actual.image.width;

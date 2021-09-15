@@ -110,44 +110,63 @@ const items: Array<MenuItem> = [
 
 export const Nested = () => {
   return (
-    <Menu items={items} selectedKeys={["Pinned"]}>
+    <Menu items={items} selectedKeys={["Pinned"]} autoFocus>
       {renderItem}
     </Menu>
   );
 };
 
-export const Position = () => {
+export const Position = ({ offsetRight = 230 }: { offsetRight: number }) => {
   return (
-    <div style={{ paddingLeft: "calc(100% - 250px)" }}>
-      <Menu items={viewModeItems}>{renderItem}</Menu>
+    <div style={{ paddingLeft: `calc(100% - ${offsetRight}px)` }}>
+      <Menu items={items}>{renderItem}</Menu>
     </div>
   );
 };
 
-export const MenuWithTrigger = () => {
+export const MenuWithTrigger = ({
+  offsetRight,
+  offsetBottom,
+}: {
+  offsetRight?: number;
+  offsetBottom?: number;
+}) => {
   return (
-    <ActionToolbar>
-      <MenuTrigger
-        renderMenu={({ menuProps, close }) => (
-          <Menu
-            items={viewModeItems}
-            {...menuProps}
-            onAction={(key) => {
-              console.log(key);
-              close();
-            }}
-          >
-            {renderItem}
-          </Menu>
-        )}
-      >
-        {(props, ref) => (
-          <ActionButton {...props} ref={ref}>
-            <PlatformIcon icon={"general/gearPlain"} />
-          </ActionButton>
-        )}
-      </MenuTrigger>
-    </ActionToolbar>
+    <div
+      style={{
+        paddingLeft:
+          offsetRight != undefined
+            ? `calc(100% - ${offsetRight + 24}px)`
+            : undefined,
+        paddingTop:
+          offsetBottom != undefined
+            ? `calc(100% - ${offsetBottom + 24}px)`
+            : undefined,
+      }}
+    >
+      <ActionToolbar>
+        <MenuTrigger
+          renderMenu={({ menuProps, close }) => (
+            <Menu
+              items={items}
+              {...menuProps}
+              onAction={(key) => {
+                console.log(key);
+                close();
+              }}
+            >
+              {renderItem}
+            </Menu>
+          )}
+        >
+          {(props, ref) => (
+            <ActionButton {...props} ref={ref}>
+              <PlatformIcon icon={"general/gearPlain"} />
+            </ActionButton>
+          )}
+        </MenuTrigger>
+      </ActionToolbar>
+    </div>
   );
 };
 

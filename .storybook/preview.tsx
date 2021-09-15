@@ -1,16 +1,13 @@
-import { addDecorator } from "@storybook/react"; // <- or your storybook framework
+import React, { useEffect } from "react";
 // @ts-expect-error missing type definition
 import { withThemes } from "storybook-addon-themes/react";
-import React, { useEffect } from "react";
-import "./global-styles.css";
 import { ThemeProvider } from "styled-components";
 import { Theme } from "../src/Theme/Theme";
+import "./global-styles.css";
 
 const requireTheme = require.context("../themes", false, /\.theme\.json$/);
 
-addDecorator(withThemes);
-
-const themes = requireTheme.keys().map((themeFile) => {
+const themes = requireTheme.keys().map((themeFile: string) => {
   const themeJson = requireTheme(themeFile);
   return {
     name: themeJson.name,
@@ -19,7 +16,7 @@ const themes = requireTheme.keys().map((themeFile) => {
   };
 });
 
-(window as any).themes = themes;
+export const decorators = [withThemes];
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
@@ -28,11 +25,12 @@ export const parameters = {
   },
   themes: {
     default: "Darcula",
-    Decorator: Decorator,
+    Decorator,
     clearable: false,
     list: themes,
   },
 };
+
 function Decorator(props: {
   children: React.ReactNode;
   theme: { theme: Theme };
