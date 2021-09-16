@@ -11,7 +11,7 @@ import { ToolWindowStripe } from "../ToolWindowStripe";
 import { Anchor } from "../utils";
 
 export default {
-  title: "ToolWindow",
+  title: "Components/ToolWindow",
   parameters: {
     layout: "fullscreen",
     controls: { exclude: styledComponentsControlsExclude },

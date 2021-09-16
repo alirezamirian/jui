@@ -12,7 +12,7 @@ import { Divider } from "../Collections/Divider";
 import { Pane } from "../story-components";
 
 export default {
-  title: "List/Basic",
+  title: "Components/List (Basic)",
   component: List,
 } as Meta;
 

@@ -11,7 +11,7 @@ import { HighlightedTextValue } from "../../CollectionSpeedSearch/HighlightedTex
 import { Pane } from "../../story-components";
 
 export default {
-  title: "List/Speed search",
+  title: "Components/List (Speed search)",
   component: SpeedSearchList,
 } as Meta;
 

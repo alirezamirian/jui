@@ -5,7 +5,7 @@ import { StyledToolWindowOuterLayout } from "../StyledToolWindowOuterLayout";
 import { ToolWindowStripe } from "../ToolWindowStripe";
 
 export default {
-  title: "ToolWindow",
+  title: "Components/ToolWindow",
 } as Meta;
 
 export const StyledOuterLayout = ({

@@ -13,7 +13,7 @@ import {
 } from "../ToolWindowsState/ToolWindowsState";
 
 export default {
-  title: "ToolWindow",
+  title: "Components/ToolWindow",
 } as Meta;
 
 const SampleToolWindowContent = () => <textarea />;

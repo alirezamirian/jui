@@ -5,7 +5,7 @@ import { Tree } from "./Tree";
 import { Pane, SelectionLog } from "../story-components";
 
 export default {
-  title: "Tree/Basic",
+  title: "Components/Tree (Basic)",
   Component: Tree,
 } as Meta;
 

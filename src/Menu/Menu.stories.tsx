@@ -11,7 +11,7 @@ import { MenuItemLayout } from "./MenuItemLayout";
 import { MenuTrigger } from "./MenuTrigger";
 
 export default {
-  title: "Menu",
+  title: "Components/Menu",
   parameters: {
     controls: { exclude: styledComponentsControlsExclude },
     component: Menu, // doesn't work for some reason.

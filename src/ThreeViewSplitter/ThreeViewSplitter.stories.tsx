@@ -8,7 +8,7 @@ import {
 } from "../story-helpers";
 
 export default {
-  title: "ThreeViewSplitter",
+  title: "Components/ThreeViewSplitter",
 } as Meta;
 
 const ThreeViewSplitterWithStyles: React.FC<ThreeViewSplitterProps> = (

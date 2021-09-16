@@ -7,7 +7,7 @@ import {
 import { styledComponentsControlsExclude } from "../../story-helpers";
 
 export default {
-  title: "ToolWindow",
+  title: "Components/ToolWindow",
 } as Meta;
 
 export const StripeButton = (props: StyledToolWindowStripeButtonProps) => {

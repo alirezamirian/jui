@@ -15,7 +15,7 @@ import { Meta } from "@storybook/react";
 type StoryProps = StyledToolWindowStripeProps & { empty: boolean };
 
 export default {
-  title: "ToolWindow",
+  title: "Components/ToolWindow",
 } as Meta;
 export const StyledStripe = (props: StoryProps) => {
   const { anchor, empty } = props;

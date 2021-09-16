@@ -8,7 +8,7 @@ import {
 import { SpeedSearchTree } from "./SpeedSearchTree";
 
 export default {
-  title: "Tree/Speed search",
+  title: "Components/Tree (Speed search)",
   Component: SpeedSearchTree,
 } as Meta;
 

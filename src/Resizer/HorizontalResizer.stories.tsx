@@ -12,7 +12,7 @@ import { ResizerProps } from "./ResizerProps";
 import { RightResizer } from "./RightResizer";
 
 const meta: Meta = {
-  title: "HorizontalResizer",
+  title: "Components/HorizontalResizer",
   parameters: {
     layout: "fullscreen",
     controls: { exclude: styledComponentsControlsExclude },
