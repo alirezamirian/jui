@@ -1,11 +1,11 @@
-import { Node } from "@react-types/shared";
-import { TreeState } from "@react-stately/tree";
-import { TREE_ICON_SIZE, TreeNodeIcon } from "./TreeNodeIcon";
-import React, { useRef } from "react";
-import { styled } from "../styled";
-import { StyledListItem } from "../List/StyledListItem";
-import { useSelectableItem } from "@react-aria/selection";
 import { usePress } from "@react-aria/interactions";
+import { TreeState } from "@react-stately/tree";
+import { Node } from "@react-types/shared";
+import React, { useRef } from "react";
+import { StyledListItem } from "../List/StyledListItem";
+import { styled } from "../styled";
+import { TREE_ICON_SIZE, TreeNodeIcon } from "./TreeNodeIcon";
+import { useTreeNode } from "./useTreeNode";
 import { useTreeNodeToggleButton } from "./useTreeNodeToggleButton";
 
 type TreeNodeProps<T> = {
@@ -47,17 +47,12 @@ export function TreeNode<T>({
     isDisabled: disabled,
   });
 
-  const {
-    pressProps: { onKeyDown, ...pressProps },
-  } = usePress({
-    ...useSelectableItem({
-      key: item.key,
-      ref,
-      selectionManager,
-      isVirtualized: false,
-    }).itemProps,
-    isDisabled: disabled,
-    preventFocusOnPress: false,
+  const { treeNodeProps } = useTreeNode({
+    item,
+    ref,
+    toggleKey,
+    selectionManager,
+    disabled,
   });
 
   /**
@@ -73,7 +68,7 @@ export function TreeNode<T>({
     <>
       <StyledTreeNode
         ref={ref}
-        {...pressProps}
+        {...treeNodeProps}
         containerFocused={containerFocused}
         disabled={disabled}
         selected={selected}
