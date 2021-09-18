@@ -6,6 +6,7 @@ import { Item } from "@react-stately/collections";
 import { TreeState } from "@react-stately/tree";
 import { Node } from "@react-types/shared";
 import React, { Key } from "react";
+import { ItemStateContext } from "../Collections/ItemStateContext";
 import { LafIcon } from "../Icon/LafIcon";
 import { PlatformIcon } from "../Icon/PlatformIcon";
 
@@ -36,15 +37,6 @@ const StyledSelectedMark = styled.span`
   transform: translateY(-50%);
   display: inline-flex; // to make it not take more height than the icon
 `;
-
-interface MenuItemContext {
-  isSelected: boolean;
-  isFocused: boolean;
-  isDisabled: boolean;
-}
-export const MenuItemContext = React.createContext<MenuItemContext | null>(
-  null
-);
 
 export function MenuItem<T>({
   item,
@@ -136,9 +128,11 @@ export function MenuItem<T>({
             />
           </StyledSelectedMark>
         )}
-        <MenuItemContext.Provider value={{ isDisabled, isFocused, isSelected }}>
+        <ItemStateContext.Provider
+          value={{ isDisabled, isFocused, isSelected }}
+        >
           {item.rendered}
-        </MenuItemContext.Provider>
+        </ItemStateContext.Provider>
         {item.hasChildNodes && (
           <StyledNestedArrow>
             <PlatformIcon icon="icons/ide/menuArrow" />

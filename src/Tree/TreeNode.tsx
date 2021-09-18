@@ -2,6 +2,7 @@ import { usePress } from "@react-aria/interactions";
 import { TreeState } from "@react-stately/tree";
 import { Node } from "@react-types/shared";
 import React, { useRef } from "react";
+import { ItemStateContext } from "../Collections/ItemStateContext";
 import { StyledListItem } from "../List/StyledListItem";
 import { styled } from "../styled";
 import { TREE_ICON_SIZE, TreeNodeIcon } from "./TreeNodeIcon";
@@ -33,9 +34,9 @@ export function TreeNode<T>({
   containerFocused,
 }: TreeNodeProps<T>) {
   const ref = useRef(null);
-  const selected = selectionManager.isSelected(item.key);
+  const isSelected = selectionManager.isSelected(item.key);
   const expanded = expandedKeys.has(item.key);
-  const disabled = disabledKeys.has(item.key);
+  const isDisabled = disabledKeys.has(item.key);
 
   const { pressProps: togglePressProps } = usePress({
     ...useTreeNodeToggleButton({
@@ -44,7 +45,7 @@ export function TreeNode<T>({
       selectionManager,
       toggleKey,
     }).treeNodeToggleButtonProps,
-    isDisabled: disabled,
+    isDisabled,
   });
 
   const { treeNodeProps } = useTreeNode({
@@ -52,7 +53,7 @@ export function TreeNode<T>({
     ref,
     toggleKey,
     selectionManager,
-    disabled,
+    disabled: isDisabled,
   });
 
   /**
@@ -70,20 +71,24 @@ export function TreeNode<T>({
         ref={ref}
         {...treeNodeProps}
         containerFocused={containerFocused}
-        disabled={disabled}
-        selected={selected}
-        aria-disabled={disabled}
-        aria-selected={selected}
+        disabled={isDisabled}
+        selected={isSelected}
+        aria-disabled={isDisabled}
+        aria-selected={isSelected}
         level={item.level}
       >
         {item.hasChildNodes && (
           <TreeNodeIcon
-            selected={selected}
+            selected={isSelected}
             expanded={expanded}
             {...togglePressProps}
           />
         )}
-        {item.rendered}
+        <ItemStateContext.Provider
+          value={{ isDisabled, isSelected, isFocused: containerFocused }}
+        >
+          {item.rendered}
+        </ItemStateContext.Provider>
       </StyledTreeNode>
     </>
   );

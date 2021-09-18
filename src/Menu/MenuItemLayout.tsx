@@ -1,8 +1,8 @@
 import React from "react";
+import { ItemStateContext } from "../Collections/ItemStateContext";
 import { styled } from "../styled";
 import { UnknownThemeProp } from "../Theme/Theme";
 import { useContextOrThrow } from "../utils/useContextOrThrow";
-import { MenuItemContext } from "./MenuItem";
 
 interface MenuItemLayoutProps {
   icon?: React.ReactNode;
@@ -41,7 +41,7 @@ export const MenuItemLayout = ({
   icon,
 }: MenuItemLayoutProps) => {
   const { isFocused, isSelected } = useContextOrThrow(
-    MenuItemContext,
+    ItemStateContext,
     "MenuItemLayout is meant to be rendered in Item component in Menus"
   );
   return (
