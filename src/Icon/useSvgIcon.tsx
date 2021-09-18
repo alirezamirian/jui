@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTheme } from "styled-components";
 import { Theme } from "../Theme/Theme";
 
-export function useSvgIcon(path: string) {
+export function useSvgIcon(path: string, fallbackPath?: string) {
   const theme = useTheme() as Theme; // TODO: investigate why useTheme is typed like this
   const [svg, setSvg] = useState("");
   useEffect(() => {
@@ -12,7 +12,12 @@ export function useSvgIcon(path: string) {
         console.error("icon path is empty");
         return;
       }
-      const svg = await theme.getSvgIcon(path);
+      const svg = await theme.getSvgIcon(path).catch((e) => {
+        if (fallbackPath) {
+          return theme.getSvgIcon(fallbackPath);
+        }
+        throw e;
+      });
 
       if (svg) {
         if (!unmounted) {

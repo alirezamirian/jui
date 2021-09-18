@@ -15,6 +15,9 @@ export const getDarkPath = (path: string, darkPath?: string) => {
   return darkPath || `${name}_dark${ext ? `.${ext}` : ""}`;
 };
 
+const getPlatformIconPath = (relativePath: string) =>
+  `platform/icons/src/${relativePath}`;
+
 /**
  * Renders an icon from the predefined list of platform icons.
  * icon name must follow the directory structure in platform icons.
@@ -30,7 +33,10 @@ export function PlatformIcon({
 }: PlatformIconProps) {
   const theme = useTheme() as Theme; // TODO: investigate why useTheme is typed like this
   const iconName = theme.dark ? getDarkPath(icon, darkIcon) : icon;
-  const svg = useSvgIcon(`platform/icons/src/${iconName}`);
+  const svg = useSvgIcon(
+    getPlatformIconPath(iconName),
+    getPlatformIconPath(icon)
+  );
   return (
     <StyledIconWrapper {...props} dangerouslySetInnerHTML={{ __html: svg }} />
   );
