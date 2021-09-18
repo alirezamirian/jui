@@ -6,6 +6,9 @@ export const TREE_ICON_SIZE = 16;
 const StyledTreeNodeIcon = styled(LafIcon)`
   margin-left: -20px;
   margin-right: 4px;
+  margin-top: -1px; // the svg path seems to have uneven vertical padding. This is to compensate for that.
+  flex-shrink: 0;
+  align-self: center;
 `;
 
 type TreeNodeIconProps = ComponentProps<typeof StyledTreeNodeIcon> & {
