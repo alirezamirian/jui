@@ -122,6 +122,10 @@ export class Theme<P extends string = string> {
         "ToolTip.foreground",
         theme.dark ? "#bfbfbf" : "#000000"
       ),
+      inactiveTextColor: theme.color(
+        "Component.infoForeground",
+        theme.dark ? "#787878" : "#999999"
+      ),
       panelBackground: theme.color("Panel.background") || "#fff",
       red: theme.dark ? "rgb(255,100,100)" : "rgb(255,0,0)",
       contrastBorder: theme.color(
