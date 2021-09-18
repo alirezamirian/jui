@@ -2117,6 +2117,14 @@
     "@babel/runtime" "^7.6.2"
     "@react-types/shared" "^3.8.0"
 
+"@react-stately/data@^3.4.2":
+  version "3.4.2"
+  resolved "https://registry.yarnpkg.com/@react-stately/data/-/data-3.4.2.tgz#33a28b08b8172acd53eb089326ae54179e8414f8"
+  integrity sha512-pFVf0eniMF6SsoNcarMtTl0txWc+fEEpvDW7dxB5NSxHaEzbnlKOWr8aggROrsQBpopheMnbAljZzlHlhfGIIQ==
+  dependencies:
+    "@babel/runtime" "^7.6.2"
+    "@react-types/shared" "^3.9.0"
+
 "@react-stately/list@^3.2.2", "@react-stately/list@^3.3.0":
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/@react-stately/list/-/list-3.3.0.tgz#64ab3a507aa3ef03a8f3afc9f8d0bde0c79efd81"
@@ -2240,6 +2248,11 @@
   version "3.8.0"
   resolved "https://registry.yarnpkg.com/@react-types/shared/-/shared-3.8.0.tgz#c8abf9dd51dbcf381ad4878741aef5c7ce32fdca"
   integrity sha512-/HlULcULGQDSn/EArpEYjexITjAaKCHD/0xw6sLBROOJPuancIb1TRlE4Ncux/3ZV/7K1LUmHs5YBiXC8QdcBA==
+
+"@react-types/shared@^3.9.0":
+  version "3.9.0"
+  resolved "https://registry.yarnpkg.com/@react-types/shared/-/shared-3.9.0.tgz#d834f3e6e2c992089192f3c83fb7963e3a6f5207"
+  integrity sha512-YYksINfR6q92P10AhPEGo47Hd7oz1hrnZ6Vx8Gsrq62IbqDdv1XOTzPBaj17Z1ymNY2pitLUSEXsLmozt4wxxQ==
 
 "@sinonjs/commons@^1.7.0":
   version "1.8.3"

@@ -14,3 +14,4 @@
 
 - Tree
   - [ ] dblclick on non-leaf nodes should toggle. text selection should be disabled.
+  - [ ] SpeedSearch tree doesn't allow selection by click when speed search is active
