@@ -19,14 +19,16 @@ const FLOAT_WINDOW_MIN_HEIGHT = 40; // in Intellij Platform it's zero but there 
  * NOTE: can be used in other kinds of resizable overlays too, in future.
  */
 export function WindowResizeHandles() {
-  const { getResizerProps } = useWindowResizer();
+  const windowResizer = useWindowResizer();
   return (
-    <>
-      <RightResizer {...getResizerProps("right")} />
-      <LeftResizer {...getResizerProps("left")} />
-      <TopResizer {...getResizerProps("top")} />
-      <BottomResizer {...getResizerProps("bottom")} />
-    </>
+    windowResizer && (
+      <>
+        <RightResizer {...windowResizer.getResizerProps("right")} />
+        <LeftResizer {...windowResizer.getResizerProps("left")} />
+        <TopResizer {...windowResizer.getResizerProps("top")} />
+        <BottomResizer {...windowResizer.getResizerProps("bottom")} />
+      </>
+    )
   );
 }
 
@@ -41,11 +43,15 @@ function useWindowResizer() {
     width: 0,
     left: 0,
   });
+  const interactionHandler = useWindowInteractionHandler();
+  if (!interactionHandler) {
+    return null;
+  }
   const {
     finishInteraction,
     startInteraction,
     updateBounds,
-  } = useWindowInteractionHandler();
+  } = interactionHandler;
 
   const onResize = {
     right: (size: number) =>

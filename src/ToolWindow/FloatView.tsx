@@ -26,16 +26,8 @@ type BoundsInteractionHandlerProps = {
   finishInteraction: () => void;
 };
 
-const throwMissingProviderError = () => {
-  throw new Error("WindowInteractionHandlerContext not provided");
-};
-
-const WindowInteractionHandlerContext = React.createContext<BoundsInteractionHandlerProps>(
-  {
-    updateBounds: throwMissingProviderError,
-    finishInteraction: throwMissingProviderError,
-    startInteraction: throwMissingProviderError,
-  }
+const WindowInteractionHandlerContext = React.createContext<BoundsInteractionHandlerProps | null>(
+  null
 );
 
 export const useWindowInteractionHandler = () =>

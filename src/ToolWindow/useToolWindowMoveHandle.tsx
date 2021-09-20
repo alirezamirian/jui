@@ -2,11 +2,15 @@ import { useWindowInteractionHandler } from "./FloatView";
 import { useMove } from "./useMove";
 
 export function useToolWindowMoveHandle() {
+  const interactionHandler = useWindowInteractionHandler();
+  if (!interactionHandler) {
+    return {};
+  }
   const {
     finishInteraction,
     startInteraction,
     updateBounds,
-  } = useWindowInteractionHandler();
+  } = interactionHandler;
 
   const moveProps = useMove({
     onMoveStart: () => {
