@@ -1,5 +1,6 @@
 import { Anchor, isHorizontal } from "./utils";
 import { Key } from "react";
+type Rect = Omit<ClientRect, "toJSON" | "x" | "y">;
 
 export interface DropPosition {
   index: number;
@@ -24,17 +25,17 @@ export const createGetDropPosition = <T extends any>({
 }: {
   stripeElement: HTMLElement;
   anchor: Anchor;
-  getItemRect: (key: Key) => ClientRect;
+  getItemRect: (key: Key) => Rect;
   getKey: (key: T) => Key;
   mainItems: T[];
   splitItems: T[];
-}): ((draggedRect: ClientRect) => DropPosition | null) => {
+}): ((draggedRect: Rect) => DropPosition | null) => {
   // Note: It may be tempting to calculate stripe element boundaries just once
   // here, since it's not supposed to change during a drag session, but it
   // can change due to getting empty when the only button is being dragged out.
   const getStripeRect = () => stripeElement.getBoundingClientRect();
 
-  const getCanDrop = (draggingRect: ClientRect) => {
+  const getCanDrop = (draggingRect: Rect) => {
     const stripeRect = getStripeRect();
     return (
       draggingRect.right > stripeRect.left - stripeRect.width &&
@@ -44,10 +45,8 @@ export const createGetDropPosition = <T extends any>({
     );
   };
 
-  const start = (rect: ClientRect) =>
-    isHorizontal(anchor) ? rect.left : rect.top;
-  const end = (rect: ClientRect) =>
-    isHorizontal(anchor) ? rect.right : rect.bottom;
+  const start = (rect: Rect) => (isHorizontal(anchor) ? rect.left : rect.top);
+  const end = (rect: Rect) => (isHorizontal(anchor) ? rect.right : rect.bottom);
 
   const getKeyToOffsets = (items: T[]) => {
     const keyToOffsets: Record<Key, { start: number; end: number }> = {};
@@ -66,7 +65,7 @@ export const createGetDropPosition = <T extends any>({
     items: T[],
     split = false
     // FIXME: score is a bad name. it's quite the opposite! the less means the higher score.
-  ): Array<DropPosition & { score: (rect: ClientRect) => number }> => {
+  ): Array<DropPosition & { score: (rect: Rect) => number }> => {
     const getRef = split ? end : start;
     if (items.length === 0) {
       // if the section is empty, we should still allow adding to it.
@@ -74,7 +73,7 @@ export const createGetDropPosition = <T extends any>({
         {
           index: 0,
           split,
-          score: (draggingRect: ClientRect) =>
+          score: (draggingRect: Rect) =>
             Math.abs(getRef(draggingRect) - getRef(getStripeRect())),
         },
       ];
@@ -86,14 +85,14 @@ export const createGetDropPosition = <T extends any>({
           index,
           split,
           relative: { key, placement: "before" },
-          score: (draggingRect: ClientRect) =>
+          score: (draggingRect: Rect) =>
             Math.abs(getRef(draggingRect) - keyToOffsets[key].start),
         },
         {
           index: index + 1,
           split,
           relative: { key, placement: "after" },
-          score: (draggingRect: ClientRect) =>
+          score: (draggingRect: Rect) =>
             Math.abs(getRef(draggingRect) - keyToOffsets[key].end),
         },
       ];
@@ -108,7 +107,7 @@ export const createGetDropPosition = <T extends any>({
   ];
 
   let lastDropPosition: DropPosition | null = null;
-  return (draggingRect: ClientRect) => {
+  return (draggingRect: Rect) => {
     if (!getCanDrop(draggingRect)) {
       return null;
     }

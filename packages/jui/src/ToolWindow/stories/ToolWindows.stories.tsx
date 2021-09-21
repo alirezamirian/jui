@@ -2,7 +2,7 @@ import { Meta } from "@storybook/react";
 import { indexBy, map } from "ramda";
 import React, { useState } from "react";
 import { ActionButton } from "../../ActionButton/ActionButton";
-import { PlatformIcon } from "../../Icon/PlatformIcon";
+import { PlatformIcon } from "../../Icon";
 import { SpeedSearchTreeSample } from "../../story-components";
 import { styledComponentsControlsExclude } from "../../story-helpers";
 import { DefaultToolWindow } from "../DefaultToolWindow";

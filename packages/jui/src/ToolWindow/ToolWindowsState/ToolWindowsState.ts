@@ -9,7 +9,12 @@ export type ViewMode =
   | "float"
   | "window";
 
-export type WindowBounds = Omit<ClientRect, "right" | "bottom">;
+export type WindowBounds = {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+};
 
 /**
  * Data structure for keeping the state of a single tool window. very similar to WindowInfo in Intellij Platform

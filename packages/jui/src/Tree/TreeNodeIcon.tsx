@@ -1,4 +1,4 @@
-import { LafIcon } from "../Icon/LafIcon";
+import { LafIcon } from "../Icon";
 import React, { ComponentProps, useMemo } from "react";
 import { styled } from "../styled";
 

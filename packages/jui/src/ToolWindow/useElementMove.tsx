@@ -2,6 +2,8 @@ import { useMove, UseMoveOptions, XY } from "./useMove";
 import { RefObject } from "react";
 import { findEffectiveBackgroundColor } from "./findEffectiveBackgroundColor";
 
+type Rect = Omit<ClientRect, "toJSON" | "x" | "y">;
+
 export interface UseElementMoveOptions<S>
   extends Omit<UseMoveOptions<S>, "onMoveStart" | "onMove"> {
   ref: RefObject<HTMLElement>;
@@ -12,20 +14,15 @@ export interface UseElementMoveOptions<S>
    */
   ghost?: boolean | ((defaultGhost: HTMLElement) => HTMLElement);
 
-  onMoveStart: (args: { from: ClientRect }) => S;
-  onMove: (args: {
-    from: ClientRect;
-    to: ClientRect;
-    movement: XY;
-    startState: S;
-  }) => void;
+  onMoveStart: (args: { from: Rect }) => S;
+  onMove: (args: { from: Rect; to: Rect; movement: XY; startState: S }) => void;
 }
 
 /**
  * Provides necessary event handling props to be applied on an element to make it movable.
  * It's implemented on top of {@link useMove}. The differences are:
  * - The signature of `onMoveStart`, `onMove` and `onMoveEnd` are changed to pass
- *   {@link ClientRect} instead of {@link XY}.
+ *   {@link Rect} instead of {@link XY}.
  * - rendering a ghost element.
  *
  * ## A note about ghost:
@@ -58,13 +55,13 @@ export function useElementMove<S>({
           "Movement started but ref value is null. Make sure the passed ref is applied on the same element that other props are."
         );
       }
-      const updateGhostPosition = (rect: ClientRect) => {
+      const updateGhostPosition = (rect: Rect) => {
         if (ghost) {
           ghost.style.left = `${rect.left}px`;
           ghost.style.top = `${rect.top}px`;
         }
       };
-      const from: ClientRect = element.getBoundingClientRect();
+      const from: Rect = element.getBoundingClientRect();
       if (ghostOption) {
         const defaultGhost = createDefaultGhost(element);
         ghost =
@@ -86,7 +83,7 @@ export function useElementMove<S>({
       movement,
       startState: { from, updateGhostPosition, startState },
     }) => {
-      const to: ClientRect = {
+      const to: Rect = {
         left: from.left + movement.x,
         right: from.right + movement.x,
         top: from.top + movement.y,

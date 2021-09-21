@@ -1,7 +1,7 @@
 import { Meta } from "@storybook/react";
 import { indexBy, map } from "ramda";
 import React, { useState } from "react";
-import { PlatformIcon } from "../Icon/PlatformIcon";
+import { PlatformIcon } from "../Icon";
 import { styledComponentsControlsExclude } from "../story-helpers";
 import { ToolWindows } from "../ToolWindow";
 import { DefaultToolWindow } from "../ToolWindow/DefaultToolWindow";

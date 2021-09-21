@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import { Divider, DividerItem } from "../Collections/Divider";
-import { PlatformIcon } from "../Icon/PlatformIcon";
+import { PlatformIcon } from "../Icon";
 import { Item, Menu, MenuItemLayout } from "../Menu";
 import { useToolWindowState } from "./ToolWindowsState/ToolWindowStateProvider";
 import { ViewMode } from "./ToolWindowsState/ToolWindowsState";

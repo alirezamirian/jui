@@ -13,6 +13,8 @@ import { DropPosition } from "./createGetDropPosition";
 import { UseElementMoveOptions } from "./useElementMove";
 import { Anchor } from "./utils";
 
+type Rect = Omit<ClientRect, "toJSON" | "x" | "y">;
+
 type StripeLocation<T extends unknown> = {
   index: number;
   anchor: Anchor;
@@ -26,7 +28,7 @@ type MovableStripeProps<T> = {
   splitItems: T[];
   createGetDropPosition: (
     key: Key
-  ) => (draggedRect: ClientRect) => DropPosition | null;
+  ) => (draggedRect: Rect) => DropPosition | null;
 };
 
 type MovableToolWindowStripeContextType<T> = {
@@ -34,12 +36,12 @@ type MovableToolWindowStripeContextType<T> = {
     id: string,
     propsRef: MutableRefObject<MovableStripeProps<T>>
   ) => () => void;
-  startMove: (id: string, args: { from: ClientRect; key: Key }) => void;
-  move: (args: { to: ClientRect }) => void;
+  startMove: (id: string, args: { from: Rect; key: Key }) => void;
+  move: (args: { to: Rect }) => void;
   endMove: () => void;
   dropPosition: null | { id: string; dropPosition: DropPosition };
   draggingKey: Key | null;
-  draggingRect: ClientRect | null;
+  draggingRect: Rect | null;
 };
 
 export type MovableToolWindowStripeProviderProps<T = unknown> = {
@@ -64,7 +66,7 @@ export const MovableToolWindowStripeProvider = <T extends unknown>({
   const stripes = useRef<{
     [id: string]: RefObject<MovableStripeProps<T>>;
   }>({});
-  const [draggingRect, setDraggingRect] = useState<ClientRect | null>(null);
+  const [draggingRect, setDraggingRect] = useState<Rect | null>(null);
   const [draggingKey, setDraggingKey] = useState<Key | null>(null);
   const [dropPosition, setDropPosition] = useState<{
     id: string;
@@ -72,7 +74,7 @@ export const MovableToolWindowStripeProvider = <T extends unknown>({
   } | null>(null);
   const getDropPositionRef = useRef<
     (
-      to: ClientRect
+      to: Rect
     ) => {
       id: string;
       dropPosition: DropPosition;
@@ -132,7 +134,7 @@ export const MovableToolWindowStripeProvider = <T extends unknown>({
           ([id, stripe]) =>
             [id, stripe.current!.createGetDropPosition(key)] as const
         );
-        const getDropPosition = (draggedRect: ClientRect) => {
+        const getDropPosition = (draggedRect: Rect) => {
           for (const [id, getDropPosition] of dropPositionGetters) {
             const dropPosition = getDropPosition(draggedRect);
             if (dropPosition) {
@@ -199,7 +201,7 @@ export function useMovableStripeButtons<T>(props: MovableStripeProps<T>) {
     "onMoveStart" | "onMove" | "onMoveEnd"
   > & { moveDisabled: boolean } => ({
     moveDisabled: !context,
-    onMoveStart: ({ from }: { from: ClientRect }) => {
+    onMoveStart: ({ from }) => {
       context?.startMove?.(id, { from, key });
     },
     onMove: ({ to }) => {

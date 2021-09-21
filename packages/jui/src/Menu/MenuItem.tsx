@@ -7,8 +7,7 @@ import { TreeState } from "@react-stately/tree";
 import { Node } from "@react-types/shared";
 import React, { Key } from "react";
 import { ItemStateContext } from "../Collections/ItemStateContext";
-import { LafIcon } from "../Icon/LafIcon";
-import { PlatformIcon } from "../Icon/PlatformIcon";
+import { LafIcon, PlatformIcon } from "../Icon";
 
 import { styled } from "../styled";
 import { FocusScope } from "../ToolWindow/FocusScope";

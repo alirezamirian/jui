@@ -105,6 +105,7 @@ export function ToolWindowStripe<T>({
     </>
   );
 }
+type Rect = Omit<ClientRect, "toJSON" | "x" | "y">;
 
 function getStripeButtonStyles({
   anchor,
@@ -116,7 +117,7 @@ function getStripeButtonStyles({
   anchor: Anchor;
   key: Key;
   draggingKey: Key | null;
-  draggingRect: ClientRect | null;
+  draggingRect: Rect | null;
   dropPosition: DropPosition | null;
 }) {
   const styles: CSSProperties = {

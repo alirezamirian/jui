@@ -1,7 +1,7 @@
 import React, { HTMLProps } from "react";
 import { ActionButton } from "../ActionButton/ActionButton";
 import { ActionToolbar } from "../ActionToolbar/ActionToolbar";
-import { PlatformIcon } from "../Icon/PlatformIcon";
+import { PlatformIcon } from "../Icon";
 import { MenuTrigger } from "../Menu/MenuTrigger";
 import { styled } from "../styled";
 import { StyledHorizontalSeparator } from "../StyledSeparator";

@@ -4,7 +4,7 @@ import { identity, sortBy } from "ramda";
 import React, { useContext, useEffect, useState } from "react";
 import { ItemStateContext } from "../../Collections/ItemStateContext";
 import { HighlightedTextValue } from "../../CollectionSpeedSearch/HighlightedTextValue";
-import { PlatformIcon } from "../../Icon/PlatformIcon";
+import { PlatformIcon } from "../../Icon";
 import { Img } from "../../Img";
 import { styled } from "../../styled";
 import { SpeedSearchTree } from "../../Tree/SpeedSearchTree/SpeedSearchTree";

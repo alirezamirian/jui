@@ -4,7 +4,7 @@ import React from "react";
 import { ActionButton } from "../ActionButton/ActionButton";
 import { ActionToolbar } from "../ActionToolbar/ActionToolbar";
 import { Divider, DividerItem } from "../Collections/Divider";
-import { PlatformIcon } from "../Icon/PlatformIcon";
+import { PlatformIcon } from "../Icon";
 import { styledComponentsControlsExclude } from "../story-helpers";
 import { Menu } from "./Menu";
 import { MenuItemLayout } from "./MenuItemLayout";
