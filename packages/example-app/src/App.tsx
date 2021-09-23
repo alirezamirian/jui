@@ -1,19 +1,13 @@
-import { Meta } from "@storybook/react";
-import { indexBy, map } from "ramda";
-import React, { useState } from "react";
-import { PlatformIcon } from "../Icon";
-import { styledComponentsControlsExclude } from "../story-helpers";
-import { ToolWindows } from "../ToolWindow";
-import { DefaultToolWindow } from "../ToolWindow/DefaultToolWindow";
 import {
+  DefaultToolWindow,
+  PlatformIcon,
+  ToolWindows,
   ToolWindowsState,
   toolWindowState,
-} from "../ToolWindow/ToolWindowsState/ToolWindowsState";
+} from "jui";
+import { indexBy, map } from "ramda";
+import React, { useState } from "react";
 import { ProjectViewPane } from "./ProjectView/ProjectViewPane";
-
-export default {
-  title: "Demos",
-} as Meta;
 
 const windows = [
   {
@@ -25,7 +19,7 @@ const windows = [
   },
 ];
 const windowById = indexBy(({ id }) => id, windows);
-export const Default = () => {
+export const App = () => {
   const [state, setState] = useState(
     () =>
       new ToolWindowsState(map(({ initialState }) => initialState, windowById))
@@ -54,10 +48,4 @@ export const Default = () => {
       <div style={{ padding: 8 }}>{null}</div>
     </ToolWindows>
   );
-};
-
-Default.parameters = {
-  layout: "fullscreen",
-  controls: { exclude: styledComponentsControlsExclude },
-  component: Default,
 };

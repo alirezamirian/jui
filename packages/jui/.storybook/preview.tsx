@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 // @ts-expect-error missing type definition
 import { withThemes } from "storybook-addon-themes/react";
 import { ThemeProvider } from "styled-components";
-import { Theme } from "../src/Theme/Theme";
+import { Theme } from "../src/Theme";
 import "./global-styles.css";
 
 const requireTheme = require.context("../themes", false, /\.theme\.json$/);

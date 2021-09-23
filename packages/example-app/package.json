@@ -1,0 +1,7 @@
+{
+  "name": "jui-example-app",
+  "version": "0.0.0",
+  "dependencies": {
+    "xterm": "^4.14.1"
+  }
+}
