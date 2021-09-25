@@ -60,7 +60,13 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
         {title}
       </ToolWindowHeader>
       <StyledToolWindowContent ref={contentRef} {...toolWindowContentProps}>
-        <FocusScope ref={focusableContentRef} autoFocus contain>
+        {/**
+         * FIXME: adding `contain` prevents focus from moving to another focus scope both with mouse and keyboard.
+         * If we want to follow the Intellij Platform behaviour exactly, we need a kind of focus containment, where
+         * focus is trapped only for keyboard interaction, and user can still move focus by clicking another scope.
+         * Maybe a custom useFocusContainment hook and a separate option for activating it on our own FocusScope.
+         */}
+        <FocusScope ref={focusableContentRef} autoFocus>
           {children}
         </FocusScope>
       </StyledToolWindowContent>
