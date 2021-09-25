@@ -29,7 +29,7 @@ export class Theme<P extends string = string> {
   commonColors: ReturnType<Theme<P>["getCommonColors"]>;
 
   constructor(
-    protected readonly themeJson: ThemeJson,
+    public readonly themeJson: ThemeJson,
     protected readonly os: OS | null = detectOs(),
     protected readonly iconResolver: IconResolver = new GithubIconResolver()
   ) {
@@ -43,6 +43,10 @@ export class Theme<P extends string = string> {
 
   get dark(): boolean {
     return Boolean(this.themeJson.dark);
+  }
+
+  get name(): string {
+    return this.themeJson.name;
   }
 
   private setDefault(path: P, value: string) {

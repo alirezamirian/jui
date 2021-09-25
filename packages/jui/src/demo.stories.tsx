@@ -1,13 +1,13 @@
 import { Meta } from "@storybook/react";
 import React from "react";
 import { styledComponentsControlsExclude } from "./story-helpers";
-import { App as AppCmp } from "jui-example-app/src";
+import { App } from "jui-example-app/src";
 
 export default {
   title: "Demos/Example App",
 } as Meta;
 
-export const ExampleApp = () => <AppCmp />;
+export const ExampleApp = () => <App />;
 ExampleApp.parameters = {
   layout: "fullscreen",
   controls: { exclude: styledComponentsControlsExclude },
