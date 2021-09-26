@@ -13,6 +13,7 @@ import { useRecoilValue } from "recoil";
 import { DefaultSuspense } from "../DefaultSuspense";
 import { Editor } from "../Editor";
 import { activeEditorTabState } from "../Editor/editor.state";
+import { ProjectViewActionButtons } from "../ProjectView/ProjectViewActionButtons";
 import { ProjectViewPane } from "../ProjectView/ProjectViewPane";
 import { fileContent } from "./project.state";
 
@@ -21,14 +22,16 @@ const windows = [
     id: "project",
     title: "Project",
     icon: "toolwindows/toolWindowProject",
-    component: ProjectViewPane,
+    content: <ProjectViewPane />,
+    additionalActions: <ProjectViewActionButtons />,
     initialState: toolWindowState({ isVisible: true, weight: 0.22 }),
   },
   {
     id: "terminal",
     title: "Terminal",
     icon: "toolwindows/toolWindowProject",
-    component: () => <>TODO</>,
+    content: <>TODO</>,
+    additionalActions: null,
     initialState: toolWindowState({ anchor: "bottom" }),
   },
 ];
@@ -65,10 +68,14 @@ export const Project = () => {
         </>
       )}
       renderWindow={(id) => {
-        const Component = windowById[id].component;
+        const { content, additionalActions } = windowById[id];
         return (
-          <DefaultToolWindow key={id} title={windowById[id].title}>
-            {<Component />}
+          <DefaultToolWindow
+            key={id}
+            title={windowById[id].title}
+            additionalActions={additionalActions}
+          >
+            {content}
           </DefaultToolWindow>
         );
       }}

@@ -1,4 +1,5 @@
 import { Selection } from "@react-types/shared";
+import { Key } from "react";
 import { atom, selector } from "recoil";
 import {
   currentProjectFilesState,
@@ -38,12 +39,12 @@ export const foldersOnTopState = atom({
 
 export const expandedKeysState = atom({
   key: "projectView.expandedKeys",
-  default: new Set([""]), // empty string is the key for the root node
+  default: new Set<Key>([""]), // empty string is the key for the root node
 });
 
 export const selectedKeysState = atom<Selection>({
   key: "projectView.selectedKeys",
-  default: new Set([]),
+  default: new Set<Key>([]),
 });
 
 export const currentProjectTreeState = selector({

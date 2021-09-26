@@ -30,7 +30,7 @@ export const ProjectViewPane = (): React.ReactElement => {
   const [selectedKeys, setSelectedKeys] = useRecoilState(selectedKeysState);
   const foldersOnTop = useRecoilValue(foldersOnTopState);
 
-  const sortFn = foldersOnTop
+  const sortItems = foldersOnTop
     ? sortBy<ProjectTreeNode>((a) => (a.type === "dir" ? 1 : 2))
     : identity;
 
@@ -46,16 +46,16 @@ export const ProjectViewPane = (): React.ReactElement => {
         selectedKeys={selectedKeys}
         onSelectionChange={setSelectedKeys}
         expandedKeys={expandedKeys}
-        onExpandedChange={(newExpandedKeys) => {
-          setExpandedKeys(newExpandedKeys as Set<string>);
-        }}
+        onExpandedChange={setExpandedKeys}
       >
         {(item) => (
           <Item
             key={item.path}
             textValue={item.name}
             hasChildItems={"children" in item}
-            childItems={"children" in item ? sortFn(item.children) : undefined}
+            childItems={
+              "children" in item ? sortItems(item.children) : undefined
+            }
           >
             <StyledProjectViewTreeNode>
               {<ProjectViewNodeIcon node={item} />}
