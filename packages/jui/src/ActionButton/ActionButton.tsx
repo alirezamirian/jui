@@ -36,7 +36,7 @@ export const StyledActionButton = styled.button<{ minSize: number }>`
       theme.color("ActionButton.hoverBorderColor", "#DFDFDF")};
   }
   &:active:not(:disabled),
-  .active {
+  &.active:not(:disabled) {
     background: ${({ theme }) =>
       theme.color("ActionButton.pressedBackground", "#CFCFCF")};
     border-color: ${({ theme }) =>
@@ -48,10 +48,11 @@ export const ActionButton = React.forwardRef(function ActionButton(
   { minSize = DEFAULT_MINIMUM_BUTTON_SIZE, ...otherProps }: ActionButtonProps,
   ref: ForwardedRef<HTMLButtonElement>
 ) {
-  const { pressProps } = usePress(otherProps);
+  const { pressProps, isPressed } = usePress(otherProps);
 
   return (
     <StyledActionButton
+      className={isPressed ? "active" : ""}
       disabled={otherProps.isDisabled}
       {...pressProps}
       minSize={minSize}
