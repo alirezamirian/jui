@@ -1,5 +1,5 @@
 import { TreeState } from "@react-stately/tree";
-import { RefObject, useMemo, useState } from "react";
+import { Key, RefObject, useMemo, useState } from "react";
 import { useSelectableCollection } from "../selection/useSelectableCollection";
 import { TreeKeyboardDelegate } from "./TreeKeyboardDelegate";
 import { KeyboardDelegate, KeyboardEvent } from "@react-types/shared";
@@ -11,10 +11,11 @@ import { useCollectionAutoScroll } from "../Collections/useCollectionAutoScroll"
 export type SelectableTreeProps<T> = TreeState<T> & {
   isVirtualized?: boolean;
   keyboardDelegate?: KeyboardDelegate;
+  onAction: undefined | ((key: Key) => void);
 };
 
 export function useSelectableTree<T>(
-  props: SelectableTreeProps<T>,
+  { onAction, ...props }: SelectableTreeProps<T>,
   ref: RefObject<HTMLElement>
 ) {
   const collator = useCollator({ usage: "search", sensitivity: "base" });
@@ -59,16 +60,22 @@ export function useSelectableTree<T>(
   const onKeyDown = (event: KeyboardEvent) => {
     const focusedKey = props.selectionManager.focusedKey;
     const isExpandable =
-      focusedKey && props.collection.getItem(focusedKey).hasChildNodes;
+      focusedKey != null && props.collection.getItem(focusedKey).hasChildNodes;
     const expanded = focusedKey && props.expandedKeys.has(focusedKey);
+    const isDisabled = props.disabledKeys.has(focusedKey);
+    if (isDisabled) {
+      return;
+    }
     const shouldToggle =
-      !props.disabledKeys.has(focusedKey) &&
-      (event.key === "Enter" ||
-        (event.key === "ArrowLeft" && expanded) ||
-        (event.key === "ArrowRight" && !expanded));
+      event.key === "Enter" ||
+      (event.key === "ArrowLeft" && expanded) ||
+      (event.key === "ArrowRight" && !expanded);
+
     if (isExpandable && shouldToggle) {
       event.preventDefault();
       props.toggleKey(focusedKey);
+    } else if (event.key === "Enter") {
+      onAction?.(focusedKey);
     } else {
       selectionKeyDown?.(event);
     }

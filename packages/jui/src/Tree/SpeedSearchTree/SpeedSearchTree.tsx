@@ -1,21 +1,18 @@
-import { TreeProps } from "@react-stately/tree";
 import React, { useRef } from "react";
 import { StyledList } from "../../List/StyledList";
 import { TreeNode } from "../TreeNode";
+import { TreeProps } from "../Tree";
 import { useTreeState } from "../__tmp__useTreeState";
 import { replaceSelectionManager } from "../../selection/replaceSelectionManager";
-import { useSpeedSearchTree } from "./useSpeedSearchTree";
-import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
 import { CollectionSpeedSearchContainer } from "../../CollectionSpeedSearch/CollectionSpeedSearchContainer";
-
-interface Props<T extends object> extends TreeProps<T> {
-  fillAvailableSpace?: boolean;
-}
+import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
+import { useSpeedSearchTree } from "./useSpeedSearchTree";
 
 export function SpeedSearchTree<T extends object>({
   fillAvailableSpace = false,
+  onAction,
   ...props
-}: Props<T>) {
+}: TreeProps<T>) {
   const state = replaceSelectionManager(useTreeState(props));
   const ref = useRef<HTMLDivElement>(null);
 
@@ -24,7 +21,7 @@ export function SpeedSearchTree<T extends object>({
     focused,
     getHighlightedItem,
     searchPopupProps,
-  } = useSpeedSearchTree(state, ref);
+  } = useSpeedSearchTree({ ...state, onAction }, ref);
 
   return (
     <CollectionSpeedSearchContainer fillAvailableSpace={fillAvailableSpace}>
@@ -42,6 +39,7 @@ export function SpeedSearchTree<T extends object>({
               key={item.key}
               item={getHighlightedItem(item)}
               state={state}
+              onAction={onAction}
               containerFocused={focused}
             />
           ))}

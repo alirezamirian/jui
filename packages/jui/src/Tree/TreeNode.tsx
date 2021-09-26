@@ -1,7 +1,7 @@
 import { usePress } from "@react-aria/interactions";
 import { TreeState } from "@react-stately/tree";
 import { Node } from "@react-types/shared";
-import React, { useRef } from "react";
+import React, { Key, useRef } from "react";
 import { ItemStateContext } from "../Collections/ItemStateContext";
 import { StyledListItem } from "../List/StyledListItem";
 import { styled } from "../styled";
@@ -12,6 +12,7 @@ import { useTreeNodeToggleButton } from "./useTreeNodeToggleButton";
 type TreeNodeProps<T> = {
   item: Node<T>;
   state: TreeState<T>;
+  onAction?: (key: Key) => void;
   containerFocused: boolean;
 };
 const StyledTreeNode = styled(StyledListItem).attrs({ as: "div" })<{
@@ -31,6 +32,7 @@ export function TreeNode<T>({
     disabledKeys,
     toggleKey,
   },
+  onAction,
   containerFocused,
 }: TreeNodeProps<T>) {
   const ref = useRef(null);
@@ -52,6 +54,7 @@ export function TreeNode<T>({
     item,
     ref,
     toggleKey,
+    onAction,
     selectionManager,
     disabled: isDisabled,
   });

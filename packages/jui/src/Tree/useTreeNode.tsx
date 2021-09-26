@@ -11,11 +11,13 @@ export function useTreeNode<T>({
   selectionManager,
   disabled,
   toggleKey,
+  onAction,
 }: {
   item: Node<T>;
   ref: RefObject<HTMLElement>;
   disabled: boolean;
   toggleKey: (key: Key) => void;
+  onAction?: (key: Key) => void;
   selectionManager: SelectionManager;
 }) {
   const {
@@ -35,7 +37,7 @@ export function useTreeNode<T>({
     if (item.hasChildNodes) {
       toggleKey(item.key);
     } else {
-      // on action.
+      onAction?.(item.key);
     }
   };
 

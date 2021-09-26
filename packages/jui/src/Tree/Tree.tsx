@@ -1,14 +1,18 @@
-import { TreeProps } from "@react-stately/tree";
-import React, { useRef } from "react";
+import { TreeProps as StatelyTreeProps } from "@react-stately/tree";
+import React, { Key, useRef } from "react";
 import { StyledList } from "../List/StyledList";
 import { TreeNode } from "./TreeNode";
 import { useTreeState } from "./__tmp__useTreeState";
 import { useSelectableTree } from "./useSelectableTree";
 import { replaceSelectionManager } from "../selection/replaceSelectionManager";
 
-interface Props<T extends object> extends TreeProps<T> {
+export interface TreeProps<T extends object> extends StatelyTreeProps<T> {
   fillAvailableSpace?: boolean;
-  isVirtualized?: boolean;
+  /**
+   * Called when the action associated with a leaf tree node should be taken.
+   * The exact UI interaction is abstracted away, but it's either Enter key or double click.
+   */
+  onAction?: (key: Key) => void;
 }
 
 /**
@@ -25,16 +29,16 @@ interface Props<T extends object> extends TreeProps<T> {
  */
 export function Tree<T extends object>({
   fillAvailableSpace = false,
-  isVirtualized,
+  onAction,
   ...props
-}: Props<T>) {
+}: TreeProps<T>) {
   const state = replaceSelectionManager(useTreeState(props));
   const ref = useRef<HTMLDivElement>(null);
 
   const { treeProps, focused } = useSelectableTree(
     {
+      onAction,
       ...state,
-      isVirtualized,
     },
     ref
   );
@@ -53,6 +57,7 @@ export function Tree<T extends object>({
               key={item.key}
               item={item}
               state={state}
+              onAction={onAction}
               containerFocused={focused}
             />
           );
