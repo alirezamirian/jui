@@ -61,7 +61,7 @@ export function useSelectableTree<T>(
     const focusedKey = props.selectionManager.focusedKey;
     const isExpandable =
       focusedKey != null && props.collection.getItem(focusedKey).hasChildNodes;
-    const expanded = focusedKey && props.expandedKeys.has(focusedKey);
+    const expanded = focusedKey != null && props.expandedKeys.has(focusedKey);
     const isDisabled = props.disabledKeys.has(focusedKey);
     if (isDisabled) {
       return;
