@@ -1,3 +1,4 @@
+import { Monaco } from "@monaco-editor/react";
 import {
   DefaultToolWindow,
   PlatformIcon,
@@ -5,7 +6,7 @@ import {
   ToolWindowsState,
   toolWindowState,
 } from "jui";
-import { editor } from "monaco-editor";
+import { editor, languages } from "monaco-editor";
 import { indexBy, map } from "ramda";
 import React, { useEffect, useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
@@ -78,12 +79,12 @@ export const Project = () => {
             {(content) => (
               <Editor
                 height="100%"
-                onMount={(monacoEditor) => {
+                path={activeTab.filePath}
+                onMount={(monacoEditor, monaco) => {
                   monacoEditor.focus();
+                  enableJsx(monaco);
                   editorRef.current = monacoEditor;
                 }}
-                defaultLanguage="typescript" // FIXME
-                language="javascript" // FIXME
                 value={content}
               />
             )}
@@ -94,6 +95,10 @@ export const Project = () => {
   );
 };
 
+/**
+ * an extra component, just ot be able to catch loading state with a suspense, which would otherwise bubble up the
+ * component tree.
+ */
 function CurrentTabContent({
   children,
 }: {
@@ -102,4 +107,15 @@ function CurrentTabContent({
   const activeTab = useRecoilValue(activeEditorTabState);
   const content = useRecoilValue(fileContent(activeTab.filePath));
   return <>{children(content)}</>;
+}
+
+function enableJsx(monaco: Monaco) {
+  monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+    jsx: languages.typescript.JsxEmit.React,
+  });
+
+  monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+    noSemanticValidation: false,
+    noSyntaxValidation: false,
+  });
 }
