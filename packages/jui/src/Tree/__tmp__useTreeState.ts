@@ -151,7 +151,7 @@ export function useTreeState<T extends object>(
   props: TreeProps<T>
 ): TreeState<T> {
   let [expandedKeys, setExpandedKeys] = useControlledState(
-    props.expandedKeys ? new Set(props.expandedKeys) : undefined,
+    props.expandedKeys ? props.expandedKeys : undefined,
     props.defaultExpandedKeys ? new Set(props.defaultExpandedKeys) : new Set(),
     props.onExpandedChange
   );
