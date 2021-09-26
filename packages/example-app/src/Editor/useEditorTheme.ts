@@ -40,6 +40,7 @@ export const useEditorTheme = () => {
         // colors and rules should come from color scheme xml files.
         // see platform/platform-resources/src/DefaultColorSchemesManager.xml
         colors: {
+          // FIXME: read from color scheme files. List of available keys: https://github.com/microsoft/monaco-editor/issues/1631
           "editor.background": "#2B2B2B",
           "editor.lineHighlightBackground": "#323232",
           "editor.lineHighlightBorder": "none",
