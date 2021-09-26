@@ -10,7 +10,7 @@ interface ActionButtonProps extends PressProps {
 export const DEFAULT_MINIMUM_BUTTON_SIZE = 22;
 export const NAVBAR_MINIMUM_BUTTON_SIZE = 20;
 
-const StyledActionButton = styled.button<{ minSize: number }>`
+export const StyledActionButton = styled.button<{ minSize: number }>`
   background: none;
   color: inherit;
   border: 1px solid transparent;
@@ -22,8 +22,11 @@ const StyledActionButton = styled.button<{ minSize: number }>`
   min-width: ${({ minSize }) => `${minSize}px`};
   padding: 0;
   margin: 0;
-  &:hover,
-  &:focus /* in intellij platform, the button doesn't grab the focus after being active. This is not the case in web,
+  &:disabled {
+    opacity: 0.25; // not quite accurate implementation. There might be better ways to style disabled state.
+  }
+  &:hover:not(:disabled),
+  &:focus:not(:disabled) /* in intellij platform, the button doesn't grab the focus after being active. This is not the case in web,
   for better accessibility. But there is no existing UI spec for it in intellij platform obviously. So for now, we
   fallback to the same UI as hover state. Perhaps it can be improved with a opacity or something.*/ {
     outline: none;
@@ -32,7 +35,7 @@ const StyledActionButton = styled.button<{ minSize: number }>`
     border-color: ${({ theme }) =>
       theme.color("ActionButton.hoverBorderColor", "#DFDFDF")};
   }
-  &:active,
+  &:active:not(:disabled),
   .active {
     background: ${({ theme }) =>
       theme.color("ActionButton.pressedBackground", "#CFCFCF")};
@@ -47,5 +50,12 @@ export const ActionButton = React.forwardRef(function ActionButton(
 ) {
   const { pressProps } = usePress(otherProps);
 
-  return <StyledActionButton {...pressProps} minSize={minSize} ref={ref} />;
+  return (
+    <StyledActionButton
+      disabled={otherProps.isDisabled}
+      {...pressProps}
+      minSize={minSize}
+      ref={ref}
+    />
+  );
 });
