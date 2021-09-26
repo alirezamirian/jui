@@ -1,4 +1,5 @@
 import React from "react";
+import { StyledActionButton } from "../ActionButton/ActionButton";
 import { styled } from "../styled";
 import {
   StyledHorizontalSeparator,
@@ -15,7 +16,13 @@ const StyledActionToolbar = styled.div`
 const StyledHorizontalActionToolbar = styled(StyledActionToolbar)`
   padding: 2px 0;
   ${StyledHorizontalSeparator} {
-    margin: 1px 4px;
+    margin: 1px 3px;
+  }
+  // NOTE: in the original implementation, there is no empty space between buttons, but buttons have kind of an
+  // invisible left padding, which is mouse-intractable, but doesn't visually seem a part of the button.
+  // Although implementable, it didn't seem necessary to follow the exact same thing. Margin should be fine.
+  ${StyledActionButton} {
+    margin: 0 2px 0 1px;
   }
 `;
 
@@ -24,6 +31,9 @@ const StyledVerticalActionToolbar = styled(StyledActionToolbar)`
   padding: 0 2px;
   ${StyledVerticalSeparator} {
     margin: 4px 1px;
+  }
+  ${StyledActionButton} {
+    margin: 2px 0 1px 0;
   }
 `;
 
