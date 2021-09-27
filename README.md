@@ -1,10 +1,9 @@
 # JUI
+
 JUI is Intellij Platform UI implemented as a React.js library.
 
-
-
-
 ## Features:
+
 <table>
     <thead>
         <tr>
@@ -209,17 +208,18 @@ JUI is Intellij Platform UI implemented as a React.js library.
 </table>
 
 1. Not exactly a list feature. But more about checking feasibility of it
-2. It seems in Intellij UI, such menu lists are only used in popups. Maybe only 
+2. It seems in Intellij UI, such menu lists are only used in popups. Maybe only
    FlatSpeedSearchPopup
-3. Probably not a feature of Tree itself   
+3. Probably not a feature of Tree itself
 4. Keyboard shortcuts for resizing windows depend on action system implementation and not done yet.
    Also "Remove from sidebar" doesn't fit with how tool windows is implemented at the moment.
 
 ### Intellij platform bugs
+
 These bugs are found in the original Intellij Platform UI, which doesn't exist in JUI:
+
 - in Tree with speed search, when toggling a node changes the matches, the speed search popup is
-  not updated accordingly. Here is an example, in which we have this invalid state, where there 
-  is a match but speed search popup is red: ![img.png](bug-1.png)
+  not updated accordingly. Here is an example, in which we have this invalid state, where there
+  is a match but speed search popup is red: ![img.png](packages/jui/bug-1.png)
 
-
-[CommonShortcuts]: https://github.com/JetBrains/intellij-community/blob/e3c7d96daba1d5d84d5650bde6c220aed225bfda/platform/platform-api/src/com/intellij/openapi/actionSystem/CommonShortcuts.java#L56-L56
+[commonshortcuts]: https://github.com/JetBrains/intellij-community/blob/e3c7d96daba1d5d84d5650bde6c220aed225bfda/platform/platform-api/src/com/intellij/openapi/actionSystem/CommonShortcuts.java#L56-L56
