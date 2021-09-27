@@ -1,3 +1,4 @@
+import { PlatformIcon } from "jui";
 import React from "react";
 import { styled } from "../styled";
 
@@ -7,22 +8,28 @@ export interface SpeedSearchPopupProps {
   active: boolean | undefined;
 }
 
+const StyledSearchIcon = styled(PlatformIcon)`
+  margin-right: 10px;
+  vertical-align: middle;
+`;
+
 /**
  * The little popup view shown at the top left corner of list, tree, etc., which shows the search
  * query.
  * TODO:
  *  - add magnifier icon
  */
-export const SpeedSearchPopup: React.FC<SpeedSearchPopupProps> = ({
-  active,
-  match,
-  children,
-}) =>
+export const SpeedSearchPopup = React.forwardRef<
+  HTMLElement,
+  SpeedSearchPopupProps
+>(({ active, match, children }, ref) =>
   active ? (
-    <StyledSpeedSearchPopup match={match}>
+    <StyledSpeedSearchPopup ref={ref} match={match}>
+      <StyledSearchIcon icon={"actions/search"} />
       {(children || "").replace(/ /g, "\u00A0")}
     </StyledSpeedSearchPopup>
-  ) : null;
+  ) : null
+);
 
 const StyledSpeedSearchPopup = styled.span<{ match?: boolean }>`
   // ref: https://github.com/JetBrains/intellij-community/blob/e3c7d96daba1d5d84d5650bde6c220aed225bfda/platform/platform-impl/src/com/intellij/ui/SpeedSearchBase.java#L53-L53
@@ -47,7 +54,7 @@ const StyledSpeedSearchPopup = styled.span<{ match?: boolean }>`
         )
       : theme.color("SpeedSearch.errorForeground", theme.commonColors.red)};
   z-index: 1;
-  padding: 3px 10px;
-  height: 24px;
+  padding: 3px 7px;
+  height: 25px;
   transform: translateY(-100%);
 `;

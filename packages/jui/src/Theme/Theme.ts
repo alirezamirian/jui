@@ -73,15 +73,18 @@ export class Theme<P extends string = string> {
     // More info: https://github.com/JetBrains/intellij-community/blob/58dbd93e9ea527987466072fa0bfbf70864cd35f/platform/platform-impl/src/com/intellij/ide/ui/UITheme.java#L371-L371
     // NOTE: Maybe this fallback to *.{prop} is something we should have for any type of property, not
     // only colors. Can be refactored if it turned out to be the case.
-    const maybeReferencedValue =
-      this.value<string>(path) || (this.getFallbackFromStar(path) as string);
-    const value =
+    const dereference = (maybeReferencedValue: string | null) =>
       maybeReferencedValue &&
       (this.themeJson.colors?.[maybeReferencedValue] || maybeReferencedValue);
+
     // we could return Color object and it works because of overridden toString. but there
     // will be ts type errors because color css properties expect the value to be string.
     // Of course we can call .toString() on each usage but doesn't seem nice.
-    return value || (fallback as any);
+    return (
+      dereference(this.value<string>(path)) ||
+      (fallback as any) ||
+      dereference(this.getFallbackFromStar(path) as string)
+    );
   }
 
   /**
