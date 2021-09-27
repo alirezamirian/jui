@@ -77,7 +77,7 @@ JUI is Intellij Platform UI implemented as a React.js library.
         </tr>
         <tr>
             <td colspan="3">Icon</td>
-            <td>:construction:</td>
+            <td>:white_check_mark:</td>
         </tr>
         <tr>
             <td colspan="3">Breadcrumb</td>
@@ -97,18 +97,18 @@ JUI is Intellij Platform UI implemented as a React.js library.
         </tr>
         <tr>
             <td colspan="3">Action Button</td>
-            <td>:construction:</td>
+            <td>:white_check_mark:</td>
         </tr>
         <tr>
             <td colspan="3">Action Toolbar</td>
-            <td>:construction:</td>
+            <td>:white_check_mark:</td>
         </tr>
         <tr>
             <td rowspan="3">MenuList <sup>2</sup></td>
         </tr>
         <tr>
-            <td colspan="2">Base</td>
-            <td>:x:</td></tr>
+            <td colspan="2">Basic</td>
+            <td>:white_check_mark:</td></tr>
         <tr>
             <td colspan="2">Speed search (with input)</td>
             <td>:x:</td>
@@ -133,7 +133,7 @@ JUI is Intellij Platform UI implemented as a React.js library.
         </tr>
         <tr>
             <td colspan="2">Basic support</td>
-            <td>:x:</td></tr>
+            <td>🚧</td></tr>
         <tr>
             <td colspan="2">Grouping (always or when not fit in view)</td>
             <td>:x:</td>
@@ -170,7 +170,7 @@ JUI is Intellij Platform UI implemented as a React.js library.
         </tr>
         <tr>
             <td colspan="2">Hide action</td>
-            <td>:white_check_mark:</td>
+            <td>:heavy_check_mark:</td>
         </tr>
         <tr>
             <td colspan="2">Resize</td>
@@ -190,7 +190,7 @@ JUI is Intellij Platform UI implemented as a React.js library.
         </tr>
         <tr>
             <td colspan="2">View Mode - Float</td>
-            <td>:x:</td>
+            <td>:white_check_mark:</td>
         </tr>
         <tr>
             <td colspan="2">View Mode - Window</td>
