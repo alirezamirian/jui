@@ -1,11 +1,10 @@
 import React, { useRef } from "react";
 import { StyledList } from "../../List/StyledList";
-import { TreeNode } from "../TreeNode";
-import { TreeProps } from "../Tree";
-import { useTreeState } from "../__tmp__useTreeState";
 import { replaceSelectionManager } from "../../selection/replaceSelectionManager";
-import { CollectionSpeedSearchContainer } from "../../CollectionSpeedSearch/CollectionSpeedSearchContainer";
 import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
+import { useTreeState } from "../__tmp__useTreeState";
+import { TreeProps } from "../Tree";
+import { TreeNode } from "../TreeNode";
 import { useSpeedSearchTree } from "./useSpeedSearchTree";
 
 export function SpeedSearchTree<T extends object>({
@@ -23,8 +22,10 @@ export function SpeedSearchTree<T extends object>({
     searchPopupProps,
   } = useSpeedSearchTree({ ...state, onAction }, ref);
 
+  // NOTE: SpeedSearchPopup can be rendered as an portal with proper positioning (useOverlayPosition), if overflow
+  // issues required it.
   return (
-    <CollectionSpeedSearchContainer fillAvailableSpace={fillAvailableSpace}>
+    <>
       <SpeedSearchPopup {...searchPopupProps} />
       <StyledList
         as="div"
@@ -44,6 +45,6 @@ export function SpeedSearchTree<T extends object>({
             />
           ))}
       </StyledList>
-    </CollectionSpeedSearchContainer>
+    </>
   );
 }
