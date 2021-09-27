@@ -62,8 +62,7 @@ export function useCollectionSpeedSearch<T>({
     selectionManager: speedSearchSelectionManager,
     keyboardDelegate: speedSearchKeyboardDelegate,
     speedSearch: {
-      active: speedSearch.active,
-      searchTerm: speedSearch.searchTerm,
+      ...speedSearch,
       matches,
     },
     searchPopupProps: {
