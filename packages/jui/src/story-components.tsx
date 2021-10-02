@@ -1,8 +1,12 @@
 import { Item } from "@react-stately/collections";
 import { Selection } from "@react-types/shared";
 import React, { Key } from "react";
+import { styled } from "./styled";
 import { SpeedSearchTree } from "./Tree/SpeedSearchTree/SpeedSearchTree";
 
+export const Container = styled.div`
+  color: ${({ theme }) => theme.color("*.foreground")};
+`;
 export function Pane({ children }: { children: React.ReactNode }) {
   return (
     <div
