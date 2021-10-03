@@ -7,6 +7,8 @@ import { StyledTabProps } from "jui/tabs/StyledDefaultTab";
 export interface TabTheme {
   underlineHeight?: number;
 
+  borderColor?: string;
+
   inactiveUnderlineColor?: string;
   underlineColor?: string;
 
@@ -20,6 +22,14 @@ export interface TabTheme {
   hoverBackground?: string;
   inactiveColoredTabBackground?: string; // not used for now
 }
+
+export const getTabsThemeStyles = ({
+  background,
+  borderColor,
+}: Pick<TabTheme, "background" | "borderColor">) => css`
+  border-color: ${borderColor};
+  background: ${background};
+`;
 
 /**
  * Converts tab theme properties to a chunk of style that can be dropped in a styled version of StyledDefaultTab
@@ -45,8 +55,8 @@ export const getTabThemeStyles = ({
 
   inactiveUnderlineColor,
   underlineColor,
-}: TabTheme) => {
-  return css<StyledTabProps>`
+}: TabTheme) =>
+  css<StyledTabProps>`
     // active indicator
     &::after {
       height: ${underlineHeight != null ? `${underlineHeight}px` : undefined};
@@ -75,4 +85,3 @@ export const getTabThemeStyles = ({
         background: ${active && hoverBackground}
     `}
   `;
-};

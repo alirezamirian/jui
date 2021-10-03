@@ -3,6 +3,7 @@ import { StyledDefaultTab } from "jui/tabs/StyledDefaultTab";
 import { getTabThemeStyles, TabTheme } from "jui/tabs/TabTheme";
 
 export const editorTabTheme = ({ theme }: { theme: Theme }): TabTheme => ({
+  borderColor: theme.color("EditorTabs.borderColor"),
   underlineHeight: theme.value<number>("EditorTabs.underlineHeight"),
   background: theme.color("EditorTabs.background" as UnknownThemeProp),
   underlinedTabInactiveBackground: theme.color(

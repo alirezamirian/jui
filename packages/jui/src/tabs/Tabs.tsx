@@ -4,7 +4,7 @@ import { AriaTabListProps } from "@react-types/tabs";
 import { Tab } from "jui/tabs/Tab";
 import React from "react";
 import { StyledDefaultTab } from "./StyledDefaultTab";
-import { StyledTabs } from "./StyledTabs";
+import { StyledDefaultTabs } from "./StyledDefaultTabs";
 
 export type TabsProps<T> = Omit<AriaTabListProps<T>, "orientation"> & {
   /**
@@ -21,7 +21,7 @@ export type TabsProps<T> = Omit<AriaTabListProps<T>, "orientation"> & {
    */
   active?: boolean;
 
-  // TabsComponent?: typeof StyledTabs;
+  TabsComponent?: typeof StyledDefaultTabs;
   /**
    *
    */
@@ -46,7 +46,7 @@ export const Tabs = <T extends object>({
   const ref = React.useRef(null);
   const { tabListProps } = useTabList(props, state, ref);
   return (
-    <StyledTabs {...tabListProps} ref={ref}>
+    <StyledDefaultTabs {...tabListProps} ref={ref}>
       {[...state.collection].map((item) => (
         <Tab
           key={item.key}
@@ -57,6 +57,6 @@ export const Tabs = <T extends object>({
           Component={TabComponent}
         />
       ))}
-    </StyledTabs>
+    </StyledDefaultTabs>
   );
 };

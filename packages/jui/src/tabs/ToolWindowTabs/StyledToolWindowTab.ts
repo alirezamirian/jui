@@ -3,6 +3,7 @@ import { StyledDefaultTab } from "jui/tabs/StyledDefaultTab";
 import { getTabThemeStyles, TabTheme } from "jui/tabs/TabTheme";
 
 export const toolWindowTabTheme = ({ theme }: { theme: Theme }): TabTheme => ({
+  borderColor: theme.color("ToolWindow.HeaderTab.borderColor"),
   underlineHeight: theme.value<number>("ToolWindow.HeaderTab.underlineHeight"),
   background: "transparent",
   underlinedTabInactiveBackground: theme.color(
