@@ -10,7 +10,8 @@ import { identity, sortBy } from "ramda";
 import React, { useContext } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { DefaultSuspense } from "../DefaultSuspense";
-import { useEditor } from "../Editor/editor.state";
+import { useEditorStateManager } from "../Editor/editor.state";
+import { FILE_ICON, getIconForFile } from "../file-utils";
 import { currentProjectState } from "../Project/project.state";
 import {
   currentProjectTreeState,
@@ -22,7 +23,7 @@ import {
 
 export const ProjectViewPane = (): React.ReactElement => {
   const { slug: repoSlug } = useRecoilValue(currentProjectState);
-  const editor = useEditor();
+  const editor = useEditorStateManager();
 
   const projectTree = useRecoilValue(currentProjectTreeState);
 
@@ -106,30 +107,14 @@ const TreeNodeHint: React.FC = ({ children }) => {
   );
 };
 
-const extensionIconMap: Record<string, string> = {
-  editorconfig: "nodes/editorconfig",
-  json: "fileTypes/json",
-  js: "fileTypes/javaScript",
-  css: "fileTypes/css",
-  yaml: "fileTypes/yaml",
-  java: "fileTypes/java",
-  xml: "fileTypes/xml",
-  html: "fileTypes/html",
-  xhtml: "fileTypes/xhtml",
-  gitignore: "vcs/ignore_file",
-};
-
 const nodeTypeIconMap: { [key in ProjectTreeNode["type"]]?: string } = {
   project: "nodes/folder",
   dir: "nodes/folder",
-  file: "fileTypes/text",
+  file: FILE_ICON,
 };
 
 function findNodeIcon(value: ProjectTreeNode): string | null {
-  const extension = value.name.split(".").pop();
-  return (
-    extensionIconMap[extension || ""] ?? nodeTypeIconMap[value.type] ?? null
-  );
+  return getIconForFile(value.name) ?? nodeTypeIconMap[value.type] ?? null;
 }
 
 const StyledNodeIcon = styled.span`
