@@ -11,7 +11,7 @@ import { Color } from "../Theme/Color";
 const minHeight = `calc(${STRIPE_BUTTON_LINE_HEIGHT} + ${
   2 * STRIPE_BUTTON_CROSS_PADDING + 1 /*border*/
 }px)`;
-console.log(minHeight);
+
 const anchorStyles = ({
   anchor,
   preventCollapse,

@@ -1,5 +1,6 @@
 import { TreeProps as StatelyTreeProps } from "@react-stately/tree";
-import React, { Key, useRef } from "react";
+import { TreeRef } from "jui/Tree/useTreeRef";
+import React, { ForwardedRef, Key, useRef } from "react";
 import { StyledList } from "../List/StyledList";
 import { TreeNode } from "./TreeNode";
 import { useTreeState } from "./__tmp__useTreeState";
@@ -27,41 +28,42 @@ export interface TreeProps<T extends object> extends StatelyTreeProps<T> {
  *  [1]:
  * https://github.com/adobe/react-spectrum/blob/main/packages/@react-stately/selection/src/SelectionManager.ts#L303-L303
  */
-export function Tree<T extends object>({
-  fillAvailableSpace = false,
-  onAction,
-  ...props
-}: TreeProps<T>) {
-  const state = replaceSelectionManager(useTreeState(props));
-  const ref = useRef<HTMLDivElement>(null);
+export const Tree = React.forwardRef(
+  <T extends object>(
+    { fillAvailableSpace = false, onAction, ...props }: TreeProps<T>,
+    forwardedRef: ForwardedRef<TreeRef>
+  ) => {
+    const state = replaceSelectionManager(useTreeState(props, forwardedRef));
+    const ref = useRef<HTMLDivElement>(null);
 
-  const { treeProps, focused } = useSelectableTree(
-    {
-      onAction,
-      ...state,
-    },
-    ref
-  );
-  return (
-    <StyledList
-      as="div"
-      ref={ref}
-      fillAvailableSpace={fillAvailableSpace}
-      {...treeProps}
-    >
-      {[...state.collection.getKeys()]
-        .map((key) => state.collection.getItem(key))
-        .map((item) => {
-          return (
-            <TreeNode
-              key={item.key}
-              item={item}
-              state={state}
-              onAction={onAction}
-              containerFocused={focused}
-            />
-          );
-        })}
-    </StyledList>
-  );
-}
+    const { treeProps, focused } = useSelectableTree(
+      {
+        onAction,
+        ...state,
+      },
+      ref
+    );
+    return (
+      <StyledList
+        as="div"
+        ref={ref}
+        fillAvailableSpace={fillAvailableSpace}
+        {...treeProps}
+      >
+        {[...state.collection.getKeys()]
+          .map((key) => state.collection.getItem(key))
+          .map((item) => {
+            return (
+              <TreeNode
+                key={item.key}
+                item={item}
+                state={state}
+                onAction={onAction}
+                containerFocused={focused}
+              />
+            );
+          })}
+      </StyledList>
+    );
+  }
+);

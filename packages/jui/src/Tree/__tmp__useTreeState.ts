@@ -24,7 +24,8 @@ import {
   MultipleSelection,
   Node,
 } from "@react-types/shared";
-import { Key, useEffect, useMemo } from "react";
+import { TreeRef, useTreeRef } from "jui/Tree/useTreeRef";
+import { ForwardedRef, Key, useEffect, useMemo } from "react";
 import {
   SelectionManager,
   useMultipleSelectionState,
@@ -139,6 +140,8 @@ export interface TreeState<T> {
   /** Toggles the expanded state for an item by its key. */
   toggleKey(key: Key): void;
 
+  expandToKey(key: Key): void;
+
   /** A selection manager to read and update multiple selection state. */
   readonly selectionManager: SelectionManager;
 }
@@ -148,7 +151,8 @@ export interface TreeState<T> {
  * of items from props, item expanded state, and manages multiple selection state.
  */
 export function useTreeState<T extends object>(
-  props: TreeProps<T>
+  props: TreeProps<T>,
+  treeRef?: ForwardedRef<TreeRef>
 ): TreeState<T> {
   let [expandedKeys, setExpandedKeys] = useControlledState(
     props.expandedKeys ? props.expandedKeys : undefined,
@@ -179,16 +183,30 @@ export function useTreeState<T extends object>(
     }
   }, [tree, selectionState.focusedKey]);
 
-  let onToggle = (key: Key) => {
+  const onToggle = (key: Key) => {
     setExpandedKeys((expandedKeys) => toggleKey(expandedKeys, key));
   };
+
+  const expandToKey = (key: Key) => {
+    const keysToExpand = [...expandedKeys];
+    let currentKey: Key | undefined = key;
+    while (currentKey) {
+      keysToExpand.push(currentKey);
+      currentKey = tree.getItem(key)?.parentKey;
+    }
+    setExpandedKeys(new Set(keysToExpand));
+  };
+  const selectionManager = new SelectionManager(tree, selectionState);
+
+  useTreeRef({ selectionManager, expandToKey }, treeRef);
 
   return {
     collection: tree,
     expandedKeys,
     disabledKeys,
     toggleKey: onToggle,
-    selectionManager: new SelectionManager(tree, selectionState),
+    expandToKey,
+    selectionManager: selectionManager,
   };
 }
 

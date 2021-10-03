@@ -1,4 +1,3 @@
-import { TreeState } from "@react-stately/tree";
 import { Key, RefObject, useMemo, useState } from "react";
 import { useSelectableCollection } from "../selection/useSelectableCollection";
 import { TreeKeyboardDelegate } from "./TreeKeyboardDelegate";
@@ -7,6 +6,7 @@ import { useFocusWithin, useKeyboard } from "@react-aria/interactions";
 import { mergeProps } from "@react-aria/utils";
 import { useCollator } from "@react-aria/i18n";
 import { useCollectionAutoScroll } from "../Collections/useCollectionAutoScroll";
+import { TreeState } from "./__tmp__useTreeState";
 
 export type SelectableTreeProps<T> = TreeState<T> & {
   isVirtualized?: boolean;
