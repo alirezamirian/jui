@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ForwardedRef } from "react";
 import { useTheme } from "styled-components";
 import { Theme } from "../Theme/Theme";
 import { IconProps } from "./IconProps";
@@ -64,11 +64,20 @@ function useIconPath(
   return findIconPath(theme, name, modifiers);
 }
 
-export function LafIcon({ themePath, icon, size, ...props }: ThemeIconProps) {
-  const resolvedIconPath = useIconPath(icon, themePath);
+export const LafIcon = React.forwardRef(
+  (
+    { themePath, icon, size, ...props }: ThemeIconProps,
+    ref: ForwardedRef<HTMLElement>
+  ) => {
+    const resolvedIconPath = useIconPath(icon, themePath);
 
-  const svg = useSvgIcon(`platform/platform-impl/src/${resolvedIconPath}`);
-  return (
-    <StyledIconWrapper {...props} dangerouslySetInnerHTML={{ __html: svg }} />
-  );
-}
+    const svg = useSvgIcon(`platform/platform-impl/src/${resolvedIconPath}`);
+    return (
+      <StyledIconWrapper
+        {...props}
+        ref={ref}
+        dangerouslySetInnerHTML={{ __html: svg }}
+      />
+    );
+  }
+);
