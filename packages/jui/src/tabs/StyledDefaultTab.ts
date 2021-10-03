@@ -52,6 +52,7 @@ export const StyledDefaultTab = styled.div<StyledTabProps>`
   display: inline-flex;
   font-size: 0.73rem;
   cursor: default;
+  white-space: nowrap;
 
   // spacing
   padding: 0 0.75rem;

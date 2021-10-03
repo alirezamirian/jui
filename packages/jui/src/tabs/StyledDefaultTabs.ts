@@ -13,6 +13,8 @@ const defaultTabsTheme = ({ theme }: { theme: Theme }) =>
 
 export const StyledDefaultTabs = styled.div`
   display: flex;
+  flex-wrap: nowrap;
+  overflow: hidden;
   box-sizing: border-box;
   border-style: solid;
   border-width: 1px 0;
