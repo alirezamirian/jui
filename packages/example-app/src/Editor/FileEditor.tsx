@@ -16,7 +16,7 @@ import { fileContent } from "../Project/project.state";
 import { Editor } from "./Editor";
 import {
   activeEditorTabState,
-  focusableEditorState,
+  editorRefState,
   useEditorStateManager,
 } from "./editor.state";
 
@@ -36,7 +36,7 @@ export const FileEditor = () => {
   // which is subject to this caching.
   const tabActionsRef = useLatest({ closePath });
 
-  const setEditorFocusable = useSetRecoilState(focusableEditorState);
+  const setEditorRef = useSetRecoilState(editorRefState);
 
   const contentLoadable = useRecoilValueLoadable(
     fileContent(activeTab?.filePath)
@@ -56,7 +56,7 @@ export const FileEditor = () => {
     <StyledFileEditorContainer
       onFocus={() => {
         setActive(true);
-        setEditorFocusable({
+        setEditorRef({
           focus: () => editorRef.current?.focus(),
         });
       }}

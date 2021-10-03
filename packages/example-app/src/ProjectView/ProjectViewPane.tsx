@@ -5,10 +5,11 @@ import {
   PlatformIcon,
   SpeedSearchTree,
   styled,
+  TreeRef,
 } from "jui";
 import { identity, sortBy } from "ramda";
-import React, { useContext } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import React, { useContext, useLayoutEffect, useRef } from "react";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { DefaultSuspense } from "../DefaultSuspense";
 import { useEditorStateManager } from "../Editor/editor.state";
 import { FILE_ICON, getIconForFile } from "../file-utils";
@@ -18,12 +19,18 @@ import {
   expandedKeysState,
   foldersOnTopState,
   ProjectTreeNode,
+  projectViewTreeRefState,
   selectedKeysState,
 } from "./ProjectView.state";
 
 export const ProjectViewPane = (): React.ReactElement => {
   const { slug: repoSlug } = useRecoilValue(currentProjectState);
   const editor = useEditorStateManager();
+  const treeRef = useRef<TreeRef>(null);
+  const setProjectViewTreeRef = useSetRecoilState(projectViewTreeRefState);
+  useLayoutEffect(() => {
+    setProjectViewTreeRef(treeRef);
+  }, [treeRef]);
 
   const projectTree = useRecoilValue(currentProjectTreeState);
 
@@ -38,6 +45,7 @@ export const ProjectViewPane = (): React.ReactElement => {
   return (
     <DefaultSuspense>
       <SpeedSearchTree
+        ref={treeRef}
         items={[projectTree] as ProjectTreeNode[]}
         onAction={(path) => {
           editor.openPath(`${path}`);

@@ -1,5 +1,6 @@
 import { Selection } from "@react-types/shared";
-import { Key } from "react";
+import { TreeRef } from "jui";
+import { Key, RefObject } from "react";
 import { atom, selector } from "recoil";
 import {
   currentProjectFilesState,
@@ -45,6 +46,11 @@ export const expandedKeysState = atom({
 export const selectedKeysState = atom<Selection>({
   key: "projectView.selectedKeys",
   default: new Set<Key>([]),
+});
+
+export const projectViewTreeRefState = atom<null | RefObject<TreeRef>>({
+  key: "projectView.focusHandle",
+  default: null,
 });
 
 export const currentProjectTreeState = selector({

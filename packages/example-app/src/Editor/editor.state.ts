@@ -5,6 +5,7 @@ import {
   useRecoilState,
   useSetRecoilState,
 } from "recoil";
+import { Focusable } from "../common-types";
 
 interface EditorTabState {
   cursorPos: { lineNumber: number; column: number };
@@ -27,13 +28,11 @@ export const activeEditorTabState = selector({
   get: ({ get }) => get(editorTabsState)[get(activeEditorTabIndexState)],
 });
 
-type Focusable = { focus: () => void };
-
 /**
  * could be a global variable also, since there is no re-rendering need for it. It's kept as an atom, just to avoid
  * global variable and its issues.
  */
-export const focusableEditorState = atom<null | Focusable>({
+export const editorRefState = atom<null | Focusable>({
   key: "editor.focusHandle",
   default: null,
 });
@@ -51,7 +50,7 @@ export const useEditorStateManager = (): EditorStateManager => {
   const setActiveTabIndex = useSetRecoilState(activeEditorTabIndexState);
   const focus = useRecoilCallback(
     ({ snapshot }) => () => {
-      snapshot.getLoadable(focusableEditorState).valueOrThrow()?.focus();
+      snapshot.getLoadable(editorRefState).valueOrThrow()?.focus();
     },
     []
   );

@@ -8,5 +8,6 @@
     "recoil": "^0.4.1",
     "styled-components": "^5.2.3",
     "xterm": "^4.14.1"
-  }
+  },
+  "devDependencies": {}
 }

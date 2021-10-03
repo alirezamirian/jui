@@ -1,15 +1,28 @@
 import { ActionButton, PlatformIcon } from "jui";
-import React from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import React, { Key } from "react";
+import { useRecoilCallback, useRecoilValue, useSetRecoilState } from "recoil";
 import { activeEditorTabState } from "../Editor/editor.state";
 import { currentProjectFilesState } from "../Project/project.state";
-import { expandedKeysState, selectedKeysState } from "./ProjectView.state";
+import {
+  expandedKeysState,
+  projectViewTreeRefState,
+} from "./ProjectView.state";
 
 export const ProjectViewActionButtons = (): React.ReactElement => {
-  const [expandedKeys, setExpandedKeys] = useRecoilState(expandedKeysState);
-  const setSelectedKeys = useSetRecoilState(selectedKeysState);
+  const setExpandedKeys = useSetRecoilState(expandedKeysState);
   const { items } = useRecoilValue(currentProjectFilesState);
   const activeTab = useRecoilValue(activeEditorTabState);
+  const expandToKeyAndSelect = useRecoilCallback(
+    ({ snapshot }) => (key: Key) => {
+      const treeRef = snapshot
+        .getLoadable(projectViewTreeRefState)
+        .valueOrThrow()?.current;
+      treeRef?.expandToKey(key);
+      treeRef?.replaceSelection(key);
+      treeRef?.focus(key);
+    },
+    []
+  );
   const collapseAll = () => setExpandedKeys(new Set()); // in Intellij, it also changes selection some times.
   const expandAll = () => {
     const allDirPaths = [""].concat(
@@ -24,16 +37,7 @@ export const ProjectViewActionButtons = (): React.ReactElement => {
   };
   const selectOpenedFile = () => {
     if (activeTab) {
-      const keysToExpand = [""].concat(
-        activeTab.filePath
-          .split("/")
-          .map((part, index, parts) => parts.slice(0, index + 1).join("/"))
-      );
-      setExpandedKeys(new Set([...expandedKeys, ...keysToExpand]));
-      setSelectedKeys(new Set([activeTab.filePath]));
-      // TODO: move focus to the project view tool window. Imperatively moving focus to some tool window is not
-      //  currently supported, but it can be a feature exposed by ToolWindows :-?
-      // TODO: selected file is not scrolled into view.
+      expandToKeyAndSelect(activeTab.filePath);
     }
   };
   return (
