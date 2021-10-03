@@ -1,73 +1,11 @@
-import { css, styled } from "../styled";
+import { getTabThemeStyles } from "jui/tabs/TabTheme";
+import { styled } from "../styled";
 import { Theme, UnknownThemeProp } from "../Theme";
 
-export interface TabTheme {
-  underlineHeight?: number;
-
-  inactiveUnderlineColor?: string;
-  underlineColor?: string;
-
-  underlinedTabInactiveForeground?: string;
-  underlinedTabForeground?: string;
-
-  background?: string;
-  underlinedTabBackground?: string;
-  underlinedTabInactiveBackground?: string;
-  hoverInactiveBackground?: string;
-  hoverBackground?: string;
-  inactiveColoredTabBackground?: string; // not used for now
-}
-
-type Props = {
+export type StyledTabProps = {
   selected?: boolean;
   disabled?: boolean;
   active?: boolean;
-};
-
-export const getTabThemeStyles = ({
-  underlineHeight,
-
-  background,
-  underlinedTabBackground,
-  underlinedTabInactiveBackground,
-  hoverInactiveBackground,
-  hoverBackground,
-
-  underlinedTabForeground,
-  underlinedTabInactiveForeground,
-
-  inactiveUnderlineColor,
-  underlineColor,
-}: TabTheme) => {
-  return css<Props>`
-    // active indicator
-    &::after {
-      height: ${underlineHeight != null ? `${underlineHeight}px` : undefined};
-      background-color: ${({ selected }) => selected && inactiveUnderlineColor};
-      background-color: ${({ selected, active }) =>
-        selected && active && underlineColor};
-    }
-
-    // foreground rules
-    color: ${({ selected }) => selected && underlinedTabInactiveForeground};
-    color: ${({ selected, active }) =>
-      selected && active && underlinedTabForeground};
-
-    //  background rules
-    background: ${background};
-    background: ${({ selected }) =>
-      selected && underlinedTabInactiveBackground};
-    background: ${({ selected, active }) =>
-      selected && active && underlinedTabBackground};
-
-    ${({ disabled, active }) =>
-      !disabled &&
-      css`
-      &:hover {
-        background: ${hoverInactiveBackground};
-        background: ${active && hoverBackground}
-    `}
-  `;
 };
 
 const defaultTabTheme = ({ theme }: { theme: Theme }) =>
@@ -109,13 +47,14 @@ const defaultTabTheme = ({ theme }: { theme: Theme }) =>
     ),
   });
 
-export const StyledDefaultTab = styled.div<Props>`
+export const StyledDefaultTab = styled.div<StyledTabProps>`
   box-sizing: border-box;
+  display: inline-flex;
   font-size: 0.73rem;
   cursor: default;
 
   // spacing
-  padding: 0 0.5rem;
+  padding: 0 0.75rem;
   line-height: 1.7rem; // vertical spacing handled by line-height
 
   // disabled state doesn't seem to be supported in Intellij Platform at all.

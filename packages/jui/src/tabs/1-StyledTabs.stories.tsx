@@ -1,17 +1,24 @@
 import { Meta } from "@storybook/react";
-import { StyledDebuggerTab } from "jui/tabs/StyledDebuggerTab";
-import { StyledEditorTab } from "jui/tabs/StyledEditorTab";
+import { Container } from "jui/story-components";
+import { StyledEditorTab } from "jui/tabs/EditorTabs/StyledEditorTab";
+import { StyledDebuggerTab } from "jui/tabs/DebuggerTabs/StyledDebuggerTab";
+import { StyledDefaultTab } from "jui/tabs/StyledDefaultTab";
 import { StyledTabs } from "jui/tabs/StyledTabs";
-import { StyledToolWindowTab } from "jui/tabs/StyledToolWindowTab";
+import { StyledToolWindowTab } from "jui/tabs/ToolWindowTabs/StyledToolWindowTab";
 import React from "react";
-import { Container } from "../story-components";
-import { StyledDefaultTab } from "./StyledDefaultTab";
 
 export default {
-  title: "Components/Tabs",
+  title: "Components/Tabs/Styled Components",
+  component: StyledTabs,
+  subcomponents: {
+    StyledDefaultTab,
+    StyledDebuggerTab,
+    StyledEditorTab,
+    StyledToolWindowTab,
+  },
 } as Meta;
 
-export const Styled = (): React.ReactElement => {
+export const StyledComponents = (): React.ReactElement => {
   return (
     <Container>
       <h3>StyledDefaultTab</h3>

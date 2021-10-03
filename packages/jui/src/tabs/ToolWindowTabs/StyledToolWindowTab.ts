@@ -1,9 +1,6 @@
 import { styled, Theme } from "jui";
-import {
-  getTabThemeStyles,
-  StyledDefaultTab,
-  TabTheme,
-} from "jui/tabs/StyledDefaultTab";
+import { StyledDefaultTab } from "jui/tabs/StyledDefaultTab";
+import { getTabThemeStyles, TabTheme } from "jui/tabs/TabTheme";
 
 export const toolWindowTabTheme = ({ theme }: { theme: Theme }): TabTheme => ({
   underlineHeight: theme.value<number>("ToolWindow.HeaderTab.underlineHeight"),
