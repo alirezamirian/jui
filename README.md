@@ -129,13 +129,18 @@ JUI is Intellij Platform UI implemented as a React.js library.
             <td>❌</td>
         </tr>
         <tr>
-            <td rowspan="3">Tabs</td>
+            <td rowspan="4">Tabs</td>
         </tr>
         <tr>
             <td colspan="2">Basic support</td>
-            <td>🚧</td></tr>
+            <td>✅</td>
+        </tr>
         <tr>
-            <td colspan="2">Grouping (always or when not fit in view)</td>
+            <td colspan="2">Overflow scroll and shadows</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td colspan="2">Overflow dropdown menu</td>
             <td>❌</td>
         </tr>
         <tr>

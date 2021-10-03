@@ -22,6 +22,9 @@ import {
 
 /**
  * Used as main content in the main ToolWindows. Shows currently opened files tabs and the editor.
+ *
+ * TODO: preserve editor state when switching between tabs
+ * TODO: support multiple editors in split view.
  */
 export const FileEditor = () => {
   const { tabs, closePath, select: selectTab } = useEditorStateManager();
