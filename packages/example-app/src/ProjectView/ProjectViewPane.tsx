@@ -122,7 +122,10 @@ const nodeTypeIconMap: { [key in ProjectTreeNode["type"]]?: string } = {
 };
 
 function findNodeIcon(value: ProjectTreeNode): string | null {
-  return getIconForFile(value.name) ?? nodeTypeIconMap[value.type] ?? null;
+  if (value.type === "file") {
+    return getIconForFile(value.name);
+  }
+  return nodeTypeIconMap[value.type] ?? null;
 }
 
 const StyledNodeIcon = styled.span`
