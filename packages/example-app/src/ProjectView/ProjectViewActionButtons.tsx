@@ -1,11 +1,12 @@
 import { ActionButton, PlatformIcon } from "jui";
-import React, { Key } from "react";
+import React from "react";
 import { useRecoilCallback, useRecoilValue, useSetRecoilState } from "recoil";
 import { activeEditorTabState } from "../Editor/editor.state";
 import { currentProjectFilesState } from "../Project/project.state";
 import {
   expandedKeysState,
-  projectViewTreeRefState,
+  expandToPathCallback,
+  selectKeyAndFocusCallback,
 } from "./ProjectView.state";
 
 export const ProjectViewActionButtons = (): React.ReactElement => {
@@ -13,26 +14,15 @@ export const ProjectViewActionButtons = (): React.ReactElement => {
   const { items } = useRecoilValue(currentProjectFilesState);
   const activeTab = useRecoilValue(activeEditorTabState);
 
-  const expandToKey = useRecoilCallback(({ snapshot }) => (key: Key) => {
-    const expandedKeys = snapshot.getLoadable(expandedKeysState).valueOrThrow();
-    const keysToExpand = [""].concat(
-      `${key}`
-        .split("/")
-        .map((part, index, parts) => parts.slice(0, index + 1).join("/"))
-    );
-    setExpandedKeys(new Set([...expandedKeys, ...keysToExpand]));
-  });
+  const expandToOpenedFile = useRecoilCallback(expandToPathCallback, []);
+  const selectKeyAndFocus = useRecoilCallback(selectKeyAndFocusCallback, []);
+  const selectOpenedFile = () => {
+    if (activeTab) {
+      expandToOpenedFile(activeTab.filePath);
+      selectKeyAndFocus(activeTab.filePath);
+    }
+  };
 
-  const selectKeyAndFocus = useRecoilCallback(
-    ({ snapshot }) => (key: Key) => {
-      const treeRef = snapshot
-        .getLoadable(projectViewTreeRefState)
-        .valueOrThrow()?.current;
-      treeRef?.replaceSelection(key);
-      treeRef?.focus(key);
-    },
-    []
-  );
   const collapseAll = () => setExpandedKeys(new Set()); // in Intellij, it also changes selection some times.
   const expandAll = () => {
     const allDirPaths = [""].concat(
@@ -44,12 +34,6 @@ export const ProjectViewActionButtons = (): React.ReactElement => {
       );
     }
     setExpandedKeys(new Set(allDirPaths.slice(0, 100)));
-  };
-  const selectOpenedFile = () => {
-    if (activeTab) {
-      expandToKey(activeTab.filePath);
-      selectKeyAndFocus(activeTab.filePath);
-    }
   };
   return (
     <>

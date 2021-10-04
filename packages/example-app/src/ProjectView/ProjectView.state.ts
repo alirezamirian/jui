@@ -1,7 +1,7 @@
 import { Selection } from "@react-types/shared";
 import { TreeRef } from "jui";
 import { Key, RefObject } from "react";
-import { atom, selector } from "recoil";
+import { atom, CallbackInterface, selector } from "recoil";
 import {
   currentProjectFilesState,
   currentProjectState,
@@ -108,3 +108,35 @@ function createTreeFromNodes(items: FileTreeItem[], project: GithubProject) {
   };
   return root;
 }
+
+/**
+ * a function to be passed to useRecoilCallback to get back a callback for expanding to a certain path in project view.
+ * @param snapshot
+ * @param set
+ */
+export const expandToPathCallback = ({ snapshot, set }: CallbackInterface) => (
+  path: string
+) => {
+  const expandedKeys = snapshot.getLoadable(expandedKeysState).valueOrThrow();
+  const keysToExpand = [""].concat(
+    path
+      .split("/")
+      .map((part, index, parts) => parts.slice(0, index + 1).join("/"))
+  );
+  set(expandedKeysState, new Set([...expandedKeys, ...keysToExpand]));
+};
+
+/**
+ * a function to be passed to useRecoilCallback to get back a callback for selecting a file in project view and focusing
+ * the project view.
+ * // TODO: open project view tool window if needed, when tool window state is also moved to recoil instead of local
+ * //  state.
+ */
+export const selectKeyAndFocusCallback = ({ snapshot }: CallbackInterface) => (
+  key: Key
+) => {
+  const treeRef = snapshot.getLoadable(projectViewTreeRefState).valueOrThrow()
+    ?.current;
+  treeRef?.replaceSelection(key);
+  treeRef?.focus(key);
+};
