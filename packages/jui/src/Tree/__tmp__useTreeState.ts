@@ -192,7 +192,7 @@ export function useTreeState<T extends object>(
     let currentKey: Key | undefined = key;
     while (currentKey) {
       keysToExpand.push(currentKey);
-      currentKey = tree.getItem(key)?.parentKey;
+      currentKey = tree.getItem(currentKey)?.parentKey;
     }
     setExpandedKeys(new Set(keysToExpand));
   };
