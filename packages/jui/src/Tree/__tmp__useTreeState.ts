@@ -140,8 +140,6 @@ export interface TreeState<T> {
   /** Toggles the expanded state for an item by its key. */
   toggleKey(key: Key): void;
 
-  expandToKey(key: Key): void;
-
   /** A selection manager to read and update multiple selection state. */
   readonly selectionManager: SelectionManager;
 }
@@ -187,26 +185,16 @@ export function useTreeState<T extends object>(
     setExpandedKeys((expandedKeys) => toggleKey(expandedKeys, key));
   };
 
-  const expandToKey = (key: Key) => {
-    const keysToExpand = [...expandedKeys];
-    let currentKey: Key | undefined = key;
-    while (currentKey) {
-      keysToExpand.push(currentKey);
-      currentKey = tree.getItem(currentKey)?.parentKey;
-    }
-    setExpandedKeys(new Set(keysToExpand));
-  };
   const selectionManager = new SelectionManager(tree, selectionState);
 
-  useTreeRef({ selectionManager, expandToKey }, treeRef);
+  useTreeRef({ selectionManager }, treeRef);
 
   return {
     collection: tree,
     expandedKeys,
     disabledKeys,
     toggleKey: onToggle,
-    expandToKey,
-    selectionManager: selectionManager,
+    selectionManager,
   };
 }
 

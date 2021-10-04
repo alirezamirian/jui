@@ -4,7 +4,6 @@ import { ForwardedRef, Key, useImperativeHandle } from "react";
 
 export interface TreeRef {
   focus(key: Key): void;
-  expandToKey(key: Key): void;
   replaceSelection(key: Key): void;
 }
 
@@ -13,7 +12,7 @@ export interface TreeRef {
  * specific key, etc.
  */
 export function useTreeRef(
-  props: Pick<SelectableTreeProps<unknown>, "selectionManager" | "expandToKey">,
+  props: Pick<SelectableTreeProps<unknown>, "selectionManager">,
   forwardedRef?: ForwardedRef<TreeRef>
 ) {
   const latestState = useLatest(props);
@@ -22,9 +21,6 @@ export function useTreeRef(
     forwardedRef,
     () => {
       return {
-        expandToKey: (key: Key) => {
-          latestState.current.expandToKey(key);
-        },
         replaceSelection: (key: Key) => {
           latestState.current.selectionManager.replaceSelection(key);
         },

@@ -12,12 +12,22 @@ export const ProjectViewActionButtons = (): React.ReactElement => {
   const setExpandedKeys = useSetRecoilState(expandedKeysState);
   const { items } = useRecoilValue(currentProjectFilesState);
   const activeTab = useRecoilValue(activeEditorTabState);
-  const expandToKeyAndSelect = useRecoilCallback(
+
+  const expandToKey = useRecoilCallback(({ snapshot }) => (key: Key) => {
+    const expandedKeys = snapshot.getLoadable(expandedKeysState).valueOrThrow();
+    const keysToExpand = [""].concat(
+      `${key}`
+        .split("/")
+        .map((part, index, parts) => parts.slice(0, index + 1).join("/"))
+    );
+    setExpandedKeys(new Set([...expandedKeys, ...keysToExpand]));
+  });
+
+  const selectKeyAndFocus = useRecoilCallback(
     ({ snapshot }) => (key: Key) => {
       const treeRef = snapshot
         .getLoadable(projectViewTreeRefState)
         .valueOrThrow()?.current;
-      treeRef?.expandToKey(key);
       treeRef?.replaceSelection(key);
       treeRef?.focus(key);
     },
@@ -37,7 +47,8 @@ export const ProjectViewActionButtons = (): React.ReactElement => {
   };
   const selectOpenedFile = () => {
     if (activeTab) {
-      expandToKeyAndSelect(activeTab.filePath);
+      expandToKey(activeTab.filePath);
+      selectKeyAndFocus(activeTab.filePath);
     }
   };
   return (
