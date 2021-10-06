@@ -1,10 +1,13 @@
 import { useTabList } from "@react-aria/tabs";
+import { mergeProps } from "@react-aria/utils";
 import { useTabListState } from "@react-stately/tabs";
 import { AriaTabListProps } from "@react-types/tabs";
-import { Tab } from "jui/tabs/Tab";
+import { StyledHorizontalOverflowShadows } from "jui/tabs/StyledHorizontalOverflowShadows";
+import { useIsScrolled } from "jui/tabs/useIsScrolled";
 import React from "react";
 import { StyledDefaultTab } from "./StyledDefaultTab";
 import { StyledDefaultTabs } from "./StyledDefaultTabs";
+import { Tab } from "./Tab";
 
 export type TabsProps<T> = Omit<AriaTabListProps<T>, "orientation"> & {
   /**
@@ -31,10 +34,9 @@ export type TabsProps<T> = Omit<AriaTabListProps<T>, "orientation"> & {
 /**
  *
  * TODO: add support for overflow:
- *  - scroll
- *  - shadows on ends
+ *  - have vertical scroll also scroll tabs
  *  - arrow down button with overflow menu
- * TODO: add support for re-reordering tabs.
+ *  - add support for re-reordering tabs.
  */
 export const Tabs = <T extends object>({
   focusable,
@@ -45,18 +47,29 @@ export const Tabs = <T extends object>({
   const state = useTabListState(props);
   const ref = React.useRef(null);
   const { tabListProps } = useTabList(props, state, ref);
+
+  const { scrolledIndicatorProps, isScrolled } = useIsScrolled({ ref });
+
   return (
-    <StyledDefaultTabs {...tabListProps} ref={ref}>
-      {[...state.collection].map((item) => (
-        <Tab
-          key={item.key}
-          item={item}
-          state={state}
-          focusable={focusable}
-          active={active}
-          Component={TabComponent}
-        />
-      ))}
-    </StyledDefaultTabs>
+    <StyledHorizontalOverflowShadows
+      hasOverflowAtStart={isScrolled.left}
+      hasOverflowAtEnd={isScrolled.right}
+    >
+      <StyledDefaultTabs
+        {...mergeProps(tabListProps, scrolledIndicatorProps)}
+        ref={ref}
+      >
+        {[...state.collection].map((item) => (
+          <Tab
+            key={item.key}
+            item={item}
+            state={state}
+            focusable={focusable}
+            active={active}
+            Component={TabComponent}
+          />
+        ))}
+      </StyledDefaultTabs>
+    </StyledHorizontalOverflowShadows>
   );
 };
