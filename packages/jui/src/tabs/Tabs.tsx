@@ -42,6 +42,7 @@ export const Tabs = <T extends object>({
   focusable,
   active,
   TabComponent,
+  TabsComponent = StyledDefaultTabs,
   ...props
 }: TabsProps<T>): React.ReactElement => {
   const state = useTabListState(props);

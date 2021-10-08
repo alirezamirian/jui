@@ -1,8 +1,8 @@
 import { styled } from "jui";
 import { editorTabTheme } from "jui/tabs/EditorTabs/StyledEditorTab";
-import { StyledDefaultTab } from "jui/tabs/StyledDefaultTab";
+import { StyledDefaultTabs } from "jui/tabs/StyledDefaultTabs";
 import { getTabsThemeStyles } from "jui/tabs/TabTheme";
 
-export const StyledEditorTabs = styled(StyledDefaultTab)`
+export const StyledEditorTabs = styled(StyledDefaultTabs)`
   ${({ theme }) => getTabsThemeStyles(editorTabTheme({ theme }))};
 `;

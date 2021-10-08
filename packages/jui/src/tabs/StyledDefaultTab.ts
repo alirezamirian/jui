@@ -50,12 +50,12 @@ const defaultTabTheme = ({ theme }: { theme: Theme }) =>
 export const StyledDefaultTab = styled.div<StyledTabProps>`
   box-sizing: border-box;
   display: inline-flex;
-  font-size: 0.73rem;
+  font-size: 0.7rem;
   cursor: default;
   white-space: nowrap;
 
   // spacing
-  padding: 0 0.75rem;
+  padding: 0 0.5rem;
   line-height: 1.7rem; // vertical spacing handled by line-height
 
   // disabled state doesn't seem to be supported in Intellij Platform at all.
