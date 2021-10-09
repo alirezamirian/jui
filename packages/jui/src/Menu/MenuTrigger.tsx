@@ -22,6 +22,7 @@ interface Props extends MenuTriggerProps {
   }) => React.ReactNode;
 }
 
+// FIXME: closeOnSelect should either work or be removed
 // FIXME: Escape doesn't close the menu
 // FIXME: Focus is not restored if nested menu are opened. It may be solved by using useOverlay and closing submenu in click outside.
 // TODO: introduce a more generic Overlay component and use it here too.
@@ -73,6 +74,7 @@ export const MenuTrigger: React.FC<Props> = ({
     placement: getPlacement(direction, align),
     shouldFlip,
     offset: 0,
+    containerPadding: 0,
     isOpen: state.isOpen,
   });
 
