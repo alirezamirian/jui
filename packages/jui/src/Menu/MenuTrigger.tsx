@@ -12,6 +12,7 @@ import React, { HTMLProps, RefObject } from "react";
 import { FocusScope } from "../ToolWindow/FocusScope";
 
 interface Props extends MenuTriggerProps {
+  restoreFocus?: boolean;
   children: (
     props: HTMLProps<HTMLElement>,
     ref: RefObject<any> // Using a generic didn't seem to work for some reason
@@ -32,6 +33,7 @@ export const MenuTrigger: React.FC<Props> = ({
   direction = "bottom",
   align = "start",
   shouldFlip = true,
+  restoreFocus = false,
   ...otherProps
 }) => {
   const menuTriggerProps: MenuTriggerProps = {
@@ -83,7 +85,7 @@ export const MenuTrigger: React.FC<Props> = ({
       {children(buttonProps, triggerRef)}
       {state.isOpen && (
         <OverlayContainer>
-          <FocusScope restoreFocus forceRestoreFocus autoFocus>
+          <FocusScope restoreFocus={restoreFocus} autoFocus>
             <div {...mergeProps(overlayProps, positionProps)} ref={overlayRef}>
               {renderMenu({ menuProps, close: () => state.close() })}
             </div>
