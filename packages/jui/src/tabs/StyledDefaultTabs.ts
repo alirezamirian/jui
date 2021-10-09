@@ -11,23 +11,12 @@ const defaultTabsTheme = ({ theme }: { theme: Theme }) =>
     background: theme.color("DefaultTabs.background"),
   });
 
-const scrollBarDisabledStyle = css`
-  -ms-overflow-style: none; /* for Internet Explorer, Edge */
-  scrollbar-width: none; /* for Firefox */
-  &::-webkit-scrollbar {
-    /* for Chrome/Safari/Webkit */
-    display: none;
-  }
-`;
-
-export const StyledDefaultTabs = styled.div`
+export const StyledDefaultTabs = styled.div<{ noBorders?: boolean }>`
   display: flex;
-  flex-wrap: nowrap;
-  overflow: auto;
+  align-items: center;
   box-sizing: border-box;
   border-style: solid;
-  border-width: 1px 0;
+  border-width: ${({ noBorders }) => (noBorders ? "0" : "1px 0")};
 
-  ${scrollBarDisabledStyle};
   ${defaultTabsTheme};
 `;

@@ -1,6 +1,7 @@
 import { Meta } from "@storybook/react";
+import { MenuItemLayout, PlatformIcon } from "jui";
 import React from "react";
-import { Item, TabsProps } from ".";
+import { Item, TabContentLayout, TabItem, TabsProps } from ".";
 import { Tabs } from "./Tabs";
 
 type StoryProps<T extends TabsProps<unknown> = TabsProps<unknown>> = Pick<
@@ -34,5 +35,34 @@ export const DynamicItems: React.FC<StoryProps> = (props) => {
     >
       {({ title }: { title: string }) => <Item key={title}>{title}</Item>}
     </Tabs>
+  );
+};
+
+export const Overflow: React.FC<StoryProps> = (props) => {
+  const tabs = Array(10)
+    .fill(null)
+    .map((_, index) => ({
+      title: `Big tab title #${index}`,
+      icon: "nodes/folder",
+    }));
+  return (
+    <div style={{ maxWidth: 800 }}>
+      <Tabs {...props} items={tabs}>
+        {(tab) => {
+          const icon = <PlatformIcon icon={tab.icon} />;
+          return (
+            <TabItem
+              key={tab.title}
+              textValue={tab.title}
+              inOverflowMenu={
+                <MenuItemLayout content={tab.title} icon={icon} />
+              }
+            >
+              <TabContentLayout startIcon={icon} title={tab.title} />
+            </TabItem>
+          );
+        }}
+      </Tabs>
+    </div>
   );
 };

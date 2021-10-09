@@ -2,11 +2,12 @@ import { useTab } from "@react-aria/tabs";
 import { TabListState } from "@react-stately/tabs";
 import { Node } from "@react-types/shared";
 import { StyledDefaultTab } from "jui/tabs/StyledDefaultTab";
-import React from "react";
+import React, { useEffect } from "react";
 
 type TabProps<T extends object> = {
   state: TabListState<object>;
   item: Node<T>;
+  intersectionObserver: IntersectionObserver | null;
   /**
    * {@see TabsProps#focusable}
    */
@@ -24,6 +25,7 @@ export const Tab = <T extends object>({
   focusable,
   active,
   Component = StyledDefaultTab,
+  intersectionObserver,
 }: TabProps<T>): React.ReactElement => {
   const { key, rendered } = item;
   const ref = React.useRef(null);
@@ -39,6 +41,8 @@ export const Tab = <T extends object>({
   } = useTab({ key }, state, ref);
   const isSelected = state.selectedKey === key;
   const isDisabled = state.disabledKeys.has(key);
+  useIntersectionObserver(ref, intersectionObserver);
+
   return (
     <Component
       {...tabProps}
@@ -52,3 +56,18 @@ export const Tab = <T extends object>({
     </Component>
   );
 };
+
+function useIntersectionObserver(
+  ref: React.MutableRefObject<null>,
+  intersectionObserver: IntersectionObserver | null
+) {
+  useEffect(() => {
+    const element = ref.current;
+    if (element) {
+      intersectionObserver?.observe(element);
+      return () => {
+        intersectionObserver?.unobserve(element);
+      };
+    }
+  }, [intersectionObserver]);
+}
