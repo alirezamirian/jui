@@ -1,3 +1,4 @@
+const libSrcAlias = require("../../../config/lib-src-webpack-alias");
 /**
  * This is needed for cypress component testing.
  *
@@ -16,6 +17,9 @@ module.exports = {
   devtool: false,
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
+    alias: {
+      ...libSrcAlias,
+    },
   },
   module: {
     rules: [

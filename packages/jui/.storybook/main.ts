@@ -1,6 +1,6 @@
-import * as path from "path";
-// @ts-expect-error resolveJsonModule is set to true but doesn't work for some reason, at least in the IDE.
-import packageJson from "../package.json";
+import { Configuration } from "webpack";
+// @ts-expect-error noImplicitAny
+import alias from "../../../config/lib-src-webpack-alias";
 
 module.exports = {
   stories: [
@@ -15,9 +15,11 @@ module.exports = {
     "@storybook/addon-essentials",
     "storybook-addon-themes",
   ],
-  webpackFinal: async (config) => {
+  webpackFinal: async (config: Configuration) => {
+    config.resolve = config.resolve || {};
     config.resolve.alias = {
-      [packageJson.name]: path.resolve(__dirname, "../src"), // to link package usages to src. for example-app
+      ...config.resolve.alias,
+      ...alias,
     };
     return config;
   },
