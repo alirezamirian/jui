@@ -35,7 +35,7 @@ describe("Menu with trigger", () => {
   });
 
   it("when closed, restores focus to where it was", () => {
-    mount(<MenuWithTrigger />);
+    mount(<MenuWithTrigger restoreFocus />);
     cy.get("button[aria-haspopup]").realClick(); // open the menu by clicking the trigger.
     cy.realPress("Escape"); // close the menu by pressing escape
     cy.focused().should("have.attr", "aria-haspopup"); // trigger button should now be focused again

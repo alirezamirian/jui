@@ -127,9 +127,11 @@ export const Position = ({ offsetRight = 230 }: { offsetRight: number }) => {
 export const MenuWithTrigger = ({
   offsetRight,
   offsetBottom,
+  restoreFocus,
 }: {
   offsetRight?: number;
   offsetBottom?: number;
+  restoreFocus?: boolean;
 }) => {
   return (
     <div
@@ -146,6 +148,7 @@ export const MenuWithTrigger = ({
     >
       <ActionToolbar>
         <MenuTrigger
+          restoreFocus={restoreFocus}
           renderMenu={({ menuProps, close }) => (
             <Menu
               items={items}

@@ -85,7 +85,11 @@ export const MenuTrigger: React.FC<Props> = ({
       {children(buttonProps, triggerRef)}
       {state.isOpen && (
         <OverlayContainer>
-          <FocusScope restoreFocus={restoreFocus} autoFocus>
+          <FocusScope
+            restoreFocus={restoreFocus}
+            forceRestoreFocus={restoreFocus}
+            autoFocus
+          >
             <div {...mergeProps(overlayProps, positionProps)} ref={overlayRef}>
               {renderMenu({ menuProps, close: () => state.close() })}
             </div>
