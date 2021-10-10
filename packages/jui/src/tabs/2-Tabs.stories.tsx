@@ -1,12 +1,17 @@
 import { Meta } from "@storybook/react";
 import { MenuItemLayout, PlatformIcon } from "jui";
 import React from "react";
-import { Item, TabContentLayout, TabItem, TabsProps } from ".";
+import { TabContentLayout, TabItem, TabsProps } from ".";
 import { Tabs } from "./Tabs";
 
 type StoryProps<T extends TabsProps<unknown> = TabsProps<unknown>> = Pick<
   T,
-  "active" | "focusable" | "defaultSelectedKey"
+  | "active"
+  | "focusable"
+  | "defaultSelectedKey"
+  | "multiRow"
+  | "noOverflowMenu"
+  | "noBorders"
 >;
 
 export default {
@@ -17,28 +22,28 @@ export default {
   },
 } as Meta;
 
-export const StaticItems: React.FC<StoryProps> = (props) => {
+export const StaticItems = (props: StoryProps) => {
   return (
     <Tabs {...props}>
-      <Item>Tab 1</Item>
-      <Item>Tab 2</Item>
-      <Item>Tab 3</Item>
+      <TabItem>Tab 1</TabItem>
+      <TabItem>Tab 2</TabItem>
+      <TabItem>Tab 3</TabItem>
     </Tabs>
   );
 };
 
-export const DynamicItems: React.FC<StoryProps> = (props) => {
+export const DynamicItems = (props: StoryProps) => {
   return (
     <Tabs
       {...props}
       items={["Tab 1", "Tab 2", "Tab 3"].map((title) => ({ title }))}
     >
-      {({ title }: { title: string }) => <Item key={title}>{title}</Item>}
+      {({ title }: { title: string }) => <TabItem key={title}>{title}</TabItem>}
     </Tabs>
   );
 };
 
-export const Overflow: React.FC<StoryProps> = (props) => {
+export const Overflow = (props: StoryProps) => {
   const tabs = Array(10)
     .fill(null)
     .map((_, index) => ({

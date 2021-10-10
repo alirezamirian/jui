@@ -23,7 +23,7 @@ export const SpeedSearchTree = React.forwardRef(
       searchPopupProps,
     } = useSpeedSearchTree({ ...state, onAction }, ref);
 
-    // NOTE: SpeedSearchPopup can be rendered as an portal with proper positioning (useOverlayPosition), if overflow
+    // NOTE: SpeedSearchPopup can be rendered as a portal with proper positioning (useOverlayPosition), if overflow
     // issues required it.
     return (
       <>
