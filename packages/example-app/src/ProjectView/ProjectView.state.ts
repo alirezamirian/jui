@@ -51,6 +51,7 @@ export const selectedKeysState = atom<Selection>({
 export const projectViewTreeRefState = atom<null | RefObject<TreeRef>>({
   key: "projectView.focusHandle",
   default: null,
+  dangerouslyAllowMutability: true,
 });
 
 export const currentProjectTreeState = selector({

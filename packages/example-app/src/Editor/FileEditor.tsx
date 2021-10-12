@@ -1,6 +1,6 @@
 import { Monaco } from "@monaco-editor/react";
-import { Item, PlatformIcon, styled } from "jui";
-import { EditorTabs } from "jui/tabs";
+import { MenuItemLayout, PlatformIcon, styled } from "jui";
+import { EditorTabs, TabItem } from "jui/tabs";
 import { EditorTabContent } from "jui/tabs/EditorTabs";
 import { useLatest } from "jui/utils/useLatest";
 import { editor, languages } from "monaco-editor";
@@ -50,8 +50,8 @@ export const FileEditor = () => {
   // Note that it's event currently buggy
   useEffect(() => {
     editorRef.current?.focus();
-    if (activeTab?.cursorPos) {
-      editorRef.current?.setPosition(activeTab?.cursorPos);
+    if (activeTab?.editorState.cursorPos) {
+      editorRef.current?.setPosition(activeTab?.editorState.cursorPos);
     }
   }, [activeTab?.filePath]);
 
@@ -75,20 +75,27 @@ export const FileEditor = () => {
           onSelectionChange={(key) =>
             selectTab(tabs.findIndex((tab) => tab.filePath === key))
           }
+          noBorders
         >
           {(tab) => {
             const filename = getFilename(tab.filePath);
-            const icon = getIconForFile(tab.filePath);
+            const icon = <PlatformIcon icon={getIconForFile(tab.filePath)} />;
             return (
-              <Item key={tab.filePath} textValue={filename}>
+              <TabItem
+                key={tab.filePath}
+                textValue={filename}
+                inOverflowMenu={
+                  <MenuItemLayout content={filename} icon={icon} />
+                }
+              >
                 <EditorTabContent
-                  icon={<PlatformIcon icon={icon} />}
+                  icon={icon}
                   title={filename}
                   onClose={() => {
                     tabActionsRef.current.closePath(tab.filePath);
                   }}
                 />
-              </Item>
+              </TabItem>
             );
           }}
         </EditorTabs>

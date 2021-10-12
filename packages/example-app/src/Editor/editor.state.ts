@@ -7,8 +7,13 @@ import {
 } from "recoil";
 import { Focusable } from "../common-types";
 
-interface EditorTabState {
+interface TextEditorState {
   cursorPos: { lineNumber: number; column: number };
+}
+type EditorState = TextEditorState;
+
+interface EditorTabState {
+  editorState: EditorState;
   filePath: string;
 }
 
@@ -74,7 +79,7 @@ export const useEditorStateManager = (): EditorStateManager => {
         ...currentState,
         {
           filePath,
-          cursorPos: { lineNumber: 0, column: 0 }, // no persistence of cursor position for now.
+          editorState: { cursorPos: { lineNumber: 0, column: 0 } }, // no persistence of cursor position for now.
         },
       ]);
       select(newIndex);
