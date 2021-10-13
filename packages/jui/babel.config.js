@@ -4,5 +4,6 @@ module.exports = {
     ["@babel/plugin-proposal-decorators", { legacy: true }],
     "@babel/plugin-proposal-class-properties",
     "@babel/plugin-transform-typescript",
+    ["babel-plugin-styled-components", { displayName: true }],
   ],
 };

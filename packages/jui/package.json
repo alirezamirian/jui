@@ -58,6 +58,7 @@
     "@types/ramda": "^0.27.44",
     "@types/styled-components": "5.1.9",
     "babel-loader": "^8.2.2",
+    "babel-plugin-styled-components": "^1.13.2",
     "cypress": "^8.4.0",
     "cypress-plugin-snapshots": "^1.4.4",
     "cypress-real-events": "^1.5.1",
