@@ -10,6 +10,7 @@ import React, { useState } from "react";
 import { FileEditor } from "../Editor/FileEditor";
 import { ProjectViewActionButtons } from "../ProjectView/ProjectViewActionButtons";
 import { ProjectViewPane } from "../ProjectView/ProjectViewPane";
+import { Terminal } from "../Terminal";
 
 const windows = [
   {
@@ -24,7 +25,7 @@ const windows = [
     id: "terminal",
     title: "Terminal",
     icon: "toolwindows/toolWindowProject",
-    content: <>TODO</>,
+    content: <Terminal />,
     additionalActions: null,
     initialState: toolWindowState({ anchor: "bottom" }),
   },
