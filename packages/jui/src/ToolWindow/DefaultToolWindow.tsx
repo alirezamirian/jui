@@ -41,6 +41,7 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
   additionalActions,
   onFocusChange,
 }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const focusableContentRef = useRef<{ focus: () => void }>(null);
   const {
@@ -50,10 +51,15 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
     toolWindowProps,
     toolWindowContentProps,
     toolWindowHeaderProps,
-  } = useToolWindow(contentRef, focusableContentRef, { onFocusChange });
+  } = useToolWindow(
+    { containerRef, contentRef, focusableContentRef },
+    {
+      onFocusChange,
+    }
+  );
 
   return (
-    <StyledToolWindowContainer {...toolWindowProps}>
+    <StyledToolWindowContainer {...toolWindowProps} ref={containerRef}>
       <ToolWindowHeader
         additionalActions={additionalActions}
         contentHasFocus={contentHasFocus}

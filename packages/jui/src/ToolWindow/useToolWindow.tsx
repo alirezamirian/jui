@@ -1,12 +1,25 @@
 import { useFocusWithin } from "@react-aria/interactions";
 import { mergeProps } from "@react-aria/utils";
-import React, { FocusEventHandler, RefObject, useRef, useState } from "react";
+import React, {
+  FocusEventHandler,
+  RefObject,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useToolWindowState } from "./ToolWindowsState/ToolWindowStateProvider";
 import { useToolWindowMoveHandle } from "./useToolWindowMoveHandle";
 
 export function useToolWindow(
-  contentRef: RefObject<Element>,
-  focusableContentRef: RefObject<{ focus: () => void }>,
+  {
+    containerRef,
+    contentRef,
+    focusableContentRef,
+  }: {
+    containerRef: RefObject<HTMLElement>;
+    contentRef: RefObject<Element>;
+    focusableContentRef: RefObject<{ focus: () => void }>;
+  },
   { onFocusChange }: { onFocusChange?: (focused: boolean) => void } = {}
 ) {
   const [contentHasFocus, setContentHasFocus] = useState(false);
@@ -44,6 +57,18 @@ export function useToolWindow(
     focusableContentRef,
     contentRef
   );
+
+  // If there is no focusable content rendered in the tool window, nothing will be autofocused. In that case
+  // we will focus the tool window container itself as a fallback.
+  useEffect(() => {
+    if (
+      !document.activeElement ||
+      !containerRef.current?.contains(document.activeElement)
+    ) {
+      containerRef.current?.focus();
+    }
+  }, []);
+
   const { moveHandleProps } = useToolWindowMoveHandle();
 
   return {
@@ -75,7 +100,7 @@ function useAutoHide() {
   const hideTimeoutId = useRef<number | null>(null);
   const { focusWithinProps: windowFocusWithinProps } = useFocusWithin({
     onBlurWithin: (e) => {
-      // setTimeout and windowHasFocusRef is to workaround the problem with useFocusWithin, described above.
+      // setTimeout and windowHasFocusRef is to work around the problem with useFocusWithin, described above.
       hideTimeoutId.current = window.setTimeout(() => {
         // Sometimes when the element is blurred, the subsequent focus that is triggered by FocusScope to keep the focus
         // is a little delayed and therefore after the timeout reaches. It seem to happen only when a non-focusable
