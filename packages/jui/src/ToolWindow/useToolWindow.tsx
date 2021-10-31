@@ -6,7 +6,8 @@ import { useToolWindowMoveHandle } from "./useToolWindowMoveHandle";
 
 export function useToolWindow(
   contentRef: RefObject<Element>,
-  focusableContentRef: RefObject<{ focus: () => void }>
+  focusableContentRef: RefObject<{ focus: () => void }>,
+  { onFocusChange }: { onFocusChange?: (focused: boolean) => void } = {}
 ) {
   const [contentHasFocus, setContentHasFocus] = useState(false);
   /**
@@ -33,6 +34,10 @@ export function useToolWindow(
     onFocusWithinChange: setContentHasFocus,
   });
 
+  const { focusWithinProps } = useFocusWithin({
+    onFocusWithinChange: onFocusChange,
+  });
+
   const { toolWindowProps: autoHideProps } = useAutoHide();
 
   const { focusDelegatorProps } = useFocusDelegator(
@@ -43,9 +48,14 @@ export function useToolWindow(
 
   return {
     contentHasFocus,
-    toolWindowProps: mergeProps(focusDelegatorProps, autoHideProps, {
-      tabIndex: -1,
-    }),
+    toolWindowProps: mergeProps(
+      focusDelegatorProps,
+      focusWithinProps,
+      autoHideProps,
+      {
+        tabIndex: -1,
+      }
+    ),
     toolWindowContentProps: contentFocusWithinProps,
     toolWindowHeaderProps: moveHandleProps,
   };
