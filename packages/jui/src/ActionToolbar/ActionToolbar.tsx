@@ -1,3 +1,4 @@
+import { Theme } from "jui/Theme";
 import React from "react";
 import { StyledActionButton } from "../ActionButton/ActionButton";
 import { styled } from "../styled";
@@ -8,13 +9,33 @@ import {
 
 interface ActionToolbarProps {
   orientation?: "vertical" | "horizontal";
+  /**
+   * Whether to include a border to the bottom/right the toolbar, or not.
+   */
+  hasBorder?: boolean;
 }
 const StyledActionToolbar = styled.div`
   display: flex;
 `;
 
-const StyledHorizontalActionToolbar = styled(StyledActionToolbar)`
+const getBorder = ({
+  theme,
+  hasBorder,
+}: {
+  theme: Theme;
+  hasBorder?: boolean;
+}) =>
+  hasBorder
+    ? `1px solid ${theme.color(
+        "Borders.color",
+        theme.dark ? "rgb(50,50,50)" : "rgb(192, 192, 192)"
+      )}`
+    : "none";
+const StyledHorizontalActionToolbar = styled(StyledActionToolbar)<{
+  hasBorder?: boolean;
+}>`
   padding: 2px 0;
+  border-bottom: ${getBorder};
   ${StyledHorizontalSeparator} {
     margin: 1px 3px;
   }
@@ -26,9 +47,13 @@ const StyledHorizontalActionToolbar = styled(StyledActionToolbar)`
   }
 `;
 
-const StyledVerticalActionToolbar = styled(StyledActionToolbar)`
+const StyledVerticalActionToolbar = styled(StyledActionToolbar)<{
+  hasBorder?: boolean;
+}>`
   flex-direction: column;
   padding: 0 2px;
+  border-right: ${getBorder};
+
   ${StyledVerticalSeparator} {
     margin: 4px 1px;
   }
@@ -46,11 +71,16 @@ const StyledVerticalActionToolbar = styled(StyledActionToolbar)`
  */
 export const ActionToolbar: React.FC<ActionToolbarProps> = ({
   orientation = "horizontal",
+  hasBorder = false,
   children,
 }) => {
   return orientation === "horizontal" ? (
-    <StyledHorizontalActionToolbar>{children}</StyledHorizontalActionToolbar>
+    <StyledHorizontalActionToolbar hasBorder={hasBorder}>
+      {children}
+    </StyledHorizontalActionToolbar>
   ) : (
-    <StyledVerticalActionToolbar>{children}</StyledVerticalActionToolbar>
+    <StyledVerticalActionToolbar hasBorder={hasBorder}>
+      {children}
+    </StyledVerticalActionToolbar>
   );
 };
