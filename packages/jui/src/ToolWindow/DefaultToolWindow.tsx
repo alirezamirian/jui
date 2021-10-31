@@ -8,7 +8,7 @@ export interface DefaultToolWindowProps {
   /**
    * title to be shown in the left side of the tool window header.
    */
-  title?: React.ReactNode;
+  headerContent?: React.ReactNode;
   additionalActions?: React.ReactNode;
 }
 
@@ -27,7 +27,7 @@ const StyledToolWindowContent = styled.div`
 
 /**
  * Default component for rendering the content of a tool window. It supports a header and a scrollable area.
- * The header supports showing a title on the left and some default+custom actions on the right.
+ * The header supports showing a content, and some default+custom actions on the right.
  *
  * Remaining features:
  * - Gear icon actions + additional actions (when menu component is added)
@@ -35,7 +35,7 @@ const StyledToolWindowContent = styled.div`
  *
  */
 export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
-  title,
+  headerContent,
   children,
   additionalActions,
 }) => {
@@ -57,7 +57,7 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
         contentHasFocus={contentHasFocus}
         {...toolWindowHeaderProps}
       >
-        {title}
+        {headerContent}
       </ToolWindowHeader>
       <StyledToolWindowContent ref={contentRef} {...toolWindowContentProps}>
         {/**

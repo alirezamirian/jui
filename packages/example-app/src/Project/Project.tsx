@@ -55,7 +55,7 @@ export const Project = () => {
         return (
           <DefaultToolWindow
             key={id}
-            title={windowById[id].title}
+            headerContent={windowById[id].title}
             additionalActions={additionalActions}
           >
             {content}

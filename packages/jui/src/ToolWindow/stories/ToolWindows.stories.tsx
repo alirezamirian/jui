@@ -105,7 +105,7 @@ export const Default = (
         return (
           <DefaultToolWindow
             key={id} /*FIXME: this shouldn't be necessary */
-            title={windowById[id].title}
+            headerContent={windowById[id].title}
             additionalActions={
               id === "project" && (
                 <>
