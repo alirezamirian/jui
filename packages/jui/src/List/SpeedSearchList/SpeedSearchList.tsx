@@ -20,6 +20,7 @@ export function SpeedSearchList<T extends object>({
   disallowEmptySelection = true,
   alwaysShowListAsFocused = false,
   fillAvailableSpace = false,
+  onAction,
   ...inputProps
 }: SpeedSearchListProps<T>) {
   const props = { ...inputProps, disallowEmptySelection };
@@ -49,6 +50,7 @@ export function SpeedSearchList<T extends object>({
                 item={getHighlightedItem(item)}
                 state={state}
                 listFocused={alwaysShowListAsFocused || focused}
+                onAction={() => onAction?.(item.key)}
               />
             ),
           })

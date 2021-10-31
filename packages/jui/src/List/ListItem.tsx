@@ -9,6 +9,7 @@ export interface ListItemProps<T> {
   listFocused: boolean;
   item: Node<T>;
   state: ListState<T>;
+  onAction: () => void;
   children?: React.ReactNode;
 }
 
@@ -16,6 +17,7 @@ export function ListItem<T>({
   listFocused,
   item,
   state,
+  onAction,
   children,
 }: ListItemProps<T>) {
   const ref = React.useRef(null);
@@ -40,6 +42,7 @@ export function ListItem<T>({
       disabled={disabled}
       aria-disabled={disabled}
       aria-selected={selected}
+      onDoubleClick={onAction}
       {...pressProps}
       ref={ref}
     >

@@ -1,5 +1,5 @@
 import { AriaListBoxProps } from "@react-types/listbox";
-import React, { useRef } from "react";
+import React, { Key, useRef } from "react";
 import { useList } from "./useList";
 import { ListItem } from "./ListItem";
 import { StyledList } from "./StyledList";
@@ -21,6 +21,11 @@ export interface ListProps<T extends object> extends AriaListBoxProps<T> {
    * Jetbrains UI behaviour.
    */
   alwaysShowListAsFocused?: boolean;
+  /**
+   * Called when the action for the item should be triggered, which can be by double click or pressing Enter.
+   * Enter not implemented yet :D
+   */
+  onAction?: (key: Key) => void;
 }
 
 /**
@@ -34,6 +39,7 @@ export function List<T extends object>({
   disallowEmptySelection = true,
   alwaysShowListAsFocused = false,
   fillAvailableSpace = false,
+  onAction,
   ...inputProps
 }: ListProps<T>) {
   const props = { ...inputProps, disallowEmptySelection };
@@ -54,6 +60,7 @@ export function List<T extends object>({
               key={item.key}
               item={item}
               state={state}
+              onAction={() => onAction?.(item.key)}
               listFocused={alwaysShowListAsFocused || focused}
             />
           ),
