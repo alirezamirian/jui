@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ForwardedRef, HTMLProps } from "react";
 import { css, styled } from "../styled";
 
 const StyledTabItemLayout = styled.div`
@@ -36,23 +36,29 @@ interface TabItemLayoutProps {
    * the icon placed after the text. Typical use cases: close or pin icon.
    */
   endIcon?: React.ReactNode;
+
+  /**
+   * Generic HTML props passed to the container div.
+   */
+  containerProps?: Omit<HTMLProps<HTMLDivElement>, "ref" | "as">;
 }
 
 /**
  * Helper component for rendering the common layout of tab content.
  */
-export const TabContentLayout: React.FC<TabItemLayoutProps> = ({
-  startIcon,
-  title,
-  endIcon,
-}) => {
-  return (
-    <StyledTabItemLayout>
-      {startIcon && (
-        <StyledStartIconWrapper>{startIcon}</StyledStartIconWrapper>
-      )}
-      {title}
-      {endIcon && <StyledEndIconWrapper>{endIcon}</StyledEndIconWrapper>}
-    </StyledTabItemLayout>
-  );
-};
+export const TabContentLayout = React.forwardRef(
+  (
+    { startIcon, title, endIcon, containerProps }: TabItemLayoutProps,
+    ref: ForwardedRef<HTMLDivElement>
+  ) => {
+    return (
+      <StyledTabItemLayout {...containerProps} ref={ref}>
+        {startIcon && (
+          <StyledStartIconWrapper>{startIcon}</StyledStartIconWrapper>
+        )}
+        {title}
+        {endIcon && <StyledEndIconWrapper>{endIcon}</StyledEndIconWrapper>}
+      </StyledTabItemLayout>
+    );
+  }
+);
