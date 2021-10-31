@@ -41,6 +41,8 @@ const StyledToolWindowHeader = styled.div<{ active: boolean }>`
 const StyledToolWindowHeaderActions = styled.div``;
 const StyledToolWindowHeaderContent = styled.div`
   flex: 1;
+  display: flex;
+  align-items: center;
 `;
 
 export const ToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
