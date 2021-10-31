@@ -1,3 +1,4 @@
+import useForwardedRef from "jui/utils/useForwardedRef";
 import React, { ForwardedRef } from "react";
 import { useTheme } from "styled-components";
 import { Theme } from "../Theme/Theme";
@@ -28,20 +29,19 @@ const getPlatformIconPath = (relativePath: string) =>
 export const PlatformIcon = React.forwardRef(
   (
     { icon, darkIcon, size, ...props }: PlatformIconProps,
-    ref: ForwardedRef<HTMLElement>
+    forwardedRef: ForwardedRef<HTMLElement>
   ) => {
+    const ref = useForwardedRef(forwardedRef);
     const theme = useTheme() as Theme; // TODO: investigate why useTheme is typed like this
     const iconName = theme.dark ? getDarkPath(icon, darkIcon) : icon;
-    const svg = useSvgIcon(
-      getPlatformIconPath(iconName),
-      getPlatformIconPath(icon)
+    useSvgIcon(
+      {
+        path: getPlatformIconPath(iconName),
+        fallbackPath: getPlatformIconPath(icon),
+      },
+      ref
     );
-    return (
-      <StyledIconWrapper
-        {...props}
-        ref={ref}
-        dangerouslySetInnerHTML={{ __html: svg }}
-      />
-    );
+
+    return <StyledIconWrapper {...props} ref={ref} />;
   }
 );

@@ -13,4 +13,5 @@ export const StyledIconWrapper = styled.span<{
   line-height: 0;
   width: ${({ size = DEFAULT_ICON_SIZE }) => `${size}px`};
   height: ${({ size = DEFAULT_ICON_SIZE }) => `${size}px`};
+  position: relative; // to allow absolute positioned indicators and overlays on icon
 `;

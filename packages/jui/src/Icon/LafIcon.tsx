@@ -1,3 +1,4 @@
+import useForwardedRef from "jui/utils/useForwardedRef";
 import React, { ForwardedRef } from "react";
 import { useTheme } from "styled-components";
 import { Theme } from "../Theme/Theme";
@@ -67,17 +68,12 @@ function useIconPath(
 export const LafIcon = React.forwardRef(
   (
     { themePath, icon, size, ...props }: ThemeIconProps,
-    ref: ForwardedRef<HTMLElement>
+    forwardedRef: ForwardedRef<HTMLElement>
   ) => {
     const resolvedIconPath = useIconPath(icon, themePath);
 
-    const svg = useSvgIcon(`platform/platform-impl/src/${resolvedIconPath}`);
-    return (
-      <StyledIconWrapper
-        {...props}
-        ref={ref}
-        dangerouslySetInnerHTML={{ __html: svg }}
-      />
-    );
+    const ref = useForwardedRef(forwardedRef);
+    useSvgIcon({ path: `platform/platform-impl/src/${resolvedIconPath}` }, ref);
+    return <StyledIconWrapper {...props} ref={ref} />;
   }
 );
