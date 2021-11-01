@@ -1,5 +1,5 @@
-import { css } from "jui";
-import { StyledTabProps } from "jui/tabs/StyledDefaultTab";
+import { css } from "jui/styled";
+import { StyledTabProps } from "./StyledDefaultTab";
 
 /**
  * Describes theme-able properties of a tab, which can then be passed to {@link getTabThemeStyles}

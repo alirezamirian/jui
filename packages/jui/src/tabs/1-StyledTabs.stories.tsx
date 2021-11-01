@@ -1,11 +1,11 @@
-import { Meta } from "@storybook/react";
-import { Container } from "jui/story-components";
-import { StyledEditorTab } from "jui/tabs/EditorTabs/StyledEditorTab";
-import { StyledDebuggerTab } from "jui/tabs/DebuggerTabs/StyledDebuggerTab";
-import { StyledDefaultTab } from "jui/tabs/StyledDefaultTab";
-import { StyledDefaultTabs } from "jui/tabs/StyledDefaultTabs";
-import { StyledToolWindowTab } from "jui/tabs/ToolWindowTabs/StyledToolWindowTab";
 import React from "react";
+import { Meta } from "@storybook/react";
+import { Container } from "../story-components";
+import { StyledEditorTab } from "./EditorTabs/StyledEditorTab";
+import { StyledDebuggerTab } from "./DebuggerTabs/StyledDebuggerTab";
+import { StyledDefaultTab } from "./StyledDefaultTab";
+import { StyledDefaultTabs } from "./StyledDefaultTabs";
+import { StyledToolWindowTab } from "./ToolWindowTabs/StyledToolWindowTab";
 
 export default {
   title: "Components/Tabs/Styled Components",

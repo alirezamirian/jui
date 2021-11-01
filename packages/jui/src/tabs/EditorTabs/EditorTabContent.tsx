@@ -1,8 +1,8 @@
+import React from "react";
 import { Pressable } from "@react-aria/interactions";
-import { PlatformIcon } from "jui";
+import { PlatformIcon } from "jui/Icon";
 import { TabCloseButton } from "jui/tabs/TabCloseButton";
 import { TabContentLayout } from "jui/tabs/TabContentLayout";
-import React from "react";
 
 /**
  * For rendering the content of Editor tabs. supports for file icon which is shown on the left and close or unpin

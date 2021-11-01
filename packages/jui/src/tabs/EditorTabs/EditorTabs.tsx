@@ -1,6 +1,6 @@
 import { Tabs, TabsProps } from "jui/tabs";
-import { StyledEditorTab } from "jui/tabs/EditorTabs/StyledEditorTab";
-import { StyledEditorTabs } from "jui/tabs/EditorTabs/StyledEditorTabs";
+import { StyledEditorTab } from "./StyledEditorTab";
+import { StyledEditorTabs } from "./StyledEditorTabs";
 import React from "react";
 
 export type EditorTabsProps<T extends object> = Omit<

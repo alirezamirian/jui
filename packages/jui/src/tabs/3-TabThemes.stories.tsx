@@ -1,12 +1,14 @@
 import { Meta } from "@storybook/react";
-import { PlatformIcon } from "jui";
-import { DebuggerTabContent } from "jui/tabs/DebuggerTabs/DebuggerTabContent";
-import { EditorTabContent } from "jui/tabs/EditorTabs/EditorTabContent";
-import { EditorTabs, EditorTabsProps } from "jui/tabs/EditorTabs/EditorTabs";
-import { DebuggerTabs, Item, Tabs, TabsProps } from "jui/tabs/index";
-import { TabContentLayout } from "jui/tabs/TabContentLayout";
-import { ToolWindowTabs } from "jui/tabs/ToolWindowTabs/ToolWindowTabs";
+import { PlatformIcon } from "../Icon";
+import { DebuggerTabContent } from "./DebuggerTabs/DebuggerTabContent";
+import { EditorTabContent } from "./EditorTabs/EditorTabContent";
+import { EditorTabs, EditorTabsProps } from "./EditorTabs/EditorTabs";
+import { DebuggerTabs } from "./DebuggerTabs/DebuggerTabs";
+import { TabsProps, Tabs } from "./Tabs";
+import { TabContentLayout } from "./TabContentLayout";
+import { ToolWindowTabs } from "./ToolWindowTabs/ToolWindowTabs";
 import React from "react";
+import { Item } from "jui";
 
 type StoryProps<T extends TabsProps<unknown> = TabsProps<unknown>> = Pick<
   T,

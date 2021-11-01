@@ -1,7 +1,7 @@
-import { Tabs, TabsProps } from "jui/tabs";
-import { StyledToolWindowTab } from "jui/tabs/ToolWindowTabs/StyledToolWindowTab";
-import { StyledToolWindowTabs } from "jui/tabs/ToolWindowTabs/StyledToolWindowTabs";
 import React from "react";
+import { Tabs, TabsProps } from "jui/tabs";
+import { StyledToolWindowTab } from "./StyledToolWindowTab";
+import { StyledToolWindowTabs } from "./StyledToolWindowTabs";
 
 type ToolWindowTabsProps<T extends object> = Omit<
   TabsProps<T>,

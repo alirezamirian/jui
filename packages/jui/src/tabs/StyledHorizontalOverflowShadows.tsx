@@ -1,4 +1,4 @@
-import { css, styled } from "jui";
+import { css, styled } from "jui/styled";
 
 interface Props {
   hasOverflowAtStart: boolean;

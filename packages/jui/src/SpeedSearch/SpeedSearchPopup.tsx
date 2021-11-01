@@ -1,4 +1,4 @@
-import { PlatformIcon } from "jui";
+import { PlatformIcon } from "jui/Icon";
 import React from "react";
 import { styled } from "../styled";
 

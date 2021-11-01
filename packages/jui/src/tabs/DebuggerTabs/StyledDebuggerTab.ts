@@ -1,6 +1,8 @@
-import { styled, Theme } from "jui";
-import { StyledDefaultTab } from "jui/tabs/StyledDefaultTab";
-import { getTabThemeStyles, TabTheme } from "jui/tabs/TabTheme";
+import { Theme } from "jui/Theme";
+import { styled } from "jui/styled";
+
+import { StyledDefaultTab } from "jui/tabs";
+import { getTabThemeStyles, TabTheme } from "jui/tabs";
 
 export const debuggerTabTheme = ({ theme }: { theme: Theme }): TabTheme => ({
   underlineHeight: theme.value<number>("DebuggerTabs.underlineHeight") ?? 2,

@@ -1,5 +1,5 @@
 import { Theme, UnknownThemeProp } from "../Theme";
-import { css, styled } from "../styled";
+import { styled } from "jui/styled";
 import { getTabsThemeStyles } from "./TabTheme";
 
 const defaultTabsTheme = ({ theme }: { theme: Theme }) =>

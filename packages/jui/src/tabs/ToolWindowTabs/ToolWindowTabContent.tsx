@@ -1,6 +1,6 @@
+import React, { ForwardedRef, HTMLProps } from "react";
 import { TabCloseButton } from "jui/tabs/TabCloseButton";
 import { TabContentLayout } from "jui/tabs/TabContentLayout";
-import React, { ForwardedRef, HTMLProps, RefObject } from "react";
 
 type Props = {
   icon: React.ReactNode;

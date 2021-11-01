@@ -6,7 +6,7 @@ import { useToolWindow } from "./useToolWindow";
 
 export interface DefaultToolWindowProps {
   /**
-   * title to be shown in the left side of the tool window header.
+   * title to be shown on the left side of the tool window header.
    */
   headerContent?: React.ReactNode;
   additionalActions?: React.ReactNode;
@@ -30,9 +30,10 @@ const StyledToolWindowContent = styled.div`
  * Default component for rendering the content of a tool window. It supports a header and a scrollable area.
  * The header supports showing a content, and some default+custom actions on the right.
  *
+ * @see MultiContentToolWindow
+ *
  * Remaining features:
- * - Gear icon actions + additional actions (when menu component is added)
- * - Multi tab content, with support for tab/dropdown mode in the header. And the action for toggling that.
+ * - Additional gear menu actions.
  *
  */
 export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({

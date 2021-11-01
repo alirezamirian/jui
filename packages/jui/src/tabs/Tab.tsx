@@ -1,7 +1,7 @@
 import { useTab } from "@react-aria/tabs";
 import { TabListState } from "@react-stately/tabs";
 import { Node } from "@react-types/shared";
-import { StyledDefaultTab } from "jui/tabs/StyledDefaultTab";
+import { StyledDefaultTab } from "./StyledDefaultTab";
 import React, { useEffect } from "react";
 
 type TabProps<T extends object> = {

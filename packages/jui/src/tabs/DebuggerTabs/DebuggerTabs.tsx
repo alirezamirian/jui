@@ -1,5 +1,5 @@
 import { Tabs, TabsProps } from "jui/tabs";
-import { StyledDebuggerTab } from "jui/tabs/DebuggerTabs/StyledDebuggerTab";
+import { StyledDebuggerTab } from "./StyledDebuggerTab";
 import React from "react";
 
 type DebuggerTabsProps<T extends object> = Omit<

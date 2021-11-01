@@ -1,5 +1,5 @@
 import { ItemProps } from "@react-types/shared";
-import { Item } from "jui";
+import { Item } from "@react-stately/collections";
 import React from "react";
 
 export interface TabItemProps extends ItemProps<never> {
