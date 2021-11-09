@@ -1,5 +1,7 @@
 import { Configuration } from "webpack";
 // @ts-expect-error noImplicitAny
+import CircularDependencyPlugin from "circular-dependency-plugin";
+// @ts-expect-error noImplicitAny
 import alias from "../../../config/lib-src-webpack-alias";
 
 module.exports = {
@@ -21,6 +23,13 @@ module.exports = {
       ...config.resolve.alias,
       ...alias,
     };
+    config.plugins?.push(
+      new CircularDependencyPlugin({
+        exclude: /node_modules/,
+        include: /jui/,
+        failOnError: false,
+      })
+    );
     return config;
   },
 };

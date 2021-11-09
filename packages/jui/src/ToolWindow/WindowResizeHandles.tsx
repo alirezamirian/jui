@@ -1,5 +1,4 @@
-import React from "react";
-import { useRef } from "react";
+import React, { useContext, useRef } from "react";
 import {
   BottomResizer,
   LeftResizer,
@@ -10,7 +9,6 @@ import {
   HorizontalResizerProps,
   VerticalResizerProps,
 } from "../Resizer/ResizerProps";
-import { useWindowInteractionHandler } from "./FloatView";
 import { WindowBounds } from "./ToolWindowsState/ToolWindowsState";
 
 const FLOAT_WINDOW_MIN_WIDTH = 100;
@@ -31,6 +29,29 @@ export function WindowResizeHandles() {
     )
   );
 }
+
+/**
+ * TODO(docs): add a few words about this abstraction and it's use.
+ */
+export type BoundsInteractionHandlerProps = {
+  /**
+   * Signals start of a UI interaction like resize or move, in which window bounds change.
+   */
+  startInteraction: () => WindowBounds;
+  /**
+   * Used to update bounds state during a UI interaction.
+   */
+  updateBounds: (bounds: WindowBounds) => void;
+  /**
+   * Signals end of a UI interaction.
+   */
+  finishInteraction: () => void;
+};
+export const WindowInteractionHandlerContext = React.createContext<BoundsInteractionHandlerProps | null>(
+  null
+);
+export const useWindowInteractionHandler = () =>
+  useContext(WindowInteractionHandlerContext);
 
 /**
  * window resizing logic and state. When resizing is in progress, the source of truth is a local state, for performance

@@ -1,5 +1,7 @@
-import { styled, Theme } from "jui";
-import { StyledDefaultTab, getTabThemeStyles, TabTheme } from "jui/tabs";
+import { styled } from "jui/styled";
+import { Theme } from "jui/Theme";
+import { StyledDefaultTab } from "jui/tabs/StyledDefaultTab";
+import { getTabThemeStyles, TabTheme } from "jui/tabs/TabTheme";
 
 export const toolWindowTabTheme = ({ theme }: { theme: Theme }): TabTheme => ({
   borderColor: theme.color("ToolWindow.HeaderTab.borderColor"),

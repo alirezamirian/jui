@@ -1,4 +1,4 @@
-import { Tabs, TabsProps } from "jui/tabs";
+import { Tabs, TabsProps } from "jui/tabs/Tabs";
 import { StyledDebuggerTab } from "./StyledDebuggerTab";
 import React from "react";
 

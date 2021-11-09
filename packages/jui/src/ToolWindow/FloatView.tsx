@@ -1,37 +1,16 @@
 import { isMac } from "@react-aria/utils";
-import React, { HTMLProps, useContext, useState } from "react";
+import React, { HTMLProps, useState } from "react";
 import { css } from "styled-components";
 import { MAC_WINDOW_SHADOW } from "../style-constants";
 import { styled } from "../styled";
 import { Theme } from "../Theme/Theme";
 import { FloatWindowState } from "./ToolWindowsState/ToolWindowsLayoutState";
 import { WindowBounds } from "./ToolWindowsState/ToolWindowsState";
-import { WindowResizeHandles } from "./WindowResizeHandles";
-
-/**
- * TODO(docs): add a few words about this abstraction and it's use.
- */
-type BoundsInteractionHandlerProps = {
-  /**
-   * Signals start of a UI interaction like resize or move, in which window bounds change.
-   */
-  startInteraction: () => WindowBounds;
-  /**
-   * Used to update bounds state during a UI interaction.
-   */
-  updateBounds: (bounds: WindowBounds) => void;
-  /**
-   * Signals end of a UI interaction.
-   */
-  finishInteraction: () => void;
-};
-
-const WindowInteractionHandlerContext = React.createContext<BoundsInteractionHandlerProps | null>(
-  null
-);
-
-export const useWindowInteractionHandler = () =>
-  useContext(WindowInteractionHandlerContext);
+import {
+  BoundsInteractionHandlerProps,
+  WindowInteractionHandlerContext,
+  WindowResizeHandles,
+} from "./WindowResizeHandles";
 
 const StyledFloatView = styled.div`
   position: absolute;

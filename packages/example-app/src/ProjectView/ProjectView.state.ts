@@ -103,10 +103,9 @@ function createTreeFromNodes(items: FileTreeItem[], project: GithubProject) {
     path: "",
     name: project.name,
     parent: null,
-    children: nodes
-      .filter((node) => !node.parent)
-      .map((item) => ({ ...item, parent: root })),
+    children: nodes.filter((node) => !node.parent),
   };
+  root.children = root.children.map((item) => ({ ...item, parent: root }));
   return root;
 }
 

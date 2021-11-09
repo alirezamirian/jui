@@ -1,4 +1,4 @@
-import { useWindowInteractionHandler } from "./FloatView";
+import { useWindowInteractionHandler } from "jui/ToolWindow/WindowResizeHandles";
 import { useMove } from "./useMove";
 
 export function useToolWindowMoveHandle() {

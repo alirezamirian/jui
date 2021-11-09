@@ -1,4 +1,5 @@
-import { styled, Theme, UnknownThemeProp } from "jui";
+import { styled } from "jui/styled";
+import { Theme, UnknownThemeProp } from "jui/Theme";
 import { StyledDefaultTab } from "jui/tabs/StyledDefaultTab";
 import { getTabThemeStyles, TabTheme } from "jui/tabs/TabTheme";
 

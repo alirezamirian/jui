@@ -1,5 +1,5 @@
 import React from "react";
-import { Tabs, TabsProps } from "jui/tabs";
+import { Tabs, TabsProps } from "jui/tabs/Tabs";
 import { StyledToolWindowTab } from "./StyledToolWindowTab";
 import { StyledToolWindowTabs } from "./StyledToolWindowTabs";
 
