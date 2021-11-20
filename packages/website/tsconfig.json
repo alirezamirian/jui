@@ -1,0 +1,13 @@
+{
+  // This file is not used in compilation. It is here just for a nice editor experience.
+  "extends": "@tsconfig/docusaurus/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "resolveJsonModule": true,
+    "paths": {
+      "jui": ["../jui/src"],
+      "jui/*": ["../jui/src/*"],
+    },
+    "jsx": "react"
+  }
+}
