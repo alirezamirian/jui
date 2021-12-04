@@ -16,8 +16,6 @@ const StyledSearchIcon = styled(PlatformIcon)`
 /**
  * The little popup view shown at the top left corner of list, tree, etc., which shows the search
  * query.
- * TODO:
- *  - add magnifier icon
  */
 export const SpeedSearchPopup = React.forwardRef<
   HTMLElement,
@@ -56,5 +54,6 @@ const StyledSpeedSearchPopup = styled.span<{ match?: boolean }>`
   z-index: 1;
   padding: 3px 7px;
   height: 25px;
+  line-height: 1.2;
   transform: translateY(-100%);
 `;
