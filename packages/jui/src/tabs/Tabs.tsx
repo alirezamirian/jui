@@ -124,15 +124,19 @@ export const Tabs = <T extends object>({
     intersectionObserver,
   } = useCollectionOverflowObserver(ref);
 
-  const onOverflowMenuItemSelected = (key: Key) => {
-    state.setSelectedKey(key);
+  useEffect(() => {
     if (!noScroll) {
       if (ref.current) {
-        ref.current.querySelector(`[data-key="${key}"]`)?.scrollIntoView?.();
+        ref.current
+          .querySelector(`[data-key="${state.selectedKey}"]`)
+          ?.scrollIntoView?.();
       }
     } else {
       // TODO maybe? sample use case: project tool window tabs, when not grouped.
     }
+  }, [state.selectedKey]);
+  const onOverflowMenuItemSelected = (key: Key) => {
+    state.setSelectedKey(key);
   };
   if (noScroll) {
     throw new Error("noScroll is not supported yet.");
