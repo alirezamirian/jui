@@ -26,7 +26,7 @@ const config = {
       "docusaurus-plugin-module-alias",
       {
         alias: {
-          jui: path.resolve(__dirname, "../jui/src"),
+          "@intellij-platform/core": path.resolve(__dirname, "../jui/src"),
         },
       },
     ],

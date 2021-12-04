@@ -73,8 +73,10 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
-      "jui": ["./packages/jui/src"],
-      "jui/*": ["./packages/jui/src/*"]
+      // The following path mapping doesn't affect storybook or website build. The only important thing for those to
+      // build is the webpack alias configuration. This is just for type-check scripts and IDE support.
+      "@intellij-platform/core": ["./packages/jui/src"],
+      "@intellij-platform/core/*": ["./packages/jui/src/*"]
     }
   }
 }

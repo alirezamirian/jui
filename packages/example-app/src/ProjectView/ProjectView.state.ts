@@ -1,5 +1,5 @@
 import { Selection } from "@react-types/shared";
-import { TreeRef } from "jui";
+import { TreeRef } from "@intellij-platform/core";
 import { Key, RefObject } from "react";
 import { atom, CallbackInterface, selector } from "recoil";
 import {

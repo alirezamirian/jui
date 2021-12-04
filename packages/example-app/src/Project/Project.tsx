@@ -4,7 +4,7 @@ import {
   ToolWindows,
   ToolWindowsState,
   toolWindowState,
-} from "jui";
+} from "@intellij-platform/core";
 import { indexBy, map } from "ramda";
 import React, { useState } from "react";
 import { FileEditor } from "../Editor/FileEditor";

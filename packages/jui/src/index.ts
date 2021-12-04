@@ -10,4 +10,5 @@ export * from "./Collections";
 export * from "./Img";
 export * from "./styled";
 export * from "./Tree";
+export * from "./tabs";
 export * from "./Theme";

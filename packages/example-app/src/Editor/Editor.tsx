@@ -1,5 +1,5 @@
 import MonacoEditor, { EditorProps } from "@monaco-editor/react";
-import { styled } from "jui";
+import { styled } from "@intellij-platform/core";
 import React from "react";
 import { useEditorTheme } from "./useEditorTheme";
 

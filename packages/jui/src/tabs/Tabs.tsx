@@ -1,4 +1,4 @@
-import React, { Key } from "react";
+import React, { Key, useEffect } from "react";
 import { useTabList } from "@react-aria/tabs";
 import { mergeProps } from "@react-aria/utils";
 import { useTabListState } from "@react-stately/tabs";
@@ -7,7 +7,7 @@ import { StyledHorizontalOverflowShadows } from "./StyledHorizontalOverflowShado
 import { TabsOverflowMenu } from "./TabsOverflowMenu";
 import { useCollectionOverflowObserver } from "./useCollectionOverflowObserver";
 import { useIsScrolled } from "./useIsScrolled";
-import { styled, css } from "jui/styled";
+import { styled, css } from "@intellij-platform/core/styled";
 import { StyledDefaultTab } from "./StyledDefaultTab";
 import { StyledDefaultTabs } from "./StyledDefaultTabs";
 import { Tab } from "./Tab";

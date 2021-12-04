@@ -24,7 +24,7 @@ import {
   MultipleSelection,
   Node,
 } from "@react-types/shared";
-import { TreeRef, useTreeRef } from "jui/Tree/useTreeRef";
+import { TreeRef, useTreeRef } from "@intellij-platform/core/Tree/useTreeRef";
 import { ForwardedRef, Key, useEffect, useMemo } from "react";
 import {
   SelectionManager,

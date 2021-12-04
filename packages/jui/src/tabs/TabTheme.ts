@@ -1,4 +1,4 @@
-import { css } from "jui/styled";
+import { css } from "@intellij-platform/core/styled";
 import { StyledTabProps } from "./StyledDefaultTab";
 
 /**

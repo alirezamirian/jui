@@ -1,5 +1,5 @@
 import BrowserOnly from "@docusaurus/BrowserOnly";
-import { styled } from "jui";
+import { styled } from "@intellij-platform/core";
 import React from "react";
 import { ExampleContext } from "../components/ExampleContext";
 

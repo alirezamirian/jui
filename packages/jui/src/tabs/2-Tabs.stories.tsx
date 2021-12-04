@@ -1,5 +1,5 @@
 import { Meta } from "@storybook/react";
-import { MenuItemLayout, PlatformIcon } from "jui";
+import { MenuItemLayout, PlatformIcon } from "@intellij-platform/core";
 import React from "react";
 import { TabContentLayout, TabItem, TabsProps } from ".";
 import { Tabs } from "./Tabs";

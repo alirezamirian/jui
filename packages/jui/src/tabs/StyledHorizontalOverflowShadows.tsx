@@ -1,4 +1,4 @@
-import { css, styled } from "jui/styled";
+import { css, styled } from "@intellij-platform/core/styled";
 
 interface Props {
   hasOverflowAtStart: boolean;

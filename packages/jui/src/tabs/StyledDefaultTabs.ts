@@ -1,5 +1,5 @@
 import { Theme, UnknownThemeProp } from "../Theme";
-import { styled } from "jui/styled";
+import { styled } from "@intellij-platform/core/styled";
 import { getTabsThemeStyles } from "./TabTheme";
 
 const defaultTabsTheme = ({ theme }: { theme: Theme }) =>

@@ -1,4 +1,4 @@
-import { TreeRef } from "jui/Tree";
+import { TreeRef } from "@intellij-platform/core/Tree";
 import React, { ForwardedRef, useRef } from "react";
 import { StyledList } from "../../List/StyledList";
 import { replaceSelectionManager } from "../../selection/replaceSelectionManager";

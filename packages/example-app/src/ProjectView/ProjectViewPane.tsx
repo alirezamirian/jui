@@ -6,7 +6,7 @@ import {
   SpeedSearchTree,
   styled,
   TreeRef,
-} from "jui";
+} from "@intellij-platform/core";
 import { identity, sortBy } from "ramda";
 import React, { useContext, useLayoutEffect, useRef } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";

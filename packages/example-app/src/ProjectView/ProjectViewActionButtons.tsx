@@ -1,4 +1,4 @@
-import { ActionButton, PlatformIcon } from "jui";
+import { ActionButton, PlatformIcon } from "@intellij-platform/core";
 import React from "react";
 import { useRecoilCallback, useRecoilValue, useSetRecoilState } from "recoil";
 import { activeEditorTabState } from "../Editor/editor.state";

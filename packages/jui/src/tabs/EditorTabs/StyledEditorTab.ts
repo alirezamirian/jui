@@ -1,7 +1,10 @@
-import { styled } from "jui/styled";
-import { Theme, UnknownThemeProp } from "jui/Theme";
-import { StyledDefaultTab } from "jui/tabs/StyledDefaultTab";
-import { getTabThemeStyles, TabTheme } from "jui/tabs/TabTheme";
+import { styled } from "@intellij-platform/core/styled";
+import { Theme, UnknownThemeProp } from "@intellij-platform/core/Theme";
+import { StyledDefaultTab } from "@intellij-platform/core/tabs/StyledDefaultTab";
+import {
+  getTabThemeStyles,
+  TabTheme,
+} from "@intellij-platform/core/tabs/TabTheme";
 
 export const editorTabTheme = ({ theme }: { theme: Theme }): TabTheme => ({
   borderColor: theme.color("EditorTabs.borderColor"),

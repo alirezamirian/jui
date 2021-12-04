@@ -1,5 +1,5 @@
 import { TreeProps as StatelyTreeProps } from "@react-stately/tree";
-import { TreeRef } from "jui/Tree/useTreeRef";
+import { TreeRef } from "@intellij-platform/core/Tree/useTreeRef";
 import React, { ForwardedRef, Key, useRef } from "react";
 import { StyledList } from "../List/StyledList";
 import { TreeNode } from "./TreeNode";

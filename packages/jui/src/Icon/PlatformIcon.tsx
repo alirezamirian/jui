@@ -1,4 +1,4 @@
-import useForwardedRef from "jui/utils/useForwardedRef";
+import useForwardedRef from "@intellij-platform/core/utils/useForwardedRef";
 import React, { ForwardedRef } from "react";
 import { useTheme } from "styled-components";
 import { Theme } from "../Theme/Theme";

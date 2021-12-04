@@ -1,11 +1,12 @@
 {
-  "name": "jui",
+  "name": "@intellij-platform/core",
   "version": "1.0.0",
   "description": "Intellij Platform implementation in React.js",
   "keywords": [],
   "license": "ISC",
   "author": "Alireza Mirian <alireza.mirian@gmail.com>",
   "module": "src/index.ts",
+  "main": "src/index.ts",
   "scripts": {
     "start": "yarn run storybook:start",
     "storybook:start": "start-storybook -p 6008",

@@ -1,8 +1,8 @@
 import { Monaco } from "@monaco-editor/react";
-import { MenuItemLayout, PlatformIcon, styled } from "jui";
-import { EditorTabs, TabItem } from "jui/tabs";
-import { EditorTabContent } from "jui/tabs/EditorTabs";
-import { useLatest } from "jui/utils/useLatest";
+import { MenuItemLayout, PlatformIcon, styled } from "@intellij-platform/core";
+import { EditorTabs, TabItem } from "@intellij-platform/core/tabs";
+import { EditorTabContent } from "@intellij-platform/core/tabs/EditorTabs";
+import { useLatest } from "@intellij-platform/core/utils/useLatest";
 import { editor, languages } from "monaco-editor";
 import React, { useEffect, useRef, useState } from "react";
 import {

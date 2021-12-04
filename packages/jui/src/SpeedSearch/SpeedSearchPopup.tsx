@@ -1,4 +1,4 @@
-import { PlatformIcon } from "jui/Icon";
+import { PlatformIcon } from "@intellij-platform/core/Icon";
 import React from "react";
 import { styled } from "../styled";
 

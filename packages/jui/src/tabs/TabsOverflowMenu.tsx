@@ -1,8 +1,8 @@
 import { Collection, Node } from "@react-types/shared";
 import { Item } from "@react-stately/collections";
-import { Menu, MenuTrigger } from "jui/Menu";
-import { ActionButton } from "jui/ActionButton/ActionButton";
-import { PlatformIcon } from "jui/Icon";
+import { Menu, MenuTrigger } from "@intellij-platform/core/Menu";
+import { ActionButton } from "@intellij-platform/core/ActionButton/ActionButton";
+import { PlatformIcon } from "@intellij-platform/core/Icon";
 import React, { Key } from "react";
 
 export const TabsOverflowMenu = <T extends unknown>({

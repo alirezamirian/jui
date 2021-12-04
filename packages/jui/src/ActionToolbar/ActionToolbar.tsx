@@ -1,4 +1,4 @@
-import { Theme } from "jui/Theme";
+import { Theme } from "@intellij-platform/core/Theme";
 import React from "react";
 import { StyledActionButton } from "../ActionButton/ActionButton";
 import { styled } from "../styled";

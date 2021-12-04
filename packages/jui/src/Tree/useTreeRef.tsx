@@ -1,5 +1,5 @@
-import { SelectableTreeProps } from "jui/Tree/useSelectableTree";
-import { useLatest } from "jui/utils/useLatest";
+import { SelectableTreeProps } from "@intellij-platform/core/Tree/useSelectableTree";
+import { useLatest } from "@intellij-platform/core/utils/useLatest";
 import { ForwardedRef, Key, useImperativeHandle } from "react";
 
 export interface TreeRef {
