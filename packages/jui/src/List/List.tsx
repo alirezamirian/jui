@@ -1,4 +1,5 @@
 import { AriaListBoxProps } from "@react-types/listbox";
+import { AsyncLoadable } from "@react-types/shared";
 import React, { Key, useRef } from "react";
 import { useList } from "./useList";
 import { ListItem } from "./ListItem";
@@ -6,7 +7,10 @@ import { StyledList } from "./StyledList";
 import { listItemRenderer } from "./listItemRenderer";
 import { useListState } from "./useListState";
 
-export interface ListProps<T extends object> extends AriaListBoxProps<T> {
+export type ListProps<T extends object> = Omit<
+  AriaListBoxProps<T>,
+  keyof AsyncLoadable
+> & {
   /**
    * fills the available horizontal or vertical space, when rendered in a flex container.
    */
@@ -26,7 +30,7 @@ export interface ListProps<T extends object> extends AriaListBoxProps<T> {
    * Enter not implemented yet :D
    */
   onAction?: (key: Key) => void;
-}
+};
 
 /**
  * List view with speedSearch instead of default typeahead.
