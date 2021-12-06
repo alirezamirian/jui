@@ -23,7 +23,7 @@ const StyledEndIconWrapper = styled.span`
   border-radius: 16px;
 `;
 
-interface TabItemLayoutProps {
+export interface TabItemLayoutProps {
   /**
    * the icon placed before the text.
    */
