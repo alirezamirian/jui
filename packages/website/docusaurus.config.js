@@ -18,6 +18,7 @@ const config = {
   favicon: "jui/img/favicon.ico", // FIXME
   organizationName: "alirezamirian",
   projectName: "jui",
+  trailingSlash: false,
 
   plugins: [
     myPlugin,

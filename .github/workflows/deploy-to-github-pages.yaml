@@ -13,10 +13,10 @@ jobs:
       - name: Install and Build 🔧
         run: |
           yarn
-          yarn workspace jui run storybook:build
+          yarn workspace website run build
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
           branch: gh-pages
-          folder: packages/jui/storybook-static
+          folder: packages/website/build
