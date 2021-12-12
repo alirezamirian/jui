@@ -1,3 +1,4 @@
+import { Node } from "@react-types/shared";
 import { TreeProps as StatelyTreeProps } from "@react-stately/tree";
 import { TreeRef } from "@intellij-platform/core/Tree/useTreeRef";
 import React, { ForwardedRef, Key, useRef } from "react";
@@ -43,6 +44,19 @@ export const Tree = React.forwardRef(
       },
       ref
     );
+
+    const renderNode = (item: Node<T>) => {
+      return (
+        <TreeNode
+          key={item.key}
+          item={item}
+          state={state}
+          onAction={onAction}
+          containerFocused={focused}
+        />
+      );
+    };
+
     return (
       <StyledList
         as="div"
@@ -52,17 +66,7 @@ export const Tree = React.forwardRef(
       >
         {[...state.collection.getKeys()]
           .map((key) => state.collection.getItem(key))
-          .map((item) => {
-            return (
-              <TreeNode
-                key={item.key}
-                item={item}
-                state={state}
-                onAction={onAction}
-                containerFocused={focused}
-              />
-            );
-          })}
+          .map(renderNode)}
       </StyledList>
     );
   }

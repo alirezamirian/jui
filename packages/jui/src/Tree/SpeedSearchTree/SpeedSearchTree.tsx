@@ -1,4 +1,5 @@
 import { TreeRef } from "@intellij-platform/core/Tree";
+import { Node } from "@react-types/shared";
 import React, { ForwardedRef, useRef } from "react";
 import { StyledList } from "../../List/StyledList";
 import { replaceSelectionManager } from "../../selection/replaceSelectionManager";
@@ -23,6 +24,16 @@ export const SpeedSearchTree = React.forwardRef(
       searchPopupProps,
     } = useSpeedSearchTree({ ...state, onAction }, ref);
 
+    const renderNode = (item: Node<T>) => (
+      <TreeNode
+        key={item.key}
+        item={getHighlightedItem(item)}
+        state={state}
+        onAction={onAction}
+        containerFocused={focused}
+      />
+    );
+
     // NOTE: SpeedSearchPopup can be rendered as a portal with proper positioning (useOverlayPosition), if overflow
     // issues required it.
     return (
@@ -36,15 +47,7 @@ export const SpeedSearchTree = React.forwardRef(
         >
           {[...state.collection.getKeys()]
             .map((key) => state.collection.getItem(key))
-            .map((item) => (
-              <TreeNode
-                key={item.key}
-                item={getHighlightedItem(item)}
-                state={state}
-                onAction={onAction}
-                containerFocused={focused}
-              />
-            ))}
+            .map(renderNode)}
         </StyledList>
       </>
     );
