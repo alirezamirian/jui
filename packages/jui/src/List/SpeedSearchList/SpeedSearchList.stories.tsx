@@ -2,13 +2,13 @@ import React from "react";
 import { Meta } from "@storybook/react";
 import { SpeedSearchList } from "./SpeedSearchList";
 import { legends } from "../../../test-data";
+import { HighlightedTextValue } from "../../CollectionSpeedSearch/HighlightedTextValue";
+import { Pane } from "../../story-components";
 import {
   itemRenderer,
   renderItemCustomUI,
   renderItemString,
-} from "../../story-helpers";
-import { HighlightedTextValue } from "../../CollectionSpeedSearch/HighlightedTextValue";
-import { Pane } from "../../story-components";
+} from "../story-helpers";
 
 export default {
   title: "Components/List (Speed search)",

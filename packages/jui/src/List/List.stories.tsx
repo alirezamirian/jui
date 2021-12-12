@@ -2,14 +2,14 @@ import React from "react";
 import { Meta } from "@storybook/react";
 import { List } from "./List";
 import { legends } from "../../test-data";
+import { Item, Section } from "@react-stately/collections";
+import { Divider } from "../Collections/Divider";
+import { Pane } from "../story-components";
 import {
   itemRenderer,
   renderItemCustomUI,
   renderItemString,
-} from "../story-helpers";
-import { Item, Section } from "@react-stately/collections";
-import { Divider } from "../Collections/Divider";
-import { Pane } from "../story-components";
+} from "./story-helpers";
 
 export default {
   title: "Components/List (Basic)",

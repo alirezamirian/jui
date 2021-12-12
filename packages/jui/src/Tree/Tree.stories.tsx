@@ -2,6 +2,7 @@ import { Item } from "@react-stately/collections";
 import { Meta } from "@storybook/react";
 import React, { Key, useState } from "react";
 import { Tree } from "./Tree";
+import { treeItems } from "./story-helpers";
 import { Pane, SelectionLog } from "../story-components";
 
 export default {
@@ -45,6 +46,37 @@ export const Static = () => {
           <Item title="Theme" key="Theme">
             <Item>createTheme.ts</Item>
           </Item>
+        </Tree>
+      </Pane>
+      <div style={{ marginLeft: 20 }}>
+        <h4>Selection</h4>
+        <SelectionLog selection={selectedKeys} />
+      </div>
+    </div>
+  );
+};
+
+export const Dynamic = () => {
+  const [selectedKeys, setSelectedKeys] = useState<"all" | Set<Key>>(
+    new Set(["Theme", "index.ts"])
+  );
+  return (
+    <div style={{ display: "flex" }}>
+      <Pane>
+        <Tree
+          fillAvailableSpace
+          selectionMode="multiple"
+          defaultExpandedKeys={["List", "Theme", "BasicList", "Foo"]}
+          items={treeItems}
+          selectedKeys={selectedKeys}
+          disabledKeys={["SpeedSearchList.tsx"]}
+          onSelectionChange={setSelectedKeys}
+        >
+          {(item) => (
+            <Item key={item.name} title={item.name} childItems={item.children}>
+              {item.name}
+            </Item>
+          )}
         </Tree>
       </Pane>
       <div style={{ marginLeft: 20 }}>
