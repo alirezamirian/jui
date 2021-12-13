@@ -1,19 +1,16 @@
 import { usePress } from "@react-aria/interactions";
-import { TreeState } from "@react-stately/tree";
 import { Node } from "@react-types/shared";
-import React, { Key, useRef } from "react";
+import React, { useContext, useRef } from "react";
 import { ItemStateContext } from "../Collections/ItemStateContext";
 import { StyledListItem } from "../List/StyledListItem";
 import { styled } from "../styled";
 import { TREE_ICON_SIZE, TreeNodeIcon } from "./TreeNodeIcon";
 import { useTreeNode } from "./useTreeNode";
 import { useTreeNodeToggleButton } from "./useTreeNodeToggleButton";
+import { TreeContext } from "./TreeContext";
 
 type TreeNodeProps<T> = {
   item: Node<T>;
-  state: TreeState<T>;
-  onAction?: (key: Key) => void;
-  containerFocused: boolean;
 };
 const StyledTreeNode = styled(StyledListItem).attrs({ as: "div" })<{
   level: number;
@@ -23,19 +20,20 @@ const StyledTreeNode = styled(StyledListItem).attrs({ as: "div" })<{
   padding-left: ${({ level }) => `${(level + 1) * TREE_ICON_SIZE + 8}px`};
 `;
 
-export function TreeNode<T>({
-  item,
-  state: {
-    collection,
-    selectionManager,
-    expandedKeys,
-    disabledKeys,
-    toggleKey,
-  },
-  onAction,
-  containerFocused,
-}: TreeNodeProps<T>) {
+export function TreeNode<T>({ item }: TreeNodeProps<T>) {
   const ref = useRef(null);
+  const {
+    state: {
+      collection,
+      selectionManager,
+      expandedKeys,
+      disabledKeys,
+      toggleKey,
+    },
+    focused: containerFocused,
+    onActionRef: { current: onAction },
+  } = useContext(TreeContext)!;
+
   const isSelected = selectionManager.isSelected(item.key);
   const expanded = expandedKeys.has(item.key);
   const isDisabled = disabledKeys.has(item.key);

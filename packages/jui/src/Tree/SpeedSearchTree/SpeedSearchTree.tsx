@@ -7,6 +7,7 @@ import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
 import { useTreeState } from "../__tmp__useTreeState";
 import { TreeProps } from "../Tree";
 import { TreeNode } from "../TreeNode";
+import { TreeContext } from "../TreeContext";
 import { useSpeedSearchTree } from "./useSpeedSearchTree";
 
 export const SpeedSearchTree = React.forwardRef(
@@ -19,25 +20,18 @@ export const SpeedSearchTree = React.forwardRef(
 
     const {
       treeProps,
-      focused,
+      treeContext,
       getHighlightedItem,
       searchPopupProps,
     } = useSpeedSearchTree({ ...state, onAction }, ref);
 
     const renderNode = (item: Node<T>) => (
-      <TreeNode
-        key={item.key}
-        item={getHighlightedItem(item)}
-        state={state}
-        onAction={onAction}
-        containerFocused={focused}
-      />
+      <TreeNode key={item.key} item={getHighlightedItem(item)} />
     );
-
     // NOTE: SpeedSearchPopup can be rendered as a portal with proper positioning (useOverlayPosition), if overflow
     // issues required it.
     return (
-      <>
+      <TreeContext.Provider value={treeContext}>
         <SpeedSearchPopup {...searchPopupProps} />
         <StyledList
           as="div"
@@ -49,7 +43,7 @@ export const SpeedSearchTree = React.forwardRef(
             .map((key) => state.collection.getItem(key))
             .map(renderNode)}
         </StyledList>
-      </>
+      </TreeContext.Provider>
     );
   }
 );

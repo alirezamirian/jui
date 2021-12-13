@@ -1,4 +1,4 @@
-import { Key, RefObject, useMemo, useState } from "react";
+import React, { Key, RefObject, useMemo, useState } from "react";
 import { useSelectableCollection } from "../selection/useSelectableCollection";
 import { TreeKeyboardDelegate } from "./TreeKeyboardDelegate";
 import { KeyboardDelegate, KeyboardEvent } from "@react-types/shared";
@@ -7,6 +7,8 @@ import { mergeProps } from "@react-aria/utils";
 import { useCollator } from "@react-aria/i18n";
 import { useCollectionAutoScroll } from "../Collections/useCollectionAutoScroll";
 import { TreeState } from "./__tmp__useTreeState";
+import { useLatest } from "@intellij-platform/core/utils/useLatest";
+import { TreeContextType } from "./TreeContext";
 
 export type SelectableTreeProps<T> = TreeState<T> & {
   isVirtualized?: boolean;
@@ -32,6 +34,7 @@ export function useSelectableTree<T>(
   } = useSelectableCollection({
     ref,
     selectionManager: props.selectionManager,
+    shouldUseVirtualFocus: props.isVirtualized,
     selectOnFocus: true,
     keyboardDelegate: useMemo(
       () =>
@@ -83,9 +86,45 @@ export function useSelectableTree<T>(
   const { keyboardProps } = useKeyboard({
     onKeyDown,
   });
+
+  //////////////////////////////// providing context value ////////////////////////////////
+  const onActionRef = useLatest(onAction);
+
+  const {
+    selectionManager,
+    collection,
+    expandedKeys,
+    disabledKeys,
+    toggleKey,
+  } = props;
+  const treeContext = useMemo<TreeContextType<T>>(
+    () => ({
+      state: {
+        collection,
+        selectionManager,
+        expandedKeys,
+        disabledKeys,
+        toggleKey,
+      },
+      focused,
+      onActionRef,
+    }),
+    [
+      selectionManager,
+      collection,
+      expandedKeys,
+      disabledKeys,
+      toggleKey,
+      focused,
+      onActionRef,
+    ]
+  );
+  ////////////////////////////////////////////////////////////////////////////////////////
+
   return {
     // order of merging here is important. navigation handling should precede selection handling
     treeProps: mergeProps(focusWithinProps, collectionProps, keyboardProps),
+    treeContext,
     focused,
   };
 }

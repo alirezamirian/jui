@@ -4,6 +4,7 @@ import { TreeRef } from "@intellij-platform/core/Tree/useTreeRef";
 import React, { ForwardedRef, Key, useRef } from "react";
 import { StyledList } from "../List/StyledList";
 import { TreeNode } from "./TreeNode";
+import { TreeContext } from "./TreeContext";
 import { useTreeState } from "./__tmp__useTreeState";
 import { useSelectableTree } from "./useSelectableTree";
 import { replaceSelectionManager } from "../selection/replaceSelectionManager";
@@ -37,7 +38,7 @@ export const Tree = React.forwardRef(
     const state = replaceSelectionManager(useTreeState(props, forwardedRef));
     const ref = useRef<HTMLDivElement>(null);
 
-    const { treeProps, focused } = useSelectableTree(
+    const { treeProps, treeContext } = useSelectableTree(
       {
         onAction,
         ...state,
@@ -45,29 +46,23 @@ export const Tree = React.forwardRef(
       ref
     );
 
-    const renderNode = (item: Node<T>) => {
-      return (
-        <TreeNode
-          key={item.key}
-          item={item}
-          state={state}
-          onAction={onAction}
-          containerFocused={focused}
-        />
-      );
-    };
+    const renderNode = (item: Node<T>) => (
+      <TreeNode key={item.key} item={item} />
+    );
 
     return (
-      <StyledList
-        as="div"
-        ref={ref}
-        fillAvailableSpace={fillAvailableSpace}
-        {...treeProps}
-      >
-        {[...state.collection.getKeys()]
-          .map((key) => state.collection.getItem(key))
-          .map(renderNode)}
-      </StyledList>
+      <TreeContext.Provider value={treeContext}>
+        <StyledList
+          as="div"
+          ref={ref}
+          fillAvailableSpace={fillAvailableSpace}
+          {...treeProps}
+        >
+          {[...state.collection.getKeys()]
+            .map((key) => state.collection.getItem(key))
+            .map(renderNode)}
+        </StyledList>
+      </TreeContext.Provider>
     );
   }
 );

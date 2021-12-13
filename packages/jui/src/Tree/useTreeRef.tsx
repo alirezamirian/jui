@@ -1,4 +1,4 @@
-import { SelectableTreeProps } from "@intellij-platform/core/Tree/useSelectableTree";
+import { SelectableTreeProps } from "./useSelectableTree";
 import { useLatest } from "@intellij-platform/core/utils/useLatest";
 import { ForwardedRef, Key, useImperativeHandle } from "react";
 
