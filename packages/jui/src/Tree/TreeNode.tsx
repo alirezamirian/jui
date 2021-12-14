@@ -78,7 +78,7 @@ export function TreeNode<T>({ item }: TreeNodeProps<T>) {
         aria-selected={isSelected}
         level={item.level}
       >
-        {item.hasChildNodes && (
+        {[...item.childNodes].length > 0 && (
           <TreeNodeIcon
             selected={isSelected}
             expanded={expanded}

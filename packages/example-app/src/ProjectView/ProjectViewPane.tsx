@@ -61,7 +61,6 @@ export const ProjectViewPane = (): React.ReactElement => {
           <Item
             key={item.path}
             textValue={item.name}
-            hasChildItems={"children" in item}
             childItems={
               "children" in item ? sortItems(item.children) : undefined
             }

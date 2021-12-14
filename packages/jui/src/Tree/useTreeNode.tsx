@@ -34,7 +34,7 @@ export function useTreeNode<T>({
   });
 
   const onDoubleClick = () => {
-    if (item.hasChildNodes) {
+    if ([...item.childNodes].length > 0) {
       toggleKey(item.key);
     } else {
       onAction?.(item.key);
