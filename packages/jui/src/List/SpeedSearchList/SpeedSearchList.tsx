@@ -7,6 +7,10 @@ import { listItemRenderer } from "../listItemRenderer";
 import { useListState } from "../useListState";
 import { ListItem } from "../ListItem";
 import { CollectionSpeedSearchContainer } from "../../CollectionSpeedSearch/CollectionSpeedSearchContainer";
+import {
+  CollectionSpeedSearchContext,
+  SpeedSearchItemHighlightsProvider,
+} from "@intellij-platform/core";
 
 interface SpeedSearchListProps<T extends object> extends ListProps<T> {
   stickySearch?: boolean;
@@ -31,31 +35,35 @@ export function SpeedSearchList<T extends object>({
     listProps,
     searchPopupProps,
     focused,
-    getHighlightedItem,
+    speedSearchContextValue,
   } = useSpeedSearchList(props, state, ref);
 
   return (
     <CollectionSpeedSearchContainer fillAvailableSpace={fillAvailableSpace}>
-      <SpeedSearchPopup {...searchPopupProps} />
-      <StyledList
-        ref={ref}
-        fillAvailableSpace={fillAvailableSpace}
-        {...listProps}
-      >
-        {[...state.collection].map(
-          listItemRenderer({
-            item: (item) => (
-              <ListItem
-                key={item.key}
-                item={getHighlightedItem(item)}
-                state={state}
-                listFocused={alwaysShowListAsFocused || focused}
-                onAction={() => onAction?.(item.key)}
-              />
-            ),
-          })
-        )}
-      </StyledList>
+      <CollectionSpeedSearchContext.Provider value={speedSearchContextValue}>
+        <SpeedSearchPopup {...searchPopupProps} />
+        <StyledList
+          ref={ref}
+          fillAvailableSpace={fillAvailableSpace}
+          {...listProps}
+        >
+          {[...state.collection].map(
+            listItemRenderer({
+              item: (item) => (
+                <SpeedSearchItemHighlightsProvider itemKey={item.key}>
+                  <ListItem
+                    key={item.key}
+                    item={item}
+                    state={state}
+                    listFocused={alwaysShowListAsFocused || focused}
+                    onAction={() => onAction?.(item.key)}
+                  />
+                </SpeedSearchItemHighlightsProvider>
+              ),
+            })
+          )}
+        </StyledList>
+      </CollectionSpeedSearchContext.Provider>
     </CollectionSpeedSearchContainer>
   );
 }

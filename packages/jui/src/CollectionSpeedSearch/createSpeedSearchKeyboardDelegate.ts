@@ -1,5 +1,4 @@
 import React, { Key } from "react";
-import { TextRange } from "../TextRange";
 import { KeyboardDelegate } from "@react-types/shared";
 
 /**
@@ -11,7 +10,7 @@ import { KeyboardDelegate } from "@react-types/shared";
  */
 export function createSpeedSearchKeyboardDelegate(
   wrappedKeyboardDelegate: KeyboardDelegate,
-  matches: Map<Key, TextRange[]> | null
+  matches: Map<Key, unknown /*We don't care what a match is, here*/> | null
 ): KeyboardDelegate {
   // TODO: page up and down deactivate speed search. If we want that, we can pass the speedSearch
   //  object too. but doesn't seem like the best way to do it, even it the same behavior is expected

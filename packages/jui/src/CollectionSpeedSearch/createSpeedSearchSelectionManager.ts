@@ -1,10 +1,9 @@
 import { Key } from "react";
 import { SelectionManager } from "../selection/SelectionManager";
-import { TextRange } from "../TextRange";
 
 export function createSpeedSearchSelectionManager(
   wrappedSelectionManager: SelectionManager,
-  matches: Map<Key, TextRange[]> | null
+  matches: Map<Key, unknown /* We don't care what a match is here */> | null
 ): SelectionManager {
   return Object.create(wrappedSelectionManager, {
     selectAll: {

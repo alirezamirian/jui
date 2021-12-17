@@ -1,7 +1,11 @@
 import { Legend, legends } from "../../test-data";
 import React, { ReactNode } from "react";
 import { Item, Section } from "@react-stately/collections";
-import { Divider, DividerItem } from "@intellij-platform/core";
+import {
+  Divider,
+  DividerItem,
+  HighlightedTextValue,
+} from "@intellij-platform/core";
 
 export const renderItemCustomUI = (item: Legend, content?: ReactNode) => (
   <Item key={item.name} textValue={item.name}>
@@ -27,8 +31,13 @@ export const itemRenderer = (
   }
   return renderItem(item as Legend, content);
 };
-export const renderItemString = (item: Legend) => (
+export const renderItemText = (item: Legend) => (
   <Item key={item.name} textValue={item.name}>
     {item.name}
+  </Item>
+);
+export const renderItemTextWithHighlights = (item: Legend) => (
+  <Item key={item.name} textValue={item.name}>
+    <HighlightedTextValue />
   </Item>
 );

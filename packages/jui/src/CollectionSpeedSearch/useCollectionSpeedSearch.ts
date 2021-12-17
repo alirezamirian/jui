@@ -8,7 +8,6 @@ import {
 import { useCollectionSpeedSearchResult } from "./useCollectionSpeedSearchResult";
 import { useMemo } from "react";
 import { createSpeedSearchKeyboardDelegate } from "./createSpeedSearchKeyboardDelegate";
-import { getHighlightedItem } from "./getHighlightedItem";
 
 /**
  * Given a `collection`, a `selectionManager` and a `keyboardDelegate`, it returns:
@@ -60,6 +59,9 @@ export function useCollectionSpeedSearch<T>({
     [speedSearch.active, keyboardDelegate, matches]
   );
 
+  // Doesn't seem necessary to wrap with useMemo, but can be rethink-ed
+  const speedSearchContextValue = { matches, collection };
+
   return {
     containerProps,
     selectionManager: speedSearchSelectionManager,
@@ -73,7 +75,6 @@ export function useCollectionSpeedSearch<T>({
       match: matches.size > 0,
       children: speedSearch.searchTerm,
     },
-    getHighlightedItem: (item: Node<T>) =>
-      getHighlightedItem(item, matches.get(item.key) || null),
+    speedSearchContextValue,
   };
 }

@@ -1,10 +1,12 @@
 import { Key, useMemo } from "react";
 import { minusculeMatch } from "../minusculeMatch";
 import { SpeedSearchState } from "../SpeedSearch/useSpeedSearch";
-import { TextRange } from "../TextRange";
 import { Collection, Node } from "@react-types/shared";
 import { SelectionManager } from "@react-stately/selection";
 import { createSpeedSearchSelectionManager } from "./createSpeedSearchSelectionManager";
+import { TextRange } from "@intellij-platform/core/TextRange";
+
+export type CollectionSpeedSearchMatches = Map<Key, TextRange[]>;
 
 export function useCollectionSpeedSearchResult<T>({
   collection,
@@ -17,7 +19,7 @@ export function useCollectionSpeedSearchResult<T>({
 }) {
   const { searchTerm, active } = speedSearch;
   return useMemo(() => {
-    const matches = new Map<Key, TextRange[]>(); // maybe make it nullable makes more sense
+    const matches: CollectionSpeedSearchMatches = new Map(); // maybe make it nullable makes more sense
     if (speedSearch.active) {
       // it's important not to iterate on items, since they can be nested.
       [...collection.getKeys()]

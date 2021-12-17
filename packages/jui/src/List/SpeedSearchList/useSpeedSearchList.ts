@@ -1,4 +1,3 @@
-import { Node } from "@react-types/shared";
 import { ListState } from "@react-stately/list";
 import { SelectionManager } from "@react-stately/selection";
 import { HTMLProps, Key, RefObject } from "react";
@@ -8,6 +7,7 @@ import { SpeedSearchPopupProps } from "../../SpeedSearch/SpeedSearchPopup";
 import { TextRange } from "../../TextRange";
 import { useCollectionSpeedSearch } from "../../CollectionSpeedSearch/useCollectionSpeedSearch";
 import { ListProps, useList } from "../useList";
+import { CollectionSpeedSearchContextValue } from "@intellij-platform/core/CollectionSpeedSearch";
 
 interface UseListProps
   extends Omit<ListProps, "keyboardDelegate" | "disallowTypeAhead"> {
@@ -22,8 +22,8 @@ export function useSpeedSearchList<T>(
   listProps: Omit<HTMLProps<HTMLUListElement>, "as" | "ref">;
   searchPopupProps: SpeedSearchPopupProps;
   focused: boolean;
-  getHighlightedItem: (item: Node<T>) => Node<T>;
   selectionManager: SelectionManager;
+  speedSearchContextValue: CollectionSpeedSearchContextValue;
   matches: Map<Key, TextRange[]>;
 } {
   const { stickySearch } = props;
@@ -34,7 +34,7 @@ export function useSpeedSearchList<T>(
     keyboardDelegate,
     containerProps: speedSearchContainerProps,
     searchPopupProps,
-    getHighlightedItem,
+    speedSearchContextValue,
   } = useCollectionSpeedSearch({
     collection: listState.collection,
     selectionManager: listState.selectionManager,
@@ -60,7 +60,7 @@ export function useSpeedSearchList<T>(
     matches: speedSearch.matches,
     focused,
     selectionManager,
-    getHighlightedItem,
+    speedSearchContextValue,
     searchPopupProps,
   };
 }

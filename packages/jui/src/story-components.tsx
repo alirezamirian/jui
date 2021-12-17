@@ -3,6 +3,7 @@ import { Selection } from "@react-types/shared";
 import React, { Key } from "react";
 import { styled } from "./styled";
 import { SpeedSearchTree } from "./Tree/SpeedSearchTree/SpeedSearchTree";
+import { HighlightedTextValue } from "@intellij-platform/core/CollectionSpeedSearch";
 
 export const Container = styled.div`
   color: ${({ theme }) => theme.color("*.foreground")};
@@ -54,25 +55,53 @@ export const SpeedSearchTreeSample = ({
       onSelectionChange={onSelectedKeysChange}
     >
       <Item key="index.ts">index.ts</Item>
-      <Item title="List" key="List">
-        <Item title="BasicList" key="BasicList">
-          <Item>BasicList.stories.tsx</Item>
-          <Item>BasicList.tsx</Item>
-          <Item>BasicListItem.tsx</Item>
-          <Item>useBasicList.ts</Item>
+      <Item textValue="List" title={<HighlightedTextValue />} key="List">
+        <Item
+          textValue="BasicList"
+          title={<HighlightedTextValue />}
+          key="BasicList"
+        >
+          <Item textValue="BasicList.stories.tsx">
+            <HighlightedTextValue />
+          </Item>
+          <Item textValue="BasicList.tsx">
+            <HighlightedTextValue />
+          </Item>
+          <Item textValue="BasicListItem.tsx">
+            <HighlightedTextValue />
+          </Item>
+          <Item textValue="useBasicList.ts">
+            <HighlightedTextValue />
+          </Item>
         </Item>
 
-        <Item title="SpeedSearchList" key="SpeedSearchList">
-          <Item>SpeedSearchList.stories.tsx</Item>
-          <Item>SpeedSearchList.tsx</Item>
-          <Item>SpeedSearchListItem.tsx</Item>
-          <Item>useSpeedSearchList.ts</Item>
+        <Item
+          textValue="SpeedSearchList"
+          title={<HighlightedTextValue />}
+          key="SpeedSearchList"
+        >
+          <Item textValue="SpeedSearchList.stories.tsx">
+            <HighlightedTextValue />
+          </Item>
+          <Item textValue="SpeedSearchList.tsx">
+            <HighlightedTextValue />
+          </Item>
+          <Item textValue="SpeedSearchListItem.tsx">
+            <HighlightedTextValue />
+          </Item>
+          <Item textValue="useSpeedSearchList.ts">
+            <HighlightedTextValue />
+          </Item>
         </Item>
 
-        <Item>ListDivider.tsx</Item>
+        <Item textValue="ListDivider.tsx">
+          <HighlightedTextValue />
+        </Item>
       </Item>
-      <Item title="Theme" key="Theme">
-        <Item>createTheme.ts</Item>
+      <Item textValue="Theme" title={<HighlightedTextValue />} key="Theme">
+        <Item textValue="createTheme.ts">
+          <HighlightedTextValue />
+        </Item>
       </Item>
     </SpeedSearchTree>
   );

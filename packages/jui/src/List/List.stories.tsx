@@ -8,7 +8,7 @@ import { Pane } from "../story-components";
 import {
   itemRenderer,
   renderItemCustomUI,
-  renderItemString,
+  renderItemText,
 } from "./story-helpers";
 
 export default {
@@ -20,7 +20,7 @@ export const Default = () => {
   return (
     <Pane>
       <List selectionMode="single" items={legends} fillAvailableSpace>
-        {itemRenderer(renderItemString)}
+        {itemRenderer(renderItemText)}
       </List>
     </Pane>
   );
@@ -71,7 +71,7 @@ export const MultiSelect = ({
         shouldFocusWrap={shouldFocusWrap}
         alwaysShowListAsFocused={alwaysShowListAsFocused}
       >
-        {itemRenderer(renderItemString)}
+        {itemRenderer(renderItemText)}
       </List>
     </Pane>
   );

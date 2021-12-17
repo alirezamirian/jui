@@ -7,7 +7,8 @@ import { Pane } from "../../story-components";
 import {
   itemRenderer,
   renderItemCustomUI,
-  renderItemString,
+  renderItemText,
+  renderItemTextWithHighlights,
 } from "../story-helpers";
 
 export default {
@@ -15,7 +16,7 @@ export default {
   component: SpeedSearchList,
 } as Meta;
 
-export const HighlightedByDefault = () => {
+export const WithHighlight = () => {
   return (
     <Pane>
       <SpeedSearchList
@@ -24,12 +25,26 @@ export const HighlightedByDefault = () => {
         disabledKeys={["El Amir"]}
         fillAvailableSpace
       >
-        {itemRenderer(renderItemString)}
+        {itemRenderer(renderItemTextWithHighlights)}
       </SpeedSearchList>
     </Pane>
   );
 };
 
+export const WithoutHighlight = () => {
+  return (
+    <Pane>
+      <SpeedSearchList
+        selectionMode="multiple"
+        items={legends}
+        disabledKeys={["El Amir"]}
+        fillAvailableSpace
+      >
+        {itemRenderer(renderItemText)}
+      </SpeedSearchList>
+    </Pane>
+  );
+};
 export const HighlightInCustomUI = () => {
   return (
     <Pane>

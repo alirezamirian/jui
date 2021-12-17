@@ -8,6 +8,7 @@ import {
 import { treeItems } from "../story-helpers";
 import { SpeedSearchTree } from "./SpeedSearchTree";
 import { Item } from "@react-stately/collections";
+import { HighlightedTextValue } from "@intellij-platform/core";
 
 export default {
   title: "Components/Tree (Speed search)",
@@ -50,8 +51,12 @@ export const Dynamic = () => {
           onSelectionChange={setSelectedKeys}
         >
           {(item) => (
-            <Item key={item.name} title={item.name} childItems={item.children}>
-              {item.name}
+            <Item
+              key={item.name}
+              textValue={item.name}
+              childItems={item.children}
+            >
+              <HighlightedTextValue />
             </Item>
           )}
         </SpeedSearchTree>
