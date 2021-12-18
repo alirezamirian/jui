@@ -53,7 +53,7 @@ JUI is Intellij Platform UI implemented as a React.js library.
             <td>❌</td>
         </tr>
         <tr>
-            <td rowspan="4">Tree</td>
+            <td rowspan="5">Tree</td>
         </tr>
         <tr>
             <td colspan="2">Base</td>
@@ -61,6 +61,10 @@ JUI is Intellij Platform UI implemented as a React.js library.
         </tr>
         <tr>
             <td colspan="2">Speed search</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td colspan="2">Virtualization</td>
             <td>✅</td>
         </tr>
         <tr>

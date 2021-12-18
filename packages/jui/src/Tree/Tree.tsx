@@ -1,4 +1,5 @@
 import { Node } from "@react-types/shared";
+import { Virtualizer } from "@react-aria/virtualizer";
 import { TreeProps as StatelyTreeProps } from "@react-stately/tree";
 import { TreeRef } from "@intellij-platform/core/Tree/useTreeRef";
 import React, { ForwardedRef, Key, useRef } from "react";
@@ -8,6 +9,7 @@ import { TreeContext } from "./TreeContext";
 import { useTreeState } from "./__tmp__useTreeState";
 import { useSelectableTree } from "./useSelectableTree";
 import { replaceSelectionManager } from "../selection/replaceSelectionManager";
+import { useTreeVirtualizer } from "./useTreeVirtualizer";
 
 export interface TreeProps<T extends object> extends StatelyTreeProps<T> {
   fillAvailableSpace?: boolean;
@@ -20,15 +22,10 @@ export interface TreeProps<T extends object> extends StatelyTreeProps<T> {
 
 /**
  * TODO:
- *  - virtualization
- *  - Match select all behaviour. Currently, [getSelectAllKeys][1] in `SelectionManager` returns
- * all
- *    nested keys too. But it's not aligned with Tree implementation in Intellij Platform. And
- * beside from that, it seems to be a little inconsistent in some edge cases where you select all,
- * and then deselect a node. hen all of a sudden, all collapsed nested keys are no longer selected.
- *
- *  [1]:
- * https://github.com/adobe/react-spectrum/blob/main/packages/@react-stately/selection/src/SelectionManager.ts#L303-L303
+ *  - Match select all behaviour. Currently, `getSelectAllKeys` in `SelectionManager` returns
+ *   all nested keys too. But it's not aligned with Tree implementation in Intellij Platform. And
+ *   beside from that, it seems to be a little inconsistent in some edge cases where you select all,
+ *   and then deselect a node. Then all of a sudden, all collapsed nested keys are no longer selected.
  */
 export const Tree = React.forwardRef(
   <T extends object>(
@@ -40,11 +37,13 @@ export const Tree = React.forwardRef(
 
     const { treeProps, treeContext } = useSelectableTree(
       {
+        isVirtualized: true,
         onAction,
         ...state,
       },
       ref
     );
+    const { virtualizerProps } = useTreeVirtualizer({ state });
 
     const renderNode = (item: Node<T>) => (
       <TreeNode key={item.key} item={item} />
@@ -53,14 +52,13 @@ export const Tree = React.forwardRef(
     return (
       <TreeContext.Provider value={treeContext}>
         <StyledList
-          as="div"
+          as={Virtualizer}
           ref={ref}
           fillAvailableSpace={fillAvailableSpace}
+          {...virtualizerProps}
           {...treeProps}
         >
-          {[...state.collection.getKeys()]
-            .map((key) => state.collection.getItem(key))
-            .map(renderNode)}
+          {(itemType: string, item: object) => renderNode(item as Node<T>)}
         </StyledList>
       </TreeContext.Provider>
     );

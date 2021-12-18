@@ -1,11 +1,13 @@
 import { TreeRef } from "@intellij-platform/core/Tree";
 import { Node } from "@react-types/shared";
+import { Virtualizer } from "@react-aria/virtualizer";
 import React, { ForwardedRef, useRef } from "react";
 import { StyledList } from "../../List/StyledList";
 import { replaceSelectionManager } from "../../selection/replaceSelectionManager";
 import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
 import { useTreeState } from "../__tmp__useTreeState";
 import { TreeProps } from "../Tree";
+import { useTreeVirtualizer } from "../useTreeVirtualizer";
 import { TreeNode } from "../TreeNode";
 import { TreeContext } from "../TreeContext";
 import { useSpeedSearchTree } from "./useSpeedSearchTree";
@@ -27,7 +29,9 @@ export const SpeedSearchTree = React.forwardRef(
       treeContext,
       speedSearchContextValue,
       searchPopupProps,
-    } = useSpeedSearchTree({ ...state, onAction }, ref);
+    } = useSpeedSearchTree({ ...state, onAction, isVirtualized: true }, ref);
+
+    const { virtualizerProps } = useTreeVirtualizer({ state });
 
     const renderNode = (item: Node<T>) => (
       <SpeedSearchItemHighlightsProvider itemKey={item.key}>
@@ -41,14 +45,13 @@ export const SpeedSearchTree = React.forwardRef(
         <CollectionSpeedSearchContext.Provider value={speedSearchContextValue}>
           <SpeedSearchPopup {...searchPopupProps} />
           <StyledList
-            as="div"
+            as={Virtualizer}
             ref={ref}
             fillAvailableSpace={fillAvailableSpace}
+            {...virtualizerProps}
             {...treeProps}
           >
-            {[...state.collection.getKeys()]
-              .map((key) => state.collection.getItem(key))
-              .map(renderNode)}
+            {(type: string, item: unknown) => renderNode(item as Node<T>)}
           </StyledList>
         </CollectionSpeedSearchContext.Provider>
       </TreeContext.Provider>

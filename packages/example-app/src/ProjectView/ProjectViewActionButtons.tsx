@@ -33,7 +33,7 @@ export const ProjectViewActionButtons = (): React.ReactElement => {
         "virtual scrolling is not yet implemented for tree view. Only first 100 items are expanded."
       );
     }
-    setExpandedKeys(new Set(allDirPaths.slice(0, 100)));
+    setExpandedKeys(new Set(allDirPaths));
   };
   return (
     <>
