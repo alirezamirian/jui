@@ -1,4 +1,4 @@
-name: Node.js CI
+name: CI pipeline
 
 on:
   push:
@@ -20,4 +20,4 @@ jobs:
       run: yarn
 
     - name: Run Tests ✅
-    - run: yarn workspaces run test
+      run: yarn workspaces run test
