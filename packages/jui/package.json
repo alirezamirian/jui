@@ -15,8 +15,8 @@
     "type-check": "tsc && yarn run cypress:type-check",
     "jest": "jest",
     "jest:watch": "jest --watch",
-    "cypress": "cypress run-ct --browser=chrome",
-    "cypress:open": "cypress open-ct",
+    "cypress": "ELECTRON_EXTRA_LAUNCH_ARGS=--disable-color-correct-rendering cypress run-ct",
+    "cypress:open": "ELECTRON_EXTRA_LAUNCH_ARGS=--disable-color-correct-rendering cypress open-ct --browser=electron",
     "cypress:type-check": "tsc --project tsconfig.cypress.json"
   },
   "dependencies": {
