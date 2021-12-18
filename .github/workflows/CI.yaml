@@ -9,8 +9,8 @@ on:
 jobs:
   build:
 
-    runs-on: macos-11
-    container: cypress/browsers:node14.17.0-chrome88-ff89
+    runs-on: ubuntu-latest # note: macos doesn't have docker installed!
+    container: cypress/browsers:node14.17.0-chrome91-ff89
 
     steps:
     - name: Checkout 🛎️
