@@ -34,7 +34,6 @@ export function useSelectableTree<T>(
   } = useSelectableCollection({
     ref,
     selectionManager: props.selectionManager,
-    shouldUseVirtualFocus: props.isVirtualized,
     selectOnFocus: true,
     keyboardDelegate: useMemo(
       () =>
