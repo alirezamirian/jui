@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: macos-11
     container: cypress/browsers:node14.17.0-chrome88-ff89
 
     steps:
