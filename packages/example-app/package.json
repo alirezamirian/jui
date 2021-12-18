@@ -1,6 +1,9 @@
 {
   "name": "jui-example-app",
   "version": "0.0.0",
+  "scripts": {
+    "test": "echo \"Not implemented\""
+  },
   "dependencies": {
     "@monaco-editor/react": "^4.2.2",
     "monaco-editor": "^0.28.1",
