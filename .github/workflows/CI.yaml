@@ -21,3 +21,10 @@ jobs:
 
     - name: Run Tests ✅
       run: yarn workspaces run test
+
+    - uses: actions/upload-artifact@v2
+      name: Upload Cypress screenshots if tests failed 🤕
+      if: failure()
+      with:
+        name: cypress-screenshots
+        path: "**/__image_snapshots__"
