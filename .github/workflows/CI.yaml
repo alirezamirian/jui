@@ -9,8 +9,8 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
-    container: cypress/browsers:node14.17.0-chrome88-ff89
+    runs-on: ubuntu-latest # note: macos doesn't have docker installed!
+    container: cypress/browsers:node14.17.0-chrome91-ff89
 
     steps:
     - name: Checkout 🛎️
@@ -21,3 +21,10 @@ jobs:
 
     - name: Run Tests ✅
       run: yarn workspaces run test
+
+    - uses: actions/upload-artifact@v2
+      name: Upload Cypress screenshots if tests failed 🤕
+      if: failure()
+      with:
+        name: cypress-screenshots
+        path: "**/__image_snapshots__"
