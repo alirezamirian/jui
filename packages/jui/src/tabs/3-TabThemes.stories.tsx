@@ -4,7 +4,7 @@ import { DebuggerTabContent } from "./DebuggerTabs/DebuggerTabContent";
 import { EditorTabContent } from "./EditorTabs/EditorTabContent";
 import { EditorTabs, EditorTabsProps } from "./EditorTabs/EditorTabs";
 import { DebuggerTabs } from "./DebuggerTabs/DebuggerTabs";
-import { TabsProps, Tabs } from "./Tabs";
+import { Tabs, TabsProps } from "./Tabs";
 import { TabContentLayout } from "./TabContentLayout";
 import { ToolWindowTabs } from "./ToolWindowTabs/ToolWindowTabs";
 import React from "react";
@@ -28,21 +28,43 @@ export const EditorTheme: React.FC<StoryProps<EditorTabsProps<any>>> = (
 ) => {
   return (
     <EditorTabs {...props} items={editorTabs} active>
-      {renderEditorTab}
+      {(tab: typeof editorTabs[number]) => (
+        <Item key={tab.title} textValue={tab.title}>
+          <EditorTabContent
+            icon={<PlatformIcon icon={tab.icon} />}
+            title={tab.title}
+            pinned={tab.pinned}
+          />
+        </Item>
+      )}
     </EditorTabs>
   );
 };
 export const DebuggerTheme: React.FC<StoryProps> = (props) => {
   return (
     <DebuggerTabs {...props} items={debuggerTabs}>
-      {renderDebuggerTab}
+      {(tab: typeof debuggerTabs[number]) => (
+        <Item key={tab.title} textValue={tab.title}>
+          <DebuggerTabContent
+            icon={tab.icon && <PlatformIcon icon={tab.icon} />}
+            title={tab.title}
+          />
+        </Item>
+      )}
     </DebuggerTabs>
   );
 };
 export const ToolWindowTheme: React.FC<StoryProps> = (props) => {
   return (
     <ToolWindowTabs {...props} items={toolWindowTabs}>
-      {renderToolWindowTabs}
+      {(tab: typeof toolWindowTabs[number]) => (
+        <Item key={tab.title} textValue={tab.title}>
+          <TabContentLayout
+            startIcon={<PlatformIcon icon={tab.icon} />}
+            title={tab.title}
+          />
+        </Item>
+      )}
     </ToolWindowTabs>
   );
 };
@@ -96,34 +118,3 @@ const debuggerTabs = [
     icon: null,
   },
 ];
-const renderEditorTab = (tab: typeof editorTabs[number]) => (
-  <Item key={tab.title} textValue={tab.title}>
-    <EditorTabContent
-      icon={<PlatformIcon icon={tab.icon} />}
-      title={tab.title}
-      pinned={tab.pinned}
-      onUnpin={() => {
-        console.log("onUnpin");
-      }}
-      onClose={() => {
-        console.log("onClose");
-      }}
-    />
-  </Item>
-);
-const renderDebuggerTab = (tab: typeof debuggerTabs[number]) => (
-  <Item key={tab.title} textValue={tab.title}>
-    <DebuggerTabContent
-      icon={tab.icon && <PlatformIcon icon={tab.icon} />}
-      title={tab.title}
-    />
-  </Item>
-);
-const renderToolWindowTabs = (tab: typeof toolWindowTabs[number]) => (
-  <Item key={tab.title} textValue={tab.title}>
-    <TabContentLayout
-      startIcon={<PlatformIcon icon={tab.icon} />}
-      title={tab.title}
-    />
-  </Item>
-);

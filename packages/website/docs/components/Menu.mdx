@@ -1,0 +1,40 @@
+---
+---
+
+import { RefToIntellijPlatform } from "../../src/components/RefToIntellijPlatform.tsx";
+import {
+  Static,
+  MenuWithTrigger,
+} from "@intellij-platform/core/Menu/Menu.stories";
+import { Example } from "../../src/components/ExampleContext";
+
+# Menu
+
+### Features
+
+- Nested menu items
+- Check-able menu items
+- Default menu layout with icon, text and keyboard shortcut
+- Full keyboard support
+- Viewport-aware positioning with respect to a trigger.
+
+#### Remaining
+
+- [ ] Context Menu. Positioning with respect to a click point.
+- [ ] Advanced hover behaviour, which detects attempt to go to submenu and doesn't close the menu on mouse out.
+
+## Examples
+
+### Simple flat menu with static items
+
+<Example>
+  <Static />
+</Example>
+
+### Menu with a trigger
+
+This is the most common use case of a menu.
+
+<Example>
+  <MenuWithTrigger />
+</Example>

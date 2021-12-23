@@ -43,7 +43,10 @@ export const DynamicItems = (props: StoryProps) => {
   );
 };
 
-export const Overflow = (props: StoryProps) => {
+export const Overflow = ({
+  maxWidth = 800,
+  ...props
+}: StoryProps & { maxWidth: number }) => {
   const tabs = Array(10)
     .fill(null)
     .map((_, index) => ({
@@ -51,7 +54,7 @@ export const Overflow = (props: StoryProps) => {
       icon: "nodes/folder",
     }));
   return (
-    <div style={{ maxWidth: 800 }}>
+    <div style={{ maxWidth }}>
       <Tabs {...props} items={tabs}>
         {(tab) => {
           const icon = <PlatformIcon icon={tab.icon} />;

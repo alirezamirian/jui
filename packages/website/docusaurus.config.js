@@ -21,6 +21,7 @@ const config = {
   trailingSlash: false,
 
   plugins: [
+    "@docusaurus/theme-live-codeblock",
     myPlugin,
     [
       // We might as well remove this and add the alias in our custom plugin, now that we have one
@@ -55,6 +56,7 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      liveCodeBlock: { playgroundPosition: "top" },
       navbar: {
         style: "primary",
         title: "jui",

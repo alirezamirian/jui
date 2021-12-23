@@ -1,0 +1,95 @@
+---
+---
+
+import { RefToIntellijPlatform } from "../../src/components/RefToIntellijPlatform.tsx";
+import {
+  EditorTheme,
+  DebuggerTheme,
+  ToolWindowTheme,
+} from "@intellij-platform/core/Tabs/3-TabThemes.stories";
+import { Overflow } from "@intellij-platform/core/Tabs/2-Tabs.stories";
+import { Example } from "../../src/components/ExampleContext";
+
+# Tabs
+
+### Features
+
+- Fully customizable and themeable
+- Support for different ways of handling overflow
+- Default tab themes, with support for icon, close button and pinned tabs.
+
+#### Remaining
+
+- [ ] drag and drop
+
+## Simple usage
+
+```tsx live
+<Tabs>
+  <Item>Tab 1</Item>
+  <Item>Tab 2</Item>
+  <Item>Tab 3</Item>
+</Tabs>
+```
+
+## Overflow behavior
+
+There are a few was of handling the overflow, when there is not enough space for showing all tabs. By default tabs will
+scroll horizontally and a small arrow down icon button is added next to the tabs which opens an overflow menu for the
+tabs that are not fully visible, based on the current scroll position.
+
+:::tip
+Use `TabItem` instead of `Item` to specify via `inOverflowMenu` prop, a different react node to be shown when the tab
+is rendered in the overflow menu.
+:::
+
+<Example>
+  <Overflow maxWidth={1800} />
+</Example>
+
+<br />
+
+Overflow menu can be disabled via `noOverflow` prop:
+
+<Example>
+  <Overflow maxWidth={1800} noOverflowMenu />
+</Example>
+
+<br />
+
+Horizontal scroll can be disabled via `noScroll` prop. If overflow is also disabled, tabs will be shrunk to fit
+the available space.
+
+:::warning
+Support for `noScroll` is under development.
+:::
+
+## Customization
+
+`Tabs` component allows for `TabsComponent` (the container) and `TabComponent` to allow for customizing look and feel.
+By default `StyledDefaultTabs` and `StyledDefaultTab` are used. The following variations are a thin wrapper around
+`Tabs`, which use those two props. They also expose a customized version of `TabContentLayout`.
+
+### Editor Theme
+
+Use `EditorTabs` together with `EditorTabContent` for editor tab style.
+
+<Example>
+  <EditorTheme />
+</Example>
+
+### Debugger Theme
+
+Use `DebuggerTabs` together with `DebuggerTabContent` for editor tab style.
+
+<Example>
+  <DebuggerTheme />
+</Example>
+
+### Tool Window Theme
+
+Use `ToolWindowTabs` together with the default `TabContentLayout` for editor tab style.
+
+<Example>
+  <ToolWindowTheme />
+</Example>

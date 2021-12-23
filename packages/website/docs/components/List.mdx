@@ -1,0 +1,32 @@
+---
+---
+
+import { RefToIntellijPlatform } from "../../src/components/RefToIntellijPlatform.tsx";
+import { Default } from "@intellij-platform/core/List/List.stories";
+import { ExampleContext } from "../../src/components/ExampleContext";
+
+# List
+
+Used for showing a flat list of items with different selection modes. It's usually used in master-detail views, or for
+a list of items with a single attribute. Here is some examples from JetBrains IDEs:
+
+- **Settings -> Tools -> SSH Configurations** (master-detail)
+- **Settings -> Appearance & Behavior -> Scopes** (master-detail)
+- **Settings -> Editor -> General -> Console -> Exceptions** (single attribute list of items)
+- **Settings -> Editor -> File and Code Templates** (master-detail)
+- **Settings -> Editor -> Natural Languages** (single attribute list of items)
+- **Show Local History** window (advanced layout)
+
+#### Remaining
+
+- [ ] Virtualized scrolling support for performance with long lists
+
+<ExampleContext>
+  <Default />
+</ExampleContext>
+
+## SpeedSearchList
+
+## Advanced use
+
+### Custom list component with useList and useSpeedSearchList
