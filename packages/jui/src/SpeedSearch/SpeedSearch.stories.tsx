@@ -22,6 +22,7 @@ export const Default = () => {
     <SpeedSearchContainer
       searchTerm={searchTerm}
       onSearchTermChange={setSearchTerm}
+      match // search is done within the searchable text component in this dummy example, and we don't have information about match.
       stickySearch
     >
       <ul>

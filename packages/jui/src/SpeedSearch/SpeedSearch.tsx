@@ -11,6 +11,7 @@ import {
 interface Props extends SpeedSearchStateProps {
   children: React.ReactNode;
   stickySearch?: boolean;
+  match?: boolean;
   className?: string;
   containerProps?: Omit<HTMLProps<HTMLDivElement>, "as" | "ref">;
 }
@@ -22,6 +23,7 @@ export function SpeedSearch({
   stickySearch = false,
   className,
   containerProps = {},
+  match,
   ...otherProps
 }: Props) {
   const speedSearchState = useSpeedSearchState(otherProps);
@@ -36,7 +38,7 @@ export function SpeedSearch({
       tabIndex={-1}
       {...mergeProps(containerProps, speedSearchContainerProps, { className })}
     >
-      <SpeedSearchPopup active={speedSearchState.active}>
+      <SpeedSearchPopup active={speedSearchState.active} match={match}>
         {speedSearchState.searchTerm}
       </SpeedSearchPopup>
       {children}
