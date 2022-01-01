@@ -21,3 +21,11 @@
   align-items: center;
   justify-content: center;
 }
+
+.link,
+.link:hover {
+  color: inherit;
+  text-underline-offset: 5px;
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+}

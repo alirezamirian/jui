@@ -30,8 +30,8 @@ const FeatureList: FeatureItem[] = [
     image: "/img/undraw_docusaurus_react.svg",
     description: (
       <>
-        Amazing keyboard-first UX of Intellij Platform UI, but implementable in
-        a declarative style which has proved to how UI is meant to be developed.
+        Amazing keyboard-first UX of Intellij Platform, in a descriptive and
+        declarative style, which works great for UI applications.
       </>
     ),
   },
