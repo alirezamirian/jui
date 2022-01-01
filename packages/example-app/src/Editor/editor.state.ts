@@ -6,6 +6,8 @@ import {
   useSetRecoilState,
 } from "recoil";
 import { Focusable } from "../common-types";
+import { currentProjectFilesState } from "../Project/project.state";
+import { descend, sortBy, sortWith } from "ramda";
 
 interface TextEditorState {
   cursorPos: { lineNumber: number; column: number };
@@ -20,7 +22,27 @@ interface EditorTabState {
 // it should become something under "project" state later.
 const editorTabsState = atom<EditorTabState[]>({
   key: "editor.tabs",
-  default: [],
+  default: selector({
+    key: "editor.tabs/Default",
+    get: ({ get }) =>
+      sortWith(
+        [
+          // first README.md, then ts and js files.
+          descend((file) => file.path === "README.md"),
+          descend((file) => file.path.endsWith(".ts")),
+          descend((file) => file.path.endsWith(".js")),
+        ],
+        get(currentProjectFilesState).items.filter(
+          (item) => item.type === "file"
+        )
+      )
+        .slice(0, 12)
+        // map project file to editor state object
+        .map((file) => ({
+          filePath: file.path,
+          editorState: { cursorPos: { lineNumber: 0, column: 0 } },
+        })),
+  }),
 });
 
 const activeEditorTabIndexState = atom<number>({

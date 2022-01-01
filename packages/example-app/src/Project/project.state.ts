@@ -56,7 +56,7 @@ export const currentProjectFilesState = selector({
         if (!response.ok) {
           throw response; // can be improved
         }
-        const result = await getContentTree(project.slug);
+        const result = await getContentTree(project.slug, project.ref);
         const typeMap = { tree: "dir", blob: "file" } as const;
         const items: FileTreeItem[] = result.tree.map(
           ({ type, ...item }) =>

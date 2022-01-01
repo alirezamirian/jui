@@ -46,8 +46,8 @@ export default function ExampleAppPage(): JSX.Element {
               <ColumnContainer>
                 <StyledBanner>
                   <BannerLinkButton to="/">
-                    <PlatformIcon icon="actions/back.svg" />
-                    &nbsp; Back to home
+                    <PlatformIcon icon="actions/exit.svg" />
+                    &nbsp; Quit example app
                   </BannerLinkButton>
                 </StyledBanner>
                 <App />

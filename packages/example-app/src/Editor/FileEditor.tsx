@@ -94,6 +94,12 @@ export const FileEditor = () => {
                   onClose={() => {
                     tabActionsRef.current.closePath(tab.filePath);
                   }}
+                  containerProps={{
+                    onDoubleClick: () => {
+                      // TODO: close all tool windows
+                      console.log("TODO: close all tool windows");
+                    },
+                  }}
                 />
               </TabItem>
             );
