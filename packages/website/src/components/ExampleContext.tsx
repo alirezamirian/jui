@@ -1,14 +1,30 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { ThemeProvider } from "styled-components";
 import { SSRProvider } from "@react-aria/ssr";
-import themeJson from "../../../jui/themes/darcula.theme.json";
+import darculaTheme from "../../../jui/themes/darcula.theme.json";
+import highContrastTheme from "../../../jui/themes/HighContrast.theme.json";
+import lightTheme from "../../../jui/themes/intellijlaf.theme.json";
 import { Theme } from "../../../jui/src";
 
-export const ExampleContext: React.FC = ({ children }) => (
-  <SSRProvider>
-    <ThemeProvider theme={new Theme(themeJson)}>{children}</ThemeProvider>
-  </SSRProvider>
-);
+export type ExampleContextThemeName = "light" | "darcula" | "highContrast";
+
+export const ExampleContext: React.FC<{
+  themeName?: ExampleContextThemeName;
+}> = ({ children, themeName = "darcula" }) => {
+  const themeJson = ({
+    light: lightTheme,
+    highContrast: highContrastTheme,
+    darcula: darculaTheme,
+  } as const)[themeName];
+
+  // @ts-expect-error ThemeJson type is not accurate ATM
+  const theme = useMemo(() => new Theme(themeJson), [themeJson]);
+  return (
+    <SSRProvider>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+    </SSRProvider>
+  );
+};
 
 /**
  * TODO: add a surrounding UI for examples, with tools for theme selection for example.
@@ -16,6 +32,7 @@ export const ExampleContext: React.FC = ({ children }) => (
 export const Example: React.FC = ({ children }) => (
   <ExampleContext>
     <div
+      // @ts-expect-error: css prop is not working for some reason
       css={`
         background: ${({ theme }) => theme.color("*.background")};
       `}

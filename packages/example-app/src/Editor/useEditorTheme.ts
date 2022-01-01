@@ -33,23 +33,25 @@ export const useEditorTheme = () => {
   );
   useLayoutEffect(() => {
     if (monaco) {
-      const name = `jui-theme-${theme.name}`;
+      const name = `jui-theme-${theme.name.replace(" ", "")}`;
       monaco.editor.defineTheme(name, {
-        base: "vs-dark",
+        base: theme.dark ? "vs-dark" : "vs",
         inherit: true,
         // colors and rules should come from color scheme xml files.
         // see platform/platform-resources/src/DefaultColorSchemesManager.xml
-        colors: {
-          // FIXME: read from color scheme files. List of available keys: https://github.com/microsoft/monaco-editor/issues/1631
-          "editor.background": "#2B2B2B",
-          "editor.lineHighlightBackground": "#323232",
-          "editor.lineHighlightBorder": "none",
-          "editorLineNumber.foreground": "#606366", // LINE_NUMBERS_COLOR
-          "editorActiveLineNumber.foreground": "#a4a3a3", // LINE_NUMBER_ON_CARET_ROW_COLOR
-          "editorIndentGuide.background": "#373737", // INDENT_GUIDE
-          "editorIndentGuide.activeBackground": "#505050", // SELECTED_INDENT_GUIDE
-          "editorGutter.background": theme.dark ? "#313335" : "#f0f0f0",
-        },
+        colors: theme.dark
+          ? {
+              // FIXME: read from color scheme files. List of available keys: https://github.com/microsoft/monaco-editor/issues/1631
+              "editor.background": "#2B2B2B",
+              "editor.lineHighlightBackground": "#323232",
+              "editor.lineHighlightBorder": "none",
+              "editorLineNumber.foreground": "#606366", // LINE_NUMBERS_COLOR
+              "editorActiveLineNumber.foreground": "#a4a3a3", // LINE_NUMBER_ON_CARET_ROW_COLOR
+              "editorIndentGuide.background": "#373737", // INDENT_GUIDE
+              "editorIndentGuide.activeBackground": "#505050", // SELECTED_INDENT_GUIDE
+              "editorGutter.background": theme.dark ? "#313335" : "#f0f0f0",
+            }
+          : {},
         // token rules for syntax highlighting
         rules: darculaColorSchemeTokenRules,
       });
