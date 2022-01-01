@@ -1,6 +1,12 @@
 # JUI
 
-JUI is Intellij Platform UI implemented as a React.js library.
+JUI is Intellij Platform UI implemented as a React.js library. It's built on top of [react-spectrum](https://react-spectrum.adobe.com/) foundation libraries.
+
+If you too love the user experience of the JetBrains products, and the developer experience of creating UI applications with react, you may find this interesting.
+ 
+## :warning: WARNING :warning:
+
+This library is a work in progress. It's not published on npm just yet, and documentation is incomplete. But you can checkout [a WIP demo](https://alirezamirian.github.io/jui/example-app), [the storybook](https://alirezamirian.github.io/jui/storybook/), or the current state of the [documentation](https://alirezamirian.github.io/jui/).
 
 ## Features:
 
@@ -237,7 +243,7 @@ JUI is Intellij Platform UI implemented as a React.js library.
 
 ### Intellij platform bugs
 
-These bugs are found in the original Intellij Platform UI, which doesn't exist in JUI:
+These bugs are found in the original Intellij Platform UI, which don't exist in JUI:
 
 - in Tree with speed search, when toggling a node changes the matches, the speed search popup is
   not updated accordingly. Here is an example, in which we have this invalid state, where there
