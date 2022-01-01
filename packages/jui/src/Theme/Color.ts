@@ -64,6 +64,18 @@ export class Color {
     );
   }
 
+  darker() {
+    const FACTOR = Color.FACTOR;
+    const int = Math.floor;
+
+    return new Color(
+      Math.max(int(this.r * FACTOR), 0),
+      Math.max(int(this.g * FACTOR), 0),
+      Math.max(int(this.b * FACTOR), 0),
+      this.a
+    );
+  }
+
   static brighter(color: string): string {
     // note: we can't type args simply with ConstructorParameters<typeof Color>.
     // see more: https://github.com/microsoft/TypeScript/issues/37079
