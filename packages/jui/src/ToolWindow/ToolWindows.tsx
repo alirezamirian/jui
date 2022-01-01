@@ -47,6 +47,7 @@ export interface ToolWindowsProps {
   mainContentMinWidth?: number;
 
   height?: CSSProperties["height"];
+  minHeight?: CSSProperties["minHeight"];
 }
 
 /**
@@ -74,6 +75,7 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
   hideToolWindowBars = false,
   useWidescreenLayout = false,
   height = "100%",
+  minHeight = "0",
   toolWindowsState,
   onToolWindowStateChange,
   renderToolbarButton,
@@ -303,7 +305,7 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
     <StyledToolWindowOuterLayout.Shell
       ref={containerRef}
       hideStripes={hideToolWindowBars}
-      style={{ height }}
+      style={{ height, minHeight }}
     >
       {layoutState && renderInnerLayout(layoutState)}
     </StyledToolWindowOuterLayout.Shell>
