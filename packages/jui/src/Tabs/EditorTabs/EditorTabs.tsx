@@ -1,4 +1,4 @@
-import { Tabs, TabsProps } from "@intellij-platform/core/tabs/Tabs";
+import { Tabs, TabsProps } from "@intellij-platform/core/Tabs/Tabs";
 import { StyledEditorTab } from "./StyledEditorTab";
 import { StyledEditorTabs } from "./StyledEditorTabs";
 import React from "react";

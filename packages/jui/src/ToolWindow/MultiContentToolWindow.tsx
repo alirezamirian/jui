@@ -1,9 +1,9 @@
 import React, { Key, useEffect, useState } from "react";
 import { useControlledState } from "@react-stately/utils";
 import { DefaultToolWindow } from "./DefaultToolWindow";
-import { TabItem } from "../tabs/TabItem";
+import { TabItem } from "../Tabs/TabItem";
 import { usePrevious } from "../utils/usePrevious";
-import { ToolWindowTabs } from "../tabs/ToolWindowTabs/ToolWindowTabs";
+import { ToolWindowTabs } from "../Tabs/ToolWindowTabs/ToolWindowTabs";
 
 export interface MultiContentToolWindowProps {
   /**

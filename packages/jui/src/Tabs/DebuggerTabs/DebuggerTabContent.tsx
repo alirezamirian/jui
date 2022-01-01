@@ -1,5 +1,5 @@
-import { TabCloseButton } from "@intellij-platform/core/tabs/TabCloseButton";
-import { TabContentLayout } from "@intellij-platform/core/tabs/TabContentLayout";
+import { TabCloseButton } from "@intellij-platform/core/Tabs/TabCloseButton";
+import { TabContentLayout } from "@intellij-platform/core/Tabs/TabContentLayout";
 import React from "react";
 
 export const DebuggerTabContent = ({

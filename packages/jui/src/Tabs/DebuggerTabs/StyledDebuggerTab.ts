@@ -1,11 +1,11 @@
 import { Theme } from "@intellij-platform/core/Theme";
 import { styled } from "@intellij-platform/core/styled";
 
-import { StyledDefaultTab } from "@intellij-platform/core/tabs/StyledDefaultTab";
+import { StyledDefaultTab } from "@intellij-platform/core/Tabs/StyledDefaultTab";
 import {
   getTabThemeStyles,
   TabTheme,
-} from "@intellij-platform/core/tabs/TabTheme";
+} from "@intellij-platform/core/Tabs/TabTheme";
 
 export const debuggerTabTheme = ({ theme }: { theme: Theme }): TabTheme => ({
   underlineHeight: theme.value<number>("DebuggerTabs.underlineHeight") ?? 2,

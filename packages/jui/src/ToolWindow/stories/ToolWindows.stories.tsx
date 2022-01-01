@@ -2,7 +2,7 @@ import { Section, Item } from "@react-stately/collections";
 import { Meta } from "@storybook/react";
 import { StyledIconLiveIndicator } from "../../Icon";
 import { SpeedSearchList } from "../../List/SpeedSearchList/SpeedSearchList";
-import { ToolWindowTabContent } from "../../tabs/ToolWindowTabs";
+import { ToolWindowTabContent } from "../../Tabs/ToolWindowTabs";
 import {
   MultiContentToolWindow,
   MultiContentToolWindowContent,

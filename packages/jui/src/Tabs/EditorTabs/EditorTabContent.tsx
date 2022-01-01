@@ -1,11 +1,11 @@
 import React from "react";
 import { Pressable } from "@react-aria/interactions";
 import { PlatformIcon } from "@intellij-platform/core/Icon";
-import { TabCloseButton } from "@intellij-platform/core/tabs/TabCloseButton";
+import { TabCloseButton } from "@intellij-platform/core/Tabs/TabCloseButton";
 import {
   TabContentLayout,
   TabItemLayoutProps,
-} from "@intellij-platform/core/tabs/TabContentLayout";
+} from "@intellij-platform/core/Tabs/TabContentLayout";
 
 /**
  * For rendering the content of Editor tabs. supports for file icon which is shown on the left and close or unpin

@@ -1,5 +1,5 @@
 import React from "react";
-import { Tabs, TabsProps } from "@intellij-platform/core/tabs/Tabs";
+import { Tabs, TabsProps } from "@intellij-platform/core/Tabs/Tabs";
 import { StyledToolWindowTab } from "./StyledToolWindowTab";
 import { StyledToolWindowTabs } from "./StyledToolWindowTabs";
 

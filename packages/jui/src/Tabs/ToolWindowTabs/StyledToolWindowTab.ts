@@ -1,10 +1,10 @@
 import { styled } from "@intellij-platform/core/styled";
 import { Theme } from "@intellij-platform/core/Theme";
-import { StyledDefaultTab } from "@intellij-platform/core/tabs/StyledDefaultTab";
+import { StyledDefaultTab } from "@intellij-platform/core/Tabs/StyledDefaultTab";
 import {
   getTabThemeStyles,
   TabTheme,
-} from "@intellij-platform/core/tabs/TabTheme";
+} from "@intellij-platform/core/Tabs/TabTheme";
 
 export const toolWindowTabTheme = ({ theme }: { theme: Theme }): TabTheme => ({
   borderColor: theme.color("ToolWindow.HeaderTab.borderColor"),
