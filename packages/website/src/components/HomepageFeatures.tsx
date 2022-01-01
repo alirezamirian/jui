@@ -17,7 +17,7 @@ type FeatureItem = {
 const FeatureList: FeatureItem[] = [
   {
     title: "Pixel perfect UI match",
-    image: "/img/undraw_docusaurus_tree.svg",
+    image: "img/undraw_docusaurus_tree.svg",
     description: (
       <>
         Unless you inspect and see it's DOM elements, it's hard to tell what you
@@ -27,7 +27,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: "Intellij Platform's UX, React's DX",
-    image: "/img/undraw_docusaurus_react.svg",
+    image: "img/undraw_docusaurus_react.svg",
     description: (
       <>
         Amazing keyboard-first UX of Intellij Platform, in a descriptive and
@@ -37,7 +37,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: "Drop-in support for themes",
-    image: "/img/undraw_docusaurus_mountain.svg",
+    image: "img/undraw_docusaurus_mountain.svg",
     description: (
       <>
         All components respect and use theme properties like their corresponding
