@@ -56,6 +56,12 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      announcementBar: {
+        id: "library-state-warning",
+        content:
+          "This library is still in very early stages of development. It's <b>not even published yet</b>, and documentation is incomplete.",
+        backgroundColor: "khaki",
+      },
       liveCodeBlock: { playgroundPosition: "top" },
       navbar: {
         style: "primary",
