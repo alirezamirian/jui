@@ -24,7 +24,7 @@ import {
 } from "./ProjectView.state";
 
 export const ProjectViewPane = (): React.ReactElement => {
-  const { slug: repoSlug } = useRecoilValue(currentProjectState);
+  const project = useRecoilValue(currentProjectState);
   const editor = useEditorStateManager();
   const treeRef = useRef<TreeRef>(null);
   const setProjectViewTreeRef = useSetRecoilState(projectViewTreeRefState);
@@ -72,7 +72,7 @@ export const ProjectViewPane = (): React.ReactElement => {
                   <b>
                     <HighlightedTextValue />
                   </b>
-                  <TreeNodeHint>github:{repoSlug}</TreeNodeHint>
+                  <TreeNodeHint>{project.path}</TreeNodeHint>
                 </>
               ) : (
                 <HighlightedTextValue />

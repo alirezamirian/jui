@@ -12,13 +12,13 @@ import {
 } from "recoil";
 import { getFilename, getIconForFile } from "../file-utils";
 import { LoadingGif } from "../LoadingGif";
-import { fileContent } from "../Project/project.state";
 import { Editor } from "./Editor";
 import {
   activeEditorTabState,
   editorRefState,
   useEditorStateManager,
 } from "./editor.state";
+import { fileContent } from "../fs/fs.state";
 
 /**
  * Used as main content in the main ToolWindows. Shows currently opened files tabs and the editor.

@@ -1,31 +1,26 @@
 import { Selection } from "@react-types/shared";
 import { TreeRef } from "@intellij-platform/core";
 import { Key, RefObject } from "react";
-import { atom, CallbackInterface, selector } from "recoil";
-import {
-  currentProjectFilesState,
-  currentProjectState,
-  FileTreeDirItem,
-  FileTreeFileItem,
-  FileTreeItem,
-  GithubProject,
-} from "../Project/project.state";
+import { atom, CallbackInterface, GetRecoilValue, selector } from "recoil";
+import { currentProjectState, Project } from "../Project/project.state";
+import { dirContentState, FsItem } from "../fs/fs.state";
+import { filterPath } from "../Project/project-utils";
 
 interface FileTreeNodeBase {
-  parent: (FileTreeNodeBase & { children: FileTreeNode[] }) | null;
-  path: string;
+  parent: (FileTreeNodeBase & { children: FsItem[] }) | null;
   name: string;
 }
 
-type FileTreeDirNode = FileTreeNodeBase &
-  FileTreeDirItem & {
+export type FileTreeDirNode = FileTreeNodeBase &
+  FsItem & {
     children: FileTreeNode[];
   };
-type FileTreeFileNode = FileTreeNodeBase & FileTreeFileItem;
-type FileTreeNode = FileTreeFileNode | FileTreeDirNode;
+type FileTreeFileNode = FileTreeNodeBase & FsItem;
+export type FileTreeNode = FileTreeFileNode | FileTreeDirNode;
 
 interface ProjectTreeRoot extends FileTreeNodeBase {
   type: "project";
+  path: string;
   children: FileTreeNode[];
 }
 
@@ -40,7 +35,10 @@ export const foldersOnTopState = atom({
 
 export const expandedKeysState = atom({
   key: "projectView.expandedKeys",
-  default: new Set<Key>([""]), // empty string is the key for the root node
+  default: selector({
+    key: "projectView.expandedKeys/default",
+    get: ({ get }) => new Set<Key>([get(currentProjectState).path]),
+  }),
 });
 
 export const selectedKeysState = atom<Selection>({
@@ -57,56 +55,48 @@ export const projectViewTreeRefState = atom<null | RefObject<TreeRef>>({
 export const currentProjectTreeState = selector({
   key: "projectTree",
   get: ({ get }) => {
-    const { items } = get(currentProjectFilesState);
     const project = get(currentProjectState);
-    return createTreeFromNodes(items, project);
+    return createProjectTree(project, get);
   },
 });
 
-function createTreeFromNodes(items: FileTreeItem[], project: GithubProject) {
-  const nodes: FileTreeNode[] = items.map((item) => {
+// NOTE: this function could be sync, and those `await`s before `get` are unnecessary. They are there simply because
+// I didn't realize `get` returns the value, not Promise. But interestingly, when this function is made sync,
+// performance drastically drops for some reason. That needs to be investigated.
+async function createProjectTree(
+  project: Project,
+  get: GetRecoilValue
+): Promise<ProjectTreeRoot> {
+  const rootItems = await get(dirContentState(project.path));
+  const mapItem = (parent: FileTreeDirNode | null) => async (
+    item: FsItem
+  ): Promise<FileTreeNode> => {
     const name = item.path.split("/").pop() || item.path;
-    return item.type === "dir"
-      ? {
-          ...item,
-          parent: null,
-          children: [],
-          name,
-        }
-      : {
-          ...item,
-          parent: null,
-          name: name,
-        };
-  });
-  nodes.forEach((node) => {
-    const pathParts = node.path.split("/");
-    const parentPath = pathParts.slice(0, -1).join("/");
-    const parent = parentPath
-      ? nodes.find(
-          (node): node is FileTreeDirNode =>
-            node.path === parentPath && node.type === "dir"
+    const node = {
+      ...item,
+      name,
+      parent,
+    };
+    const dirNode: FileTreeDirNode = { ...node, children: [] };
+    if (item.type === "dir") {
+      dirNode.children = await Promise.all(
+        ((await get(dirContentState(item.path))) ?? ([] as FsItem[])).map(
+          mapItem(dirNode)
         )
-      : null;
-    if (parent === undefined) {
-      throw new Error(
-        `Unexpected file tree. Could not find file tree item at path: "${parentPath}"`
       );
     }
-    node.parent = parent;
-    if (parent && !parent.children.includes(node)) {
-      parent.children.push(node);
-    }
-  });
-  const root: ProjectTreeRoot = {
+    return item.type === "dir" ? dirNode : node;
+  };
+
+  return {
     type: "project",
-    path: "",
+    path: project.path,
     name: project.name,
     parent: null,
-    children: nodes.filter((node) => !node.parent),
+    children: await Promise.all(
+      (rootItems || []).filter(filterPath).map(mapItem(null))
+    ),
   };
-  root.children = root.children.map((item) => ({ ...item, parent: root }));
-  return root;
 }
 
 /**
@@ -118,7 +108,9 @@ export const expandToPathCallback = ({ snapshot, set }: CallbackInterface) => (
   path: string
 ) => {
   const expandedKeys = snapshot.getLoadable(expandedKeysState).valueOrThrow();
-  const keysToExpand = [""].concat(
+  const keysToExpand = [
+    snapshot.getLoadable(currentProjectState).valueOrThrow().path,
+  ].concat(
     path
       .split("/")
       .map((part, index, parts) => parts.slice(0, index + 1).join("/"))
