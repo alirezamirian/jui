@@ -1,15 +1,19 @@
+
+## :warning: WARNING :warning:
+
+This library is a work in progress. It's not published on npm just yet, and documentation is incomplete. But you can checkout these:
+- [A WIP demo](https://alirezamirian.github.io/jui/example-app)
+- [storybook](https://alirezamirian.github.io/jui/storybook/)
+- The current state of the [documentation](https://alirezamirian.github.io/jui/).
+
 # JUI
 
-JUI is Intellij Platform UI implemented as a React.js library. It's built on top of [react-spectrum](https://react-spectrum.adobe.com/) foundation libraries.
+JUI is JetBrain's IntelliJ Platform UI implemented as a React.js library. A lot of accessibility aspects are implemented using hooks from [react-aria](https://react-spectrum.adobe.com/react-aria/index.html) and friends.
 
 If you too love the user experience of the JetBrains products, and the developer experience of creating UI applications with react, you may find this interesting.
 
 https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-ad80-3e4f640dd726.mp4
 
-
-## :warning: WARNING :warning:
-
-This library is a work in progress. It's not published on npm just yet, and documentation is incomplete. But you can checkout [a WIP demo](https://alirezamirian.github.io/jui/example-app), [the storybook](https://alirezamirian.github.io/jui/storybook/), or the current state of the [documentation](https://alirezamirian.github.io/jui/).
 
 ## Features:
 
