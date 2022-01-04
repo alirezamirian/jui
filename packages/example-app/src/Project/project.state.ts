@@ -7,18 +7,31 @@ export interface Project {
   path: string;
 }
 
+const sampleRepos = {
+  JUI: {
+    path: "/workspace/jui",
+    url: "https://github.com/alirezamirian/jui.git",
+  },
+  "React Spectrum": {
+    path: "/workspace/react-spectrum",
+    url: "https://github.com/adobe/react-spectrum.git",
+  },
+  Recoil: {
+    path: "/workspace/recoil",
+    url: "https://github.com/facebookexperimental/Recoil.git",
+  },
+};
+const sampleRepoKey: keyof typeof sampleRepos = "JUI";
+
 /**
  * temporary hard coded sample repo, until clone UI is implemented.
  */
-export const sampleRepo = {
-  path: "/workspace/jui",
-  url: "https://github.com/alirezamirian/jui.git",
-};
+export const sampleRepo = sampleRepos[sampleRepoKey];
 
 export const currentProjectState = atom<Project>({
   key: "project",
   default: {
-    name: "JUI",
+    name: sampleRepoKey,
     path: sampleRepo.path,
   },
 });

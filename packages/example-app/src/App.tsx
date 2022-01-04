@@ -6,12 +6,12 @@ import { SampleRepoInitializer } from "./SampleRepoInitializer";
 
 export const App = () => {
   return (
-    <RecoilRoot>
-      <DefaultSuspense>
-        <SampleRepoInitializer>
+    <DefaultSuspense>
+      <SampleRepoInitializer>
+        <RecoilRoot>
           <Project />
-        </SampleRepoInitializer>
-      </DefaultSuspense>
-    </RecoilRoot>
+        </RecoilRoot>
+      </SampleRepoInitializer>
+    </DefaultSuspense>
   );
 };

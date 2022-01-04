@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { sampleRepo } from "./Project/project.state";
-import { fs } from "./fs/fs";
+import { fs, WaitForFs } from "./fs/fs";
 import { clone } from "isomorphic-git";
 import http from "isomorphic-git/http/web";
 import styled from "styled-components";
@@ -77,19 +77,21 @@ export const SampleRepoInitializer: React.FC = ({ children }) => {
     return <>{children}</>;
   }
   return (
-    <StyledDialog>
-      <StyledDialogHeader>Cloning sample repo</StyledDialogHeader>
-      <StyledDialogContent>
-        {state === "cloning" ? (
-          <>
-            Cloning <b>{sampleRepo.url}</b>. <br />
-            It takes a little while the first time.
-          </>
-        ) : (
-          <>Something went wrong!</>
-        )}
-      </StyledDialogContent>
-    </StyledDialog>
+    <WaitForFs>
+      <StyledDialog>
+        <StyledDialogHeader>Cloning sample repo</StyledDialogHeader>
+        <StyledDialogContent>
+          {state === "cloning" ? (
+            <>
+              Cloning <b>{sampleRepo.url}</b>. <br />
+              It may take several seconds.
+            </>
+          ) : (
+            <>Something went wrong!</>
+          )}
+        </StyledDialogContent>
+      </StyledDialog>
+    </WaitForFs>
   );
 };
 
@@ -103,5 +105,4 @@ async function cloneRepo(dir: string, repoUrl: string) {
     dir,
     singleBranch: true,
   });
-  console.log(`successfully cloned "${repoUrl}" in "${dir}"`);
 }
