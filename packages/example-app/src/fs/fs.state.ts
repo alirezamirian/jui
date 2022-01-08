@@ -1,4 +1,8 @@
-import { selectorFamily, useRecoilRefresher_UNSTABLE } from "recoil";
+import {
+  atomFamily,
+  selectorFamily,
+  useRecoilRefresher_UNSTABLE,
+} from "recoil";
 import { fs } from "./fs";
 
 export interface FsItem {
@@ -10,11 +14,13 @@ export interface FsItem {
 /**
  * recoil atoms and selectors for keeping list and content of files in recoil state, for components that need on such
  * state.
+ * NOTE: still not clear if we should be using atomFamily or selectorFamily for this. changing the current
+ * implementation to atomFamily however is easy and side effect free.
  */
-
 export const dirContentState = selectorFamily({
   key: "dirContents",
   get: (path: string) => async (): Promise<null | FsItem[]> => {
+    console.log("reading directory content", path);
     let fileNames: string[];
     try {
       fileNames = await fs.promises.readdir(path);
@@ -39,14 +45,42 @@ export const dirContentState = selectorFamily({
   },
 });
 
-export const fileContent = selectorFamily({
+/**
+ * NOTE: Still not quite clear if we should use atom and [synchronize with source of truth (FS)][recoil-atom-effects],
+ * or if we should use selector and refresh it when needed. We probably need a proper [VFS][vfs] implementation at
+ * some point, which would be capable of tracking modifications, and setting up listeners for it, and then atoms, can
+ * hold the states like directory content, with effects which uses the listener API.
+ * NOTE: currently, only text file is supported, for simplicity.
+ *
+ * [recoil-atom-effects]: https://recoiljs.org/docs/guides/atom-effects#write-through-cache-example
+ * [vfs]: https://plugins.jetbrains.com/docs/intellij/virtual-file-system.html
+ **/
+export const fileContent = atomFamily<string, string>({
   key: "fileContent",
-  get: (path: string) => async (): Promise<Uint8Array | string> => {
-    if (!path) {
+  default: (filepath: string) => {
+    if (!filepath) {
       return "";
     }
-    return fs.promises.readFile(path, { encoding: "utf8" });
+    // @ts-expect-error return type is wrong
+    return fs.promises.readFile(filepath, { encoding: "utf8" }) as string;
   },
+  effects_UNSTABLE: (filepath) => [
+    ({ onSet }) => {
+      onSet((content) => {
+        // Should a sync API be used here?
+        fs.promises
+          .writeFile(
+            filepath,
+            // @ts-expect-error: string should also be acceptable. Seems like bad typing
+            content,
+            { encoding: "utf8" }
+          )
+          .catch((e) => {
+            console.error("failed to sync the file back to the fs", e);
+          });
+      });
+    },
+  ],
 });
 
 export const useReloadFromDisk = (path: string) => {
