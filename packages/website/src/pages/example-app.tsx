@@ -17,6 +17,7 @@ const ColumnContainer = styled(StyleNormalizer)`
   display: flex;
   flex-direction: column;
   height: 100vh;
+  background: ${({ theme }) => theme.color("*.background")};
 `;
 
 const StyledBanner = styled.div`

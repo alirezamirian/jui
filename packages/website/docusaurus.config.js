@@ -3,6 +3,7 @@
 
 const lightCodeTheme = require("prism-react-renderer/themes/github");
 const darkCodeTheme = require("prism-react-renderer/themes/dracula");
+const webpack = require("webpack");
 const path = require("path");
 
 const repoUrl = "https://github.com/alirezamirian/jui";
@@ -23,6 +24,7 @@ const config = {
   plugins: [
     "@docusaurus/theme-live-codeblock",
     myPlugin,
+    isomorphicGitWebpackConfigPlugin,
     [
       // We might as well remove this and add the alias in our custom plugin, now that we have one
       "docusaurus-plugin-module-alias",
@@ -158,6 +160,35 @@ function myPlugin() {
         };
       }
       return {};
+    },
+  };
+}
+
+/**
+ *
+ * @return {import('@docusaurus/types').Plugin}
+ */
+function isomorphicGitWebpackConfigPlugin() {
+  return {
+    name: "isomorphic-git-webpack-config-docusaurus-plugin",
+    configureWebpack(config, isServer, utils) {
+      return {
+        resolve: {
+          fallback: {
+            buffer: require.resolve("buffer"),
+            process: require.resolve("process/browser"),
+            stream: require.resolve("stream-browserify"),
+          },
+        },
+        plugins: [
+          new webpack.ProvidePlugin({
+            Buffer: ["buffer", "Buffer"],
+          }),
+          new webpack.ProvidePlugin({
+            process: "process/browser",
+          }),
+        ],
+      };
     },
   };
 }
