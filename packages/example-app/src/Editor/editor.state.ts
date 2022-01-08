@@ -6,8 +6,11 @@ import {
   useSetRecoilState,
 } from "recoil";
 import { Focusable } from "../common-types";
-import { currentProjectFilesState } from "../Project/project.state";
-import { descend, sortBy, sortWith } from "ramda";
+import { descend, sortWith } from "ramda";
+import {
+  currentProjectFilesState,
+  projectFilePath,
+} from "../Project/project.state";
 
 interface TextEditorState {
   cursorPos: { lineNumber: number; column: number };
@@ -19,30 +22,32 @@ interface EditorTabState {
   filePath: string;
 }
 
+// in order to showcase tabs behaviour when many tabs are open. Later on, it should be based on persisted project
+// settings.
+const temporaryTabsDefaultValue = selector({
+  key: "editor.tabs/Default",
+  get: ({ get }) =>
+    sortWith(
+      [
+        // first README.md, then ts and js files.
+        descend((file) => file.path === get(projectFilePath("README.md"))),
+        descend((file) => file.path.endsWith(".ts")),
+        descend((file) => file.path.endsWith(".js")),
+      ],
+      get(currentProjectFilesState).filter((item) => item.type === "file")
+    )
+      .slice(0, 12)
+      // map project file to editor state object
+      .map((file) => ({
+        filePath: file.path,
+        editorState: { cursorPos: { lineNumber: 0, column: 0 } },
+      })),
+});
+
 // it should become something under "project" state later.
 const editorTabsState = atom<EditorTabState[]>({
   key: "editor.tabs",
-  default: selector({
-    key: "editor.tabs/Default",
-    get: ({ get }) =>
-      sortWith(
-        [
-          // first README.md, then ts and js files.
-          descend((file) => file.path === "README.md"),
-          descend((file) => file.path.endsWith(".ts")),
-          descend((file) => file.path.endsWith(".js")),
-        ],
-        get(currentProjectFilesState).items.filter(
-          (item) => item.type === "file"
-        )
-      )
-        .slice(0, 12)
-        // map project file to editor state object
-        .map((file) => ({
-          filePath: file.path,
-          editorState: { cursorPos: { lineNumber: 0, column: 0 } },
-        })),
-  }),
+  default: temporaryTabsDefaultValue,
 });
 
 const activeEditorTabIndexState = atom<number>({

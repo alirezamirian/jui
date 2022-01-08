@@ -5,12 +5,17 @@
     "test": "echo \"Not implemented\""
   },
   "dependencies": {
+    "@isomorphic-git/lightning-fs": "^4.4.1",
     "@monaco-editor/react": "^4.2.2",
+    "browserfs": "^2.0.0",
+    "isomorphic-git": "^1.10.3",
     "monaco-editor": "^0.28.1",
     "ramda": "^0.27.1",
-    "recoil": "^0.4.1",
+    "recoil": "^0.5.2",
     "styled-components": "^5.2.3",
     "xterm-for-react": "^1.0.4"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/isomorphic-git__lightning-fs": "^4.4.2"
+  }
 }
