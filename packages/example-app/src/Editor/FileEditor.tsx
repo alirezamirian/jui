@@ -41,9 +41,9 @@ export const FileEditor = () => {
 
   const setEditorRef = useSetRecoilState(editorRefState);
 
-  const contentLoadable = useRecoilValueLoadable(
-    fileContent(activeTab?.filePath)
-  );
+  const fileContentState = fileContent(activeTab?.filePath);
+  const contentLoadable = useRecoilValueLoadable(fileContentState);
+  const setContent = useSetRecoilState(fileContentState);
 
   // For now, when the first tab content is changed, we focus the editor.
   // FIXME when action system is implemented and there is an action like "open project file".
@@ -55,6 +55,7 @@ export const FileEditor = () => {
     }
   }, [activeTab?.filePath]);
 
+  const content = contentLoadable.valueMaybe();
   return (
     <StyledFileEditorContainer
       onFocus={() => {
@@ -62,9 +63,6 @@ export const FileEditor = () => {
         setEditorRef({
           focus: () => editorRef.current?.focus(),
         });
-      }}
-      onBlur={() => {
-        setActive(false);
       }}
     >
       {tabs.length > 0 && (
@@ -115,7 +113,11 @@ export const FileEditor = () => {
             enableJsx(monaco);
             editorRef.current = monacoEditor;
           }}
-          value={contentLoadable.valueMaybe()}
+          onChange={(newContent) => {
+            setActive(false);
+            setContent(newContent || "");
+          }}
+          value={typeof content === "string" ? content : "UNSUPPORTED CONTENT"}
         />
       )}
       {contentLoadable.state === "loading" && <FileEditorLoading />}
