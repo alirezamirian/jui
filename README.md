@@ -101,8 +101,15 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
             <td>❌</td>
         </tr>
         <tr>
-            <td colspan="3">Theming</td>
+            <td rowspan="3">Theming</td>
+        </tr>
+        <tr>
+            <td colspan="2">Theme objects based on theme json files</td>
             <td>✅</td>
+        </tr>
+        <tr>
+            <td colspan="2">Support for XML color schemes</td>
+            <td>❌</td>
         </tr>
         <tr>
             <td colspan="3">Checkbox with label</td>

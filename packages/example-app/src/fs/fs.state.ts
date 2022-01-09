@@ -46,11 +46,16 @@ export const dirContentState = selectorFamily({
 });
 
 /**
- * NOTE: Still not quite clear if we should use atom and [synchronize with source of truth (FS)][recoil-atom-effects],
+ * **Note**: Still not quite clear if we should use atom and [synchronize with source of truth (FS)][recoil-atom-effects],
  * or if we should use selector and refresh it when needed. We probably need a proper [VFS][vfs] implementation at
  * some point, which would be capable of tracking modifications, and setting up listeners for it, and then atoms, can
  * hold the states like directory content, with effects which uses the listener API.
- * NOTE: currently, only text file is supported, for simplicity.
+ * A few things to consider in that regard:
+ * - if modifications to files are not directly synchronized to fs, using isomorphic-git for updating the file status
+ *   can be tricky, unless an FS implementation is provided which uses the file content that is not yet synced with
+ *   the actual local FS. Maybe something like Intellij's VFS, can be implemented as a BrowserFS backend impl.
+ *
+ * **Note**: currently, only text file is supported, for simplicity.
  *
  * [recoil-atom-effects]: https://recoiljs.org/docs/guides/atom-effects#write-through-cache-example
  * [vfs]: https://plugins.jetbrains.com/docs/intellij/virtual-file-system.html

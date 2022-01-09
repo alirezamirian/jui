@@ -15,7 +15,7 @@ export type FileTreeDirNode = FileTreeNodeBase &
   FsItem & {
     children: FileTreeNode[];
   };
-type FileTreeFileNode = FileTreeNodeBase & FsItem;
+export type FileTreeFileNode = FileTreeNodeBase & FsItem;
 export type FileTreeNode = FileTreeFileNode | FileTreeDirNode;
 
 interface ProjectTreeRoot extends FileTreeNodeBase {

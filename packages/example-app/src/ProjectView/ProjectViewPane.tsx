@@ -17,11 +17,15 @@ import { currentProjectState } from "../Project/project.state";
 import {
   currentProjectTreeState,
   expandedKeysState,
+  FileTreeDirNode,
+  FileTreeFileNode,
+  FileTreeNode,
   foldersOnTopState,
   ProjectTreeNode,
   projectViewTreeRefState,
   selectedKeysState,
 } from "./ProjectView.state";
+import { FileStatusColor } from "../VersionControl/FileStatusColor";
 
 export const ProjectViewPane = (): React.ReactElement => {
   const project = useRecoilValue(currentProjectState);
@@ -75,7 +79,7 @@ export const ProjectViewPane = (): React.ReactElement => {
                   <TreeNodeHint>{project.path}</TreeNodeHint>
                 </>
               ) : (
-                <HighlightedTextValue />
+                <FileTreeNodeText node={item} />
               )}
               {/* {"loadingState" in item &&
                 item.loadingState === "loading" && (
@@ -88,6 +92,35 @@ export const ProjectViewPane = (): React.ReactElement => {
         )}
       </SpeedSearchTree>
     </DefaultSuspense>
+  );
+};
+
+const FileTreeNodeText = ({ node }: { node: FileTreeNode }) => {
+  return node.type === "dir" ? (
+    // why is the explicit casting necessary? :/ isn't "type" enough for TS to figure out the right type?
+    <FileTreeDirNodeText node={node as FileTreeDirNode} />
+  ) : (
+    <FileTreeFileNodeText node={node as FileTreeFileNode} />
+  );
+};
+
+const FileTreeDirNodeText = ({}: { node: FileTreeFileNode }) => (
+  // TODO: add support for "Highlight directories that contain modified files in the Project tree" (showDirtyRecursively)
+  <HighlightedTextValue />
+);
+
+const FileTreeFileNodeText = ({
+  node,
+}: {
+  node: FileTreeFileNode;
+}): React.ReactElement => {
+  const state = useContext(ItemStateContext);
+  return !state?.isSelected ? (
+    <FileStatusColor filepath={node.path}>
+      <HighlightedTextValue />
+    </FileStatusColor>
+  ) : (
+    <HighlightedTextValue />
   );
 };
 

@@ -11,6 +11,7 @@ import { FileEditor } from "../Editor/FileEditor";
 import { ProjectViewActionButtons } from "../ProjectView/ProjectViewActionButtons";
 import { ProjectViewPane } from "../ProjectView/ProjectViewPane";
 import { Terminal } from "../Terminal";
+import { useInitializeVcs } from "../VersionControl/file-status.state";
 
 const windows = [
   {
@@ -37,6 +38,8 @@ export const Project = () => {
     () =>
       new ToolWindowsState(map(({ initialState }) => initialState, windowById))
   );
+
+  useInitializeVcs();
 
   return (
     <ToolWindows

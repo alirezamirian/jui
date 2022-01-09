@@ -19,6 +19,8 @@ import {
   useEditorStateManager,
 } from "./editor.state";
 import { fileContent } from "../fs/fs.state";
+import { useUpdateFileStatus } from "../VersionControl/file-status.state";
+import { FileStatusColor } from "../VersionControl/FileStatusColor";
 
 /**
  * Used as main content in the main ToolWindows. Shows currently opened files tabs and the editor.
@@ -44,6 +46,15 @@ export const FileEditor = () => {
   const fileContentState = fileContent(activeTab?.filePath);
   const contentLoadable = useRecoilValueLoadable(fileContentState);
   const setContent = useSetRecoilState(fileContentState);
+  const updateFileStatus = useUpdateFileStatus();
+
+  const updateContent = (newContent: string = "") => {
+    setActive(false);
+    setContent(newContent);
+    updateFileStatus(activeTab.filePath).catch((e) => {
+      console.error("Could not update file status", e);
+    });
+  };
 
   // For now, when the first tab content is changed, we focus the editor.
   // FIXME when action system is implemented and there is an action like "open project file".
@@ -56,6 +67,7 @@ export const FileEditor = () => {
   }, [activeTab?.filePath]);
 
   const content = contentLoadable.valueMaybe();
+
   return (
     <StyledFileEditorContainer
       onFocus={() => {
@@ -88,7 +100,11 @@ export const FileEditor = () => {
               >
                 <EditorTabContent
                   icon={icon}
-                  title={filename}
+                  title={
+                    <FileStatusColor filepath={tab.filePath}>
+                      {filename}
+                    </FileStatusColor>
+                  }
                   onClose={() => {
                     tabActionsRef.current.closePath(tab.filePath);
                   }}
@@ -113,10 +129,7 @@ export const FileEditor = () => {
             enableJsx(monaco);
             editorRef.current = monacoEditor;
           }}
-          onChange={(newContent) => {
-            setActive(false);
-            setContent(newContent || "");
-          }}
+          onChange={updateContent}
           value={typeof content === "string" ? content : "UNSUPPORTED CONTENT"}
         />
       )}
