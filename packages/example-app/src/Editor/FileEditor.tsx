@@ -21,6 +21,7 @@ import {
 import { fileContent } from "../fs/fs.state";
 import { useUpdateFileStatus } from "../VersionControl/file-status.state";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
+import { useToolWindowsManager } from "../Project/toolWindows.state";
 
 /**
  * Used as main content in the main ToolWindows. Shows currently opened files tabs and the editor.
@@ -30,6 +31,7 @@ import { FileStatusColor } from "../VersionControl/FileStatusColor";
  */
 export const FileEditor = () => {
   const { tabs, closePath, select: selectTab } = useEditorStateManager();
+  const toolWindowsManager = useToolWindowsManager();
   const activeTab = useRecoilValue(activeEditorTabState);
   const editorRef = useRef<editor.IEditor>();
   const [active, setActive] = useState(false);
@@ -40,6 +42,7 @@ export const FileEditor = () => {
   // We can alternatively switch to mapping over tabs array, instead of using the Collection's dynamic api (items),
   // which is subject to this caching.
   const tabActionsRef = useLatest({ closePath });
+  const toolWindowsManagerRef = useLatest(toolWindowsManager);
 
   const setEditorRef = useSetRecoilState(editorRefState);
 
@@ -110,8 +113,7 @@ export const FileEditor = () => {
                   }}
                   containerProps={{
                     onDoubleClick: () => {
-                      // TODO: close all tool windows
-                      console.log("TODO: close all tool windows");
+                      toolWindowsManagerRef.current.toggleHideAll();
                     },
                   }}
                 />

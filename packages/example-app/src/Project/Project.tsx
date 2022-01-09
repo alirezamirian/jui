@@ -2,42 +2,16 @@ import {
   DefaultToolWindow,
   PlatformIcon,
   ToolWindows,
-  ToolWindowsState,
-  toolWindowState,
 } from "@intellij-platform/core";
-import { indexBy, map } from "ramda";
-import React, { useState } from "react";
+import React from "react";
 import { FileEditor } from "../Editor/FileEditor";
-import { ProjectViewActionButtons } from "../ProjectView/ProjectViewActionButtons";
-import { ProjectViewPane } from "../ProjectView/ProjectViewPane";
-import { Terminal } from "../Terminal";
 import { useInitializeVcs } from "../VersionControl/file-status.state";
+import { windowById } from "./toolWindows";
+import { useRecoilState } from "recoil";
+import { toolWindowsState } from "./toolWindows.state";
 
-const windows = [
-  {
-    id: "project",
-    title: "Project",
-    icon: "toolwindows/toolWindowProject",
-    content: <ProjectViewPane />,
-    additionalActions: <ProjectViewActionButtons />,
-    initialState: toolWindowState({ isVisible: true, weight: 0.22 }),
-  },
-  {
-    id: "terminal",
-    title: "Terminal",
-    icon: "toolwindows/toolWindowProject",
-    content: <Terminal />,
-    additionalActions: null,
-    initialState: toolWindowState({ anchor: "bottom" }),
-  },
-];
-
-const windowById = indexBy(({ id }) => id, windows);
 export const Project = () => {
-  const [state, setState] = useState(
-    () =>
-      new ToolWindowsState(map(({ initialState }) => initialState, windowById))
-  );
+  const [state, setState] = useRecoilState(toolWindowsState);
 
   useInitializeVcs();
 

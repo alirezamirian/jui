@@ -283,6 +283,12 @@ export class ToolWindowsState {
     return this.update(targetKey, "floatingBounds", floatingBounds);
   }
 
+  mapWindows(
+    mapFn: (toolWindow: ToolWindowState, key: string) => ToolWindowState
+  ) {
+    return new ToolWindowsState(mapObjIndexed(mapFn, this.windows));
+  }
+
   private update<K extends keyof ToolWindowState>(
     targetKey: Key,
     key: K,
