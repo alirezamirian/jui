@@ -3,13 +3,13 @@ import { Virtualizer } from "@react-aria/virtualizer";
 import { TreeProps as StatelyTreeProps } from "@react-stately/tree";
 import { TreeRef } from "@intellij-platform/core/Tree/useTreeRef";
 import React, { ForwardedRef, Key, useRef } from "react";
-import { StyledList } from "../List/StyledList";
 import { TreeNode } from "./TreeNode";
 import { TreeContext } from "./TreeContext";
 import { useTreeState } from "./__tmp__useTreeState";
 import { useSelectableTree } from "./useSelectableTree";
 import { replaceSelectionManager } from "../selection/replaceSelectionManager";
 import { useTreeVirtualizer } from "./useTreeVirtualizer";
+import { StyledTree } from "@intellij-platform/core/Tree/StyledTree";
 
 export interface TreeProps<T extends object> extends StatelyTreeProps<T> {
   fillAvailableSpace?: boolean;
@@ -51,7 +51,7 @@ export const Tree = React.forwardRef(
 
     return (
       <TreeContext.Provider value={treeContext}>
-        <StyledList
+        <StyledTree
           as={Virtualizer}
           ref={ref}
           fillAvailableSpace={fillAvailableSpace}
@@ -59,7 +59,7 @@ export const Tree = React.forwardRef(
           {...treeProps}
         >
           {(itemType: string, item: object) => renderNode(item as Node<T>)}
-        </StyledList>
+        </StyledTree>
       </TreeContext.Provider>
     );
   }

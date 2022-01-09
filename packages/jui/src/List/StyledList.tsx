@@ -1,4 +1,5 @@
 import { styled } from "../styled";
+import { css } from "styled-components";
 
 export const StyledList = styled.ul<{ fillAvailableSpace?: boolean }>`
   padding: 0;
@@ -8,9 +9,11 @@ export const StyledList = styled.ul<{ fillAvailableSpace?: boolean }>`
   overflow: auto;
   color: ${({ theme }) => theme.color("*.textForeground")};
   outline: none;
-  flex: ${({ fillAvailableSpace }) => (fillAvailableSpace ? "1" : undefined)};
-  background: ${({ theme }) =>
-    theme.color(
-      "Panel.background"
-    )}; // FIXME: not correct for all themes. Maybe no background for list at all.
+  ${({ fillAvailableSpace }) =>
+    fillAvailableSpace &&
+    css`
+      flex: 1;
+      height: 100%;
+    `}
+  background: ${({ theme }) => theme.color("List.background")};
 `;
