@@ -94,6 +94,7 @@ export const useEditorStateManager = (): EditorStateManager => {
     const index = tabsState.findIndex((tab) => tab.filePath === filePath);
     if (index > -1) {
       closeTab(index);
+      setActiveTabIndex(Math.max(index - 1, 0));
     }
   };
   const openPath = (filePath: string, shouldFocus = true) => {
