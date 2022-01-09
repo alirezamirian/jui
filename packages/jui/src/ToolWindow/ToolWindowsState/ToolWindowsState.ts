@@ -7,6 +7,10 @@ export type ViewMode =
   | "docked_unpinned"
   | "undock"
   | "float"
+  /**
+   * @deprecated "window" ViewMode was initially added following the original impl. It doesn't seem reasonable to
+   * support it though. It's marked as deprecated to be removed in the future.
+   */
   | "window";
 
 export type WindowBounds = {

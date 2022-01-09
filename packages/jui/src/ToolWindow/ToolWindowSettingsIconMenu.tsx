@@ -11,7 +11,6 @@ const viewModes: ViewMode[] = [
   "docked_unpinned",
   "undock",
   "float",
-  "window",
 ];
 export const anchors: Array<{
   anchor: Anchor;
