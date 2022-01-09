@@ -45,7 +45,7 @@ const StyledToolWindowHeaderContent = styled.div`
   align-items: center;
 `;
 
-export const ToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
+export const DefaultToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
   children,
   additionalActions,
   contentHasFocus = false,

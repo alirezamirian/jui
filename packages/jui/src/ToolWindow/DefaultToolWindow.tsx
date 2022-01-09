@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { styled } from "../styled";
 import { FocusScope } from "./FocusScope";
-import { ToolWindowHeader } from "./ToolWindowHeader";
+import { DefaultToolWindowHeader } from "./DefaultToolWindowHeader";
 import { useToolWindow } from "./useToolWindow";
 
 export interface DefaultToolWindowProps {
@@ -61,13 +61,13 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
 
   return (
     <StyledToolWindowContainer {...toolWindowProps} ref={containerRef}>
-      <ToolWindowHeader
+      <DefaultToolWindowHeader
         additionalActions={additionalActions}
         contentHasFocus={contentHasFocus}
         {...toolWindowHeaderProps}
       >
         {headerContent}
-      </ToolWindowHeader>
+      </DefaultToolWindowHeader>
       <StyledToolWindowContent ref={contentRef} {...toolWindowContentProps}>
         {/**
          * FIXME: adding `contain` prevents focus from moving to another focus scope both with mouse and keyboard.
