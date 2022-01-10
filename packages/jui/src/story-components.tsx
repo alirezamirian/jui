@@ -1,6 +1,6 @@
 import { Item } from "@react-stately/collections";
 import { Selection } from "@react-types/shared";
-import React, { Key } from "react";
+import React, { HTMLProps, Key } from "react";
 import { styled } from "./styled";
 import { SpeedSearchTree } from "./Tree/SpeedSearchTree/SpeedSearchTree";
 import { HighlightedTextValue } from "@intellij-platform/core/CollectionSpeedSearch";
@@ -8,21 +8,20 @@ import { HighlightedTextValue } from "@intellij-platform/core/CollectionSpeedSea
 export const Container = styled.div`
   color: ${({ theme }) => theme.color("*.foreground")};
 `;
-export function Pane({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        width: 400,
-        marginTop: 20,
-        height: "calc(100vh - 70px)",
-      }}
-    >
-      {children}
-    </div>
-  );
-}
+export const Pane: React.FC<Omit<HTMLProps<HTMLDivElement>, "style">> = (
+  props
+) => (
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      width: 400,
+      marginTop: 25,
+      height: "calc(100vh - 70px)",
+    }}
+    {...props}
+  />
+);
 
 export function SelectionLog({ selection }: { selection: Selection }) {
   return (

@@ -36,12 +36,13 @@ export const Static = () => {
 };
 
 export const Dynamic = () => {
+  // Note: selection being controlled is important in testing some stuff in cypress tests. It must not be changed.
   const [selectedKeys, setSelectedKeys] = useState<"all" | Set<Key>>(
     new Set(["Theme", "index.ts"])
   );
   return (
     <div style={{ display: "flex" }}>
-      <Pane>
+      <Pane id="component-container">
         <SpeedSearchTree
           items={treeItems}
           fillAvailableSpace
