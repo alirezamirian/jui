@@ -5,6 +5,9 @@ import * as stories from "./SpeedSearchTree.stories";
 
 const { Dynamic } = composeStories(stories);
 
+// Should probably be moved into a common test utility
+const OS_NORMALIZED_META = Cypress.platform === "darwin" ? "Meta" : "Control";
+
 describe("SpeedSearchTree", () => {
   it("supports Speed Search in dynamic items mode", () => {
     mount(<Dynamic />);
@@ -31,12 +34,22 @@ describe("SpeedSearchTree", () => {
     matchImageSnapshot("SpeedSearchTree-4-selection-moved-to-previous-match");
 
     // Select all should select all matches, which is "index.ts" and "ListDivider.tsx"
-    cy.realPress(["Meta", "a"]);
+    cy.realPress([OS_NORMALIZED_META, "a"]);
     matchImageSnapshot("SpeedSearchTree-5-select-all");
+
+    // moving selection to an item after which there is no match. Trigger a new search by adding an "s".
+    // selection should be moved to the first match, which is "index.ts"
+    cy.contains("createTheme.ts").click();
+    cy.realPress("s");
+    matchImageSnapshot("SpeedSearchTree-6-selection-moved-to-first-match");
+
+    // removing one search character. it since the currently selected items include a match, selection should not change
+    cy.realPress("{backspace}");
+    matchImageSnapshot("SpeedSearchTree-7-selection-already-contains-a-match");
 
     // moving up now should move selection to the first match, which is "index.ts"
     cy.realPress("Escape");
-    matchImageSnapshot("SpeedSearchTree-6-search-exited");
+    matchImageSnapshot("SpeedSearchTree-8-search-exited");
   });
 });
 

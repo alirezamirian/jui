@@ -53,25 +53,54 @@ export function useCollectionSpeedSearchResult<T>({
     };
   }, [searchTerm, collection, active]);
 
-  const latestValues = useLatest(result);
+  const latestValues = useLatest({ ...result, collection });
 
   // On every query change, if the current selection doesn't include any of the matched items, move selection to the
   // first matched item.
   useEffect(() => {
-    const { selectionManager, matches } = latestValues.current;
+    const { selectionManager, matches, collection } = latestValues.current;
     const matchedKeys = [...matches.keys()];
     const noneOfTheMatchesAreSelected = !matchedKeys.some((matchedKey) =>
       selectionManager.isSelected(matchedKey)
     );
 
     if (matchedKeys.length > 0 && noneOfTheMatchesAreSelected) {
-      // TODO: the first match AFTER the first key in current selection should be selected.
-      selectionManager.setFocusedKey(matchedKeys[0]);
-      selectionManager.replaceSelection(matchedKeys[0]);
+      const newSelectedKey = getMatchToSelect({
+        collection,
+        selectionManager,
+        matchedKeys,
+      });
+
+      selectionManager.setFocusedKey(newSelectedKey);
+      selectionManager.replaceSelection(newSelectedKey);
     }
   }, [
     searchTerm,
     latestValues /*it's a ref object, so no harm in listing it here to comply with rules of hooks*/,
   ]);
   return result;
+}
+
+/**
+ * given a non-empty array of matched keys, returns the one that should be selected
+ */
+function getMatchToSelect({
+  collection,
+  selectionManager,
+  matchedKeys,
+}: {
+  collection: Collection<Node<unknown>>;
+  selectionManager: SelectionManager;
+  matchedKeys: Key[];
+}): Key {
+  let passedFirstSelection = false;
+  for (const key of collection.getKeys()) {
+    if (key === selectionManager.firstSelectedKey) {
+      passedFirstSelection = true;
+    }
+    if (passedFirstSelection && matchedKeys.includes(key)) {
+      return key;
+    }
+  }
+  return matchedKeys[0];
 }
