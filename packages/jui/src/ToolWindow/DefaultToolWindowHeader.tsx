@@ -21,7 +21,7 @@ export interface ToolWindowHeaderProps
 const StyledToolWindowHeader = styled.div<{ active: boolean }>`
   display: flex;
   align-items: center;
-  padding: 0 2px 0 7px;
+  padding: 0 2px 0 4px;
   border-bottom: 1px solid
     ${({ theme }) =>
       theme.color("ToolWindow.Header.borderColor" as UnknownThemeProp) ||
@@ -38,7 +38,11 @@ const StyledToolWindowHeader = styled.div<{ active: boolean }>`
         theme.color("ToolWindow.Header.background") ||
         "#ECECEC"};
 `;
-const StyledToolWindowHeaderActions = styled.div``;
+
+const StyledToolWindowHeaderActions = styled.div`
+  margin-right: -4px;
+`;
+
 const StyledToolWindowHeaderContent = styled.div`
   flex: 1;
   display: flex;

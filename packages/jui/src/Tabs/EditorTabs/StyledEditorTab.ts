@@ -33,5 +33,6 @@ export const editorTabTheme = ({ theme }: { theme: Theme }): TabTheme => ({
   ), // TODO: use EditorColorsScheme when available
 });
 export const StyledEditorTab = styled(StyledDefaultTab)`
+  font-size: 0.7rem;
   ${({ theme }) => getTabThemeStyles(editorTabTheme({ theme }))};
 `;

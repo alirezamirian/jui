@@ -33,5 +33,6 @@ export const toolWindowTabTheme = ({ theme }: { theme: Theme }): TabTheme => ({
   ),
 });
 export const StyledToolWindowTab = styled(StyledDefaultTab)`
+  padding: 0 0.7rem;
   ${({ theme }) => getTabThemeStyles(toolWindowTabTheme({ theme }))};
 `;
