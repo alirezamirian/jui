@@ -7,11 +7,11 @@ import {
 } from "@react-aria/overlays";
 import { mergeProps } from "@react-aria/utils";
 import { useMenuTriggerState } from "@react-stately/menu";
-import { MenuTriggerProps } from "@react-types/menu";
+import { MenuTriggerProps as AriaMenuTriggerProps } from "@react-types/menu";
 import React, { HTMLProps, RefObject } from "react";
 import { FocusScope } from "../ToolWindow/FocusScope";
 
-interface Props extends MenuTriggerProps {
+export interface MenuTriggerProps extends AriaMenuTriggerProps {
   restoreFocus?: boolean;
   children: (
     props: HTMLProps<HTMLElement>,
@@ -27,7 +27,7 @@ interface Props extends MenuTriggerProps {
 // FIXME: Escape doesn't close the menu
 // FIXME: Focus is not restored if nested menu are opened. It may be solved by using useOverlay and closing submenu in click outside.
 // TODO: introduce a more generic Overlay component and use it here too.
-export const MenuTrigger: React.FC<Props> = ({
+export const MenuTrigger: React.FC<MenuTriggerProps> = ({
   children,
   renderMenu,
   direction = "bottom",
@@ -36,7 +36,7 @@ export const MenuTrigger: React.FC<Props> = ({
   restoreFocus = false,
   ...otherProps
 }) => {
-  const menuTriggerProps: MenuTriggerProps = {
+  const menuTriggerProps: AriaMenuTriggerProps = {
     ...otherProps,
     direction,
     align,
@@ -101,8 +101,8 @@ export const MenuTrigger: React.FC<Props> = ({
 };
 
 function getPlacement(
-  direction: Required<MenuTriggerProps>["direction"],
-  align: Required<MenuTriggerProps>["align"]
+  direction: Required<AriaMenuTriggerProps>["direction"],
+  align: Required<AriaMenuTriggerProps>["align"]
 ) {
   switch (direction) {
     case "left":

@@ -6,6 +6,7 @@ import { ListDivider } from "../List/ListDivider";
 import { useTreeState } from "../Tree/__tmp__useTreeState";
 import { MenuItem } from "./MenuItem";
 import { StyledMenu } from "./StyledMenu";
+import { MenuSection } from "@intellij-platform/core/Menu/MenuSection";
 
 export interface MenuProps<T>
   extends Omit<
@@ -101,8 +102,14 @@ export function Menu<T extends object>({
             );
           case "section":
             // Maybe something like "Branches" menu needs titled sections.
-            throw new Error(
-              "Section in menu is not supported yet. You can use Divider though."
+            return (
+              <MenuSection
+                key={item.key}
+                item={item}
+                state={state}
+                expandOn={expandOn}
+                onAction={props.onAction}
+              />
             );
           case "divider":
             return <ListDivider key={item.key} />;

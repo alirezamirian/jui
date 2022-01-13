@@ -9,7 +9,7 @@ export const MENU_VERTICAL_PADDING = 5;
 export const MENU_BORDER_WIDTH = 1;
 
 export const StyledMenu = styled.ul`
-  font-size: 0.92rem;
+  font-size: 0.87rem;
   margin: 0;
   padding: ${MENU_VERTICAL_PADDING}px 0;
   outline: none;
