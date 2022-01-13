@@ -9,7 +9,9 @@ export interface MultiContentToolWindowProps {
   /**
    * List of contents that will be accessible with a list of grouped or ungrouped tabs in the tool window header.
    */
-  children: React.ReactElement<MultiContentToolWindowContentProps>[];
+  children:
+    | React.ReactElement<MultiContentToolWindowContentProps>[]
+    | React.ReactElement<MultiContentToolWindowContentProps>;
   /**
    * Key of currently active content
    */
@@ -143,6 +145,7 @@ export interface MultiContentToolWindowContentProps {
 
   children: React.ReactNode;
 }
+
 export const MultiContentToolWindowContent = ({}: MultiContentToolWindowContentProps) => {
   throw new Error(
     "MultiContentToolWindowContent is not meant to be rendered directly. You should only use it in MultiContentToolWindow"
