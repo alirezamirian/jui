@@ -82,7 +82,11 @@ export class Color {
     return new Color(color).brighter().toString();
   }
 
-  blend(color: Color) {
+  blend(colorOrColorString: Color | string) {
+    const color =
+      typeof colorOrColorString === "string"
+        ? new Color(colorOrColorString)
+        : colorOrColorString;
     const getBlendedValue = (component: "r" | "g" | "b") =>
       Math.round(
         (color.a / 255) * color[component] +
