@@ -7,9 +7,10 @@ import {
   expandedKeysState,
   expandToPathCallback,
   FileTreeDirNode,
-  FileTreeNode,
+  ProjectTreeNode,
   selectKeyAndFocusCallback,
 } from "./ProjectView.state";
+import { getExpandAllKeys } from "../TreeUtils/tree-actions";
 
 export const ProjectViewActionButtons = (): React.ReactElement => {
   const setExpandedKeys = useSetRecoilState(expandedKeysState);
@@ -27,16 +28,15 @@ export const ProjectViewActionButtons = (): React.ReactElement => {
 
   const collapseAll = () => setExpandedKeys(new Set()); // in Intellij, it also changes selection sometimes.
   const expandAll = () => {
-    const allDirPaths: string[] = [root.path];
-    const processItem = (node: FileTreeNode) => {
-      if (node.type === "dir") {
-        allDirPaths.push(node.path);
-        (node as FileTreeDirNode) /* why doesn't TS realize this?! */.children
-          .forEach(processItem);
-      }
-    };
-    root.children.forEach(processItem);
-    setExpandedKeys(new Set(allDirPaths));
+    setExpandedKeys(
+      new Set(
+        getExpandAllKeys<ProjectTreeNode>(
+          (node) =>
+            node === null ? [root] : (node as FileTreeDirNode)?.children,
+          (node) => node.path
+        )
+      )
+    );
   };
   return (
     <>

@@ -12,7 +12,7 @@ import React, { useContext, useLayoutEffect, useRef } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { DefaultSuspense } from "../DefaultSuspense";
 import { useEditorStateManager } from "../Editor/editor.state";
-import { FILE_ICON, getIconForFile } from "../file-utils";
+import { DIR_ICON, FILE_ICON, getIconForFile } from "../file-utils";
 import { currentProjectState } from "../Project/project.state";
 import {
   currentProjectTreeState,
@@ -26,6 +26,8 @@ import {
   selectedKeysState,
 } from "./ProjectView.state";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
+import { StyledTreeIconWrapper } from "../TreeUtils/StyledTreeIconWrapper";
+import { StyledTreeNodeWrapper } from "../TreeUtils/StyledTreeNodeWrapper";
 
 export const ProjectViewPane = (): React.ReactElement => {
   const project = useRecoilValue(currentProjectState);
@@ -55,6 +57,7 @@ export const ProjectViewPane = (): React.ReactElement => {
           editor.openPath(`${path}`);
         }}
         fillAvailableSpace
+        disallowEmptySelection
         selectionMode="multiple"
         selectedKeys={selectedKeys}
         onSelectionChange={setSelectedKeys}
@@ -69,7 +72,7 @@ export const ProjectViewPane = (): React.ReactElement => {
               "children" in item ? sortItems(item.children) : undefined
             }
           >
-            <StyledProjectViewTreeNode>
+            <StyledTreeNodeWrapper>
               {<ProjectViewNodeIcon node={item} />}
               {item.type === "project" ? (
                 <>
@@ -87,7 +90,7 @@ export const ProjectViewPane = (): React.ReactElement => {
                     <Img height={16} src={loading} darkSrc={loadingDark} />
                   </TreeNodeHint>
                 )}*/}
-            </StyledProjectViewTreeNode>
+            </StyledTreeNodeWrapper>
           </Item>
         )}
       </SpeedSearchTree>
@@ -131,10 +134,6 @@ const StyledTreeNodeHint = styled.span<{ inheritColor: boolean }>`
   padding-left: 8px;
 `;
 
-const StyledProjectViewTreeNode = styled.div`
-  display: flex;
-  align-items: center;
-`;
 const TreeNodeHint: React.FC = ({ children }) => {
   const { isSelected, isFocused } = useContext(ItemStateContext) || {
     isSelected: false,
@@ -149,7 +148,7 @@ const TreeNodeHint: React.FC = ({ children }) => {
 
 const nodeTypeIconMap: { [key in ProjectTreeNode["type"]]?: string } = {
   project: "nodes/folder",
-  dir: "nodes/folder",
+  dir: DIR_ICON,
   file: FILE_ICON,
 };
 
@@ -160,11 +159,6 @@ function findNodeIcon(value: ProjectTreeNode): string | null {
   return nodeTypeIconMap[value.type] ?? null;
 }
 
-const StyledNodeIcon = styled.span`
-  margin-right: 4px;
-  display: inline-flex;
-`;
-
 function ProjectViewNodeIcon({
   node,
 }: {
@@ -172,6 +166,8 @@ function ProjectViewNodeIcon({
 }): React.ReactElement {
   const icon = findNodeIcon(node);
   return (
-    <StyledNodeIcon>{icon && <PlatformIcon icon={icon} />}</StyledNodeIcon>
+    <StyledTreeIconWrapper>
+      {icon && <PlatformIcon icon={icon} />}
+    </StyledTreeIconWrapper>
   );
 }
