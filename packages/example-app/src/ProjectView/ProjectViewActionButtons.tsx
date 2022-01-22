@@ -10,7 +10,7 @@ import {
   ProjectTreeNode,
   selectKeyAndFocusCallback,
 } from "./ProjectView.state";
-import { getExpandAllKeys } from "../TreeUtils/tree-actions";
+import { getExpandAllKeys } from "../TreeUtils/tree-utils";
 
 export const ProjectViewActionButtons = (): React.ReactElement => {
   const setExpandedKeys = useSetRecoilState(expandedKeysState);

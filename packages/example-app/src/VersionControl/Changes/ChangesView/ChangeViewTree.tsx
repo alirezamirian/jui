@@ -6,7 +6,7 @@ import {
   PlatformIcon,
   SpeedSearchTree,
 } from "@intellij-platform/core";
-import { StyledTreeIconWrapper } from "../../../TreeUtils/StyledTreeIconWrapper";
+import { StyledTreeNodeIconWrapper } from "../../../TreeUtils/StyledTreeNodeIconWrapper";
 import { DIR_ICON, getFilename, getIconForFile } from "../../../file-utils";
 import { StyledTreeNodeWrapper } from "../../../TreeUtils/StyledTreeNodeWrapper";
 import {
@@ -21,6 +21,10 @@ import {
   selectedKeysState,
 } from "./ChangesView.state";
 import { RepoColorIcon } from "./StyledRepoColorSquare";
+import { TreeNodeHint } from "../../../TreeUtils/TreeNodeHint";
+import { IntlMessageFormat } from "intl-messageformat";
+import { CurrentBranchName } from "../../CurrentBranchName";
+import { StyledCurrentBranchTag } from "./StyledCurrentBranchTag";
 
 /**
  * Necessary properties for each node, to be passed to `Item`s rendered in tree.
@@ -34,36 +38,65 @@ type NodeRenderer<T extends ChangeBrowserNode<any>> = (
   metadata: { fileCount: number; dirCount: number }
 ) => RenderedNode;
 
-const repoNodeItemProps: NodeRenderer<RepositoryNode> = (node) => ({
+const fileCountMsg = new IntlMessageFormat(
+  `{fileCount, plural,
+    =0 {No files}
+    =1 {1 file}
+    other {# files}
+  }`,
+  "en-US"
+);
+
+const repoNodeItemProps: NodeRenderer<RepositoryNode> = (
+  node,
+  { fileCount }
+) => ({
   textValue: node.repository.dir.split("/").slice(-1)[0],
   element: (
     <>
       <RepoColorIcon rootPath={node.repository.dir} />
       <HighlightedTextValue />
+      <TreeNodeHint>{fileCountMsg.format({ fileCount })}</TreeNodeHint>
+      <StyledCurrentBranchTag>
+        <CurrentBranchName repo={node.repository} />
+      </StyledCurrentBranchTag>
     </>
   ),
 });
 
-const directoryNodeItemProps: NodeRenderer<DirectoryNode> = (node) => ({
+const directoryNodeItemProps: NodeRenderer<DirectoryNode> = (
+  node,
+  { fileCount }
+) => ({
   textValue: node.dirPath.slice(
     node.parentNodePath ? node.parentNodePath.length + 1 : 0
   ),
   element: (
     <StyledTreeNodeWrapper>
-      <StyledTreeIconWrapper>
+      <StyledTreeNodeIconWrapper>
         <PlatformIcon icon={DIR_ICON} />
-      </StyledTreeIconWrapper>
+      </StyledTreeNodeIconWrapper>
       <HighlightedTextValue />
+      <TreeNodeHint>{fileCountMsg.format({ fileCount })}</TreeNodeHint>
     </StyledTreeNodeWrapper>
   ),
 });
 
-const changeListNodeItemProps: NodeRenderer<ChangeListNode> = (node) => ({
+const changeListNodeItemProps: NodeRenderer<ChangeListNode> = (
+  node,
+  { fileCount }
+) => ({
   textValue: node.changeList.name,
   element: (
-    <span style={{ fontWeight: node.changeList.active ? "bold" : undefined }}>
-      <HighlightedTextValue />
-    </span>
+    <StyledTreeNodeWrapper>
+      <span style={{ fontWeight: node.changeList.active ? "bold" : undefined }}>
+        <HighlightedTextValue />
+      </span>
+      <TreeNodeHint>
+        {fileCountMsg.format({ fileCount })}{" "}
+        {/*in IntelliJ it's not shown if it's empty, but why not!*/}
+      </TreeNodeHint>
+    </StyledTreeNodeWrapper>
   ),
 });
 
@@ -71,9 +104,9 @@ const changeNodeItemProps: NodeRenderer<ChangeNode> = (node) => ({
   textValue: getFilename(node.change.after.path),
   element: (
     <StyledTreeNodeWrapper>
-      <StyledTreeIconWrapper>
+      <StyledTreeNodeIconWrapper>
         <PlatformIcon icon={getIconForFile(node.change.after.path)} />
-      </StyledTreeIconWrapper>
+      </StyledTreeNodeIconWrapper>
       <HighlightedTextValue />
     </StyledTreeNodeWrapper>
   ),
@@ -90,19 +123,18 @@ const nodeRenderers: {
 
 /**
  * TODO: use the real changes instead of the dummy ones
- * TODO: show number of changes next to each node
  * TODO: checkboxes
  * TODO: unversioned files
  * TODO: add proper path and filename utils
  */
 export const ChangeViewTree = (): JSX.Element => {
-  const changeListNodes = useRecoilValue(changesTreeNodesState);
+  const { rootNodes, fileCountsMap } = useRecoilValue(changesTreeNodesState);
   const [selectedKeys, setSelectedKeys] = useRecoilState(selectedKeysState);
   const [expandedKeys, setExpandedKeys] = useRecoilState(expandedKeysState);
 
   return (
     <SpeedSearchTree
-      items={changeListNodes}
+      items={rootNodes}
       selectionMode="multiple"
       selectedKeys={selectedKeys}
       expandedKeys={expandedKeys}
@@ -114,10 +146,10 @@ export const ChangeViewTree = (): JSX.Element => {
       {(node) => {
         // Would make sense to handle missing renderer case if implementation is changed to be extensible with regard
         // to node types
-        const { textValue, element } = nodeRenderers[node.type](
-          node,
-          { fileCount: 1, dirCount: 0 } /* FIXME*/
-        );
+        const { textValue, element } = nodeRenderers[node.type](node, {
+          fileCount: fileCountsMap.get(node.key) || 0,
+          dirCount: 0, // It seems it's only used for ignored files subtree
+        });
         return (
           <Item
             key={node.key}

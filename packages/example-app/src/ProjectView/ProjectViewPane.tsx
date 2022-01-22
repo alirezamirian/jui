@@ -4,7 +4,6 @@ import {
   ItemStateContext,
   PlatformIcon,
   SpeedSearchTree,
-  styled,
   TreeRef,
 } from "@intellij-platform/core";
 import { identity, sortBy } from "ramda";
@@ -26,8 +25,9 @@ import {
   selectedKeysState,
 } from "./ProjectView.state";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
-import { StyledTreeIconWrapper } from "../TreeUtils/StyledTreeIconWrapper";
+import { StyledTreeNodeIconWrapper } from "../TreeUtils/StyledTreeNodeIconWrapper";
 import { StyledTreeNodeWrapper } from "../TreeUtils/StyledTreeNodeWrapper";
+import { TreeNodeHint } from "../TreeUtils/TreeNodeHint";
 
 export const ProjectViewPane = (): React.ReactElement => {
   const project = useRecoilValue(currentProjectState);
@@ -127,25 +127,6 @@ const FileTreeFileNodeText = ({
   );
 };
 
-const StyledTreeNodeHint = styled.span<{ inheritColor: boolean }>`
-  display: inline-flex;
-  color: ${({ theme, inheritColor }) =>
-    inheritColor ? "inherit" : theme.commonColors.inactiveTextColor};
-  padding-left: 8px;
-`;
-
-const TreeNodeHint: React.FC = ({ children }) => {
-  const { isSelected, isFocused } = useContext(ItemStateContext) || {
-    isSelected: false,
-    isFocused: false,
-  };
-  return (
-    <StyledTreeNodeHint inheritColor={isSelected && isFocused}>
-      {children}
-    </StyledTreeNodeHint>
-  );
-};
-
 const nodeTypeIconMap: { [key in ProjectTreeNode["type"]]?: string } = {
   project: "nodes/folder",
   dir: DIR_ICON,
@@ -166,8 +147,8 @@ function ProjectViewNodeIcon({
 }): React.ReactElement {
   const icon = findNodeIcon(node);
   return (
-    <StyledTreeIconWrapper>
+    <StyledTreeNodeIconWrapper>
       {icon && <PlatformIcon icon={icon} />}
-    </StyledTreeIconWrapper>
+    </StyledTreeNodeIconWrapper>
   );
 }

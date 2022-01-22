@@ -4,6 +4,7 @@ import { Key } from "react";
 import { Change, ChangeListObj, changeListsState } from "../change-lists.state";
 import { groupings } from "./changesGroupings";
 import { VcsDirectoryMapping } from "../../file-status";
+import { dfsVisit } from "../../../TreeUtils/tree-utils";
 
 export interface ChangeBrowserNode<T extends string> {
   type: T;
@@ -47,7 +48,7 @@ export interface ChangeGrouping<T extends AnyGroupNode> {
   groupFn: MaybeRecoilValue<GroupFn<T>>;
 }
 
-export const currentBranchState = atom({
+export const currentBranchState = atomFamily<string, string>({
   key: "vcs/currentBranchName",
   default: "master",
   // TODO: effect for syncing (when toolWindow state changes?)
@@ -65,7 +66,7 @@ export const showRelatedFilesState = atom({
 
 export const changesGroupingState = atomFamily({
   key: "changesView/grouping",
-  default: true,
+  default: true, // it's false in IntelliJ
 });
 export const selectedKeysState = atom<Selection>({
   key: "changesView.selectedKeys",
@@ -159,7 +160,13 @@ const recursiveGrouping = (
   return groups;
 };
 
-export const changesTreeNodesState = selector<ChangeListNode[]>({
+const getChildren = (node: AnyNode) =>
+  isGroupNode(node) ? node.children : null;
+
+export const changesTreeNodesState = selector<{
+  rootNodes: ChangeListNode[];
+  fileCountsMap: Map<string, number>;
+}>({
   key: "changesView.treeNodes",
   get: ({ get }) => {
     const resolve = <T>(value: MaybeRecoilValue<T>): T =>
@@ -174,8 +181,31 @@ export const changesTreeNodesState = selector<ChangeListNode[]>({
     const groupChanges = (changes: readonly ChangeNode[]) =>
       recursiveGrouping(groupFns, changes);
 
-    return changeLists.map((changeList) =>
+    const rootNodes = changeLists.map((changeList) =>
       changeListNode(changeList, groupChanges)
     );
+    const fileCountsMap = new Map();
+    const getFileCount = (node: GroupNode<any>): number => {
+      return node.children.reduce(
+        (totalSum, child) =>
+          totalSum + (isGroupNode(child) ? getFileCount(child) : 1),
+        0
+      );
+    };
+    dfsVisit<AnyNode, number>(
+      (root) => (root === null ? rootNodes : getChildren(root)),
+      (node, childrenFileCount) => {
+        if (!childrenFileCount) {
+          return 1;
+        }
+        const fileCount = childrenFileCount.reduce(
+          (total, count) => total + count,
+          0
+        );
+        fileCountsMap.set(node.key, fileCount);
+        return fileCount;
+      }
+    );
+    return { rootNodes, fileCountsMap };
   },
 });

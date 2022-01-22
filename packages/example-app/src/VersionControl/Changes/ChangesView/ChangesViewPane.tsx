@@ -11,7 +11,7 @@ import { GroupByActionButton } from "./ActionButtons/GroupByActionButton";
 import { ChangeListsActionButton } from "./ActionButtons/ChangeListsActionButton";
 import { useChangeListManager } from "../change-lists.state";
 import { ChangeViewTree } from "./ChangeViewTree";
-import { getExpandAllKeys } from "../../../TreeUtils/tree-actions";
+import { getExpandAllKeys } from "../../../TreeUtils/tree-utils";
 import {
   AnyNode,
   changesTreeNodesState,
@@ -39,7 +39,8 @@ export const ChangesViewPane = () => {
           getExpandAllKeys<AnyNode>(
             (node) =>
               node === null
-                ? snapshot.getLoadable(changesTreeNodesState).valueMaybe() || []
+                ? snapshot.getLoadable(changesTreeNodesState).valueMaybe()
+                    ?.rootNodes || []
                 : (node as GroupNode<any>)?.children,
             (item) => item.key
           )
