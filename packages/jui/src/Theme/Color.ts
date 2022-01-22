@@ -43,6 +43,13 @@ export class Color {
     );
   }
 
+  /**
+   * Extra method for changing transparency
+   */
+  withTransparency(alpha: number) {
+    return new Color(this.r, this.g, this.b, alpha);
+  }
+
   brighter() {
     let { r, g, b, a: alpha } = this;
     const int = Math.floor,
