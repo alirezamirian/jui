@@ -5,6 +5,8 @@ import { atom, CallbackInterface, GetRecoilValue, selector } from "recoil";
 import { currentProjectState, Project } from "../Project/project.state";
 import { dirContentState, FsItem } from "../fs/fs.state";
 import { filterPath } from "../Project/project-utils";
+import { getParentPaths } from "../file-utils";
+import * as path from "path";
 
 interface FileTreeNodeBase {
   parent: (FileTreeNodeBase & { children: FsItem[] }) | null;
@@ -71,7 +73,7 @@ async function createProjectTree(
   const mapItem = (parent: FileTreeDirNode | null) => async (
     item: FsItem
   ): Promise<FileTreeNode> => {
-    const name = item.path.split("/").pop() || item.path;
+    const name = path.basename(item.path);
     const node = {
       ...item,
       name,
@@ -110,11 +112,7 @@ export const expandToPathCallback = ({ snapshot, set }: CallbackInterface) => (
   const expandedKeys = snapshot.getLoadable(expandedKeysState).valueOrThrow();
   const keysToExpand = [
     snapshot.getLoadable(currentProjectState).valueOrThrow().path,
-  ].concat(
-    path
-      .split("/")
-      .map((part, index, parts) => parts.slice(0, index + 1).join("/"))
-  );
+  ].concat(getParentPaths(path));
   set(expandedKeysState, new Set([...expandedKeys, ...keysToExpand]));
 };
 

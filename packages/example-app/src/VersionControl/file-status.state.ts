@@ -16,6 +16,7 @@ import {
   VcsDirectoryMapping,
 } from "./file-status";
 import { useEffect } from "react";
+import * as path from "path";
 
 const temporaryVcsMappingsDefault = ({
   get,
@@ -70,7 +71,7 @@ export const useUpdateFileStatus = () =>
             await status({
               fs,
               dir: repoRoot,
-              filepath: filepath.slice(repoRoot.length + 1),
+              filepath: path.relative(repoRoot, filepath),
             })
           )
         );

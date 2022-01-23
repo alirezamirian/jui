@@ -10,7 +10,7 @@ import {
   useRecoilValueLoadable,
   useSetRecoilState,
 } from "recoil";
-import { getFilename, getIconForFile } from "../file-utils";
+import { getIconForFile } from "../file-utils";
 import { LoadingGif } from "../LoadingGif";
 import { Editor } from "./Editor";
 import {
@@ -22,6 +22,7 @@ import { fileContent } from "../fs/fs.state";
 import { useUpdateFileStatus } from "../VersionControl/file-status.state";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
 import { useToolWindowsManager } from "../Project/toolWindows.state";
+import * as path from "path";
 
 /**
  * Used as main content in the main ToolWindows. Shows currently opened files tabs and the editor.
@@ -91,7 +92,7 @@ export const FileEditor = () => {
           noBorders
         >
           {(tab) => {
-            const filename = getFilename(tab.filePath);
+            const filename = path.basename(tab.filePath);
             const icon = <PlatformIcon icon={getIconForFile(tab.filePath)} />;
             return (
               <TabItem

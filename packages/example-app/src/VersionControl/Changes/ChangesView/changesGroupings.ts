@@ -3,14 +3,15 @@ import { vcsRootsState } from "../../file-status.state";
 import { uniq } from "ramda";
 import {
   AnyGroupNode,
+  ChangeGrouping,
   ChangeNode,
   DirectoryNode,
-  RepositoryNode,
-  ChangeGrouping,
-  isDirectoryNode,
   directoryNode,
+  isDirectoryNode,
+  RepositoryNode,
   repositoryNode,
 } from "./ChangesView.state";
+import { getParentPaths } from "../../../file-utils";
 
 const repositoryGrouping: ChangeGrouping<RepositoryNode> = {
   id: "repository",
@@ -52,15 +53,7 @@ const directoryGrouping: ChangeGrouping<DirectoryNode> = {
         throw new Error("isDir=true is not supported for changes ATM!");
       }
       const filepath = node.change.after.path;
-      const parentDirPaths = filepath
-        .split("/")
-        .filter((i) => i) // filter out the empty string item added because of the leading slash
-        .slice(0, -1) // filter out the filename part
-        .map(
-          (_, index, array) =>
-            "/" + array.slice(0, array.length - index).join("/")
-        );
-      const rootDirNode = parentDirPaths.reduce(
+      const rootDirNode = getParentPaths(filepath).reduce(
         (prevNode: DirectoryNode | ChangeNode, dirPath) => {
           if (!pathToNodeCache[dirPath]) {
             pathToNodeCache[dirPath] = directoryNode(dirPath, "");

@@ -7,7 +7,7 @@ import {
   SpeedSearchTree,
 } from "@intellij-platform/core";
 import { StyledTreeNodeIconWrapper } from "../../../TreeUtils/StyledTreeNodeIconWrapper";
-import { DIR_ICON, getFilename, getIconForFile } from "../../../file-utils";
+import { DIR_ICON, getIconForFile } from "../../../file-utils";
 import { StyledTreeNodeWrapper } from "../../../TreeUtils/StyledTreeNodeWrapper";
 import {
   AnyNode,
@@ -25,6 +25,7 @@ import { TreeNodeHint } from "../../../TreeUtils/TreeNodeHint";
 import { IntlMessageFormat } from "intl-messageformat";
 import { CurrentBranchName } from "../../CurrentBranchName";
 import { StyledCurrentBranchTag } from "./StyledCurrentBranchTag";
+import * as path from "path";
 
 /**
  * Necessary properties for each node, to be passed to `Item`s rendered in tree.
@@ -51,7 +52,7 @@ const repoNodeItemProps: NodeRenderer<RepositoryNode> = (
   node,
   { fileCount }
 ) => ({
-  textValue: node.repository.dir.split("/").slice(-1)[0],
+  textValue: path.basename(node.repository.dir),
   element: (
     <>
       <RepoColorIcon rootPath={node.repository.dir} />
@@ -68,9 +69,7 @@ const directoryNodeItemProps: NodeRenderer<DirectoryNode> = (
   node,
   { fileCount }
 ) => ({
-  textValue: node.dirPath.slice(
-    node.parentNodePath ? node.parentNodePath.length + 1 : 0
-  ),
+  textValue: path.relative(node.parentNodePath, node.dirPath),
   element: (
     <StyledTreeNodeWrapper>
       <StyledTreeNodeIconWrapper>
@@ -101,7 +100,7 @@ const changeListNodeItemProps: NodeRenderer<ChangeListNode> = (
 });
 
 const changeNodeItemProps: NodeRenderer<ChangeNode> = (node) => ({
-  textValue: getFilename(node.change.after.path),
+  textValue: path.basename(node.change.after.path),
   element: (
     <StyledTreeNodeWrapper>
       <StyledTreeNodeIconWrapper>
@@ -125,7 +124,6 @@ const nodeRenderers: {
  * TODO: use the real changes instead of the dummy ones
  * TODO: checkboxes
  * TODO: unversioned files
- * TODO: add proper path and filename utils
  */
 export const ChangeViewTree = (): JSX.Element => {
   const { rootNodes, fileCountsMap } = useRecoilValue(changesTreeNodesState);

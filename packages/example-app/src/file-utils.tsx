@@ -1,3 +1,5 @@
+import path from "path";
+
 export const FILE_ICON = "fileTypes/text";
 export const DIR_ICON = "nodes/folder";
 
@@ -39,3 +41,28 @@ export const getExtension = (filepath: string): string | undefined =>
 
 export const getFilename = (filepath: string): string =>
   filepath.split("/").pop() || filepath;
+
+/**
+ * @example
+ * "/a/b/c.ext" => ["/a/b", "/a"]
+ */
+export function getParentPaths(
+  filepath: string,
+  upperLimit: string = path.sep
+): string[] {
+  return getParentPathsRecursive(filepath, upperLimit);
+}
+
+function getParentPathsRecursive(
+  filepath: string,
+  upperLimit: string,
+  previousPaths: string[] = []
+): string[] {
+  const dirname = path.dirname(filepath);
+  if (dirname !== upperLimit) {
+    return [dirname].concat(
+      getParentPathsRecursive(dirname, upperLimit, previousPaths)
+    );
+  }
+  return previousPaths;
+}
