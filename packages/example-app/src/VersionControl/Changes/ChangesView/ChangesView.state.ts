@@ -41,8 +41,8 @@ export type GroupFn<T extends AnyGroupNode> = (
   nodes: ReadonlyArray<ChangeNode>
 ) => ReadonlyArray<T>;
 
-export interface ChangeGrouping<T extends AnyGroupNode> {
-  id: string;
+export interface ChangeGrouping<T extends AnyGroupNode, I = string> {
+  id: I;
   title: string;
   isAvailable: MaybeRecoilValue<boolean>;
   groupFn: MaybeRecoilValue<GroupFn<T>>;
@@ -64,7 +64,11 @@ export const showRelatedFilesState = atom({
   default: false,
 });
 
-export const changesGroupingState = atomFamily({
+// in a more extensible implementation, the id would be just string. but now that groupings are statically defined,
+// why not have more type safety
+type GroupingIds = typeof groupings[number]["id"];
+
+export const changesGroupingState = atomFamily<boolean, GroupingIds>({
   key: "changesView/grouping",
   default: true, // it's false in IntelliJ
 });

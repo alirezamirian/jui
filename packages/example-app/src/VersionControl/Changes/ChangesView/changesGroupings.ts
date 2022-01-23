@@ -2,7 +2,6 @@ import { constSelector, GetRecoilValue, selector } from "recoil";
 import { vcsRootsState } from "../../file-status.state";
 import { uniq } from "ramda";
 import {
-  AnyGroupNode,
   ChangeGrouping,
   ChangeNode,
   DirectoryNode,
@@ -13,7 +12,7 @@ import {
 } from "./ChangesView.state";
 import { getParentPaths } from "../../../file-utils";
 
-const repositoryGrouping: ChangeGrouping<RepositoryNode> = {
+const repositoryGrouping: ChangeGrouping<RepositoryNode, "repository"> = {
   id: "repository",
   title: "Repository",
   isAvailable: selector({
@@ -42,7 +41,7 @@ const repositoryGrouping: ChangeGrouping<RepositoryNode> = {
   }),
 };
 
-const directoryGrouping: ChangeGrouping<DirectoryNode> = {
+const directoryGrouping: ChangeGrouping<DirectoryNode, "directory"> = {
   id: "directory",
   title: "Directory",
   isAvailable: constSelector(true),
@@ -53,6 +52,7 @@ const directoryGrouping: ChangeGrouping<DirectoryNode> = {
         throw new Error("isDir=true is not supported for changes ATM!");
       }
       const filepath = node.change.after.path;
+      // noinspection UnnecessaryLocalVariableJS
       const rootDirNode = getParentPaths(filepath).reduce(
         (prevNode: DirectoryNode | ChangeNode, dirPath) => {
           if (!pathToNodeCache[dirPath]) {
@@ -93,7 +93,4 @@ const directoryGrouping: ChangeGrouping<DirectoryNode> = {
   },
 };
 
-export const groupings: ReadonlyArray<ChangeGrouping<AnyGroupNode>> = [
-  repositoryGrouping,
-  directoryGrouping,
-];
+export const groupings = [repositoryGrouping, directoryGrouping];

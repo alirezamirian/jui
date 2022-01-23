@@ -14,6 +14,7 @@ import {
   ChangeBrowserNode,
   ChangeListNode,
   ChangeNode,
+  changesGroupingState,
   changesTreeNodesState,
   DirectoryNode,
   expandedKeysState,
@@ -99,6 +100,18 @@ const changeListNodeItemProps: NodeRenderer<ChangeListNode> = (
   ),
 });
 
+const ChangeNodeHint = ({ node }: { node: ChangeNode }): React.ReactElement => {
+  const isGroupedByDirectory = useRecoilValue(
+    changesGroupingState("directory")
+  );
+  return (
+    <>
+      {!isGroupedByDirectory && (
+        <TreeNodeHint>{path.dirname(node.change.after.path)}</TreeNodeHint>
+      )}
+    </>
+  );
+};
 const changeNodeItemProps: NodeRenderer<ChangeNode> = (node) => ({
   textValue: path.basename(node.change.after.path),
   element: (
@@ -107,6 +120,7 @@ const changeNodeItemProps: NodeRenderer<ChangeNode> = (node) => ({
         <PlatformIcon icon={getIconForFile(node.change.after.path)} />
       </StyledTreeNodeIconWrapper>
       <HighlightedTextValue />
+      <ChangeNodeHint node={node} />
     </StyledTreeNodeWrapper>
   ),
 });
