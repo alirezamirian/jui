@@ -7,40 +7,40 @@ const extensionIconMap: Record<string, string> = {
   editorconfig: "nodes/editorconfig",
   js: "fileTypes/javaScript",
   gitignore: "vcs/ignore_file",
-  archive: "filetypes/archive",
-  as: "filetypes/as",
-  config: "filetypes/config",
-  css: "filetypes/css",
-  dtd: "filetypes/dtd",
-  hpr: "filetypes/hprof",
-  htaccess: "filetypes/htaccess",
-  html: "filetypes/html",
-  idl: "filetypes/idl",
-  java: "filetypes/java",
-  jfr: "filetypes/jfr",
-  json: "filetypes/json",
-  jsp: "filetypes/jsp",
-  jspx: "filetypes/jspx",
-  manifest: "filetypes/manifest",
-  properties: "filetypes/properties",
-  txt: "filetypes/text",
-  wsdl: "filetypes/wsdlFile",
-  xhtml: "filetypes/xhtml",
-  xml: "filetypes/xml",
-  xsd: "filetypes/xsdFile",
-  yaml: "filetypes/yaml",
+  archive: "fileTypes/archive",
+  as: "fileTypes/as",
+  config: "fileTypes/config",
+  css: "fileTypes/css",
+  dtd: "fileTypes/dtd",
+  hpr: "fileTypes/hprof",
+  htaccess: "fileTypes/htaccess",
+  html: "fileTypes/html",
+  idl: "fileTypes/idl",
+  java: "fileTypes/java",
+  jfr: "fileTypes/jfr",
+  json: "fileTypes/json",
+  jsp: "fileTypes/jsp",
+  jspx: "fileTypes/jspx",
+  manifest: "fileTypes/manifest",
+  properties: "fileTypes/properties",
+  txt: "fileTypes/text",
+  wsdl: "fileTypes/wsdlFile",
+  xhtml: "fileTypes/xhtml",
+  xml: "fileTypes/xml",
+  xsd: "fileTypes/xsdFile",
+  yaml: "fileTypes/yaml",
 };
 
 export const getIconForFile = (filepath: string) => {
   const extension = getExtension(filepath);
-  return extensionIconMap[extension || ""] || FILE_ICON;
+  return extensionIconMap[extension] || FILE_ICON;
 };
 
-export const getExtension = (filepath: string): string | undefined =>
-  filepath.split(".").pop();
-
-export const getFilename = (filepath: string): string =>
-  filepath.split("/").pop() || filepath;
+/**
+ * A little different from path.extname(). For ".gitignore" path.extname returns "" while this returns "gitignore".
+ */
+const getExtension = (filepath: string): string =>
+  filepath.split(".").pop() || "";
 
 /**
  * @example
