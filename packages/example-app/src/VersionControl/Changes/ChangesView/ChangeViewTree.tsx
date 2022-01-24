@@ -135,9 +135,11 @@ const nodeRenderers: {
 };
 
 /**
+ * TODO: fix horizontal scroll issue
  * TODO: use the real changes instead of the dummy ones
  * TODO: checkboxes
  * TODO: unversioned files
+ * TODO: show diff/source on double click (on action to be more precise)
  */
 export const ChangeViewTree = (): JSX.Element => {
   const { rootNodes, fileCountsMap } = useRecoilValue(changesTreeNodesState);
