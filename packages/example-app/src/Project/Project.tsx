@@ -1,19 +1,17 @@
-import {
-  DefaultToolWindow,
-  PlatformIcon,
-  ToolWindows,
-} from "@intellij-platform/core";
+import { PlatformIcon, ToolWindows } from "@intellij-platform/core";
 import React from "react";
 import { FileEditor } from "../Editor/FileEditor";
 import { useInitializeVcs } from "../VersionControl/file-status.state";
 import { windowById } from "./toolWindows";
 import { useRecoilState } from "recoil";
 import { toolWindowsState } from "./toolWindows.state";
+import { useInitializeChanges } from "../VersionControl/Changes/change-lists.state";
 
 export const Project = () => {
   const [state, setState] = useRecoilState(toolWindowsState);
 
   useInitializeVcs();
+  useInitializeChanges();
 
   return (
     <ToolWindows
@@ -27,18 +25,7 @@ export const Project = () => {
           {windowById[id].title}
         </>
       )}
-      renderWindow={(id) => {
-        const { content, additionalActions } = windowById[id];
-        return (
-          <DefaultToolWindow
-            key={id}
-            headerContent={windowById[id].title}
-            additionalActions={additionalActions}
-          >
-            {content}
-          </DefaultToolWindow>
-        );
-      }}
+      renderWindow={(id) => windowById[id].element}
     >
       <FileEditor />
     </ToolWindows>

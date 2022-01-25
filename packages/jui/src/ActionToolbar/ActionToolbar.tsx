@@ -1,5 +1,5 @@
 import { Theme } from "@intellij-platform/core/Theme";
-import React from "react";
+import React, { useContext } from "react";
 import { StyledActionButton } from "../ActionButton/ActionButton";
 import { styled } from "../styled";
 import {
@@ -34,16 +34,16 @@ const getBorder = ({
 const StyledHorizontalActionToolbar = styled(StyledActionToolbar)<{
   hasBorder?: boolean;
 }>`
-  padding: 2px 0;
+  padding: 2px;
   border-bottom: ${getBorder};
   ${StyledHorizontalSeparator} {
-    margin: 1px 3px;
+    margin: 1px 2px;
   }
   // NOTE: in the original implementation, there is no empty space between buttons, but buttons have kind of an
   // invisible left padding, which is mouse-intractable, but doesn't visually seem a part of the button.
   // Although implementable, it didn't seem necessary to follow the exact same thing. Margin should be fine.
   ${StyledActionButton} {
-    margin: 0 2px 0 1px;
+    margin: 0 2px 0 2px;
   }
 `;
 
@@ -62,6 +62,11 @@ const StyledVerticalActionToolbar = styled(StyledActionToolbar)<{
   }
 `;
 
+// This can be used in other places if use-cases are raised for keeping orientation in the context.
+const OrientationContext = React.createContext<"horizontal" | "vertical">(
+  "horizontal"
+);
+
 /**
  * Remaining features:
  * - overflow behaviour:
@@ -73,14 +78,30 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
   orientation = "horizontal",
   hasBorder = false,
   children,
-}) => {
+}): React.ReactElement => {
+  return (
+    <OrientationContext.Provider value={orientation}>
+      {orientation === "horizontal" ? (
+        <StyledHorizontalActionToolbar hasBorder={hasBorder}>
+          {children}
+        </StyledHorizontalActionToolbar>
+      ) : (
+        <StyledVerticalActionToolbar hasBorder={hasBorder}>
+          {children}
+        </StyledVerticalActionToolbar>
+      )}
+    </OrientationContext.Provider>
+  );
+};
+
+/**
+ * Separator to be used between action buttons in an action toolbar.
+ */
+export const ActionToolbarSeparator = (): React.ReactElement => {
+  const orientation = useContext(OrientationContext);
   return orientation === "horizontal" ? (
-    <StyledHorizontalActionToolbar hasBorder={hasBorder}>
-      {children}
-    </StyledHorizontalActionToolbar>
+    <StyledHorizontalSeparator />
   ) : (
-    <StyledVerticalActionToolbar hasBorder={hasBorder}>
-      {children}
-    </StyledVerticalActionToolbar>
+    <StyledVerticalSeparator />
   );
 };

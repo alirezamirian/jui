@@ -1,7 +1,8 @@
 import { styled } from "../styled";
+import { IconSize } from "@intellij-platform/core/Icon/IconProps";
 
-export type IconSize = 16;
 const DEFAULT_ICON_SIZE: IconSize = 16;
+
 export const StyledIconWrapper = styled.span<{
   size?: IconSize;
   useCurrentColor?: boolean;

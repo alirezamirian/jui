@@ -1,8 +1,12 @@
 import { PressProps, usePress } from "@react-aria/interactions";
-import React, { ForwardedRef } from "react";
+import React, { ForwardedRef, HTMLProps } from "react";
 import { styled } from "../styled";
+import { mergeProps } from "@react-aria/utils";
 
-interface ActionButtonProps extends PressProps {
+export interface ActionButtonProps
+  extends PressProps,
+    // Maybe we should allow any arbitrary HTMLProps<HTMLButtonElement> props, instead of whitelisting?
+    Pick<HTMLProps<HTMLButtonElement>, "onFocus" | "onBlur"> {
   children?: React.ReactNode;
   minSize?: number;
 }
@@ -11,10 +15,11 @@ export const DEFAULT_MINIMUM_BUTTON_SIZE = 22;
 export const NAVBAR_MINIMUM_BUTTON_SIZE = 20;
 
 export const StyledActionButton = styled.button<{ minSize: number }>`
+  position: relative; // to allow absolutely positioned overlays like an dropdown icon at the bottom right corner
   background: none;
   color: inherit;
   border: 1px solid transparent;
-  border-radius: 2px;
+  border-radius: 3px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -45,16 +50,37 @@ export const StyledActionButton = styled.button<{ minSize: number }>`
 `;
 
 export const ActionButton = React.forwardRef(function ActionButton(
-  { minSize = DEFAULT_MINIMUM_BUTTON_SIZE, ...otherProps }: ActionButtonProps,
+  {
+    minSize = DEFAULT_MINIMUM_BUTTON_SIZE,
+    preventFocusOnPress = true,
+    isPressed: isPressedInput,
+    isDisabled,
+    onPress,
+    onPressChange,
+    onPressEnd,
+    onPressStart,
+    onPressUp,
+    shouldCancelOnPointerExit,
+    ...otherProps
+  }: ActionButtonProps,
   ref: ForwardedRef<HTMLButtonElement>
 ) {
-  const { pressProps, isPressed } = usePress(otherProps);
+  const { pressProps, isPressed } = usePress({
+    isPressed: isPressedInput,
+    onPress,
+    onPressChange,
+    onPressEnd,
+    onPressStart,
+    onPressUp,
+    shouldCancelOnPointerExit,
+    preventFocusOnPress,
+  });
 
   return (
     <StyledActionButton
       className={isPressed ? "active" : ""}
-      disabled={otherProps.isDisabled}
-      {...pressProps}
+      disabled={isDisabled}
+      {...mergeProps(pressProps, otherProps)}
       minSize={minSize}
       ref={ref}
     />

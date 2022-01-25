@@ -1,8 +1,10 @@
 import React, { CSSProperties, HTMLProps } from "react";
 
+export type IconSize = 16;
+
 export interface IconProps
   extends Omit<HTMLProps<HTMLSpanElement>, "ref" | "as"> {
-  size?: 16; // more options may be added here
+  size?: IconSize; // more options may be added here
   style?: CSSProperties;
   className?: string;
   /**

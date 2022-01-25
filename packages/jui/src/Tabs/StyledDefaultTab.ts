@@ -50,7 +50,8 @@ const defaultTabTheme = ({ theme }: { theme: Theme }) =>
 export const StyledDefaultTab = styled.div<StyledTabProps>`
   box-sizing: border-box;
   display: inline-flex;
-  font-size: 0.7rem;
+  letter-spacing: 0.015rem;
+  font-size: 0.85rem;
   cursor: default;
   white-space: nowrap;
 

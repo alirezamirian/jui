@@ -4,6 +4,7 @@ export * from "./Menu";
 export * from "./ToolWindow";
 export * from "./ActionButton/ActionButton";
 export * from "./ActionToolbar/ActionToolbar";
+export * from "./ActionButtonWithMenu/ActionButtonWithMenu";
 export * from "./Icon";
 export * from "./TextWithHighlights/TextWithHighlights";
 export * from "./SpeedSearch";

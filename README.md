@@ -1,7 +1,7 @@
-
 ## :warning: WARNING :warning:
 
 This library is a work in progress. It's not published on npm just yet, and documentation is incomplete. But you can checkout these:
+
 - [A WIP demo](https://alirezamirian.github.io/jui/example-app)
 - [storybook](https://alirezamirian.github.io/jui/storybook/)
 - The current state of the [documentation](https://alirezamirian.github.io/jui/).
@@ -13,7 +13,6 @@ JUI is JetBrain's IntelliJ Platform UI implemented as a React.js library. A lot 
 If you too love the user experience of the JetBrains products, and the developer experience of creating UI applications with react, you may find this interesting.
 
 https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-ad80-3e4f640dd726.mp4
-
 
 ## Features:
 
@@ -121,6 +120,10 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
         </tr>
         <tr>
             <td colspan="3">Action Button</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td colspan="3">Action Button with menu 🧬</td>
             <td>✅</td>
         </tr>
         <tr>
@@ -247,6 +250,8 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
         </tr>
     </tbody>
 </table>
+
+🧬: higher level "molecule" components that capture a common usage of two or more atomic components, together.
 
 1. Not exactly a list feature. But more about checking feasibility of it
 2. It seems in Intellij UI, such menu lists are only used in popups. Maybe only

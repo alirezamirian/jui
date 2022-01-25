@@ -135,6 +135,13 @@ export class Theme<P extends string = string> {
       ),
       panelBackground: theme.color("Panel.background") || "#fff",
       red: theme.dark ? "rgb(255,100,100)" : "rgb(255,0,0)",
+      blue: theme.dark ? "#589df6" : "rgb(0,0,255)",
+      green: theme.dark ? "rgb(98, 150, 85)" : "rgb(0,255,0)",
+      orange: theme.dark ? "rgb(159, 107, 0)" : "rgb(255, 200, 0)",
+      cyan: theme.dark ? "rgb(0, 137, 137)" : "rgb(0, 255, 255)",
+      yellow: theme.dark ? "rgb(138, 138, 0)" : "rgb(255, 255, 0)",
+      magenta: theme.dark ? "rgb(151, 118, 169)" : "rgb(255, 0, 255)",
+      pink: theme.dark ? "rgb(255, 175, 175)" : "rgb(255, 175, 175)",
       contrastBorder: theme.color(
         "Borders.ContrastBorderColor",
         theme.dark ? "#323232" : "#c9c9c9"

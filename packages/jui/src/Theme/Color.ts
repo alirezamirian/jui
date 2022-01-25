@@ -43,6 +43,13 @@ export class Color {
     );
   }
 
+  /**
+   * Extra method for changing transparency
+   */
+  withTransparency(alpha: number) {
+    return new Color(this.r, this.g, this.b, alpha);
+  }
+
   brighter() {
     let { r, g, b, a: alpha } = this;
     const int = Math.floor,
@@ -82,7 +89,11 @@ export class Color {
     return new Color(color).brighter().toString();
   }
 
-  blend(color: Color) {
+  blend(colorOrColorString: Color | string) {
+    const color =
+      typeof colorOrColorString === "string"
+        ? new Color(colorOrColorString)
+        : colorOrColorString;
     const getBlendedValue = (component: "r" | "g" | "b") =>
       Math.round(
         (color.a / 255) * color[component] +

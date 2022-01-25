@@ -13,7 +13,7 @@ export const StyledList = styled.ul<{ fillAvailableSpace?: boolean }>`
     fillAvailableSpace &&
     css`
       flex: 1;
-      height: 100%;
+      height: fill-available; // will be converted to --webkit-fill-available and --moz-available, but doesn't work in FF
     `}
   background: ${({ theme }) => theme.color("List.background")};
 `;
