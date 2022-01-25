@@ -74,7 +74,7 @@ describe("Menu with trigger", () => {
       cy.realPress("ArrowDown"); // move focus to the first menu item
       cy.realPress("ArrowDown"); // move focus to the first menu item
       cy.realPress("Enter"); // open second level submenu
-      matchImageSnapshot("menu-with-trigger--position");
+      matchImageSnapshot("menu-with-trigger--position", null);
     }
   });
 });
@@ -103,7 +103,15 @@ function testKeyboardNavigation(snapshotsName: string) {
   matchImageSnapshot(snapshotsName);
 }
 
-function matchImageSnapshot(snapshotsName: string) {
+function matchImageSnapshot(
+  snapshotsName: string,
+  clip: { x: number; y: number; width: number; height: number } | null = {
+    x: 0,
+    y: 0,
+    width: 360,
+    height: 120,
+  }
+) {
   cy.document().toMatchImageSnapshot({
     name: snapshotsName,
     imageConfig: {
@@ -113,7 +121,7 @@ function matchImageSnapshot(snapshotsName: string) {
       // since menu and submenu are rendered in overlays, we manually specify a boundary.
       // Note that not setting a boundary captures the whole viewport which has a lot of empty space, which drastically
       // reduces the diffing sensitivity, and introduces false positives in image snapshot matching.
-      clip: { x: 0, y: 0, width: 360, height: 120 },
+      clip,
     },
   });
 }
