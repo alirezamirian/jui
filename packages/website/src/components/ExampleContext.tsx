@@ -5,6 +5,7 @@ import darculaTheme from "../../../jui/themes/darcula.theme.json";
 import highContrastTheme from "../../../jui/themes/HighContrast.theme.json";
 import lightTheme from "../../../jui/themes/intellijlaf.theme.json";
 import { Theme } from "../../../jui/src";
+import styles from "./example-container-styles.module.css";
 
 export type ExampleContextThemeName = "light" | "darcula" | "highContrast";
 
@@ -36,6 +37,7 @@ export const Example: React.FC = ({ children }) => (
       css={`
         background: ${({ theme }) => theme.color("*.background")};
       `}
+      className={styles.exampleContainer}
     >
       {children}
     </div>
