@@ -1,0 +1,193 @@
+---
+---
+
+import { Example } from "../../src/components/ExampleContext";
+
+# Checkbox
+
+Checkbox with or without a label.
+
+## Simple usage
+
+```jsx live themed
+// import { Checkbox } from "@intellij-platform/core";
+<>
+  <Checkbox>Default behavior</Checkbox> <br />
+  <Checkbox isSelected>Controlled selected.</Checkbox> <br />
+  <Checkbox isIndeterminate>Indeterminate state</Checkbox> <br />
+  <Checkbox isSelected isDisabled>
+    Disabled
+  </Checkbox>
+</>
+```
+
+:::info Note
+When `isIndeterminate` is true, `isSelected` state is independently maintained, and `onChange` is still called with the
+toggled value upon interaction. But regardless of that state, the indeterminate UI is shown. It's important to note
+that it's not a
+[three state checkbox](https://github.com/JetBrains/intellij-community/blob/82f201386c3f7a339ff25fc8f3389024c8078a87/platform/util/ui/src/com/intellij/util/ui/ThreeStateCheckBox.java#L23-L22)
+in that sense and the implementation rather follows the
+[web standard implementation](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#attr-indeterminate),
+where `indeterminate` is independent of `checked` state.
+
+:::
+
+## Focus options
+
+By default, Checkbox gets focused when it's interacted with. This is inline with the default browser's behaviour for
+checkboxes. However, the focus ring is always shown when the Checkbox has focus, regardless of the interaction type.
+This is not inline with browser's default behavior of showing focus ring based
+on <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" target="_blank" >
+focus-visible heuristics </a>, which in turn depends on the input device.
+
+:::tip Tip
+Use `disableFocusAlwaysVisible` to switch to the browser default focus-visible behaviour.
+:::
+
+In some use cases, you may want to prevent checkbox from obtaining the focus when it's interacted with. A legitimate
+example could be [label-less checkboxes](#usage-without-label) in List items or Table cells, where the checkbox is a
+part of a focusable container (list item, table cell) already, and that focusable container handles keyboard interaction
+for toggling checkbox, for example by `Space` key. Another use case, which perhaps is more controversial with respect to
+i11y practices, is where the checkbox is next to more important focusable element that you don't want to take the focus
+away from. "Amend" checkbox in "Commit" tool window is an example of that use case. When the commit message editor is
+focused, toggling "Amend" checkbox won't take focus away from the commit message editor. It's important to note that
+the checkbox is still keyboard-accessible in such cases, because of the
+[Action System](https://plugins.jetbrains.com/docs/intellij/basic-action-system.html) and also
+[mnemonics](https://www.jetbrains.com/help/idea/adding-mnemonics.html).
+
+:::tip Tip
+Use `preventFocus` to not allow checkbox get focused when it's interacted with.
+:::
+
+Last thing about focus management is that you can disable focus by Tab key, while the checkbox is still focusable.
+
+:::tip Tip
+Use `excludeFromTabOrder` to exclude the checkbox from getting focus by Tab key.
+:::
+
+Below is an example of the focus management options:
+
+```jsx live themed
+// import { Checkbox } from "@intellij-platform/core";
+<>
+  <Checkbox>Default behavior</Checkbox> <br />
+  <Checkbox excludeFromTabOrder>
+    Excluded from tab order. Try focusing the previous checkbox and press tab.
+  </Checkbox> <br />
+  <Checkbox disableFocusAlwaysVisible>
+    Focus ring only shown based on `focus-visible` heuristics.
+  </Checkbox>
+  <br />
+  <Checkbox preventFocus>Doesn't get focused when toggled</Checkbox>
+</>
+```
+
+## Usage without label
+
+A use case for checkboxes without label is in list or tree items.
+That kind of use case is usually together with `preventFocus` option, since the checkbox is a part of a focusable
+container (list/tree items), and the focus should not be taken away from that focusable container.
+
+:::info Note
+You should always pass `aria-label` for checkboxes without label.
+:::
+
+Here is an example of rendering checkboxes inside tree items:
+
+```jsx live themed
+// import { Checkbox, List, Item, SpeedSearchTree, HighlightedTextValue } from "@intellij-platform/core";
+// TODO: Space doesn't toggle selection on tree items
+function Example() {
+  const [selectedKeys, setSelectedKeys] = useState(new Set(["Vicente Amigo"]));
+  const [checkedKeys, setCheckedKeys] = useState(["Paco de Lucia"]);
+
+  const isChecked = (item) =>
+    checkedKeys.includes(item.name) ||
+    (item.children && getLeafNodes(item).every(isChecked));
+
+  const getLeafNodes = (root) => {
+    if (root.children) {
+      return root.children
+        .map((child) => (child.children ? getLeafNodes(child) : [child]))
+        .flat();
+    }
+    return [];
+  };
+
+  const toggle = (item, checked) => {
+    setSelectedKeys(() => new Set([item.name]));
+    if (item.children) {
+      const allChildren = getLeafNodes(item);
+      if (!allChildren.every(isChecked)) {
+        setCheckedKeys(allChildren.map((child) => child.name));
+      } else {
+        setCheckedKeys((checkedKeys) =>
+          checkedKeys.filter(
+            (key) => !allChildren.find((child) => child.name === key)
+          )
+        );
+      }
+    } else {
+      if (checked) {
+        setCheckedKeys((checkedKeys) => checkedKeys.concat(item.name));
+      } else {
+        setCheckedKeys((checkedKeys) =>
+          checkedKeys.filter((key) => key !== item.name)
+        );
+      }
+    }
+  };
+
+  const isIndeterminate = (item) => {
+    if (!item.children) {
+      return false;
+    }
+    const leafNodes = getLeafNodes(item);
+    const checkedLeafNodes = leafNodes.filter(isChecked);
+    return (
+      checkedLeafNodes.length > 0 && checkedLeafNodes.length < leafNodes.length
+    );
+  };
+  return (
+    <SpeedSearchTree
+      selectionMode="multiple"
+      defaultExpandedKeys={["Heros"]}
+      selectedKeys={selectedKeys}
+      onSelectionChange={setSelectedKeys}
+      items={[
+        {
+          name: "Heros",
+          children: [
+            { name: "Paco de Lucia", children: null },
+            { name: "Vicente Amigo", children: null },
+            { name: "Gerardo Nunez", children: null },
+          ],
+        },
+      ]}
+    >
+      {(item) => (
+        <Item key={item.name} childItems={item.children} textValue={item.name}>
+          <div style={{ display: "flex", alignItems: "center", gap: ".2rem" }}>
+            {
+              <>
+                <span style={{ display: "inline-flex" }}>
+                  <Checkbox
+                    aria-label={`Select ${item.name}`}
+                    preventFocus
+                    isSelected={isChecked(item)}
+                    onChange={(checked) => toggle(item, checked)}
+                    isIndeterminate={item.children && isIndeterminate(item)}
+                  />
+                </span>
+              </>
+            }
+            <span>
+              <HighlightedTextValue />
+            </span>
+          </div>
+        </Item>
+      )}
+    </SpeedSearchTree>
+  );
+}
+```

@@ -17,3 +17,4 @@ export * from "./styled";
 export * from "./Tree";
 export * from "./Tabs";
 export * from "./Theme";
+export * from "./Checkbox";
