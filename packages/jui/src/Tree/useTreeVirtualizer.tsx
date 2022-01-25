@@ -22,6 +22,15 @@ class FlattenedTreeLayout<T> extends ListLayout<T> {
       .getVisibleLayoutInfos(rect)
       .filter((layoutInfo) => this.collection.getItem(layoutInfo.key) != null);
   }
+  // related to https://github.com/alirezamirian/jui/issues/6
+  // getContentSize(): Size {
+  //   return new Size(400, super.getContentSize().height);
+  // }
+  // buildNode(node: Node<T>, x: number, y: number): LayoutNode {
+  //   let layoutNode = super.buildNode(node, x, y);
+  //   layoutNode.layoutInfo.rect.width = 400;
+  //   return layoutNode;
+  // }
 }
 
 export const useTreeVirtualizer = <T extends object>({
@@ -57,7 +66,7 @@ export const useTreeVirtualizer = <T extends object>({
       collection: state.collection,
       layout,
       sizeToFit: "height",
-      scrollDirection: "vertical",
+      scrollDirection: "both",
     },
   };
 };
