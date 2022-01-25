@@ -25,7 +25,7 @@ interface ThemeIconProps extends IconProps {
   themePath?: string;
 }
 
-const ICONS_DIR_PREFIX = "/com/intellij/ide/ui/laf/icons/";
+const ICONS_DIR_PREFIX = "com/intellij/ide/ui/laf/icons/";
 
 // Similar to LafIconLookup
 function findIconPath(
@@ -74,6 +74,6 @@ export const LafIcon = React.forwardRef(
 
     const ref = useForwardedRef(forwardedRef);
     useSvgIcon({ path: `platform/platform-impl/src/${resolvedIconPath}` }, ref);
-    return <StyledIconWrapper {...props} ref={ref} />;
+    return <StyledIconWrapper {...props} ref={ref} size={size} />;
   }
 );

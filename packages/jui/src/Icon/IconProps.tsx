@@ -1,6 +1,6 @@
 import React, { CSSProperties, HTMLProps } from "react";
 
-export type IconSize = 16;
+export type IconSize = 16 | number;
 
 export interface IconProps
   extends Omit<HTMLProps<HTMLSpanElement>, "ref" | "as"> {
