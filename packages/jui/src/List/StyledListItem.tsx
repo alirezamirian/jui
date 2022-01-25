@@ -33,6 +33,7 @@ export const StyledListItem = styled.li<StyledListItemProps>(
       lineHeight: "20px",
       outline: "none",
       cursor: "default",
+      minWidth: "min-content", // ?
     };
   }
 );
