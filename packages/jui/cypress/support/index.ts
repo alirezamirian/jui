@@ -13,6 +13,7 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
+import "@percy/cypress";
 import { setGlobalConfig } from "@storybook/testing-react";
 import "cypress-real-events/support";
 import * as sbPreview from "../../.storybook/preview";
