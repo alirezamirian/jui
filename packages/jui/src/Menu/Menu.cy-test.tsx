@@ -19,11 +19,11 @@ describe("Menu", () => {
     cy.focused().should("have.attr", "role", "menu"); // focus should be on submenu, when opened by hover
     cy.get('[role="menuitem"]').contains("Docked").realHover(); // open second submenu via hover
     cy.get('[role="menuitem"]').contains("UnPinned").realHover(); // Move focus to second item via hover
-    matchImageSnapshot("menu--mouse-behaviour");
+    matchImageSnapshot("menu--mouse-behaviour-1");
     cy.get('[role="menuitem"]').contains("Float").realHover(); // Close second submenu by hovering another item
-    matchImageSnapshot("menu--mouse-behaviour");
+    matchImageSnapshot("menu--mouse-behaviour-2");
     cy.get('[role="menuitem"]').contains("Group tabs").realHover(); // Close first submenu by hovering another item
-    matchImageSnapshot("menu--mouse-behaviour");
+    matchImageSnapshot("menu--mouse-behaviour-3");
   });
 });
 
@@ -89,18 +89,18 @@ function testKeyboardNavigation(snapshotsName: string) {
   cy.realPress("ArrowDown"); // move focus to the second item in the submenu
 
   cy.focused().should("contain.text", "Docked");
-  matchImageSnapshot(snapshotsName);
+  matchImageSnapshot(`${snapshotsName}-1`);
 
   cy.realPress("ArrowLeft"); // close sub-menu with left arrow
   cy.focused().should("contain.text", "View Mode"); // Focus should now be on the submenu opener item
-  matchImageSnapshot(snapshotsName);
+  matchImageSnapshot(`${snapshotsName}-2`);
   cy.realPress("ArrowRight"); // open submenu with right arrow
   cy.focused().should("have.attr", "role", "menu"); // focus should now be on the submenu
   cy.realPress("ArrowDown"); // move focus to first submenu item
-  matchImageSnapshot(snapshotsName);
+  matchImageSnapshot(`${snapshotsName}-3`);
   cy.realPress("Escape"); // close submenu with escape
   cy.focused().should("contain.text", "View Mode"); // Focus should now be on the submenu opener item
-  matchImageSnapshot(snapshotsName);
+  matchImageSnapshot(`${snapshotsName}-4`);
 }
 
 function matchImageSnapshot(
@@ -112,16 +112,17 @@ function matchImageSnapshot(
     height: 120,
   }
 ) {
-  cy.document().toMatchImageSnapshot({
-    name: snapshotsName,
-    imageConfig: {
-      threshold: 0.04, // with current clip boundary, should be less than ~0.04 to detect change in menu item selection
-    },
-    screenshotConfig: {
-      // since menu and submenu are rendered in overlays, we manually specify a boundary.
-      // Note that not setting a boundary captures the whole viewport which has a lot of empty space, which drastically
-      // reduces the diffing sensitivity, and introduces false positives in image snapshot matching.
-      clip,
-    },
-  });
+  cy.percySnapshot(snapshotsName);
+  // cy.document().toMatchImageSnapshot({
+  //   name: snapshotsName,
+  //   imageConfig: {
+  //     threshold: 0.04, // with current clip boundary, should be less than ~0.04 to detect change in menu item selection
+  //   },
+  //   screenshotConfig: {
+  //     // since menu and submenu are rendered in overlays, we manually specify a boundary.
+  //     // Note that not setting a boundary captures the whole viewport which has a lot of empty space, which drastically
+  //     // reduces the diffing sensitivity, and introduces false positives in image snapshot matching.
+  //     clip,
+  //   },
+  // });
 }
