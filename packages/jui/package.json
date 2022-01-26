@@ -15,7 +15,7 @@
     "type-check": "tsc && yarn run cypress:type-check",
     "jest": "jest",
     "jest:watch": "jest --watch",
-    "cypress": "ELECTRON_EXTRA_LAUNCH_ARGS=--disable-color-correct-rendering cypress run-ct",
+    "cypress": "ELECTRON_EXTRA_LAUNCH_ARGS=--disable-color-correct-rendering percy exec -- cypress run-ct",
     "cypress:open": "ELECTRON_EXTRA_LAUNCH_ARGS=--disable-color-correct-rendering cypress open-ct --browser=electron",
     "cypress:type-check": "tsc --project tsconfig.cypress.json"
   },
@@ -53,6 +53,8 @@
     "@babel/preset-typescript": "7.13.0",
     "@cypress/react": "^5.10.0",
     "@cypress/webpack-dev-server": "^1.6.0",
+    "@percy/cli": "^1.0.0-beta.74",
+    "@percy/cypress": "^3.1.1",
     "@react-stately/data": "^3.4.2",
     "@react-types/listbox": "3.1.1",
     "@storybook/addon-actions": "^6.2.7",

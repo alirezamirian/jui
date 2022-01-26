@@ -70,7 +70,7 @@ describe("Checkbox", () => {
     );
     cy.contains(CHECKBOX_LABEL_TEXT).click();
     cy.focused().should("not.exist");
-    matchImageSnapshot("Checkbox-checked");
+    matchImageSnapshot("Checkbox-checked-2");
   });
 
   it("supports isIndeterminate", () => {
@@ -84,26 +84,15 @@ describe("Checkbox", () => {
     // but the indeterminate state should be displayed regardless of the checked state
     cy.contains(CHECKBOX_LABEL_TEXT).click();
     cy.wrap(onChange).should("be.calledWith", true);
-    matchImageSnapshot("Checkbox-indeterminate");
+    matchImageSnapshot("Checkbox-indeterminate-1");
 
     cy.contains(CHECKBOX_LABEL_TEXT).click();
     cy.wrap(onChange).should("be.calledWith", false);
-    matchImageSnapshot("Checkbox-indeterminate");
+    matchImageSnapshot("Checkbox-indeterminate-2");
   });
 });
 
 function matchImageSnapshot(snapshotsName: string) {
   cy.get("svg"); // :( need to manually wait for the svg icon to be loaded.
-  // FIXME: find a better way to make icons pre-loaded for tests to prevent flakiness due to icon load time. Note that
-  //  even loading icons from fixture didn't help with the flakiness.
-  cy.get("#component-container").toMatchImageSnapshot({
-    name: snapshotsName,
-    screenshotConfig: {
-      padding: [0, 0, 0, 0],
-    },
-    imageConfig: {
-      thresholdType: "pixel",
-      threshold: 9, // 9 pixels seems to be the maximum pixel threshold for detecting regression in focus-ring or checked state
-    },
-  });
+  cy.percySnapshot(snapshotsName);
 }

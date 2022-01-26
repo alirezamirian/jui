@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["cypress", "cypress-real-events"]
+    "types": ["cypress", "cypress-real-events", "@percy/cypress"]
   },
   "include": [
     "**/*.cy-test.tsx",
