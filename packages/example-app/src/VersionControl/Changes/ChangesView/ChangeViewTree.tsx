@@ -22,7 +22,7 @@ import {
   selectedKeysState,
 } from "./ChangesView.state";
 import { RepoColorIcon } from "./StyledRepoColorSquare";
-import { TreeNodeHint } from "../../../TreeUtils/TreeNodeHint";
+import { StyledTreeNodeHint } from "../../../TreeUtils/StyledTreeNodeHint";
 import { IntlMessageFormat } from "intl-messageformat";
 import { CurrentBranchName } from "../../CurrentBranchName";
 import { StyledCurrentBranchTag } from "./StyledCurrentBranchTag";
@@ -58,7 +58,9 @@ const repoNodeItemProps: NodeRenderer<RepositoryNode> = (
     <>
       <RepoColorIcon rootPath={node.repository.dir} />
       <HighlightedTextValue />
-      <TreeNodeHint>{fileCountMsg.format({ fileCount })}</TreeNodeHint>
+      <StyledTreeNodeHint>
+        {fileCountMsg.format({ fileCount })}
+      </StyledTreeNodeHint>
       <StyledCurrentBranchTag>
         <CurrentBranchName repo={node.repository} />
       </StyledCurrentBranchTag>
@@ -77,7 +79,9 @@ const directoryNodeItemProps: NodeRenderer<DirectoryNode> = (
         <PlatformIcon icon={DIR_ICON} />
       </StyledTreeNodeIconWrapper>
       <HighlightedTextValue />
-      <TreeNodeHint>{fileCountMsg.format({ fileCount })}</TreeNodeHint>
+      <StyledTreeNodeHint>
+        {fileCountMsg.format({ fileCount })}
+      </StyledTreeNodeHint>
     </StyledTreeNodeWrapper>
   ),
 });
@@ -92,10 +96,10 @@ const changeListNodeItemProps: NodeRenderer<ChangeListNode> = (
       <span style={{ fontWeight: node.changeList.active ? "bold" : undefined }}>
         <HighlightedTextValue />
       </span>
-      <TreeNodeHint>
+      <StyledTreeNodeHint>
         {fileCountMsg.format({ fileCount })}{" "}
         {/*in IntelliJ it's not shown if it's empty, but why not!*/}
-      </TreeNodeHint>
+      </StyledTreeNodeHint>
     </StyledTreeNodeWrapper>
   ),
 });
@@ -107,7 +111,9 @@ const ChangeNodeHint = ({ node }: { node: ChangeNode }): React.ReactElement => {
   return (
     <>
       {!isGroupedByDirectory && (
-        <TreeNodeHint>{path.dirname(node.change.after.path)}</TreeNodeHint>
+        <StyledTreeNodeHint>
+          {path.dirname(node.change.after.path)}
+        </StyledTreeNodeHint>
       )}
     </>
   );

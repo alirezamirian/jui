@@ -78,7 +78,19 @@ export const selectedKeysState = atom<Selection>({
 });
 export const expandedKeysState = atom<Selection>({
   key: "changesView.expandedKeys",
-  default: new Set<Key>([]),
+  default: selector({
+    key: "changesView.expandedKeys/temporaryDefault",
+    get: ({ get }) => {
+      return new Set<Key>(
+        get(changesTreeNodesState)
+          .rootNodes.map((node) => [
+            node.key,
+            ...node.children.map((child) => child.key),
+          ])
+          .flat()
+      );
+    },
+  }),
 });
 
 export const availableGroupingsState = selector({
