@@ -33,7 +33,7 @@ const windows: ToolWindowDescriptor[] = [
         <ProjectViewPane />
       </DefaultToolWindow>
     ),
-    initialState: toolWindowState({ isVisible: false, weight: 0.22 }),
+    initialState: toolWindowState({ isVisible: true, weight: 0.22 }),
   },
   {
     id: "terminal",
@@ -64,7 +64,10 @@ const windows: ToolWindowDescriptor[] = [
         </MultiContentToolWindowContent>
       </MultiContentToolWindow>
     ),
-    initialState: toolWindowState({ anchor: "left", isVisible: true }),
+    initialState: toolWindowState({ anchor: "left", isVisible: false }),
   },
-];
+].filter(
+  ({ id }) =>
+    id !== "commit" /*FIXME: remove this when change window is good enough*/
+);
 export const windowById = indexBy(({ id }) => id, windows);
