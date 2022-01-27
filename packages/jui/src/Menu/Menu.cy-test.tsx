@@ -19,11 +19,11 @@ describe("Menu", () => {
     cy.focused().should("have.attr", "role", "menu"); // focus should be on submenu, when opened by hover
     cy.get('[role="menuitem"]').contains("Docked").realHover(); // open second submenu via hover
     cy.get('[role="menuitem"]').contains("UnPinned").realHover(); // Move focus to second item via hover
-    matchImageSnapshot("menu--mouse-behaviour");
+    matchImageSnapshot("menu--mouse-behaviour-1");
     cy.get('[role="menuitem"]').contains("Float").realHover(); // Close second submenu by hovering another item
-    matchImageSnapshot("menu--mouse-behaviour");
+    matchImageSnapshot("menu--mouse-behaviour-2");
     cy.get('[role="menuitem"]').contains("Group tabs").realHover(); // Close first submenu by hovering another item
-    matchImageSnapshot("menu--mouse-behaviour");
+    matchImageSnapshot("menu--mouse-behaviour-3");
   });
 });
 
@@ -60,21 +60,21 @@ describe("Menu with trigger", () => {
   });
 
   it("makes sure the menu or submenus are positioned in viewport", () => {
-    cy.viewport(300, 300);
+    cy.viewport(375, 375);
     mount(<MenuWithTrigger offsetRight={40} />);
-    openSubMenusAndSnapshotTestPosition();
+    openSubMenusAndSnapshotTestPosition(1);
     mount(<MenuWithTrigger offsetRight={40} offsetBottom={50} />);
-    openSubMenusAndSnapshotTestPosition();
+    openSubMenusAndSnapshotTestPosition(2);
     mount(<MenuWithTrigger offsetRight={40} offsetBottom={80} />);
-    openSubMenusAndSnapshotTestPosition();
+    openSubMenusAndSnapshotTestPosition(3);
 
-    function openSubMenusAndSnapshotTestPosition() {
+    function openSubMenusAndSnapshotTestPosition(num: number) {
       cy.get("button[aria-haspopup]").click(); // open the menu by clicking the trigger.
       cy.realPress("Enter"); // open submenu with enter
       cy.realPress("ArrowDown"); // move focus to the first menu item
       cy.realPress("ArrowDown"); // move focus to the first menu item
       cy.realPress("Enter"); // open second level submenu
-      matchImageSnapshot("menu-with-trigger--position");
+      matchImageSnapshot(`menu-with-trigger--position-${num}`);
     }
   });
 });
@@ -89,31 +89,20 @@ function testKeyboardNavigation(snapshotsName: string) {
   cy.realPress("ArrowDown"); // move focus to the second item in the submenu
 
   cy.focused().should("contain.text", "Docked");
-  matchImageSnapshot(snapshotsName);
+  matchImageSnapshot(`${snapshotsName}-1`);
 
   cy.realPress("ArrowLeft"); // close sub-menu with left arrow
   cy.focused().should("contain.text", "View Mode"); // Focus should now be on the submenu opener item
-  matchImageSnapshot(snapshotsName);
+  matchImageSnapshot(`${snapshotsName}-2`);
   cy.realPress("ArrowRight"); // open submenu with right arrow
   cy.focused().should("have.attr", "role", "menu"); // focus should now be on the submenu
   cy.realPress("ArrowDown"); // move focus to first submenu item
-  matchImageSnapshot(snapshotsName);
+  matchImageSnapshot(`${snapshotsName}-3`);
   cy.realPress("Escape"); // close submenu with escape
   cy.focused().should("contain.text", "View Mode"); // Focus should now be on the submenu opener item
-  matchImageSnapshot(snapshotsName);
+  matchImageSnapshot(`${snapshotsName}-4`);
 }
 
 function matchImageSnapshot(snapshotsName: string) {
-  cy.document().toMatchImageSnapshot({
-    name: snapshotsName,
-    imageConfig: {
-      threshold: 0.04, // with current clip boundary, should be less than ~0.04 to detect change in menu item selection
-    },
-    screenshotConfig: {
-      // since menu and submenu are rendered in overlays, we manually specify a boundary.
-      // Note that not setting a boundary captures the whole viewport which has a lot of empty space, which drastically
-      // reduces the diffing sensitivity, and introduces false positives in image snapshot matching.
-      clip: { x: 0, y: 0, width: 360, height: 120 },
-    },
-  });
+  cy.percySnapshot(snapshotsName);
 }

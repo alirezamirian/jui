@@ -178,6 +178,7 @@ function isomorphicGitWebpackConfigPlugin() {
             buffer: require.resolve("buffer"),
             process: require.resolve("process/browser"),
             stream: require.resolve("stream-browserify"),
+            path: require.resolve("path-browserify"),
           },
         },
         plugins: [

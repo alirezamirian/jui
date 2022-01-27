@@ -1,19 +1,16 @@
+import React, { ComponentProps, useState } from "react";
 import BrowserOnly from "@docusaurus/BrowserOnly";
 import Link from "@docusaurus/Link";
 import { PlatformIcon, styled, Color } from "@intellij-platform/core";
-import React, { ComponentProps, useState } from "react";
 import {
   ExampleContext,
   ExampleContextThemeName,
 } from "../components/ExampleContext";
+import styles from "../components/example-container-styles.module.css";
 
 const App = React.lazy(() => import("../../../example-app/src"));
 
-const StyleNormalizer = styled.div`
-  font-family: sans-serif;
-  font-size: 14px;
-`;
-const ColumnContainer = styled(StyleNormalizer)`
+const ColumnContainer = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -56,7 +53,7 @@ export default function ExampleAppPage(): JSX.Element {
         {() => (
           <ExampleContext themeName={themeName}>
             <React.Suspense fallback="loading...">
-              <ColumnContainer>
+              <ColumnContainer className={styles.exampleContainer}>
                 <StyledBanner>
                   <BannerLinkButton to="/">
                     <PlatformIcon icon="actions/exit.svg" />

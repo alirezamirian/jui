@@ -44,7 +44,7 @@ export const AlwaysShownAsFocused = () => {
 export const WithStaticData = () => {
   return (
     <Pane>
-      <List selectionMode="multiple" items={legends} fillAvailableSpace>
+      <List selectionMode="multiple" fillAvailableSpace>
         <Item>Paco de lucia</Item>
         <Divider />
         <Item>Vicente Amigo</Item>
