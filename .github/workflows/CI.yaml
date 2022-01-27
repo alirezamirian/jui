@@ -13,6 +13,11 @@ jobs:
     container: cypress/browsers:node14.17.0-chrome91-ff89
 
     steps:
+    - name: Log Interesting Info ℹ️
+      run: |
+       echo "The job is triggered by a ${{ github.event_name }} event."
+       echo "This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+
     - name: Checkout 🛎️
       uses: actions/checkout@v2.3.1
 
@@ -20,13 +25,13 @@ jobs:
       run: yarn
 
     - name: Run Tests ✅
-      if: ${{ !contains(github.event.pull_request.title, 'no-percy') }}
+      if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.title, 'no-percy') }}
       env:
         PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
       run: yarn workspaces run test
 
     - name: Run Tests (without percy) ✅
-      if: ${{ contains(github.event.pull_request.title, 'no-percy') }}
+      if: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.title, 'no-percy') }}
       run: yarn workspaces run test
 
     - uses: actions/upload-artifact@v2
