@@ -20,8 +20,13 @@ jobs:
       run: yarn
 
     - name: Run Tests ✅
+      if: ${{ !contains(github.event.pull_request.title, 'no-percy') }}
       env:
         PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      run: yarn workspaces run test
+
+    - name: Run Tests (without percy) ✅
+      if: ${{ contains(github.event.pull_request.title, 'no-percy') }}
       run: yarn workspaces run test
 
     - uses: actions/upload-artifact@v2
