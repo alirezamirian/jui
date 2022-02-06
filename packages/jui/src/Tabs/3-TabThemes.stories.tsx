@@ -8,7 +8,7 @@ import { Tabs, TabsProps } from "./Tabs";
 import { TabContentLayout } from "./TabContentLayout";
 import { ToolWindowTabs } from "./ToolWindowTabs/ToolWindowTabs";
 import React from "react";
-import { Item } from "@intellij-platform/core";
+import { Item } from "../Collections";
 
 type StoryProps<T extends TabsProps<unknown> = TabsProps<unknown>> = Pick<
   T,

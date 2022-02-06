@@ -10,8 +10,11 @@ import { useSelectableTree } from "./useSelectableTree";
 import { replaceSelectionManager } from "../selection/replaceSelectionManager";
 import { useTreeVirtualizer } from "./useTreeVirtualizer";
 import { StyledTree } from "@intellij-platform/core/Tree/StyledTree";
+import { CollectionCacheInvalidationProps } from "@intellij-platform/core/Collections/useCollectionCacheInvalidation";
 
-export interface TreeProps<T extends object> extends StatelyTreeProps<T> {
+export interface TreeProps<T extends object>
+  extends StatelyTreeProps<T>,
+    CollectionCacheInvalidationProps {
   fillAvailableSpace?: boolean;
   /**
    * Called when the action associated with a leaf tree node should be taken.

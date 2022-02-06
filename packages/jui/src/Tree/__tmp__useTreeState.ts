@@ -32,6 +32,10 @@ import {
 } from "@react-stately/selection";
 import { useCollection } from "@react-stately/collections";
 import { useControlledState } from "@react-stately/utils";
+import {
+  CollectionCacheInvalidationProps,
+  useCollectionCacheInvalidation,
+} from "@intellij-platform/core/Collections/useCollectionCacheInvalidation";
 
 export class TreeCollection<T> implements Collection<Node<T>> {
   private keyMap: Map<Key, Node<T>> = new Map();
@@ -126,7 +130,8 @@ export class TreeCollection<T> implements Collection<Node<T>> {
 export interface TreeProps<T>
   extends CollectionBase<T>,
     Expandable,
-    MultipleSelection {}
+    MultipleSelection,
+    CollectionCacheInvalidationProps {}
 export interface TreeState<T> {
   /** A collection of items in the tree. */
   readonly collection: Collection<Node<T>>;
@@ -148,7 +153,7 @@ export interface TreeState<T> {
  * Provides state management for tree-like components. Handles building a collection
  * of items from props, item expanded state, and manages multiple selection state.
  */
-export function useTreeState<T extends object>(
+export function useTreeState<T extends object, C>(
   props: TreeProps<T>,
   treeRef?: ForwardedRef<TreeRef>
 ): TreeState<T> {
@@ -164,10 +169,12 @@ export function useTreeState<T extends object>(
     [props.disabledKeys]
   );
 
+  const context = useCollectionCacheInvalidation(props);
+
   let tree = useCollection(
     props,
     (nodes) => new TreeCollection(nodes, { expandedKeys }),
-    null,
+    context,
     [expandedKeys]
   );
 

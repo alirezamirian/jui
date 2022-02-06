@@ -1,0 +1,46 @@
+---
+---
+
+# Collections
+
+A good number of components like List, Tree, Menu, Tabs, etc. display a collection of items.
+[@react-stately/collections](https://react-spectrum.adobe.com/react-stately/collections.html) is used for all of them
+to provide a uniform and flexible API that would allow for both static jsx-based or dynamic source of items.
+
+## Rendering optimization caveat
+
+When the API for dynamic items (`items` prop and a render function as `children`) is used, the render result for each
+item [is subject to caching](https://react-spectrum.adobe.com/react-stately/collections.html#why-not-array-map) based
+on the item object. It's important to understand this assumption that the rendering should only depend on the item, and
+not any other piece of state from the closure, for example.
+
+:::info
+Item renderer function is assumed to be a pure function that depends only on its single argument, the item
+object.
+:::
+
+In some cases however, there might be a need to render some UI based on a something other than the item object itself.
+Below is a few ways to do that.
+
+### Using context
+
+TODO (important point: especially useful for components that implement virtual rendering, as only a limited number of
+items are mounted at each moment, and changes to the additional state would only affect those, without collection being rebuilt)
+
+### Wrapping items with extra state
+
+TODO
+
+### Disabling or limiting cache
+
+Passing `true` to `cacheInvalidation` prop in components that support it will disable caching altogether, but can
+drastically reduce the performance for large number of components. In a test on a [Tree](../components/Tree) with 400 elements,
+it was ~10x slower with cache being disabled.
+
+A middle ground is to pass an array of cache invalidators instead of turning the cache off completely:
+
+```tsx
+<Tree cacheInvalidation={{ invalidators: [nestedSelection] }}>...</Tree>
+```
+
+This would invalidate the cache only when `nestedSelection` is changed.

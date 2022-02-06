@@ -1,6 +1,6 @@
-import { Item } from "@react-stately/collections";
 import {
   HighlightedTextValue,
+  Item,
   ItemStateContext,
   PlatformIcon,
   SpeedSearchTree,
