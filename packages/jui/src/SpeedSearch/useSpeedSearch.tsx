@@ -52,13 +52,16 @@ export interface SpeedSearchProps {
  */
 export function useSpeedSearch(
   { stickySearch }: SpeedSearchProps,
-  { searchTerm, setActive, setSearchTerm }: SpeedSearchState
+  { searchTerm, active, setActive, setSearchTerm }: SpeedSearchState
 ) {
   const { onKeyDown: ghostInputKeydown } = useGhostInput({
     value: searchTerm,
     onChange: (value) => {
-      setSearchTerm(value);
-      setActive(true);
+      const trimmedValue = value.trimStart();
+      setSearchTerm(trimmedValue);
+      if (!active && trimmedValue !== "") {
+        setActive(true);
+      }
     },
   });
   const clear = () => {

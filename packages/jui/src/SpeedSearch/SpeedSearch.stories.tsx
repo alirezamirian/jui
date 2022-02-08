@@ -12,16 +12,32 @@ export default {
 
 const SpeedSearchContainer = styled(SpeedSearch)`
   width: 400px;
+  margin-top: 25px;
   background: ${({ theme }) => theme.color("Panel.background")};
   color: ${({ theme }) => theme.color("*.textForeground")};
 `;
-export const Default = () => {
+export const Default = ({
+  onSearchTermChange,
+  onActiveChange,
+}: {
+  onSearchTermChange?: (searchTerm: string) => void;
+  onActiveChange?: (active: boolean) => void;
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [active, setActive] = useState(false);
 
   return (
     <SpeedSearchContainer
       searchTerm={searchTerm}
-      onSearchTermChange={setSearchTerm}
+      onSearchTermChange={(searchTerm) => {
+        setSearchTerm(searchTerm);
+        onSearchTermChange?.(searchTerm);
+      }}
+      active={active}
+      onActiveChange={(active) => {
+        setActive(active);
+        onActiveChange?.(active);
+      }}
       match // search is done within the searchable text component in this dummy example, and we don't have information about match.
       stickySearch
     >
