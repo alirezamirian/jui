@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { HTMLProps, ReactNode } from "react";
 import { useToggleState } from "@react-stately/toggle";
 import { VisuallyHidden } from "@react-aria/visually-hidden";
 import { useCheckbox } from "@react-aria/checkbox";
@@ -116,10 +116,19 @@ export const Checkbox = ({
   });
   const { pressProps: wrapperPressProps, isPressed } = usePress({});
 
-  const focusDisabledProps = preventFocus
+  const focusDisabledProps: Pick<
+    HTMLProps<HTMLInputElement>,
+    "onFocusCapture" | "tabIndex"
+  > = preventFocus
     ? {
-        onFocus: () => {
-          ref.current?.blur();
+        onFocusCapture: (event) => {
+          event.stopPropagation();
+          event.preventDefault();
+          if (event.relatedTarget instanceof HTMLElement) {
+            event.relatedTarget.focus();
+          } else {
+            event.target.blur();
+          }
         },
         tabIndex: -1,
       }

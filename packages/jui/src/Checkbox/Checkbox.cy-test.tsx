@@ -62,14 +62,19 @@ describe("Checkbox", () => {
     cy.focused().should("not.exist");
   });
 
-  it("supports preventFocus", () => {
+  it.only("supports preventFocus", () => {
     mount(
       <div id="component-container">
+        <input autoFocus id="another-input" />
         <Default preventFocus />
       </div>
     );
+    // make sure the text input has focus initially
+    cy.focused().should("have.id", "another-input");
     cy.contains(CHECKBOX_LABEL_TEXT).click();
-    cy.focused().should("not.exist");
+    // focus should stay where it was before clicking checkbox. It's important that not only the checkbox is not
+    // focused, but also the focus is not changed after interaction with the checkbox.
+    cy.focused().should("have.id", "another-input");
     matchImageSnapshot("Checkbox-checked-2");
   });
 
