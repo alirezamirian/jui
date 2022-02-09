@@ -8,36 +8,28 @@ import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
 import { useTreeState } from "../__tmp__useTreeState";
 import { TreeProps } from "../Tree";
 import { useTreeVirtualizer } from "../useTreeVirtualizer";
-import { TreeNode } from "../TreeNode";
 import { TreeContext } from "../TreeContext";
 import { useSpeedSearchTree } from "./useSpeedSearchTree";
-import {
-  SpeedSearchItemHighlightsProvider,
-  CollectionSpeedSearchContext,
-} from "@intellij-platform/core/CollectionSpeedSearch";
+import { CollectionSpeedSearchContext } from "@intellij-platform/core/CollectionSpeedSearch";
+import { SpeedSearchTreeNode } from "@intellij-platform/core/Tree/SpeedSearchTree/SpeedSearchTreeNode";
+import { SpeedSearchProps } from "@intellij-platform/core/SpeedSearch";
 
 export const SpeedSearchTree = React.forwardRef(
   <T extends object>(
-    { fillAvailableSpace = false, onAction, ...props }: TreeProps<T>,
+    { fillAvailableSpace = false, ...props }: TreeProps<T> & SpeedSearchProps,
     forwardedRef: ForwardedRef<TreeRef>
   ) => {
     const state = replaceSelectionManager(useTreeState(props, forwardedRef));
     const ref = useRef<HTMLDivElement>(null);
-
     const {
       treeProps,
       treeContext,
       speedSearchContextValue,
       searchPopupProps,
-    } = useSpeedSearchTree({ ...state, onAction, isVirtualized: true }, ref);
+    } = useSpeedSearchTree({ ...props, isVirtualized: true }, state, ref);
 
     const { virtualizerProps } = useTreeVirtualizer({ state });
 
-    const renderNode = (item: Node<T>) => (
-      <SpeedSearchItemHighlightsProvider itemKey={item.key}>
-        <TreeNode key={item.key} item={item} />
-      </SpeedSearchItemHighlightsProvider>
-    );
     // NOTE: SpeedSearchPopup can be rendered as a portal with proper positioning (useOverlayPosition), if overflow
     // issues required it.
     return (
@@ -51,7 +43,12 @@ export const SpeedSearchTree = React.forwardRef(
             {...virtualizerProps}
             {...treeProps}
           >
-            {(type: string, item: unknown) => renderNode(item as Node<T>)}
+            {(type: string, item: unknown) => (
+              <SpeedSearchTreeNode
+                key={(item as Node<T>).key}
+                item={item as Node<T>}
+              />
+            )}
           </StyledTree>
         </CollectionSpeedSearchContext.Provider>
       </TreeContext.Provider>

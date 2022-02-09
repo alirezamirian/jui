@@ -1,23 +1,32 @@
 import React, { Key, RefObject, useMemo, useState } from "react";
-import { useSelectableCollection } from "../selection/useSelectableCollection";
-import { TreeKeyboardDelegate } from "./TreeKeyboardDelegate";
 import { KeyboardDelegate, KeyboardEvent } from "@react-types/shared";
 import { useFocusWithin, useKeyboard } from "@react-aria/interactions";
 import { mergeProps } from "@react-aria/utils";
 import { useCollator } from "@react-aria/i18n";
+import { useSelectableCollection } from "../selection/useSelectableCollection";
+import { TreeKeyboardDelegate } from "./TreeKeyboardDelegate";
 import { useCollectionAutoScroll } from "../Collections/useCollectionAutoScroll";
 import { TreeState } from "./__tmp__useTreeState";
 import { useLatest } from "@intellij-platform/core/utils/useLatest";
 import { TreeContextType } from "./TreeContext";
 
-export type SelectableTreeProps<T> = TreeState<T> & {
+export type SelectableTreeProps<T> = {
   isVirtualized?: boolean;
   keyboardDelegate?: KeyboardDelegate;
-  onAction: undefined | ((key: Key) => void);
+  /**
+   * Called when the action associated with a leaf tree node should be taken.
+   * The exact UI interaction is abstracted away, but it's either Enter key or double click.
+   */
+  onAction?: (key: Key) => void;
 };
 
+/**
+ * NOTE: at the time of writing this hook, react-aria didn't have support for Tree. When useTree is implemented in
+ * react-aria, it makes sense to refactor this and use that. There will still be something on top of it here.
+ */
 export function useSelectableTree<T>(
   { onAction, ...props }: SelectableTreeProps<T>,
+  state: TreeState<T>,
   ref: RefObject<HTMLElement>
 ) {
   const collator = useCollator({ usage: "search", sensitivity: "base" });
@@ -33,18 +42,18 @@ export function useSelectableTree<T>(
     },
   } = useSelectableCollection({
     ref,
-    selectionManager: props.selectionManager,
+    selectionManager: state.selectionManager,
     selectOnFocus: true,
     keyboardDelegate: useMemo(
       () =>
         props.keyboardDelegate ||
         new TreeKeyboardDelegate(
-          props.collection,
-          props.disabledKeys,
+          state.collection,
+          state.disabledKeys,
           ref,
           collator
         ),
-      [props.collection, props.disabledKeys, props.keyboardDelegate]
+      [state.collection, state.disabledKeys, props.keyboardDelegate]
     ),
   });
   const { focusWithinProps } = useFocusWithin({
@@ -54,17 +63,20 @@ export function useSelectableTree<T>(
   useCollectionAutoScroll(
     {
       isVirtualized: props.isVirtualized,
-      selectionManager: props.selectionManager,
+      selectionManager: state.selectionManager,
     },
     ref
   );
 
   const onKeyDown = (event: KeyboardEvent) => {
-    const focusedKey = props.selectionManager.focusedKey;
-    const isExpandable =
-      focusedKey != null && props.collection.getItem(focusedKey).hasChildNodes;
-    const expanded = focusedKey != null && props.expandedKeys.has(focusedKey);
-    const isDisabled = props.disabledKeys.has(focusedKey);
+    const focusedKey = state.selectionManager.focusedKey;
+    if (focusedKey == null) {
+      return;
+    }
+    const item = state.collection.getItem(focusedKey);
+    const isExpandable = item.hasChildNodes;
+    const expanded = state.expandedKeys.has(focusedKey);
+    const isDisabled = state.disabledKeys.has(focusedKey);
     if (isDisabled) {
       return;
     }
@@ -75,10 +87,13 @@ export function useSelectableTree<T>(
 
     if (isExpandable && shouldToggle) {
       event.preventDefault();
-      props.toggleKey(focusedKey);
+      state.toggleKey(focusedKey);
     } else if (event.key === "Enter") {
       onAction?.(focusedKey);
     } else {
+      // selectionKeyDown currently doesn't report back if it handled the event or not. We could have conditionally
+      // continued propagation if the event was not handled. Then we could change Speed Search impl to only handle
+      // inputs when the propagation is not prevented.
       selectionKeyDown?.(event);
     }
   };
@@ -95,7 +110,7 @@ export function useSelectableTree<T>(
     expandedKeys,
     disabledKeys,
     toggleKey,
-  } = props;
+  } = state;
   const treeContext = useMemo<TreeContextType<T>>(
     () => ({
       state: {
