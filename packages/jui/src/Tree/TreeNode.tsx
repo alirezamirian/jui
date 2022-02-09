@@ -86,7 +86,12 @@ export function TreeNode<T>({ item }: TreeNodeProps<T>) {
           />
         )}
         <ItemStateContext.Provider
-          value={{ isDisabled, isSelected, isFocused: containerFocused }}
+          value={{
+            isDisabled,
+            isSelected,
+            isFocused: containerFocused,
+            node: item,
+          }}
         >
           {item.rendered}
         </ItemStateContext.Provider>

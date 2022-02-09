@@ -2,22 +2,21 @@ import { Node } from "@react-types/shared";
 import { Virtualizer } from "@react-aria/virtualizer";
 import { TreeProps as StatelyTreeProps } from "@react-stately/tree";
 import { TreeRef } from "@intellij-platform/core/Tree/useTreeRef";
-import React, { ForwardedRef, Key, useRef } from "react";
+import React, { ForwardedRef, useRef } from "react";
 import { TreeNode } from "./TreeNode";
 import { TreeContext } from "./TreeContext";
 import { useTreeState } from "./__tmp__useTreeState";
-import { useSelectableTree } from "./useSelectableTree";
+import { SelectableTreeProps, useSelectableTree } from "./useSelectableTree";
 import { replaceSelectionManager } from "../selection/replaceSelectionManager";
 import { useTreeVirtualizer } from "./useTreeVirtualizer";
 import { StyledTree } from "@intellij-platform/core/Tree/StyledTree";
+import { CollectionCacheInvalidationProps } from "@intellij-platform/core/Collections/useCollectionCacheInvalidation";
 
-export interface TreeProps<T extends object> extends StatelyTreeProps<T> {
+export interface TreeProps<T extends object>
+  extends StatelyTreeProps<T>,
+    CollectionCacheInvalidationProps,
+    Omit<SelectableTreeProps<T>, "keyboardDelegate" | "isVirtualized"> {
   fillAvailableSpace?: boolean;
-  /**
-   * Called when the action associated with a leaf tree node should be taken.
-   * The exact UI interaction is abstracted away, but it's either Enter key or double click.
-   */
-  onAction?: (key: Key) => void;
 }
 
 /**
@@ -29,7 +28,7 @@ export interface TreeProps<T extends object> extends StatelyTreeProps<T> {
  */
 export const Tree = React.forwardRef(
   <T extends object>(
-    { fillAvailableSpace = false, onAction, ...props }: TreeProps<T>,
+    { fillAvailableSpace = false, ...props }: TreeProps<T>,
     forwardedRef: ForwardedRef<TreeRef>
   ) => {
     const state = replaceSelectionManager(useTreeState(props, forwardedRef));
@@ -37,17 +36,13 @@ export const Tree = React.forwardRef(
 
     const { treeProps, treeContext } = useSelectableTree(
       {
+        ...props,
         isVirtualized: true,
-        onAction,
-        ...state,
       },
+      state,
       ref
     );
     const { virtualizerProps } = useTreeVirtualizer({ state });
-
-    const renderNode = (item: Node<T>) => (
-      <TreeNode key={item.key} item={item} />
-    );
 
     return (
       <TreeContext.Provider value={treeContext}>
@@ -58,7 +53,9 @@ export const Tree = React.forwardRef(
           {...virtualizerProps}
           {...treeProps}
         >
-          {(itemType: string, item: object) => renderNode(item as Node<T>)}
+          {(itemType: string, item: object) => (
+            <TreeNode key={(item as Node<T>).key} item={item as Node<T>} />
+          )}
         </StyledTree>
       </TreeContext.Provider>
     );

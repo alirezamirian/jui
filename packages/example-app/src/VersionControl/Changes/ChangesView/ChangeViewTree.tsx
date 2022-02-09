@@ -4,9 +4,10 @@ import {
   HighlightedTextValue,
   Item,
   PlatformIcon,
-  SpeedSearchTree,
+  SpeedSearchTreeWithCheckboxes,
+  StyledListIconWrapper,
+  TreeNodeCheckbox,
 } from "@intellij-platform/core";
-import { StyledTreeNodeIconWrapper } from "../../../TreeUtils/StyledTreeNodeIconWrapper";
 import { DIR_ICON, getIconForFile } from "../../../file-utils";
 import { StyledTreeNodeWrapper } from "../../../TreeUtils/StyledTreeNodeWrapper";
 import {
@@ -19,10 +20,11 @@ import {
   DirectoryNode,
   expandedKeysState,
   RepositoryNode,
+  selectedChangesNestedSelection,
   selectedKeysState,
 } from "./ChangesView.state";
 import { RepoColorIcon } from "./StyledRepoColorSquare";
-import { TreeNodeHint } from "../../../TreeUtils/TreeNodeHint";
+import { StyledTreeNodeHint } from "../../../TreeUtils/StyledTreeNodeHint";
 import { IntlMessageFormat } from "intl-messageformat";
 import { CurrentBranchName } from "../../CurrentBranchName";
 import { StyledCurrentBranchTag } from "./StyledCurrentBranchTag";
@@ -58,7 +60,9 @@ const repoNodeItemProps: NodeRenderer<RepositoryNode> = (
     <>
       <RepoColorIcon rootPath={node.repository.dir} />
       <HighlightedTextValue />
-      <TreeNodeHint>{fileCountMsg.format({ fileCount })}</TreeNodeHint>
+      <StyledTreeNodeHint>
+        {fileCountMsg.format({ fileCount })}
+      </StyledTreeNodeHint>
       <StyledCurrentBranchTag>
         <CurrentBranchName repo={node.repository} />
       </StyledCurrentBranchTag>
@@ -73,11 +77,13 @@ const directoryNodeItemProps: NodeRenderer<DirectoryNode> = (
   textValue: path.relative(node.parentNodePath, node.dirPath),
   element: (
     <StyledTreeNodeWrapper>
-      <StyledTreeNodeIconWrapper>
+      <StyledListIconWrapper>
         <PlatformIcon icon={DIR_ICON} />
-      </StyledTreeNodeIconWrapper>
+      </StyledListIconWrapper>
       <HighlightedTextValue />
-      <TreeNodeHint>{fileCountMsg.format({ fileCount })}</TreeNodeHint>
+      <StyledTreeNodeHint>
+        {fileCountMsg.format({ fileCount })}
+      </StyledTreeNodeHint>
     </StyledTreeNodeWrapper>
   ),
 });
@@ -92,10 +98,10 @@ const changeListNodeItemProps: NodeRenderer<ChangeListNode> = (
       <span style={{ fontWeight: node.changeList.active ? "bold" : undefined }}>
         <HighlightedTextValue />
       </span>
-      <TreeNodeHint>
+      <StyledTreeNodeHint>
         {fileCountMsg.format({ fileCount })}{" "}
         {/*in IntelliJ it's not shown if it's empty, but why not!*/}
-      </TreeNodeHint>
+      </StyledTreeNodeHint>
     </StyledTreeNodeWrapper>
   ),
 });
@@ -107,7 +113,9 @@ const ChangeNodeHint = ({ node }: { node: ChangeNode }): React.ReactElement => {
   return (
     <>
       {!isGroupedByDirectory && (
-        <TreeNodeHint>{path.dirname(node.change.after.path)}</TreeNodeHint>
+        <StyledTreeNodeHint>
+          {path.dirname(node.change.after.path)}
+        </StyledTreeNodeHint>
       )}
     </>
   );
@@ -116,9 +124,9 @@ const changeNodeItemProps: NodeRenderer<ChangeNode> = (node) => ({
   textValue: path.basename(node.change.after.path),
   element: (
     <StyledTreeNodeWrapper>
-      <StyledTreeNodeIconWrapper>
+      <StyledListIconWrapper>
         <PlatformIcon icon={getIconForFile(node.change.after.path)} />
-      </StyledTreeNodeIconWrapper>
+      </StyledListIconWrapper>
       <HighlightedTextValue />
       <ChangeNodeHint node={node} />
     </StyledTreeNodeWrapper>
@@ -135,9 +143,8 @@ const nodeRenderers: {
 };
 
 /**
- * TODO: fix horizontal scroll issue
+ * TODO: fix horizontal scroll issue (https://github.com/alirezamirian/jui/issues/6)
  * TODO: use the real changes instead of the dummy ones
- * TODO: checkboxes
  * TODO: unversioned files
  * TODO: show diff/source on double click (on action to be more precise)
  */
@@ -145,16 +152,18 @@ export const ChangeViewTree = (): JSX.Element => {
   const { rootNodes, fileCountsMap } = useRecoilValue(changesTreeNodesState);
   const [selectedKeys, setSelectedKeys] = useRecoilState(selectedKeysState);
   const [expandedKeys, setExpandedKeys] = useRecoilState(expandedKeysState);
+  const nestedSelection = useRecoilValue(selectedChangesNestedSelection);
 
   return (
-    <SpeedSearchTree
+    <SpeedSearchTreeWithCheckboxes
       items={rootNodes}
       selectionMode="multiple"
       selectedKeys={selectedKeys}
       expandedKeys={expandedKeys}
       onExpandedChange={setExpandedKeys}
       onSelectionChange={setSelectedKeys}
-      defaultSelectedKeys={[]}
+      nestedSelection={nestedSelection}
+      disallowEmptySelection
       fillAvailableSpace
     >
       {(node) => {
@@ -171,10 +180,16 @@ export const ChangeViewTree = (): JSX.Element => {
             hasChildItems={node.children?.length > 0}
             textValue={textValue}
           >
+            {node.children?.length !== 0 && (
+              <TreeNodeCheckbox
+                selectionState={nestedSelection.getSelectionState(node)}
+                onToggle={() => nestedSelection.toggle(node)}
+              />
+            )}
             {element}
           </Item>
         );
       }}
-    </SpeedSearchTree>
+    </SpeedSearchTreeWithCheckboxes>
   );
 };

@@ -128,7 +128,7 @@ export function MenuItem<T>({
           </StyledSelectedMark>
         )}
         <ItemStateContext.Provider
-          value={{ isDisabled, isFocused, isSelected }}
+          value={{ isDisabled, isFocused, isSelected, node: item }}
         >
           {item.rendered}
         </ItemStateContext.Provider>

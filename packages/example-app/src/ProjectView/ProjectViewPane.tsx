@@ -1,9 +1,10 @@
-import { Item } from "@react-stately/collections";
 import {
   HighlightedTextValue,
+  Item,
   ItemStateContext,
   PlatformIcon,
   SpeedSearchTree,
+  StyledListIconWrapper,
   TreeRef,
 } from "@intellij-platform/core";
 import { identity, sortBy } from "ramda";
@@ -25,9 +26,8 @@ import {
   selectedKeysState,
 } from "./ProjectView.state";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
-import { StyledTreeNodeIconWrapper } from "../TreeUtils/StyledTreeNodeIconWrapper";
 import { StyledTreeNodeWrapper } from "../TreeUtils/StyledTreeNodeWrapper";
-import { TreeNodeHint } from "../TreeUtils/TreeNodeHint";
+import { StyledTreeNodeHint } from "../TreeUtils/StyledTreeNodeHint";
 
 export const ProjectViewPane = (): React.ReactElement => {
   const project = useRecoilValue(currentProjectState);
@@ -79,7 +79,7 @@ export const ProjectViewPane = (): React.ReactElement => {
                   <b>
                     <HighlightedTextValue />
                   </b>
-                  <TreeNodeHint>{project.path}</TreeNodeHint>
+                  <StyledTreeNodeHint>{project.path}</StyledTreeNodeHint>
                 </>
               ) : (
                 <FileTreeNodeText node={item} />
@@ -147,8 +147,8 @@ function ProjectViewNodeIcon({
 }): React.ReactElement {
   const icon = findNodeIcon(node);
   return (
-    <StyledTreeNodeIconWrapper>
+    <StyledListIconWrapper>
       {icon && <PlatformIcon icon={icon} />}
-    </StyledTreeNodeIconWrapper>
+    </StyledListIconWrapper>
   );
 }

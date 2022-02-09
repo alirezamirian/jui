@@ -1,8 +1,8 @@
+import React from "react";
 import { Color, styled, UnknownThemeProp } from "@intellij-platform/core";
+import { SelectionAwareSpan } from "../../../TreeUtils/SelectionAwareSpan";
 
-// TODO: text color (and maybe also background color) in selected state of the node should not be affected.
-//  Sounds like a recurring things that may reserve a component. Maybe even as a part of the core library.
-export const StyledCurrentBranchTag = styled.span`
+export const StyledCurrentBranchTag = styled(SelectionAwareSpan)`
   margin-left: 0.3rem;
   display: inline-flex;
   align-self: center;

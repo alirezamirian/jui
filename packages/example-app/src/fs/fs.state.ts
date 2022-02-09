@@ -69,7 +69,7 @@ export const fileContent = atomFamily<string, string>({
     // @ts-expect-error return type is wrong
     return fs.promises.readFile(filepath, { encoding: "utf8" }) as string;
   },
-  effects_UNSTABLE: (filepath) => [
+  effects: (filepath) => [
     ({ onSet }) => {
       onSet((content) => {
         // Should a sync API be used here?

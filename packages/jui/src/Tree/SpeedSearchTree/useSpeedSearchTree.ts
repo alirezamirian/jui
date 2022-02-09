@@ -5,11 +5,15 @@ import { useCollectionSpeedSearch } from "../../CollectionSpeedSearch/useCollect
 import { SpeedSearchProps } from "../../SpeedSearch/useSpeedSearch";
 import { TreeKeyboardDelegate } from "../TreeKeyboardDelegate";
 import { SelectableTreeProps, useSelectableTree } from "../useSelectableTree";
+import { TreeState } from "@intellij-platform/core/Tree/__tmp__useTreeState";
 
-interface Props<T> extends SpeedSearchProps, SelectableTreeProps<T> {}
+interface UseSpeedSearchTreeProps<T>
+  extends SpeedSearchProps,
+    SelectableTreeProps<T> {}
 
 export function useSpeedSearchTree<T>(
-  props: Props<T>,
+  props: UseSpeedSearchTreeProps<T>,
+  state: TreeState<T>,
   ref: RefObject<HTMLElement>
 ) {
   const {
@@ -19,12 +23,12 @@ export function useSpeedSearchTree<T>(
     speedSearch,
     ...collectionSpeedSearch
   } = useCollectionSpeedSearch({
-    collection: props.collection,
-    selectionManager: props.selectionManager,
+    collection: state.collection,
+    selectionManager: state.selectionManager,
     stickySearch: props.stickySearch,
     keyboardDelegate: new TreeKeyboardDelegate(
-      props.collection,
-      props.disabledKeys,
+      state.collection,
+      state.disabledKeys,
       ref
     ),
     // TODO: maybe allow control over speed search via other props
@@ -43,7 +47,8 @@ export function useSpeedSearchTree<T>(
   });
 
   const { treeProps, ...selectableTree } = useSelectableTree(
-    { ...props, keyboardDelegate: keyboardDelegate, selectionManager },
+    { ...props, keyboardDelegate },
+    { ...state, selectionManager },
     ref
   );
 

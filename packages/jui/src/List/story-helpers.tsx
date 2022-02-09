@@ -1,10 +1,11 @@
 import { Legend, legends } from "../../test-data";
 import React, { ReactNode } from "react";
-import { Item, Section } from "@react-stately/collections";
 import {
   Divider,
   DividerItem,
   HighlightedTextValue,
+  Item,
+  Section,
 } from "@intellij-platform/core";
 
 export const renderItemCustomUI = (item: Legend, content?: ReactNode) => (

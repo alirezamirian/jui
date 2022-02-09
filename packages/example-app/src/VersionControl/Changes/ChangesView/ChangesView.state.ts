@@ -5,6 +5,8 @@ import { Change, ChangeListObj, changeListsState } from "../change-lists.state";
 import { groupings } from "./changesGroupings";
 import { VcsDirectoryMapping } from "../../file-status";
 import { dfsVisit } from "../../../TreeUtils/tree-utils";
+import { NestedSelection, NestedSelectionState } from "@intellij-platform/core";
+import { createMapSetInterface } from "@intellij-platform/core/utils/useSet";
 
 export interface ChangeBrowserNode<T extends string> {
   type: T;
@@ -66,19 +68,72 @@ export const showRelatedFilesState = atom({
 
 // in a more extensible implementation, the id would be just string. but now that groupings are statically defined,
 // why not have more type safety
-type GroupingIds = typeof groupings[number]["id"];
+export type GroupingIds = typeof groupings[number]["id"];
 
 export const changesGroupingState = atomFamily<boolean, GroupingIds>({
   key: "changesView/grouping",
   default: true, // it's false in IntelliJ
 });
+
+/**
+ * Selection state for the changes tree. Selection here means UI selection of tree nodes.
+ */
 export const selectedKeysState = atom<Selection>({
   key: "changesView.selectedKeys",
   default: new Set<Key>([]),
 });
+
+/**
+ * The list of changes that are included for the commit (via checkboxes).
+ * TODO: for both this and tree selection state, value should be updated to exclude removed keys, when the tree data
+ *  is changed
+ */
+export const selectedChangesState = atom<Set<string>>({
+  key: "changesView.selectedChanges",
+  default: new Set<string>([]),
+});
+
+export const selectedChangesNestedSelection = selector<
+  NestedSelectionState<AnyNode>
+>({
+  key: "changesView.selectedChanges.nestedSelectionState",
+  get: ({ get, getCallback }) => {
+    const { rootNodes } = get(changesTreeNodesState);
+    const selectedChangeKeys = get(selectedChangesState);
+    const setSelectedKeys = getCallback(
+      ({ set }) => (setValue: (currentValue: Set<string>) => Set<string>) =>
+        set(selectedChangesState, setValue)
+    );
+    return new NestedSelection(
+      {
+        items: selectedChangeKeys,
+        ...createMapSetInterface(setSelectedKeys),
+      },
+      {
+        rootNodes,
+        getChildren: (item: AnyNode) =>
+          isGroupNode(item) ? item.children : null,
+        getKey: (item) => item.key,
+      }
+    );
+  },
+});
+
 export const expandedKeysState = atom<Selection>({
   key: "changesView.expandedKeys",
-  default: new Set<Key>([]),
+  default: selector({
+    key: "changesView.expandedKeys/temporaryDefault",
+    get: ({ get }) => {
+      return new Set<Key>(
+        get(changesTreeNodesState)
+          .rootNodes.map((node) => [
+            node.key,
+            ...node.children.map((child) => child.key),
+          ])
+          .flat()
+      );
+    },
+  }),
 });
 
 export const availableGroupingsState = selector({
@@ -137,8 +192,9 @@ export const repositoryNode = (
   children,
 });
 
-const isGroupNode = (node: ChangeBrowserNode<any>): node is GroupNode<any> =>
-  "children" in node;
+export const isGroupNode = (
+  node: ChangeBrowserNode<any>
+): node is GroupNode<any> => "children" in node;
 
 const isChangeNode = (node: ChangeBrowserNode<any>): node is ChangeNode =>
   node.type === "change";

@@ -22,9 +22,6 @@ import { createSpeedSearchKeyboardDelegate } from "./createSpeedSearchKeyboardDe
  *
  * Speed search options, including the ones for optionally controlling the state of the speed search
  * are also accepted in inputs.
- *
- * FIXME: speed search on collections should not move selection to the first match, it should move it
- *  to the first match AFTER the focused key (or focused key itself if it's a match)
  */
 export function useCollectionSpeedSearch<T>({
   collection,
