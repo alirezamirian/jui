@@ -7,7 +7,6 @@ import {
   SpeedSearchTreeWithCheckboxes,
   StyledListIconWrapper,
   TreeNodeCheckbox,
-  useNestedSelectionState,
 } from "@intellij-platform/core";
 import { DIR_ICON, getIconForFile } from "../../../file-utils";
 import { StyledTreeNodeWrapper } from "../../../TreeUtils/StyledTreeNodeWrapper";
@@ -20,9 +19,8 @@ import {
   changesTreeNodesState,
   DirectoryNode,
   expandedKeysState,
-  isGroupNode,
   RepositoryNode,
-  selectedChangesState,
+  selectedChangesNestedSelection,
   selectedKeysState,
 } from "./ChangesView.state";
 import { RepoColorIcon } from "./StyledRepoColorSquare";
@@ -154,19 +152,8 @@ export const ChangeViewTree = (): JSX.Element => {
   const { rootNodes, fileCountsMap } = useRecoilValue(changesTreeNodesState);
   const [selectedKeys, setSelectedKeys] = useRecoilState(selectedKeysState);
   const [expandedKeys, setExpandedKeys] = useRecoilState(expandedKeysState);
-  const [selectedChanges, setSelectedChanges] = useRecoilState(
-    selectedChangesState
-  );
+  const nestedSelection = useRecoilValue(selectedChangesNestedSelection);
 
-  const nestedSelection = useNestedSelectionState<AnyNode, string>(
-    {
-      rootNodes,
-      getChildren: (item: AnyNode) =>
-        isGroupNode(item) ? item.children : null,
-      getKey: (item) => item.key,
-    },
-    { selectedKeys: selectedChanges, onSelectedKeysChange: setSelectedChanges }
-  );
   return (
     <SpeedSearchTreeWithCheckboxes
       items={rootNodes}

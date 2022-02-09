@@ -2,33 +2,34 @@ import { useControlledState } from "@react-stately/utils";
 import { useMemo } from "react";
 import { ImmutableSet } from "./immutableSet";
 
+/**
+ * Creates map interface out of a setter of form (currentValue: Map) => Map
+ */
+export const createMapSetInterface = <T>(
+  set: (value: (prevState: Set<T>) => Set<T>) => void
+) => ({
+  add: (...values: T[]) =>
+    set(
+      (currentValue) => new Set(new ImmutableSet(currentValue).add(...values))
+    ),
+  delete: (...values: T[]) =>
+    set(
+      (currentValue) =>
+        new Set(new ImmutableSet(currentValue).delete(...values))
+    ),
+  clear: () =>
+    set((currentValue) => new Set(new ImmutableSet(currentValue).clear())),
+  toggle: (...values: T[]) =>
+    set(
+      (currentValue) =>
+        new Set(new ImmutableSet(currentValue).toggle(...values))
+    ),
+});
+
 export function useSetStateSetter<T>(
   setValue: (value: (prevState: Set<T>) => Set<T>, ...args: any[]) => void
 ) {
-  return useMemo(
-    () => ({
-      add: (...values: T[]) =>
-        setValue(
-          (currentValue) =>
-            new Set(new ImmutableSet(currentValue).add(...values))
-        ),
-      delete: (...values: T[]) =>
-        setValue(
-          (currentValue) =>
-            new Set(new ImmutableSet(currentValue).delete(...values))
-        ),
-      clear: () =>
-        setValue(
-          (currentValue) => new Set(new ImmutableSet(currentValue).clear())
-        ),
-      toggle: (...values: T[]) =>
-        setValue(
-          (currentValue) =>
-            new Set(new ImmutableSet(currentValue).toggle(...values))
-        ),
-    }),
-    [setValue]
-  );
+  return useMemo(() => createMapSetInterface(setValue), [setValue]);
 }
 
 /**
