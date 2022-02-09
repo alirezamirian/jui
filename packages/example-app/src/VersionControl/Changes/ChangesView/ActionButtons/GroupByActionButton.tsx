@@ -3,6 +3,7 @@ import { useRecoilCallback, useRecoilValue } from "recoil";
 import {
   availableGroupingsState,
   changesGroupingState,
+  GroupingIds,
 } from "../ChangesView.state";
 import {
   ActionButtonWithMenu,
@@ -18,7 +19,7 @@ export const GroupByActionButton = (): React.ReactElement => {
   const availableGroupings = useRecoilValue(availableGroupingsState);
 
   const toggleGroup = useRecoilCallback(
-    ({ set }) => (id: string) => {
+    ({ set }) => (id: GroupingIds) => {
       set(changesGroupingState(id), (value) => !value);
     },
     []

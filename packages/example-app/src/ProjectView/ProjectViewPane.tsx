@@ -4,6 +4,7 @@ import {
   ItemStateContext,
   PlatformIcon,
   SpeedSearchTree,
+  StyledListIconWrapper,
   TreeRef,
 } from "@intellij-platform/core";
 import { identity, sortBy } from "ramda";
@@ -25,7 +26,6 @@ import {
   selectedKeysState,
 } from "./ProjectView.state";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
-import { StyledTreeNodeIconWrapper } from "../TreeUtils/StyledTreeNodeIconWrapper";
 import { StyledTreeNodeWrapper } from "../TreeUtils/StyledTreeNodeWrapper";
 import { StyledTreeNodeHint } from "../TreeUtils/StyledTreeNodeHint";
 
@@ -147,8 +147,8 @@ function ProjectViewNodeIcon({
 }): React.ReactElement {
   const icon = findNodeIcon(node);
   return (
-    <StyledTreeNodeIconWrapper>
+    <StyledListIconWrapper>
       {icon && <PlatformIcon icon={icon} />}
-    </StyledTreeNodeIconWrapper>
+    </StyledListIconWrapper>
   );
 }

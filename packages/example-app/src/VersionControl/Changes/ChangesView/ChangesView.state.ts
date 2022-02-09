@@ -66,16 +66,31 @@ export const showRelatedFilesState = atom({
 
 // in a more extensible implementation, the id would be just string. but now that groupings are statically defined,
 // why not have more type safety
-type GroupingIds = typeof groupings[number]["id"];
+export type GroupingIds = typeof groupings[number]["id"];
 
 export const changesGroupingState = atomFamily<boolean, GroupingIds>({
   key: "changesView/grouping",
   default: true, // it's false in IntelliJ
 });
+
+/**
+ * Selection state for the changes tree. Selection here means UI selection of tree nodes.
+ */
 export const selectedKeysState = atom<Selection>({
   key: "changesView.selectedKeys",
   default: new Set<Key>([]),
 });
+
+/**
+ * The list of changes that are included for the commit (via checkboxes).
+ * TODO: for both this and tree selection state, value should be updated to exclude removed keys, when the tree data
+ *  is changed
+ */
+export const selectedChangesState = atom<Set<string>>({
+  key: "changesView.selectedChanges",
+  default: new Set<string>([]),
+});
+
 export const expandedKeysState = atom<Selection>({
   key: "changesView.expandedKeys",
   default: selector({
@@ -149,8 +164,9 @@ export const repositoryNode = (
   children,
 });
 
-const isGroupNode = (node: ChangeBrowserNode<any>): node is GroupNode<any> =>
-  "children" in node;
+export const isGroupNode = (
+  node: ChangeBrowserNode<any>
+): node is GroupNode<any> => "children" in node;
 
 const isChangeNode = (node: ChangeBrowserNode<any>): node is ChangeNode =>
   node.type === "change";

@@ -14,9 +14,12 @@ import { CollectionSpeedSearchContext } from "@intellij-platform/core/Collection
 import { SpeedSearchTreeNode } from "@intellij-platform/core/Tree/SpeedSearchTree/SpeedSearchTreeNode";
 import { SpeedSearchProps } from "@intellij-platform/core/SpeedSearch";
 
+export type SpeedSearchTreeProps<T extends object> = TreeProps<T> &
+  SpeedSearchProps;
+
 export const SpeedSearchTree = React.forwardRef(
   <T extends object>(
-    { fillAvailableSpace = false, ...props }: TreeProps<T> & SpeedSearchProps,
+    { fillAvailableSpace = false, ...props }: SpeedSearchTreeProps<T>,
     forwardedRef: ForwardedRef<TreeRef>
   ) => {
     const state = replaceSelectionManager(useTreeState(props, forwardedRef));
