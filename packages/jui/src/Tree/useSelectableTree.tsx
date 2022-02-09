@@ -1,5 +1,5 @@
 import React, { Key, RefObject, useMemo, useState } from "react";
-import { KeyboardDelegate, KeyboardEvent } from "@react-types/shared";
+import { KeyboardDelegate, KeyboardEvent, Node } from "@react-types/shared";
 import { useFocusWithin, useKeyboard } from "@react-aria/interactions";
 import { mergeProps } from "@react-aria/utils";
 import { useCollator } from "@react-aria/i18n";
@@ -18,6 +18,7 @@ export type SelectableTreeProps<T> = {
    * The exact UI interaction is abstracted away, but it's either Enter key or double click.
    */
   onAction?: (key: Key) => void;
+  onNodeKeyDown?: (event: KeyboardEvent, node: Node<T>) => void;
 };
 
 /**
@@ -80,6 +81,9 @@ export function useSelectableTree<T>(
     if (isDisabled) {
       return;
     }
+
+    props?.onNodeKeyDown?.(event, item);
+
     const shouldToggle =
       event.key === "Enter" ||
       (event.key === "ArrowLeft" && expanded) ||
