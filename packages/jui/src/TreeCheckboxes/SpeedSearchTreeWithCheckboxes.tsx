@@ -15,6 +15,7 @@ import { NestedSelectionState } from "./NestedSelection";
 export const SpeedSearchTreeWithCheckboxes = <T extends object>({
   nestedSelection,
   cacheInvalidation,
+  onNodeKeyDown,
   ...props
 }: SpeedSearchTreeProps<T> & {
   nestedSelection: NestedSelectionState<T>;
@@ -32,6 +33,7 @@ export const SpeedSearchTreeWithCheckboxes = <T extends object>({
         if (event.key === " ") {
           nestedSelection.toggle(item.value);
         }
+        onNodeKeyDown?.(event, item);
       }}
     />
   );

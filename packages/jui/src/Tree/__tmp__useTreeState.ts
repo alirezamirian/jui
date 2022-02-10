@@ -189,7 +189,17 @@ export function useTreeState<T extends object, C>(
   }, [tree, selectionState.focusedKey]);
 
   const onToggle = (key: Key) => {
-    setExpandedKeys((expandedKeys) => toggleKey(expandedKeys, key));
+    setExpandedKeys((expandedKeys) => {
+      const newKeys = toggleKey(expandedKeys, key);
+      // In Intellij impl, when a node is collapsed, all descendants are also collapsed. In other words, keys that are
+      // not a part of the list of visible nodes, will be excluded from the expanded keys, with the toggle action.
+      for (const aKey of newKeys) {
+        if (tree.getItem(aKey) == null) {
+          newKeys.delete(aKey);
+        }
+      }
+      return newKeys;
+    });
   };
 
   const selectionManager = new SelectionManager(tree, selectionState);
