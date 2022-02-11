@@ -198,6 +198,13 @@ export function useTreeState<T extends object, C>(
           newKeys.delete(aKey);
         }
       }
+
+      // If we are toggling it open, expand all expandable single-child items
+      if (newKeys.has(key)) {
+        for (const aKey of getSingleChildrenKeys(tree.getItem(key))) {
+          newKeys.add(aKey);
+        }
+      }
       return newKeys;
     });
   };
@@ -224,4 +231,41 @@ function toggleKey(set: Set<Key>, key: Key): Set<Key> {
   }
 
   return res;
+}
+
+const isExpandable = (node: Node<T>) =>
+  node.hasChildNodes || !isEmptyIterable(node.childNodes);
+
+function getSingleChildrenKeys<T>(node: Node<T> | null | undefined): Key[] {
+  return getSingleChildrenKeysRecursive(node, []);
+}
+
+function getSingleChildrenKeysRecursive(
+  node: Node<T> | null | undefined,
+  previousKeys: Key[]
+) {
+  if (!node) {
+    return [];
+  }
+  const childNodesIterator: Iterator<
+    Node<T>,
+    Node<T> | undefined
+  > = node.childNodes[Symbol.iterator]();
+  const { value: firstChild, done } = childNodesIterator.next();
+  const noMoreChildren = done || childNodesIterator.next().value == null;
+  if (firstChild != null && noMoreChildren && isExpandable(firstChild)) {
+    return getSingleChildrenKeysRecursive(
+      firstChild,
+      previousKeys.concat((firstChild as Node<T>).key)
+    );
+  }
+  return previousKeys;
+}
+
+function isEmptyIterable(iterable: Iterable<unknown> | undefined | null) {
+  for (const _ of iterable || []) {
+    // eslint-disable-line no-unused-vars, no-unreachable-loop
+    return false;
+  }
+  return true;
 }
