@@ -46,6 +46,17 @@ export const Static = () => {
           <Item title="Theme" key="Theme">
             <Item>createTheme.ts</Item>
           </Item>
+          <Item title="Foo">
+            <Item title="Bar">
+              <Item title="FooBar">
+                <Item title="Baz">
+                  <Item>Baz.ts</Item>
+                </Item>
+                <Item>Foo.ts</Item>
+                <Item>Bar.ts</Item>
+              </Item>
+            </Item>
+          </Item>
         </Tree>
       </Pane>
       <div style={{ marginLeft: 20 }}>
