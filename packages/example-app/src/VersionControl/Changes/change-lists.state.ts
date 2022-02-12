@@ -3,6 +3,7 @@ import { statusMatrix, StatusRow } from "isomorphic-git";
 import { fs } from "../../fs/fs";
 import { vcsRootsState } from "../file-status.state";
 import { useEffect } from "react";
+import path from "path";
 
 export type Revision = {
   path: string;
@@ -29,39 +30,12 @@ export const changeListsState = atom<ChangeListObj[]>({
       id: "some-UUID",
       name: "Changes",
       comment: "last modified commit message",
-      changes: [
-        {
-          after: { path: "/workspace/jui/README.md", isDir: false },
-          before: { path: "/workspace/jui/README.md", isDir: false },
-        },
-        {
-          after: {
-            path: "/workspace/jui/packages/example-app/src/Project/Project.tsx",
-            isDir: false,
-          },
-          before: {
-            path: "/workspace/jui/packages/example-app/src/Project/Project.tsx",
-            isDir: false,
-          },
-        },
-        {
-          after: {
-            path:
-              "/workspace/jui/packages/example-app/src/ProjectView/ProjectViewPane.tsx",
-            isDir: false,
-          },
-          before: {
-            path:
-              "/workspace/jui/packages/example-app/src/ProjectView/ProjectViewPane.tsx",
-            isDir: false,
-          },
-        },
-      ],
+      changes: [],
       active: true,
     },
     {
       id: "some-other-UUID",
-      name: "Empty changelist",
+      name: "Some other changelist",
       comment: "Some empty changelist for testing",
       changes: [],
       active: false,
@@ -86,18 +60,46 @@ export const allChangesState = selector<ReadonlyArray<Change>>({
 const isAChange = ([, head, workingDir, stage]: StatusRow): boolean =>
   head !== 1 || workingDir !== 1 || stage !== 1;
 
-const refreshChanges = ({ snapshot }: CallbackInterface) => async () => {
+const refreshChanges = ({ snapshot, set }: CallbackInterface) => async () => {
   const gitRoots = (await snapshot.getPromise(vcsRootsState)).filter(
     (root) => root.vcs === "git"
   );
   const allStatusMatrices = await Promise.all(
-    gitRoots.map(({ dir }) => statusMatrix({ fs, dir }))
+    gitRoots.map(async ({ dir }) => {
+      const rows = await statusMatrix({ fs, dir });
+      return rows
+        .filter(isAChange)
+        .map(
+          ([pathname, ...theRest]) =>
+            [path.join(dir, pathname), ...theRest] as StatusRow
+        );
+    })
   );
-  const rows = allStatusMatrices.flat().filter(isAChange);
-  console.log(rows);
-  // FIXME
-  const unversionedPaths = [];
-  rows.forEach((row) => {});
+  const unversionedPaths = []; // FIXME: handle unversioned files
+  const changes = allStatusMatrices
+    .flat()
+    .map(([path, head, workdir, stage]) => ({
+      // FIXME: change object creation doesn't cover all kind of changes.
+      after: { path, isDir: false },
+      before: { path, isDir: false },
+    }));
+
+  // FIXME: changes now all go to default change list on each refresh. fix it.
+  set(changeListsState, (changeLists) =>
+    changeLists.map((changeList) => {
+      if (changeList.active) {
+        console.log(changes);
+        return {
+          ...changeList,
+          changes,
+        };
+      }
+      return {
+        ...changeList,
+        changes: [],
+      };
+    })
+  );
 };
 
 export interface ChangeListManager {
