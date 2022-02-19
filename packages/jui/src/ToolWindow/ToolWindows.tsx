@@ -20,7 +20,7 @@ import { ToolWindowsState } from "./ToolWindowsState/ToolWindowsState";
 import { ToolWindowStateProvider } from "./ToolWindowsState/ToolWindowStateProvider";
 import { ToolWindowStripe } from "./ToolWindowStripe";
 import { UndockSide } from "./UndockSide";
-import { Anchor, isHorizontal } from "./utils";
+import { Anchor, isHorizontalToolWindow } from "./utils";
 
 export interface ToolWindowsProps {
   toolWindowsState: Readonly<ToolWindowsState>;
@@ -147,7 +147,7 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
             toolWindowsState.resizeDockSplitView(anchor, newSize)
           );
         }}
-        orientation={isHorizontal(anchor) ? "horizontal" : "vertical"}
+        orientation={isHorizontalToolWindow(anchor) ? "horizontal" : "vertical"}
       />
     );
   };

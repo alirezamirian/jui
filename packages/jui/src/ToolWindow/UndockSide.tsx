@@ -3,14 +3,14 @@ import { css } from "styled-components";
 import { ResizableView } from "../ResizableView";
 import { styled } from "../styled";
 import { SideUnDockedState } from "./ToolWindowsState/ToolWindowsLayoutState";
-import { Anchor, isHorizontal } from "./utils";
+import { Anchor, isHorizontalToolWindow } from "./utils";
 
 export const StyledUndockSide = styled.div<{ anchor: Anchor }>`
   position: absolute;
   background: inherit;
   z-index: 1;
   ${({ anchor }) =>
-    isHorizontal(anchor)
+    isHorizontalToolWindow(anchor)
       ? css`
           left: 0;
           right: 0;
@@ -40,7 +40,9 @@ export function UndockSide({
     state && (
       <StyledUndockSide anchor={anchor}>
         <ResizableView
-          orientation={isHorizontal(anchor) ? "vertical" : "horizontal"}
+          orientation={
+            isHorizontalToolWindow(anchor) ? "vertical" : "horizontal"
+          }
           resizerPlacement={
             anchor === "left" || anchor === "top" ? "after" : "before"
           }

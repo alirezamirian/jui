@@ -2,7 +2,7 @@ import {
   STRIPE_BUTTON_CROSS_PADDING,
   STRIPE_BUTTON_LINE_HEIGHT,
 } from "./StyledToolWindowStripeButton";
-import { Anchor, isHorizontal, theOtherSide } from "./utils";
+import { Anchor, isHorizontalToolWindow, theOtherSide } from "./utils";
 import { css } from "styled-components";
 import { Theme } from "../Theme/Theme";
 import { styled } from "../styled";
@@ -16,7 +16,7 @@ const anchorStyles = ({
   anchor,
   preventCollapse,
 }: StyledToolWindowStripeProps) =>
-  isHorizontal(anchor)
+  isHorizontalToolWindow(anchor)
     ? css`
         flex-direction: row;
         width: 100%;

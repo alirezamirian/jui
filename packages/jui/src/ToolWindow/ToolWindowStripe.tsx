@@ -5,7 +5,7 @@ import { useMovableStripeButtons } from "./MovableToolWindowStripeProvider";
 import { StyledSpacer, StyledToolWindowStripe } from "./StyledToolWindowStripe";
 import { StyledToolWindowStripeButton } from "./StyledToolWindowStripeButton";
 import { useElementMove, UseElementMoveOptions } from "./useElementMove";
-import { Anchor, isHorizontal } from "./utils";
+import { Anchor, isHorizontalToolWindow } from "./utils";
 
 interface ToolWindowStripeProps<T> {
   anchor: Anchor;
@@ -124,11 +124,11 @@ function getStripeButtonStyles({
     // transition: "margin 100ms", // maybe only when drag is in progress, if unwanted transition at drop
   };
   if (dropPosition?.relative?.key === key && draggingRect) {
-    const marginValue = isHorizontal(anchor)
+    const marginValue = isHorizontalToolWindow(anchor)
       ? draggingRect.width
       : draggingRect.height;
 
-    if (isHorizontal(anchor)) {
+    if (isHorizontalToolWindow(anchor)) {
       styles[
         dropPosition.relative.placement === "before"
           ? "marginLeft"

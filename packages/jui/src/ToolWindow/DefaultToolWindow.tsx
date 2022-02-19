@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useContext, useMemo, useRef } from "react";
 import { styled } from "../styled";
 import { FocusScope } from "./FocusScope";
 import { DefaultToolWindowHeader } from "./DefaultToolWindowHeader";
@@ -26,6 +26,18 @@ const StyledToolWindowContent = styled.div`
   overflow: auto;
 `;
 
+interface DefaultToolWindowContextObj {
+  hasFocus?: boolean;
+}
+
+const DefaultToolWindowContext = React.createContext<DefaultToolWindowContextObj>(
+  {
+    hasFocus: false,
+  }
+);
+
+export const useDefaultToolWindowContext = () =>
+  useContext(DefaultToolWindowContext);
 /**
  * Default component for rendering the content of a tool window. It supports a header and a scrollable area.
  * The header supports showing a content, and some default+custom actions on the right.
@@ -59,26 +71,35 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
     }
   );
 
+  const defaultToolWindowContext = useMemo(
+    () => ({
+      hasFocus: contentHasFocus,
+    }),
+    [contentHasFocus]
+  );
+
   return (
     <StyledToolWindowContainer {...toolWindowProps} ref={containerRef}>
-      <DefaultToolWindowHeader
-        additionalActions={additionalActions}
-        contentHasFocus={contentHasFocus}
-        {...toolWindowHeaderProps}
-      >
-        {headerContent}
-      </DefaultToolWindowHeader>
-      <StyledToolWindowContent ref={contentRef} {...toolWindowContentProps}>
-        {/**
-         * FIXME: adding `contain` prevents focus from moving to another focus scope both with mouse and keyboard.
-         * If we want to follow the Intellij Platform behaviour exactly, we need a kind of focus containment, where
-         * focus is trapped only for keyboard interaction, and user can still move focus by clicking another scope.
-         * Maybe a custom useFocusContainment hook and a separate option for activating it on our own FocusScope.
-         */}
-        <FocusScope ref={focusableContentRef} autoFocus>
-          {children}
-        </FocusScope>
-      </StyledToolWindowContent>
+      <DefaultToolWindowContext.Provider value={defaultToolWindowContext}>
+        <DefaultToolWindowHeader
+          additionalActions={additionalActions}
+          contentHasFocus={contentHasFocus}
+          {...toolWindowHeaderProps}
+        >
+          {headerContent}
+        </DefaultToolWindowHeader>
+        <StyledToolWindowContent ref={contentRef} {...toolWindowContentProps}>
+          {/**
+           * FIXME: adding `contain` prevents focus from moving to another focus scope both with mouse and keyboard.
+           * If we want to follow the Intellij Platform behaviour exactly, we need a kind of focus containment, where
+           * focus is trapped only for keyboard interaction, and user can still move focus by clicking another scope.
+           * Maybe a custom useFocusContainment hook and a separate option for activating it on our own FocusScope.
+           */}
+          <FocusScope ref={focusableContentRef} autoFocus>
+            {children}
+          </FocusScope>
+        </StyledToolWindowContent>
+      </DefaultToolWindowContext.Provider>
     </StyledToolWindowContainer>
   );
 };

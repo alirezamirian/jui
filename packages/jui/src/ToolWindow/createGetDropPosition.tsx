@@ -1,4 +1,4 @@
-import { Anchor, isHorizontal } from "./utils";
+import { Anchor, isHorizontalToolWindow } from "./utils";
 import { Key } from "react";
 type Rect = Omit<ClientRect, "toJSON" | "x" | "y">;
 
@@ -45,8 +45,10 @@ export const createGetDropPosition = <T extends any>({
     );
   };
 
-  const start = (rect: Rect) => (isHorizontal(anchor) ? rect.left : rect.top);
-  const end = (rect: Rect) => (isHorizontal(anchor) ? rect.right : rect.bottom);
+  const start = (rect: Rect) =>
+    isHorizontalToolWindow(anchor) ? rect.left : rect.top;
+  const end = (rect: Rect) =>
+    isHorizontalToolWindow(anchor) ? rect.right : rect.bottom;
 
   const getKeyToOffsets = (items: T[]) => {
     const keyToOffsets: Record<Key, { start: number; end: number }> = {};

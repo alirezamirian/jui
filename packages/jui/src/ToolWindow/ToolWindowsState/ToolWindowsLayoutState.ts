@@ -1,6 +1,6 @@
 import { compose, filter, groupBy, map, pipe, prop, sortBy } from "ramda";
 import { Key } from "react";
-import { Anchor, isHorizontal } from "../utils";
+import { Anchor, isHorizontalToolWindow } from "../utils";
 import {
   ToolWindowsState,
   ToolWindowState,
@@ -73,7 +73,7 @@ interface ContainerSize {
 }
 
 const getSizeInAnchor = (containerSize: ContainerSize, anchor: Anchor) =>
-  containerSize[isHorizontal(anchor) ? "height" : "width"];
+  containerSize[isHorizontalToolWindow(anchor) ? "height" : "width"];
 
 const mapToKey = map<ToolWindowStateWithKey, Key>(prop("key"));
 const sortAndMapToKey = compose(
