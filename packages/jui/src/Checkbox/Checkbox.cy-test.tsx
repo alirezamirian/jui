@@ -62,7 +62,7 @@ describe("Checkbox", () => {
     cy.focused().should("not.exist");
   });
 
-  it.only("supports preventFocus", () => {
+  it("supports preventFocus", () => {
     mount(
       <div id="component-container">
         <input autoFocus id="another-input" />
