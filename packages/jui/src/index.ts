@@ -19,3 +19,4 @@ export * from "./Tabs";
 export * from "./Theme";
 export * from "./Checkbox";
 export * from "./TreeCheckboxes";
+export * from "./ThreeViewSplitter/ThreeViewSplitter";
