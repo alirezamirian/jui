@@ -1,0 +1,44 @@
+---
+---
+
+import { RefToIntellijPlatform } from "../../src/components/RefToIntellijPlatform.tsx";
+import { Example } from "../../src/components/ExampleContext";
+
+# Button
+
+Standalone [Button](https://jetbrains.github.io/ui/controls/button/) with a textual label.
+
+### Features
+
+- Support for `default` button UI
+- Focus management options (`preventFocusOnPress`, `excludeFromTabOrder`)
+
+#### Remaining
+
+- [ ] [Default button behaviour](https://jetbrains.github.io/ui/controls/button/#default) is not implemented yet. It's
+  just the appearance at the moment.
+- [ ] Platform Specific UI. It's based on Mac UI at the moment.
+- [ ] Support for mnemonics.
+
+
+```jsx live themed
+<>
+  <Button>Button</Button> <br /><br />
+  <Button isDefault>Default</Button> <br /><br />
+  <Button isDisabled>Disabled</Button> <br /><br />
+  <Button excludeFromTabOrder>Exclude from tab order</Button> <br /><br />
+  <Button preventFocusOnPress>Prevent focus on press</Button> <br /><br />
+</>
+```
+
+
+:::caution Accessibility Caveat
+Following the original implementation, there is currently no visual feedback for pressed (active) state. That's more of
+an issue when `preventFocusOnPress` is used.
+:::
+
+:::info focus visibility
+Following the original implementation, the focus ring is visible even when the interaction is done by mouse.
+It's more common to show focus ring only when interacted with keyboard, but focus being always visible
+mitigates accessibility issue above.
+:::
