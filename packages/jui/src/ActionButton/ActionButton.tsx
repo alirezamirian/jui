@@ -9,6 +9,11 @@ export interface ActionButtonProps
     Pick<HTMLProps<HTMLButtonElement>, "onFocus" | "onBlur"> {
   children?: React.ReactNode;
   minSize?: number;
+  /**
+   * Whether the button should be focusable by pressing tab. The default is true for action buttons, which means they
+   * are not included in the tab order.
+   */
+  excludeFromTabOrder?: boolean;
 }
 
 export const DEFAULT_MINIMUM_BUTTON_SIZE = 22;
@@ -53,6 +58,7 @@ export const ActionButton = React.forwardRef(function ActionButton(
   {
     minSize = DEFAULT_MINIMUM_BUTTON_SIZE,
     preventFocusOnPress = true,
+    excludeFromTabOrder = true,
     isPressed: isPressedInput,
     isDisabled,
     onPress,
@@ -67,6 +73,7 @@ export const ActionButton = React.forwardRef(function ActionButton(
 ) {
   const { pressProps, isPressed } = usePress({
     isPressed: isPressedInput,
+    isDisabled,
     onPress,
     onPressChange,
     onPressEnd,
@@ -82,6 +89,7 @@ export const ActionButton = React.forwardRef(function ActionButton(
       disabled={isDisabled}
       {...mergeProps(pressProps, otherProps)}
       minSize={minSize}
+      tabIndex={excludeFromTabOrder && !isDisabled ? -1 : undefined}
       ref={ref}
     />
   );
