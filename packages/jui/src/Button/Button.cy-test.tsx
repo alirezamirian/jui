@@ -16,14 +16,26 @@ describe("Button", () => {
     cy.wrap(onPress).should("be.calledOnce");
     cy.get("button").focused();
     matchImageSnapshot("Button-simple-focused");
+
+    // disabled
+    mount(<SimpleUsage isDisabled onPress={onPress} />, {
+      styles: "body{padding: 10px}",
+    });
+    matchImageSnapshot("Button-simple-disabled");
+    cy.contains(BUTTON_TEXT).click({ force: true });
+    cy.wrap(onPress).should("be.calledOnce"); // no new calls
   });
 
-  it.only('supports "default" variant', () => {
+  it('supports "default" variant', () => {
     mount(<SimpleUsage isDefault />, { styles: "body{padding: 10px}" });
     matchImageSnapshot("Button-default");
     cy.get("button").click();
     cy.get("button").focused();
     matchImageSnapshot("Button-default-focused");
+
+    // disabled
+    mount(<SimpleUsage isDisabled />, { styles: "body{padding: 10px}" });
+    matchImageSnapshot("Button-default-disabled");
   });
 
   it("supports autoFocus and excludeFromTabOrder", () => {
