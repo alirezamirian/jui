@@ -74,5 +74,13 @@ describe("Button", () => {
 });
 
 function matchImageSnapshot(snapshotsName: string) {
-  cy.percySnapshot(snapshotsName);
+  cy.get("button").toMatchImageSnapshot({
+    name: snapshotsName,
+    imageConfig: {
+      threshold: 0.05,
+    },
+    screenshotConfig: {
+      padding: 10,
+    },
+  });
 }
