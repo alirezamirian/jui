@@ -73,6 +73,8 @@ export interface CheckboxProps
    * The name of the input element, used when submitting an HTML form. See [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#htmlattrdefname).
    */
   name?: string;
+
+  className?: string; // to support styled-components
 }
 
 const StyledWrapperLabel = styled.label`
@@ -104,6 +106,7 @@ const StyledCheckboxLabelText = styled.span<{
  */
 export const Checkbox = ({
   preventFocus,
+  className,
   disableFocusAlwaysVisible,
   ...props
 }: CheckboxProps) => {
@@ -135,7 +138,7 @@ export const Checkbox = ({
     : {};
 
   return (
-    <StyledWrapperLabel {...wrapperPressProps}>
+    <StyledWrapperLabel {...mergeProps(wrapperPressProps, { className })}>
       <VisuallyHidden>
         <input
           {...mergeProps(inputProps, focusProps, focusDisabledProps)}

@@ -64,6 +64,9 @@ export class Theme<P extends string = string> {
    */
   color<T extends string | undefined>(
     path: P,
+    /**
+     * fallback that will take precedence over *-based fallback mechanism.
+     */
     fallback?: T
   ): undefined extends T ? string | undefined : string {
     // There is a fallback mechanism that uses *.prop key if some key that ends with .prop
@@ -82,6 +85,13 @@ export class Theme<P extends string = string> {
     // Of course we can call .toString() on each usage but doesn't seem nice.
     return (
       dereference(this.value<string>(path)) ||
+      // NOTE: fallback is intentionally prioritized over *-based fallback. It's complicated in the original impl,
+      // and whether *-based fallback is used or not depends on the theme. More specifically, it depends
+      // on whether "Theme.name" key exists in "defaults": https://github.com/JetBrains/intellij-community/blob/82f201386c3f7a339ff25fc8f3389024c8078a87/platform/util/ui/src/com/intellij/ui/JBColor.java#L75
+      // that in turn depends on the type and name of the theme: https://github.com/JetBrains/intellij-community/blob/82f201386c3f7a339ff25fc8f3389024c8078a87/platform/platform-impl/src/com/intellij/ide/ui/laf/LafManagerImpl.java#L719
+      // At least for now, one should use theme.color like this, if *-based fallback is to be prioritized:
+      // theme.color('x.y') ?? 'fallback'
+      // then priority will be: 'x.y' -> '*.y' -> 'fallback'
       (fallback as any) ||
       dereference(this.getFallbackFromStar(path) as string)
     );

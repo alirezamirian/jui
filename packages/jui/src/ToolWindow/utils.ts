@@ -1,6 +1,11 @@
 export type Anchor = "left" | "right" | "top" | "bottom";
 
-export const isHorizontal = (anchor: Anchor) =>
+export const getAnchorOrientation = (
+  anchor: Anchor
+): "horizontal" | "vertical" =>
+  isHorizontalToolWindow(anchor) ? "horizontal" : "vertical";
+
+export const isHorizontalToolWindow = (anchor: Anchor) =>
   anchor === "top" || anchor === "bottom";
 
 export const theOtherSide = (anchor: Anchor) =>

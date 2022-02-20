@@ -1,6 +1,6 @@
 import { curry, fromPairs, insert, map, mapObjIndexed, move } from "ramda";
 import { Key } from "react";
-import { Anchor, isHorizontal } from "../utils";
+import { Anchor, isHorizontalToolWindow } from "../utils";
 
 export type ViewMode =
   | "docked_pinned"
@@ -339,7 +339,9 @@ export class ToolWindowsState {
         }, this.windows)
       );
     }
-    const expectedProperty = isHorizontal(target.anchor) ? "height" : "width";
+    const expectedProperty = isHorizontalToolWindow(target.anchor)
+      ? "height"
+      : "width";
     if (expectedProperty !== property) {
       return this;
     }
@@ -394,7 +396,7 @@ export class ToolWindowsState {
           ? isDocked(window)
           : window.viewMode === "undock";
         if (window.anchor === anchor && isInResizingView && window.isVisible) {
-          const containerSize = !isHorizontal(anchor)
+          const containerSize = !isHorizontalToolWindow(anchor)
             ? containerBounds.width
             : containerBounds.height;
           return {

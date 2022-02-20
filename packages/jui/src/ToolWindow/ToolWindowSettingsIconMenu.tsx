@@ -4,7 +4,7 @@ import { PlatformIcon } from "../Icon";
 import { Item, Menu, MenuItemLayout } from "../Menu";
 import { useToolWindowState } from "./ToolWindowsState/ToolWindowStateProvider";
 import { ViewMode } from "./ToolWindowsState/ToolWindowsState";
-import { Anchor, isHorizontal } from "./utils";
+import { Anchor, isHorizontalToolWindow } from "./utils";
 
 const viewModes: ViewMode[] = [
   "docked_pinned",
@@ -35,7 +35,7 @@ const getAnchorName = ({
   isSplit: boolean;
 }) =>
   `${anchor[0].toUpperCase()}${anchor.slice(1)} ${
-    isHorizontal(anchor)
+    isHorizontalToolWindow(anchor)
       ? isSplit
         ? "Right"
         : "Left"
@@ -112,7 +112,7 @@ export function ToolWindowSettingsIconMenu({
 
   const resizeActions: Action[] = [];
   if (state.viewMode !== "float" && state.viewMode !== "window") {
-    if (isHorizontal(state.anchor)) {
+    if (isHorizontalToolWindow(state.anchor)) {
       resizeActions.push(
         {
           id: "ResizeToolWindowTop",
