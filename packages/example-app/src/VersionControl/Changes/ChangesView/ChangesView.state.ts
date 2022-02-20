@@ -269,3 +269,31 @@ export const changesTreeNodesState = selector<{
     return { rootNodes, fileCountsMap };
   },
 });
+
+/**
+ * Commit message split width, when the commit tool window is rendered in vertical layout
+ */
+export const commitMessageSizeState = atomFamily<
+  number,
+  "horizontal" | "vertical"
+>({
+  key: "changesView/splitter/commitMessageSize",
+  default: (orientation) => (orientation === "horizontal" ? 0.4 : 0.3),
+});
+/**
+ * Whether --amend should be used for commit.
+ */
+export const amendCommitState = atom({
+  key: "changesView/amendCommit",
+  default: false,
+  // TODO: add a side effect to update message to the one from the last commit, when toggled to true.
+  // it should add a record to the commit message history and switch the message. When toggled to false,
+  // last entry in history should be back again. There is currently no history :D
+});
+/**
+ * commit message text bound to the editor.
+ */
+export const commitMessageState = atom({
+  key: "changesView/commitMessage",
+  default: "",
+});

@@ -3,12 +3,11 @@ import { Theme } from "@intellij-platform/core";
 import { useRecoilValue } from "recoil";
 import { fileStatusState } from "./file-status.state";
 import React from "react";
+import { FileStatus } from "./file-status";
 
-export const useFileStatusColor = (filepath: string): string | undefined => {
-  const fileStatus = useRecoilValue(fileStatusState(filepath));
+export const useStatusColor = (status: FileStatus) => {
   const theme = useTheme() as Theme;
-
-  switch (fileStatus) {
+  switch (status) {
     case "MODIFIED":
       return theme.dark ? "#6897bb" : "#0032a0"; // FILESTATUS_MODIFIED key from colorScheme
     case "ADDED":
@@ -20,11 +19,23 @@ export const useFileStatusColor = (filepath: string): string | undefined => {
   }
   return undefined;
 };
+export const useFileStatusColor = (filepath: string): string | undefined => {
+  const fileStatus = useRecoilValue(fileStatusState(filepath));
+  return useStatusColor(fileStatus);
+};
 
 export const FileStatusColor: React.FC<{ filepath: string }> = ({
   children,
   filepath,
 }) => {
   const color = useFileStatusColor(filepath);
+  return <span style={{ color }}>{children}</span>;
+};
+
+export const StatusColor: React.FC<{ status: FileStatus }> = ({
+  children,
+  status,
+}) => {
+  const color = useStatusColor(status);
   return <span style={{ color }}>{children}</span>;
 };
