@@ -13,14 +13,15 @@ function HomepageHeader() {
       <div className="container">
         <h1 className="hero__title">{siteConfig.title}</h1>
         <p className="hero__subtitle">
+          Web implementation of{" "}
           <Link
             href="https://www.jetbrains.com/opensource/idea/"
             className={styles.link}
             target="_blank"
           >
             Intellij Platform
-          </Link>{" "}
-          in React.
+          </Link>
+          .
         </p>
         <div className={styles.buttons}>
           <Link
