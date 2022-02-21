@@ -26,10 +26,10 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
     </thead>
     <tbody>
         <tr>
-            <td rowspan=10>List</td> 
+            <td rowspan=10><a href="https://jetbrains.github.io/ui/controls/list/">List</a></td> 
         </tr>
         <tr>
-            <td colspan="2">Speed Search </td>
+            <td colspan="2"><a href="https://jetbrains.github.io/ui/principles/speed_search/">Speed Search</a></td>
             <td>✅</td>
         </tr>
         <tr>
@@ -58,21 +58,21 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
         </tr>
         <tr>
             <td colspan="2">Access to state in items (selected, focused, disabled)</td>
-            <td>❌</td>
+            <td>✅</td>
         </tr>
         <tr>
             <td colspan="2">re-order with Alt+arrows</td>
             <td>❌</td>
         </tr>
         <tr>
-            <td rowspan="5">Tree</td>
+            <td rowspan="5"><a href="https://jetbrains.github.io/ui/controls/tree/">Tree</a></td>
         </tr>
         <tr>
             <td colspan="2">Base</td>
             <td>✅</td>
         </tr>
         <tr>
-            <td colspan="2">Speed search</td>
+            <td colspan="2"><a href="https://jetbrains.github.io/ui/principles/speed_search/">Speed Search</a></td>
             <td>✅</td>
         </tr>
         <tr>
@@ -84,11 +84,11 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
             <td>❌</td>
         </tr>
         <tr>
-            <td colspan="3">Tooltip</td>
+            <td colspan="3"><a href="https://jetbrains.github.io/ui/controls/tooltip/">Tooltip</a></td>
             <td>❌</td>
         </tr>
         <tr>
-            <td colspan="3">Progress Bar</td>
+            <td colspan="3"><a href="https://jetbrains.github.io/ui/controls/progress_bar/">Progress Bar</a></td>
             <td>❌</td>
         </tr>
         <tr>
@@ -111,7 +111,7 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
             <td>❌</td>
         </tr>
         <tr>
-            <td colspan="3">Checkbox with label</td>
+            <td colspan="3"><a href="https://jetbrains.github.io/ui/controls/checkbox/">Checkbox</a></td>
             <td>❌</td>
         </tr>
         <tr>
@@ -123,7 +123,7 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
             <td>❌</td>
         </tr>
         <tr>
-            <td colspan="3">Action Button</td>
+            <td colspan="3"><a href="https://jetbrains.github.io/ui/controls/icon_button/">Action Button</a></td>
             <td>✅</td>
         </tr>
         <tr>
@@ -131,17 +131,31 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
             <td>✅</td>
         </tr>
         <tr>
-            <td colspan="3">Action Toolbar</td>
+            <td colspan="3"><a href="https://jetbrains.github.io/ui/controls/toolbar/">Action Toolbar</a></td>
             <td>✅</td>
         </tr>
         <tr>
-            <td rowspan="3">MenuList <sup>2</sup></td>
+            <td rowspan="3"><a href="https://jetbrains.github.io/ui/controls/menu_list/">Menu List</a> <sup>2</sup></td>
         </tr>
         <tr>
             <td colspan="2">Basic</td>
             <td>✅</td></tr>
         <tr>
             <td colspan="2">Speed search (with input)</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td rowspan="4"><a href="https://jetbrains.github.io/ui/controls/balloon/">Balloon Notification</a></td>
+        </tr>
+        <tr>
+            <td colspan="2">Basic</td>
+            <td>🚧</td></tr>
+        <tr>
+            <td colspan="2">Actions</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td colspan="2">Balloons provider, container, and API to create notifications</td>
             <td>❌</td>
         </tr>
         <tr>
@@ -160,7 +174,7 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
             <td>❌</td>
         </tr>
         <tr>
-            <td rowspan="7">Tabs</td>
+            <td rowspan="7"><a href="https://jetbrains.github.io/ui/controls/tabs/">Tabs</a></td>
         </tr>
         <tr>
             <td colspan="2">Basic support</td>
@@ -191,7 +205,7 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
             <td>✅</td>
         </tr>
         <tr>
-            <td rowspan="16">ToolWindow</td>
+            <td rowspan="16"><a href="https://jetbrains.github.io/ui/components/tool_window/">Tool window</a></td>
         </tr>
         <tr>
             <td colspan="2">Basic functionality</td>
@@ -241,7 +255,7 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
             <td>✅</td>
         </tr>
         <tr>
-            <td colspan="2">View Mode - Window</td>
+            <td colspan="2">View Mode - Window <sup>4</sup></td>
             <td>❌</td>
         </tr>
         <tr>
@@ -250,7 +264,7 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
         </tr>
         <tr>
             <td colspan="2">Gear icon actions</td>
-            <td>✅<sup>4</sup></td>
+            <td>✅<sup>5</sup></td>
         </tr>
     </tbody>
 </table>
@@ -261,7 +275,8 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
 2. It seems in Intellij UI, such menu lists are only used in popups. Maybe only
    FlatSpeedSearchPopup
 3. Probably not a feature of Tree itself
-4. Keyboard shortcuts for resizing windows depend on action system implementation and not done yet.
+4. Most probably will not be implemented.
+5. Keyboard shortcuts for resizing windows depend on action system implementation and not done yet.
    Also "Remove from sidebar" doesn't fit with how tool windows is implemented at the moment.
 
 ### Intellij platform bugs
