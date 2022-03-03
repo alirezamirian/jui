@@ -20,13 +20,16 @@ export function useSvgIcon(
         console.error("icon path is empty");
         return;
       }
+      if (ref.current) {
+        // For querying for icons that are not loaded yet. Especially useful for visual testing
+        ref.current.dataset.loadingIcon = "true";
+      }
       const svg = await theme.getSvgIcon(path).catch((e) => {
         if (fallbackPath) {
           return theme.getSvgIcon(fallbackPath);
         }
         throw e;
       });
-
       if (svg) {
         if (!unmounted && ref?.current) {
           if (ref) {
@@ -35,6 +38,7 @@ export function useSvgIcon(
             const svgElement = document.createElement("svg");
             ref.current?.appendChild(svgElement);
             svgElement.outerHTML = svg;
+            delete ref.current?.dataset.loadingIcon;
           }
         }
       } else {

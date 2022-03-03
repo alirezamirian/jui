@@ -104,5 +104,6 @@ function testKeyboardNavigation(snapshotsName: string) {
 }
 
 function matchImageSnapshot(snapshotsName: string) {
+  cy.get("[data-loading-icon]").should("not.exist");
   cy.percySnapshot(snapshotsName);
 }

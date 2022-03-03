@@ -76,5 +76,6 @@ describe("Button", () => {
 function matchImageSnapshot(snapshotsName: string) {
   // NOTE: right now focus state is lost in percy snapshots. Seems like an issue in percy at the moment, since the
   // element is properly focused before and after percy snapshot.
+  cy.get("[data-loading-icon]").should("not.exist");
   cy.percySnapshot(snapshotsName);
 }
