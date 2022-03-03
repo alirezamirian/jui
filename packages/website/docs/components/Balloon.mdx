@@ -1,0 +1,68 @@
+---
+---
+
+import { Example } from "../../src/components/ExampleContext";
+import imgSrc from "./error-notification.png";
+
+# Balloon
+
+A component for a single [Balloon notification](https://jetbrains.github.io/ui/controls/balloon/).
+
+:::note Note
+How balloon notifications are stacked and positioned in bottom right, and an imperative API for triggering notifications
+is outside the scope of what this component is about.
+:::
+
+### Features
+
+- Default and custom icon types
+- `title`, `body`, `actions`. `body` is expandable/collapsible if there is overflow. It can be 1, 2 or three lines in
+  collapsed mode, based on existence of `title` and `actions`.
+- Close button in the header (if onClose is passed), as well as custom icon(s), like a settings icon.
+
+#### Remaining
+
+- [ ] `BalloonActions` component for rendering actions links where
+      [non-fitting ones are moved into a dropdown](https://jetbrains.github.io/ui/controls/balloon/#19).
+- [ ] A provider component that exposes a hook as an imperative API for triggering notifications (w/o timeout) and
+      renders the stack of notifications.
+
+- [ ] Support for error style notification (used for IDE errors)
+
+  <img src={imgSrc} width="370" />
+
+### Live example
+
+```jsx live themed
+<>
+  <Balloon
+    icon="Info" // try "Error" or "Warning"
+    title="Maven Projects need to be imported"
+    body="Projects to be imported: MavenSync, MavenDependencies. Maven project structure has been changed. Import changes to IntelliJ IDEA project to make it work correctly."
+    actions={
+      <>
+        <Link>Import changes</Link>
+        <Link>Enable auto-import</Link>
+      </>
+    }
+    onClose={console.log}
+    headerActions={
+      <AutoHoverPlatformIcon icon="ide/notification/gear" role="button" />
+    }
+  />
+</>
+```
+
+### Expanded
+
+Body becomes expandable only if the content doesn't fit within the allowed number of lines. The expanded state can
+[optionally be controlled](https://medium.com/quick-code/writing-ui-components-with-optionally-controllable-state-86e396a6f1ec).
+
+```jsx live themed
+<>
+  <Balloon
+    body="Projects to be imported: MavenSync, MavenDependencies. Maven project structure has been changed. Import changes to IntelliJ IDEA project to make it work correctly."
+    //     expanded
+  />
+</>
+```

@@ -1,0 +1,27 @@
+---
+---
+
+import { Example } from "../../src/components/ExampleContext";
+
+# Link
+
+[Link component](https://jetbrains.github.io/ui/controls/link/) implementation. It uses a focusable interactive span
+with necessary a11y attributes, and supports disabled state.
+
+#### Remaining features
+
+- [ ] `preventFocusOnPress`
+- [ ] Support for using normal html anchor link. At least external link is a use case.
+- [ ] Support for icon at left and right. A few specific icons like "externalLink", "ContextHelp", or "DropdownLink"
+      are supported in [`ActionLink` implementation](https://github.com/JetBrains/intellij-community/blob/82f201386c3f7a339ff25fc8f3389024c8078a87/platform/platform-api/src/com/intellij/ui/components/ActionLink.kt#L60-L63)
+
+### Live example
+
+```jsx live themed
+<>
+  <Link onPress={console.log}>Configure servers...</Link> <br />
+  <Link onPress={console.log} isDisabled>
+    Disabled link
+  </Link> <br />
+</>
+```
