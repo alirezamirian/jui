@@ -15,7 +15,7 @@ const Template: Story<ButtonProps> = (props) => {
   return <Button {...props} />;
 };
 
-export const SimpleUsage = Template.bind({});
+export const SimpleUsage: Story<ButtonProps> = Template.bind({});
 
 export const Disabled = Template.bind({});
 Disabled.args = { isDisabled: true, children: "Disabled" };

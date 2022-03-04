@@ -1,3 +1,3 @@
 <component name="DependencyValidationManager">
-  <scope name="stories" pattern="file[jui]:src//*.stories.tsx" />
+  <scope name="stories" pattern="file[jui]:packages/jui/src//*.stories.tsx" />
 </component>

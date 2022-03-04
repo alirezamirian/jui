@@ -1,15 +1,20 @@
-import useForwardedRef from "@intellij-platform/core/utils/useForwardedRef";
 import React, { ForwardedRef } from "react";
+import useForwardedRef from "@intellij-platform/core/utils/useForwardedRef";
 import { useTheme } from "styled-components";
 import { Theme } from "../Theme/Theme";
 import { IconProps } from "./IconProps";
 import { StyledIconWrapper } from "./StyledIconWrapper";
 import { useSvgIcon } from "./useSvgIcon";
 
-interface PlatformIconProps extends IconProps {
+export interface PlatformIconProps extends IconProps {
   icon: string;
   darkIcon?: string;
 }
+
+export const amendName = (iconNameOrPath: string, amendment: string) => {
+  const [name, ext] = iconNameOrPath.split(".");
+  return `${name}${amendment}${ext ? `.${ext}` : ""}`;
+};
 
 export const getDarkPath = (path: string, darkPath?: string) => {
   const [name, ext] = path.split(".");

@@ -25,5 +25,6 @@ describe("Tree", () => {
 });
 
 function matchImageSnapshot(snapshotsName: string) {
+  cy.get("[data-loading-icon]").should("not.exist");
   cy.percySnapshot(snapshotsName);
 }

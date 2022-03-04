@@ -149,13 +149,13 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
         </tr>
         <tr>
             <td colspan="2">Basic</td>
-            <td>🚧</td></tr>
+            <td>✅</td></tr>
         <tr>
             <td colspan="2">Actions</td>
-            <td>❌</td>
+            <td>✅ (without dropdown)</td>
         </tr>
         <tr>
-            <td colspan="2">Balloons provider, container, and API to create notifications</td>
+            <td colspan="2">Balloons provider, and imperative API to create notifications</td>
             <td>❌</td>
         </tr>
         <tr>
@@ -278,6 +278,8 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
 4. Most probably will not be implemented.
 5. Keyboard shortcuts for resizing windows depend on action system implementation and not done yet.
    Also "Remove from sidebar" doesn't fit with how tool windows is implemented at the moment.
+
+[//]: # "TODO: Contribution: - document code generation commands"
 
 ### Intellij platform bugs
 

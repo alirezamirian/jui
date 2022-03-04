@@ -144,6 +144,10 @@ export class Theme<P extends string = string> {
         theme.dark ? "#787878" : "#999999"
       ),
       panelBackground: theme.color("Panel.background") || "#fff",
+      focusBorderColor: theme.color(
+        "Component.focusedBorderColor",
+        !theme.dark ? "#87AFDA" : "#466D94"
+      ),
       red: theme.dark ? "rgb(255,100,100)" : "rgb(255,0,0)",
       blue: theme.dark ? "#589df6" : "rgb(0,0,255)",
       green: theme.dark ? "rgb(98, 150, 85)" : "rgb(0,255,0)",

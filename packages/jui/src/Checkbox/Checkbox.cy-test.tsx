@@ -9,17 +9,6 @@ const CHECKBOX_LABEL_TEXT = "Enable";
 
 describe("Checkbox", () => {
   it("works!", () => {
-    cy.intercept(
-      "GET",
-      "https://raw.githubusercontent.com/JetBrains/intellij-community/master/platform/platform-impl/src/com/intellij/ide/ui/laf/icons/darcula/*",
-      (req) => {
-        const fileName = req.url.split("/").pop();
-        req.reply({
-          statusCode: 200, // default
-          fixture: `laf/icons/darcula/${fileName}`,
-        });
-      }
-    );
     mount(
       <div id="component-container">
         <Default />
@@ -101,6 +90,6 @@ describe("Checkbox", () => {
 });
 
 function matchImageSnapshot(snapshotsName: string) {
-  cy.get("svg"); // :( need to manually wait for the svg icon to be loaded.
+  cy.get("[data-loading-icon]").should("not.exist");
   cy.percySnapshot(snapshotsName);
 }
