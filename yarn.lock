@@ -9280,10 +9280,10 @@ cypress-plugin-snapshots@^1.4.4:
     source-map-support "^0.5.10"
     unidiff "1.0.2"
 
-cypress-real-events@^1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/cypress-real-events/-/cypress-real-events-1.5.1.tgz#5eeb86d2a7aad9aa6d5271e288a23e46373915cd"
-  integrity sha512-Jwi/IJePcZrKyhdtVddaf+mqJrj3y1vpREMDgtWwz+oxvj5FbBpeU0ASu9zpB3bMbsMo7g//buopZIe4jx3iSA==
+cypress-real-events@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/cypress-real-events/-/cypress-real-events-1.7.0.tgz#ad6a78de33af3af0e6437f5c713e30691c44472c"
+  integrity sha512-iyXp07j0V9sG3YClVDcvHN2DAQDgr+EjTID82uWDw6OZBlU3pXEBqTMNYqroz3bxlb0k+F74U81aZwzMNaKyew==
 
 cypress@^8.4.0:
   version "8.4.1"

@@ -6,6 +6,12 @@ import * as stories from "./Menu.stories";
 const { Nested, MenuWithTrigger } = composeStories(stories);
 
 describe("Menu", () => {
+  beforeEach(() => {
+    // If mouse ends up in a bad position in the previous test suit, it breaks tests here. So we make sure to move
+    // mouse out of the way before each test case.
+    cy.get("body").realMouseMove(0, 0);
+  });
+
   it("supports keyboard", () => {
     mount(<Nested />);
     cy.realPress("ArrowDown"); // initially menu has focus. This moves focus to the first item.
