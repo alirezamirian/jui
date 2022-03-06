@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { IconProps } from "@intellij-platform/core/Icon/IconProps";
 import {
   AutoHoverPlatformIcon,
@@ -18,6 +18,7 @@ import {
   StyledToggleIconContainer,
 } from "@intellij-platform/core/Balloon/Balloon.styled";
 import { DOMProps } from "@react-types/shared";
+import { Link } from "@intellij-platform/core/Link";
 
 export type BalloonProps = ControlledStateProps<{ expanded: boolean }> &
   DOMProps & {
@@ -28,7 +29,7 @@ export type BalloonProps = ControlledStateProps<{ expanded: boolean }> &
     /**
      * Rendered beside close button. Can be used for rendering a "notification settings" icon button.
      */
-    headerActions: React.ReactNode;
+    headerActions?: React.ReactNode;
     /**
      * Called when the close button is clicked. If not passed, close button will not be rendered.
      */
@@ -36,7 +37,7 @@ export type BalloonProps = ControlledStateProps<{ expanded: boolean }> &
     /**
      * Actions rendered in the footer.
      */
-    actions: React.ReactNode;
+    actions?: React.ReactNode;
   } & (
     | {
         title?: React.ReactNode;
@@ -48,6 +49,35 @@ export type BalloonProps = ControlledStateProps<{ expanded: boolean }> &
       }
   );
 
+type BalloonContextObj = {
+  onClose?: () => void;
+};
+const BalloonContext = React.createContext<BalloonContextObj | null>(null);
+
+/**
+ * A tiny wrapper around {@link Link} component, to be used for actions in Balloon.
+ * It closes the balloon when pressed.
+ */
+export const BalloonActionLink: typeof Link = React.forwardRef(
+  ({ onPress, ...props }, ref) => {
+    const context = useContext(BalloonContext);
+    if (context === null) {
+      throw new Error(
+        "BalloonActionLink should only be rendered inside Balloon notifications"
+      );
+    }
+    return (
+      <Link
+        ref={ref}
+        {...props}
+        onPress={(...args) => {
+          context?.onClose?.();
+          return onPress?.(...args);
+        }}
+      />
+    );
+  }
+);
 /**
  * [Balloon notification](https://jetbrains.github.io/ui/controls/balloon/) UI.
  *
@@ -102,53 +132,56 @@ export const Balloon = ({
     ) : (
       iconProp
     );
+  // @ts-expect-error support for callback updater is removed from useControlledState. https://github.com/adobe/react-spectrum/issues/2320
   const toggle = () => setExpanded((expanded) => !expanded);
 
   const effectiveExpanded = expanded && Boolean(body);
 
   return (
-    <StyledBalloonContainer {...containerProps}>
-      <StyledIconContainer>{icon}</StyledIconContainer>
-      {title && <StyledBalloonHeader>{title}</StyledBalloonHeader>}
-      <StyledHeaderActions>
-        {headerActions}
-        {onClose && (
-          <AutoHoverPlatformIcon
-            icon="ide/notification/close.svg"
-            onClick={onClose}
-            role="button"
-            data-testid="close-btn"
-            style={{ marginLeft: "0.75rem" }}
-          />
+    <BalloonContext.Provider value={{ onClose }}>
+      <StyledBalloonContainer data-testid="balloon" {...containerProps}>
+        <StyledIconContainer>{icon}</StyledIconContainer>
+        {title && <StyledBalloonHeader>{title}</StyledBalloonHeader>}
+        <StyledHeaderActions>
+          {headerActions}
+          {onClose && (
+            <AutoHoverPlatformIcon
+              icon="ide/notification/close.svg"
+              onClick={onClose}
+              role="button"
+              data-testid="close-btn"
+              style={{ marginLeft: "0.75rem" }}
+            />
+          )}
+        </StyledHeaderActions>
+        {body && (
+          <ToggleWrapper
+            expanded={effectiveExpanded}
+            enabled={expandable && !effectiveExpanded}
+            onToggle={toggle}
+          >
+            <StyledBalloonBody
+              lineClamp={!effectiveExpanded && maxLinesWhenNotExpanded}
+              ref={bodyRef}
+            >
+              {body}
+            </StyledBalloonBody>
+          </ToggleWrapper>
         )}
-      </StyledHeaderActions>
-      {body && (
         <ToggleWrapper
           expanded={effectiveExpanded}
-          enabled={expandable && !effectiveExpanded}
+          enabled={expandable && effectiveExpanded}
           onToggle={toggle}
+          Component={StyledToggleExpandButtonFooterContainer}
         >
-          <StyledBalloonBody
-            lineClamp={!effectiveExpanded && maxLinesWhenNotExpanded}
-            ref={bodyRef}
-          >
-            {body}
-          </StyledBalloonBody>
+          {actions && (
+            <StyledBalloonFooter onClick={(e) => e.stopPropagation()}>
+              {actions}
+            </StyledBalloonFooter>
+          )}
         </ToggleWrapper>
-      )}
-      <ToggleWrapper
-        expanded={effectiveExpanded}
-        enabled={expandable && effectiveExpanded}
-        onToggle={toggle}
-        Component={StyledToggleExpandButtonFooterContainer}
-      >
-        {actions && (
-          <StyledBalloonFooter onClick={(e) => e.stopPropagation()}>
-            {actions}
-          </StyledBalloonFooter>
-        )}
-      </ToggleWrapper>
-    </StyledBalloonContainer>
+      </StyledBalloonContainer>
+    </BalloonContext.Provider>
   );
 };
 

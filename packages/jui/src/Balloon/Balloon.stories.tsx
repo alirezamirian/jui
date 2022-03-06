@@ -1,11 +1,7 @@
 import { Meta, Story } from "@storybook/react";
 import React from "react";
-import { Balloon, BalloonProps } from "./Balloon";
-import {
-  AutoHoverPlatformIcon,
-  Link,
-  PlatformIcon,
-} from "@intellij-platform/core";
+import { Balloon, BalloonActionLink, BalloonProps } from "./Balloon";
+import { AutoHoverPlatformIcon, PlatformIcon } from "@intellij-platform/core";
 
 export default {
   title: "Components/Balloon",
@@ -16,8 +12,8 @@ export default {
       "Projects to be imported: MavenSync, MavenDependencies. Maven project structure has been changed. Import changes to IntelliJ IDEA project to make it work correctly. Otherwise, code analysis, completion and other features might work incorrectly.",
     actions: (
       <>
-        <Link>Import changes</Link>
-        <Link>Enable auto-import</Link>
+        <BalloonActionLink>Import changes</BalloonActionLink>
+        <BalloonActionLink>Enable auto-import</BalloonActionLink>
       </>
     ),
     onClose: () => {},
@@ -25,7 +21,7 @@ export default {
       <AutoHoverPlatformIcon icon="ide/notification/gear" role="button" />
     ),
   } as BalloonProps,
-  argTypes: {},
+  argTypes: { onClose: { action: "onClose" } },
 } as Meta;
 
 const Template: Story<BalloonProps> = (props) => {
@@ -68,10 +64,10 @@ LongTitle.args = {
 export const LongActions: Story<BalloonProps> = Template.bind({});
 LongActions.args = {
   actions: (
-    <Link>
+    <BalloonActionLink>
       Enable auto-import Enable auto-import Enable auto-import Enable
       auto-import
-    </Link>
+    </BalloonActionLink>
   ),
 };
 
@@ -93,6 +89,7 @@ WithoutBodyAndActions.args = {
   body: undefined,
   actions: null,
 };
+
 export const WithoutActions: Story<BalloonProps> = Template.bind({});
 WithoutActions.args = {
   actions: null,

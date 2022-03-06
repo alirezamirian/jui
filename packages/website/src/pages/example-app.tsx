@@ -6,7 +6,6 @@ import {
   ExampleContext,
   ExampleContextThemeName,
 } from "../components/ExampleContext";
-import styles from "../components/example-container-styles.module.css";
 
 const App = React.lazy(() => import("../../../example-app/src"));
 
@@ -53,7 +52,7 @@ export default function ExampleAppPage(): JSX.Element {
         {() => (
           <ExampleContext themeName={themeName}>
             <React.Suspense fallback="loading...">
-              <ColumnContainer className={styles.exampleContainer}>
+              <ColumnContainer>
                 <StyledBanner>
                   <BannerLinkButton to="/">
                     <PlatformIcon icon="actions/exit.svg" />
