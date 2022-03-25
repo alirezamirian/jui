@@ -10,7 +10,6 @@ import { useTheme } from "styled-components";
 import Playground from "@theme/Playground";
 import ReactLiveScope from "@theme/ReactLiveScope";
 import CodeBlock from "@theme-init/CodeBlock";
-import styles from "../../components/example-container-styles.module.css";
 import { withExampleContext } from "../../components/ExampleContext";
 
 const withLiveEditor = (Component) => {
@@ -37,11 +36,7 @@ const withThemeBackground = (Component) => {
           "--ifm-pre-background": theme.color("*.background"),
         }
       : {};
-    return (
-      <div className={styles.exampleContainer} style={style}>
-        {content}
-      </div>
-    );
+    return <div style={style}>{content}</div>;
   }
 
   return WithThemeBackground;

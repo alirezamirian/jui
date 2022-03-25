@@ -15,6 +15,7 @@ import { LoadingGif } from "../LoadingGif";
 import { Editor } from "./Editor";
 import {
   activeEditorTabState,
+  editorCursorPositionState,
   editorRefState,
   useEditorStateManager,
 } from "./editor.state";
@@ -36,6 +37,7 @@ export const FileEditor = () => {
   const activeTab = useRecoilValue(activeEditorTabState);
   const editorRef = useRef<editor.IEditor>();
   const [active, setActive] = useState(false);
+  const setCursorPositionState = useSetRecoilState(editorCursorPositionState);
 
   // For functions that are needed in tab action callbacks. Because items are cached and referencing anything
   // other than the collection item (tab) itself has a risk of working with stale data because of the caching
@@ -131,6 +133,15 @@ export const FileEditor = () => {
             monacoEditor.focus();
             enableJsx(monaco);
             editorRef.current = monacoEditor;
+            monacoEditor.onDidChangeCursorPosition((e) => {
+              setCursorPositionState(e.position);
+            });
+            monacoEditor.onDidChangeModel(() => {
+              const position = editorRef.current?.getPosition();
+              if (position) {
+                setCursorPositionState(position);
+              }
+            });
           }}
           onChange={updateContent}
           value={typeof content === "string" ? content : "UNSUPPORTED CONTENT"}

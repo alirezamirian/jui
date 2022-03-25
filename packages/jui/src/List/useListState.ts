@@ -8,5 +8,7 @@ import { replaceSelectionManager } from "../selection/replaceSelectionManager";
 export function useListState<T extends object>(
   props: ListProps<T>
 ): ListState<T> {
-  return replaceSelectionManager(originalUseListState(props));
+  return replaceSelectionManager(
+    originalUseListState({ ...props, selectionBehavior: "replace" })
+  );
 }

@@ -10,7 +10,7 @@ import { CollectionSpeedSearchContainer } from "../../CollectionSpeedSearch/Coll
 import {
   CollectionSpeedSearchContext,
   SpeedSearchItemHighlightsProvider,
-} from "@intellij-platform/core";
+} from "@intellij-platform/core/CollectionSpeedSearch";
 
 interface SpeedSearchListProps<T extends object> extends ListProps<T> {
   stickySearch?: boolean;

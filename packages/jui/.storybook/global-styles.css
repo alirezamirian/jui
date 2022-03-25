@@ -1,10 +1,7 @@
 body {
   margin: 0;
-  /* NOTE: this style is duplicated for now both in the example-container-styles.module.css and here. make sure updates are
-  done in both places*/
   /* These styles should probably go to Theme component or in any other way be a part of the library */
   font-family: system-ui;
   font-size: 13px;
   text-rendering: optimizeLegibility;
-  /*-webkit-font-smoothing: antialiased;*/
 }

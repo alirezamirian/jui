@@ -60,6 +60,22 @@ export class Theme<P extends string = string> {
   }
 
   /**
+   * Converts inset value to a string that can be used as css padding or margin value.
+   * @example
+   * theme.inset('some.path') === "2px 4px 6px 8px" // assuming "some.path" is resolved to "2,4,6,8"
+   */
+  inset<T extends ThemePropertyValue>(path: P): string | null {
+    const value = this.value(path);
+    if (typeof value === "string") {
+      return value
+        .split(",")
+        .map((num) => `${num} px`)
+        .join(" ");
+    }
+    return null;
+  }
+
+  /**
    * - Resolves values that are references to theme.colors
    */
   color<T extends string | undefined>(
@@ -159,6 +175,14 @@ export class Theme<P extends string = string> {
       contrastBorder: theme.color(
         "Borders.ContrastBorderColor",
         theme.dark ? "#323232" : "#c9c9c9"
+      ),
+      labelForeground: theme.color(
+        "Label.foreground",
+        theme.dark ? "#bbb" : "#000"
+      ),
+      contextHelpForeground: theme.color(
+        "Label.infoForeground",
+        theme.dark ? "#8c8c8c" : "#787878"
       ),
     };
   }

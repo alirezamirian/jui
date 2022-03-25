@@ -11,6 +11,7 @@ import {
   currentProjectFilesState,
   projectFilePath,
 } from "../Project/project.state";
+import { Position } from "monaco-editor";
 
 interface TextEditorState {
   cursorPos: { lineNumber: number; column: number };
@@ -58,6 +59,11 @@ const activeEditorTabIndexState = atom<number>({
 export const activeEditorTabState = selector({
   key: "editor.activeTab",
   get: ({ get }) => get(editorTabsState)[get(activeEditorTabIndexState)],
+});
+
+export const editorCursorPositionState = atom<Position>({
+  key: "editor.cursorPosition",
+  default: new Position(0, 0),
 });
 
 /**

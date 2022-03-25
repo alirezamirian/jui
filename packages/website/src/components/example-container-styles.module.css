@@ -1,7 +1,0 @@
-.exampleContainer {
-  /* NOTE: this style is duplicated for now both in the .storybook/global-styles.css and here. make sure updates are
-  done in both places*/
-  font-family: system-ui;
-  font-size: 13px;
-  text-rendering: optimizeLegibility;
-}

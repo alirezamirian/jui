@@ -1,0 +1,58 @@
+---
+---
+
+# ProgressBar
+
+[ProgressBar](https://jetbrains.github.io/ui/controls/progress_bar/) component, for showing a simple progress bar, or
+a [ProgressPanel](https://github.com/JetBrains/intellij-community/blob/82f201386c3f7a339ff25fc8f3389024c8078a87/platform/platform-api/src/com/intellij/openapi/ui/panel/ProgressPanel.java#L28),
+consisted of a progress bar, a label, details, and control buttons.
+
+### Features
+
+- Showing [process name](https://jetbrains.github.io/ui/controls/progress_bar/#process-name) and
+  [details](https://jetbrains.github.io/ui/controls/progress_bar/#process-details).
+- [Indeterminate](https://jetbrains.github.io/ui/controls/progress_bar/#04)
+- Value label for [showing percentage when space is limited](https://jetbrains.github.io/ui/controls/progress_bar/#13)
+- [Pause, resume and cancel buttons](https://jetbrains.github.io/ui/controls/progress_bar/#process-control).
+
+### Known issues
+
+There are a couple of UI issues because of the current layout (which can be improved probably):
+
+- max-width of the label and details, it's not necessarily aligned with the the progressbar track, because they don't
+  share the same container
+- when label is on the side, details is aligned with the label, instead of the progressbar track.
+
+### Live example
+
+```jsx live themed
+<>
+  <ProgressBar value={20} /> <br />
+  <ProgressBar isIndeterminate name="Indeterminate" /> <br />
+  <ProgressBar
+    value={40}
+    name="With name, details and controls"
+    details="10 files of 256 files - About 10 minutes left"
+    button={
+      <>
+        <ProgressBarPauseButton
+          paused={false} /* try changing this to true */
+        />
+        {/* <ProgressBarStopButton /> */}
+      </>
+    }
+  />
+  <br />
+  <ProgressBar value={70} name="Name on side:" namePosition="side" /> <br />
+  <br />
+  <ProgressBar
+    value={70}
+    name="With value label:"
+    namePosition="side"
+    showValueLabel
+  />
+  <br />
+  <ProgressBar value={25} name="In dialog" button={<Button>Cancel</Button>} />
+  <br />
+</>
+```

@@ -37,6 +37,10 @@ const StyledSelectedMark = styled.span`
   display: inline-flex; // to make it not take more height than the icon
 `;
 
+const StyledMenuItemText = styled.span`
+  flex: 1;
+`;
+
 export function MenuItem<T>({
   item,
   state,
@@ -130,7 +134,11 @@ export function MenuItem<T>({
         <ItemStateContext.Provider
           value={{ isDisabled, isFocused, isSelected, node: item }}
         >
-          {item.rendered}
+          {typeof item.rendered === "string" ? (
+            <StyledMenuItemText>{item.rendered}</StyledMenuItemText>
+          ) : (
+            item.rendered
+          )}
         </ItemStateContext.Provider>
         {item.hasChildNodes && (
           <StyledNestedArrow>

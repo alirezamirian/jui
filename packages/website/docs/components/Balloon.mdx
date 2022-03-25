@@ -6,63 +6,124 @@ import imgSrc from "./error-notification.png";
 
 # Balloon
 
-A component for a single [Balloon notification](https://jetbrains.github.io/ui/controls/balloon/).
+Support for [Balloon notification](https://jetbrains.github.io/ui/controls/balloon/) is divided into two parts.
+Components for decoratively rendering a Balloon, and an API for showing balloon notifications imperatively (e.g. in
+response to events).
 
-:::note Note
-How balloon notifications are stacked and positioned in bottom right, and an imperative API for triggering notifications
-is outside the scope of what this component is about.
-:::
-
-### Features
-
-- Default and custom icon types
-- `title`, `body`, `actions`. `body` is expandable/collapsible if there is overflow. It can be 1, 2 or three lines in
-  collapsed mode, based on existence of `title` and `actions`.
-- Close button in the header (if onClose is passed), as well as custom icon(s), like a settings icon.
-
-#### Remaining
+#### Remaining features
 
 - [ ] `BalloonActions` component for rendering actions links where
       [non-fitting ones are moved into a dropdown](https://jetbrains.github.io/ui/controls/balloon/#19).
-- [ ] A provider component that exposes a hook as an imperative API for triggering notifications (w/o timeout) and
-      renders the stack of notifications.
 
-- [ ] Support for error style notification (used for IDE errors)
+- [ ] Support for error style notification (used for IDE errors) <img
+      src={imgSrc}
+      width="200"
+      style={{ verticalAlign: "middle", margin: "0 10px" }}
+      />
 
-  <img src={imgSrc} width="370" />
+## Declarative API
+
+Components used for rendering a [Balloon notification](https://jetbrains.github.io/ui/controls/balloon/):
+
+### Balloon
+
+Renders a single [Balloon notification](https://jetbrains.github.io/ui/controls/balloon/). Different parts of the
+balloon are passed as props. Timeout for hiding the balloon is not supported at this level. See
+[useBalloons](#useBalloons) for that.
+
+### BalloonActionLink
+
+A tiny wrapper around [Link](./Link) component, to be used for actions in Balloon. It closes the balloon when pressed.
+
+:::info Note
+How balloon notifications are stacked and positioned in bottom right, and an imperative API for triggering notifications
+is outside the scope of what this component is about. Use [BalloonProvider](#balloonprovider) and
+[useBalloons](#useballoons) for that.
+:::
 
 ### Live example
 
 ```jsx live themed
 <>
+  {/* prettier-ignore */}
   <Balloon
-    icon="Info" // try "Error" or "Warning"
+    // try "Error", "Warning", or a custom icon: <PlatformIcon icon="expui/fileTypes/docker.svg" />
+    icon={"Info"}
+    // try changing title to something too long
     title="Maven Projects need to be imported"
+    // depending on how big body is, it may becomes expandable
     body="Projects to be imported: MavenSync, MavenDependencies. Maven project structure has been changed. Import changes to IntelliJ IDEA project to make it work correctly."
     actions={
       <>
-        <Link>Import changes</Link>
-        <Link>Enable auto-import</Link>
+        <BalloonActionLink>Import changes</BalloonActionLink>
+        <BalloonActionLink>Enable auto-import</BalloonActionLink>
       </>
     }
+    // close button is shown only if onClose is passed
     onClose={console.log}
+    // header actions are placed next to the close button in the header
     headerActions={
       <AutoHoverPlatformIcon icon="ide/notification/gear" role="button" />
     }
-  />
+   />
 </>
 ```
 
-### Expanded
+### Expandable body
 
 Body becomes expandable only if the content doesn't fit within the allowed number of lines. The expanded state can
 [optionally be controlled](https://medium.com/quick-code/writing-ui-components-with-optionally-controllable-state-86e396a6f1ec).
 
 ```jsx live themed
 <>
+  {/* prettier-ignore */}
   <Balloon
     body="Projects to be imported: MavenSync, MavenDependencies. Maven project structure has been changed. Import changes to IntelliJ IDEA project to make it work correctly."
     //     expanded
-  />
+   />
 </>
+```
+
+## Imperative API
+
+### BalloonProvider
+
+`BalloonProvider` renders the necessary context for using [useBalloons](#useballoons), as well as the stack of the
+notifications. By default it renders the notifications stack as a portal appended to body. This can be disabled by
+setting `disablePortal` to `true`. Either way, the notifications stack is an overlay placed at the bottom right of
+where it's rendered. If portal is disabled, position will be `absolute`, otherwise `fixed`.
+
+### useBalloons
+
+`useBalloons` gives access to the imperative API for showing balloon notifications.
+
+```jsx
+const { show, showSticky } = useBalloons();
+```
+
+```jsx live noInline themed
+const App = () => (
+  <BalloonsProvider>
+    <SomeComponent />
+  </BalloonsProvider>
+);
+const SomeComponent = () => {
+  const { show } = useBalloons();
+  const showNotification = () => {
+    show({
+      title: "Maven projects need to be imported",
+      body:
+        "Projects to be imported: MavenSync, MavenDependencies. Maven project structure has been changed. Import changes to IntelliJ IDEA project to make it work correctly. Otherwise, code analysis, completion and other features might work incorrectly.",
+      actions: (
+        <>
+          <BalloonActionLink>Import changes</BalloonActionLink>
+          <BalloonActionLink>Enable auto-import</BalloonActionLink>
+        </>
+      ),
+    });
+  };
+  return <Button onPress={showNotification}>Show balloon notification</Button>;
+};
+
+render(<App />);
 ```

@@ -3,6 +3,9 @@ This file fixes some global styles that are applied from Docusaurus styles with 
 with examples.
 */
 
+/* Global styles, temporarily imported from storybook configuration */
+@import "../../../../packages/jui/.storybook/global-styles.css";
+
 [role="menu"] kbd {
   background: unset;
   color: unset;

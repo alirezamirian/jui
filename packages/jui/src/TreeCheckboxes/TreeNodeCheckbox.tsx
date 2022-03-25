@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
-import {
-  Checkbox,
-  ItemStateContext,
-  StyledListIconWrapper,
-} from "@intellij-platform/core";
+import { Checkbox } from "@intellij-platform/core/Checkbox";
 import { TreeContext } from "@intellij-platform/core/Tree/TreeContext";
 import { SelectionState } from "@intellij-platform/core/TreeCheckboxes/NestedSelection";
+import {
+  ItemStateContext,
+  StyledListIconWrapper,
+} from "@intellij-platform/core/Collections";
 
 export type TreeNodeCheckboxProps<T extends unknown> = {
   selectionState?: SelectionState;

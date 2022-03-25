@@ -65,6 +65,16 @@ export const Static = () => {
   );
 };
 
+export const StaticWithTextItems = () => (
+  <Menu>
+    <Item>Restart Typescript Service</Item>
+    <Item title="Compile">
+      <Item>packages/jui/tsconfig.json</Item>
+      <Item>packages/jui/src/StatusBar/StatusBar.stories.tsx</Item>
+      <Item>Compile All</Item>
+    </Item>
+  </Menu>
+);
 type MenuItem =
   | {
       title: string;

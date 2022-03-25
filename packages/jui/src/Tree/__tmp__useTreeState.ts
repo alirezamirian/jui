@@ -163,7 +163,10 @@ export function useTreeState<T extends object, C>(
     props.onExpandedChange
   );
 
-  let selectionState = useMultipleSelectionState(props);
+  let selectionState = useMultipleSelectionState({
+    ...props,
+    selectionBehavior: "replace",
+  });
   let disabledKeys = useMemo(
     () => (props.disabledKeys ? new Set(props.disabledKeys) : new Set<Key>()),
     [props.disabledKeys]

@@ -20,7 +20,6 @@ export interface FsItem {
 export const dirContentState = selectorFamily({
   key: "dirContents",
   get: (path: string) => async (): Promise<null | FsItem[]> => {
-    console.log("reading directory content", path);
     let fileNames: string[];
     try {
       fileNames = await fs.promises.readdir(path);

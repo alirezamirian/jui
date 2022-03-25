@@ -1,11 +1,10 @@
-import React, {useEffect, useMemo} from 'react';
+import React, { useEffect, useMemo } from "react";
 import { ThemeProvider } from "styled-components";
 import { SSRProvider } from "@react-aria/ssr";
 import darculaTheme from "../../../jui/themes/darcula.theme.json";
 import highContrastTheme from "../../../jui/themes/HighContrast.theme.json";
 import lightTheme from "../../../jui/themes/intellijlaf.theme.json";
 import { Theme } from "../../../jui/src";
-import styles from "./example-container-styles.module.css";
 
 export type ExampleContextThemeName = "light" | "darcula" | "highContrast";
 
@@ -39,7 +38,6 @@ export const Example: React.FC = ({ children }) => (
       css={`
         background: ${({ theme }) => theme.color("*.background")};
       `}
-      className={styles.exampleContainer}
     >
       {children}
     </div>
@@ -60,18 +58,15 @@ export const withExampleContext = <P extends {}>(
   return WithExampleContext;
 };
 
-
 const useFixDocusaurusStyleBleeds = () => {
   useEffect(() => {
-    const FLAG_CLASSNAME = 'example-context-patch'
-    if(!document.body.classList.contains(FLAG_CLASSNAME)) {
-      undoUseKeyboardNavigation()
-      document.body.classList.add(FLAG_CLASSNAME)
+    const FLAG_CLASSNAME = "example-context-patch";
+    if (!document.body.classList.contains(FLAG_CLASSNAME)) {
+      undoUseKeyboardNavigation();
+      document.body.classList.add(FLAG_CLASSNAME);
     }
-  }, [])
-}
-
-
+  }, []);
+};
 
 /**
  * Reverts the "improvement" [useKeyboardNavigation][1] does :|
@@ -79,12 +74,14 @@ const useFixDocusaurusStyleBleeds = () => {
  * [1]: https://github.com/facebook/docusaurus/blob/f87a3ead4664b301901c12466cb2c82cd95d141b/packages/docusaurus-theme-common/src/hooks/useKeyboardNavigation.ts#L14
  */
 function undoUseKeyboardNavigation() {
-  document.querySelectorAll<HTMLLinkElement>('link[rel=stylesheet]').forEach(linkEl => {
-    for (let i = 0; i < linkEl.sheet.cssRules.length; i++) {
-      const rule = linkEl.sheet.cssRules.item(i);
-      if (rule.cssText?.startsWith('body:not(.navigation-with-keyboard)')) {
-        linkEl.sheet.deleteRule(i); // We can change the rule to only disable it within the boundary of example
+  document
+    .querySelectorAll<HTMLLinkElement>("link[rel=stylesheet]")
+    .forEach((linkEl) => {
+      for (let i = 0; i < linkEl.sheet.cssRules.length; i++) {
+        const rule = linkEl.sheet.cssRules.item(i);
+        if (rule.cssText?.startsWith("body:not(.navigation-with-keyboard)")) {
+          linkEl.sheet.deleteRule(i); // We can change the rule to only disable it within the boundary of example
+        }
       }
-    }
-  })
+    });
 }
