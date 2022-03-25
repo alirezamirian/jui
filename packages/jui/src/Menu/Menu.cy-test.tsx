@@ -2,14 +2,22 @@ import { mount } from "@cypress/react";
 import { composeStories } from "@storybook/testing-react";
 import * as React from "react";
 import * as stories from "./Menu.stories";
+import { Menu } from "@intellij-platform/core";
 
-const { Nested, MenuWithTrigger } = composeStories(stories);
+const { Nested, MenuWithTrigger, StaticWithTextItems } = composeStories(
+  stories
+);
 
 describe("Menu", () => {
   beforeEach(() => {
     // If mouse ends up in a bad position in the previous test suit, it breaks tests here. So we make sure to move
     // mouse out of the way before each test case.
     cy.get("body").realMouseMove(0, 0);
+  });
+
+  it("shows arrow in the right position when plain text is used in menu items", () => {
+    mount(<StaticWithTextItems />);
+    matchImageSnapshot("menu--plain-text-arrow-position");
   });
 
   it("supports keyboard", () => {
