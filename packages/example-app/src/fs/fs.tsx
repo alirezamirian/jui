@@ -1,22 +1,80 @@
-import LightningFS from "@isomorphic-git/lightning-fs";
+import * as BrowserFS from "browserfs";
 import React from "react";
 import {
-  createBrowserFsBackend,
-  CustomizedBrowserFsBackend,
-} from "./createBrowserFsBackend";
+  createFs,
+  createIndexedDBFS,
+  createInMemoryFS,
+  FSModuleWithPromises,
+  initializeFS,
+} from "./browser-fs";
+import { copyFs } from "./fs-utils";
 
-export let fs: CustomizedBrowserFsBackend | LightningFS;
+/**
+ * local fs, for when used in browser. Most of the things here would be a noop in node environment.
+ */
+export let fs: FSModuleWithPromises;
 
-let fsPromise = createFS().then((theFs) => (fs = theFs));
+const localStorageSetting = <Enum extends string>(key: string) => ({
+  get: () => localStorage.getItem(key) as Enum | undefined,
+  set: (value: Enum) => localStorage.setItem(key, value),
+});
+/**
+ * Global fs preferences for which the file system itself can't be used as storage.
+ */
+export const persistentFsPreference = localStorageSetting<"yes" | "no">(
+  "demo_app_use_persistent_fs"
+);
 
-async function createFS(): Promise<CustomizedBrowserFsBackend | LightningFS> {
-  // We ended up using BrowserFS InMemory, because of low performance of IndexedDB used in LightningFS.
-  // There might be room for investigation and improvement regarding FS backend, but an InMemory backend should be
-  // good enough for now, and we can simply toggle the following lines to switch to locally persisted IndexedDB-based
-  // backend. Note that since LightningFS persists data locally, it's slow only in the clone time
+// NOTE: Maybe we can make this module side-effect free by lazy initializing fsPromise, in WaitForFs, if it's enough
+// to assume any code requiring FS is executed via components rendered inside WaitForFs.
+// Also, we can gather exports of this file into an interface to make it easier to provide two implementations, for
+// browser and node.
+const fsPromise: Promise<FSModuleWithPromises> = (persistentFsPreference.get() ===
+"yes"
+  ? createIndexedDBFS()
+  : createInMemoryFS()
+)
+  .then(initializeFS)
+  .then((theFs) => {
+    (window as any).fs = theFs;
+    return (fs = theFs);
+  })
+  .catch((e) => {
+    console.log("could not initialize FS:", e);
+    throw e;
+  });
 
-  // return new LightningFS("fs", { wipe: false }); // LightningFS is slow because of IndexedDB :(
-  return createBrowserFsBackend();
+export function isFsInMemory() {
+  return fs.getRootFS() instanceof BrowserFS.FileSystem.InMemory;
+}
+
+export async function switchToPersistentFS({
+  onCopy = console.log,
+  cancelSignal,
+}: {
+  onCopy?: (filepath: string) => void;
+  cancelSignal?: unknown;
+} = {}) {
+  if (!isFsInMemory()) {
+    console.log("Already on persistent fs. Nothing to do.");
+    return;
+  }
+  console.log("Creating IndexedDB FS");
+  console.time("creating db");
+  const indexedDbFsBackend = await createIndexedDBFS();
+
+  await copyFs({
+    source: fs,
+    target: await createFs(indexedDbFsBackend),
+    cancelSignal,
+    force: true,
+    onCopy,
+  });
+  console.timeEnd("creating db");
+
+  initializeFS(indexedDbFsBackend);
+  // persistentFsPreference.set("yes");
+  console.log("FS switched to IndexedDB backend", indexedDbFsBackend);
 }
 
 const fsResource = wrapPromise(fsPromise);

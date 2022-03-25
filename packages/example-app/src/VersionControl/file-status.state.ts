@@ -65,16 +65,14 @@ export const useUpdateFileStatus = () =>
     ({ snapshot, set }: CallbackInterface) => async (filepath: string) => {
       const repoRoot = await snapshot.getPromise(VcsRootForFile(filepath));
       if (repoRoot != null) {
-        set(
-          fileStatusState(filepath),
-          convertGitStatus(
-            await status({
-              fs,
-              dir: repoRoot,
-              filepath: path.relative(repoRoot, filepath),
-            })
-          )
-        );
+        console.time(`status ${filepath}`);
+        const fileStatus = await status({
+          fs,
+          dir: repoRoot,
+          filepath: path.relative(repoRoot, filepath),
+        });
+        console.timeEnd(`status ${filepath}`);
+        set(fileStatusState(filepath), convertGitStatus(fileStatus));
       }
     },
     []
@@ -88,7 +86,9 @@ export const useUpdateVcsFileStatuses = () =>
         vcsDirectoryMappings
           .filter(({ vcs }) => vcs === "git")
           .map(async ({ dir }) => {
+            console.time("statusMatrix");
             const rows = await statusMatrix({ fs, dir });
+            console.timeEnd("statusMatrix");
             transact_UNSTABLE(({ set }) => {
               rows.forEach((row) => {
                 set(fileStatusState(`${dir}/${row[0]}`), convertGitStatus(row));

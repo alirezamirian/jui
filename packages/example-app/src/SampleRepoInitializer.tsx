@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { sampleRepo } from "./Project/project.state";
-import { fs, WaitForFs } from "./fs/fs";
+import { fs } from "./fs/fs";
 import { clone } from "isomorphic-git";
 import http from "isomorphic-git/http/web";
 import styled from "styled-components";
@@ -30,18 +30,20 @@ async function isSuccessfullyCloned(dir: string) {
   try {
     const stats = await fs.promises.stat(dir);
     if (!stats.isDirectory()) {
-      console.info(`Not a successful Clone. "${dir}" is not a directory.`);
+      console.info(
+        `Already cloned repo was not found. "${dir}" is not a directory.`
+      );
       return false;
     }
     const files = await fs.promises.readdir(dir);
     if (files.length === 1 && files[0] === ".git") {
       console.info(
-        `Not a successful Clone. ".git" folder exists, but it's not successfully unpacked.`
+        `Already cloned repo was not found at "${dir}". ".git" folder exists, but it's not successfully unpacked.`
       );
       return false;
     }
   } catch (e) {
-    console.info(`Not a successful Clone. "${dir}" doesn't exist`);
+    console.info(`Already cloned repo was not found at "${dir}".`);
     return false;
   }
   return true;
@@ -77,21 +79,19 @@ export const SampleRepoInitializer: React.FC = ({ children }) => {
     return <>{children}</>;
   }
   return (
-    <WaitForFs>
-      <StyledDialog>
-        <StyledDialogHeader>Cloning sample repo</StyledDialogHeader>
-        <StyledDialogContent>
-          {state === "cloning" ? (
-            <>
-              Cloning <b>{sampleRepo.url}</b>. <br />
-              It may take several seconds.
-            </>
-          ) : (
-            <>Something went wrong!</>
-          )}
-        </StyledDialogContent>
-      </StyledDialog>
-    </WaitForFs>
+    <StyledDialog>
+      <StyledDialogHeader>Cloning sample repo</StyledDialogHeader>
+      <StyledDialogContent>
+        {state === "cloning" ? (
+          <>
+            Cloning <b>{sampleRepo.url}</b>. <br />
+            It may take several seconds.
+          </>
+        ) : (
+          <>Something went wrong!</>
+        )}
+      </StyledDialogContent>
+    </StyledDialog>
   );
 };
 
