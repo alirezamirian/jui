@@ -1,0 +1,65 @@
+---
+---
+
+# StatusBar
+
+[Status bar](https://jetbrains.github.io/ui/components/status_bar/) component rendered at the bottom of the main window.
+In the reference implementation, there are three slots for content: left, right and center.
+It doesn't seem center is really necessary, so only left and right are supported for now.
+
+`StatusBarWidget` is used to render clickable status bar buttons (aka. widgets).
+
+### Live example
+
+```jsx live themed
+<div style={{ margin: "48px -16px -16px" }}>
+  <StatusBar
+    right={
+      <>
+        <ProgressBar
+          value={40}
+          width={146}
+          name="Indexing Paused"
+          namePosition="side"
+          button={
+            <ProgressBarPauseButton small paused onPausedChange={() => {}} />
+          }
+          dense
+          style={{ marginLeft: 10 }}
+        />
+        <StatusBarWidget label="LF" />
+        <StatusBarWidget label="UTF-8" />
+        <MenuTrigger
+          direction="top"
+          renderMenu={({ menuProps, close }) => (
+            <Menu {...menuProps} onAction={close}>
+              <Item>Configure Indents for Typescript</Item>
+              <Item>Disable Indents Detection for Project</Item>
+            </Menu>
+          )}
+        >
+          {(props, ref) => (
+            <StatusBarWidget {...props} ref={ref} label="2 spaces" />
+          )}
+        </MenuTrigger>
+        <StatusBarWidget label="TypeScript 4.4.3" />
+        <StatusBarWidget
+          icon={<PlatformIcon icon="vcs/branch.svg" />}
+          label="feat/StatusBar"
+        />
+        <StatusBarWidget icon={<PlatformIcon icon="ide/readwrite.svg" />} />
+        <StatusBarWidget icon={<PlatformIcon icon="ide/fatalError.svg" />} />
+      </>
+    }
+    left={
+      <>
+        <PlatformIcon icon="general/tbHidden.svg" />
+        <div style={{ marginLeft: "0.75rem", cursor: "pointer" }} role="button">
+          Workspace associated with branch 'feat/balloons-provider' has been
+          restored // Rollback Configure...
+        </div>
+      </>
+    }
+  />
+</div>
+```

@@ -1,5 +1,5 @@
 import { styled } from "@intellij-platform/core/styled";
-import React from "react";
+import React, { ForwardedRef } from "react";
 import { amendName, PlatformIcon, PlatformIconProps } from "./PlatformIcon";
 
 export const StyledHoverContainer = styled.span`
@@ -11,7 +11,7 @@ export const StyledHoverContainer = styled.span`
       display: none;
     }
     .icon[data-hover] {
-      display: unset;
+      display: inline-flex;
     }
   }
 `;
@@ -31,24 +31,30 @@ const StyledIconHoverContainer = styled(StyledHoverContainer)`
  * Now the hover icon is shown when the parent is hovered, instead of the icon itself.
  *
  */
-export const AutoHoverPlatformIcon: React.FC<
-  PlatformIconProps & {
-    /**
-     * The icon to be used when hovered. If not provided, it will be the "somethingHovered" where "something" is the `icon`
-     */
-    hoverIcon?: string;
+export const AutoHoverPlatformIcon = React.forwardRef(
+  function AutoHoverPlatformIcon(
+    {
+      hoverIcon,
+      ...props
+    }: PlatformIconProps & {
+      /**
+       * The icon to be used when hovered. If not provided, it will be the "somethingHovered" where "something" is the `icon`
+       */
+      hoverIcon?: string;
+    },
+    ref: ForwardedRef<HTMLSpanElement>
+  ) {
+    const className = `icon ${props.className || ""}`;
+    return (
+      <StyledIconHoverContainer ref={ref}>
+        <PlatformIcon {...props} className={className} />
+        <PlatformIcon
+          {...props}
+          className={className}
+          icon={hoverIcon ?? amendName(props.icon, "Hover")}
+          data-hover
+        />
+      </StyledIconHoverContainer>
+    );
   }
-> = ({ hoverIcon, ...props }) => {
-  const className = `icon ${props.className || ""}`;
-  return (
-    <StyledIconHoverContainer>
-      <PlatformIcon {...props} className={className} />
-      <PlatformIcon
-        {...props}
-        className={className}
-        icon={hoverIcon ?? amendName(props.icon, "Hover")}
-        data-hover
-      />
-    </StyledIconHoverContainer>
-  );
-};
+);

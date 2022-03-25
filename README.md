@@ -89,7 +89,7 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
         </tr>
         <tr>
             <td colspan="3"><a href="https://jetbrains.github.io/ui/controls/progress_bar/">Progress Bar</a></td>
-            <td>❌</td>
+            <td>✅</td>
         </tr>
         <tr>
             <td colspan="3">Icon</td>
@@ -202,6 +202,10 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
         </tr>
         <tr>
             <td rowspan="1" colspan="3">ThreeViewSplitter</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="3"><a href="https://jetbrains.github.io/ui/components/status_bar/">StatusBar</a></td>
             <td>✅</td>
         </tr>
         <tr>

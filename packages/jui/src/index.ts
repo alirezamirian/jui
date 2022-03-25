@@ -23,3 +23,5 @@ export * from "./TreeCheckboxes";
 export * from "./ThreeViewSplitter/ThreeViewSplitter";
 export * from "./Balloon";
 export * from "./Link";
+export * from "./StatusBar";
+export * from "./ProgressBar";

@@ -28,6 +28,7 @@
     "@react-aria/listbox": "^3.4.2",
     "@react-aria/menu": "^3.4.1",
     "@react-aria/overlays": "^3.7.5",
+    "@react-aria/progress": "^3.1.6",
     "@react-aria/selection": "^3.7.3",
     "@react-aria/separator": "^3.1.5",
     "@react-aria/tabs": "^3.1.2",
