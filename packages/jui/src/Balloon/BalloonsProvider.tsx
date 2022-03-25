@@ -10,21 +10,29 @@ import ReactDOM from "react-dom";
 import { Balloon, BalloonProps } from "./Balloon";
 import { StyledBalloonsStack } from "./StyledBalloonsStack";
 
+type ShowProps = Pick<
+  BalloonProps,
+  "title" | "body" | "actions" | "headerActions"
+>;
+
 interface BalloonsAPI {
   /**
    * Shows a Balloon notification on the bottom left of the screen.
+   * @param props: Props to pass to the Balloon component
+   * @param [autoHideTimeout=10_000] timeout in ms for hiding the balloon notification.
    * @returns hide function, in case the notification can expire for some reason.
    */
-  show(
-    props: Pick<BalloonProps, "title" | "body" | "actions" | "headerActions">,
-    timeout?: number
-  ): () => void;
+  show(props: ShowProps, autoHideTimeout?: number): () => void;
+  showSticky(props: ShowProps): () => void;
 }
 
+const NotImplementedFn = () => {
+  throw new Error("You must render a BalloonsProvider...");
+};
+
 const BalloonsContext = React.createContext<BalloonsAPI>({
-  show: () => {
-    throw new Error("You must render a BalloonsProvider...");
-  },
+  show: NotImplementedFn,
+  showSticky: NotImplementedFn,
 });
 
 export const useBalloons = (): BalloonsAPI => useContext(BalloonsContext);
@@ -56,39 +64,43 @@ export const BalloonsProvider: React.FC<BalloonsProviderProps> = ({
 }) => {
   const [balloons, setBalloons] = useState<Array<BalloonElement>>([]);
   const timeoutIdsRef = useRef<number[]>([]);
+  const lastIdRef = useRef<number>(0);
 
-  const api = useMemo<BalloonsAPI>(
-    () => ({
-      show: (props, timeout = 0) => {
-        const onClose = () => {
-          setBalloons((balloons) =>
-            balloons.filter((aBalloon) => aBalloon !== balloon)
-          );
-        };
-        const balloon = (
-          <Balloon
-            {...props}
-            title={props.title} // TS acts unreasonable without this
-            onClose={onClose}
-          />
+  const api = useMemo<BalloonsAPI>(() => {
+    const show: BalloonsAPI["show"] = (props, timeout = 10_000) => {
+      lastIdRef.current++;
+      const onClose = () => {
+        setBalloons((balloons) =>
+          balloons.filter((aBalloon) => aBalloon !== balloon)
         );
-        setBalloons((balloons) => {
-          if (timeout > 0) {
-            const timeoutId = window.setTimeout(() => {
-              onClose();
-              timeoutIdsRef.current = timeoutIdsRef.current.filter(
-                (aTimeoutId) => aTimeoutId !== timeoutId
-              );
-            }, timeout);
-            timeoutIdsRef.current = [...timeoutIdsRef.current, timeoutId];
-          }
-          return balloons.concat(balloon);
-        });
-        return onClose;
-      },
-    }),
-    []
-  );
+      };
+      const balloon = (
+        <Balloon
+          key={lastIdRef.current}
+          {...props}
+          title={props.title} // TS acts unreasonable without this
+          onClose={onClose}
+        />
+      );
+      setBalloons((balloons) => {
+        if (timeout > 0) {
+          const timeoutId = window.setTimeout(() => {
+            onClose();
+            timeoutIdsRef.current = timeoutIdsRef.current.filter(
+              (aTimeoutId) => aTimeoutId !== timeoutId
+            );
+          }, timeout);
+          timeoutIdsRef.current = [...timeoutIdsRef.current, timeoutId];
+        }
+        return balloons.concat(balloon);
+      });
+      return onClose;
+    };
+    return {
+      show,
+      showSticky: (props) => show(props, 0),
+    };
+  }, []);
 
   // clear timeouts when unmounted
   useEffect(() => {
