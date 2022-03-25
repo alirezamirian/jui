@@ -7,8 +7,8 @@ import React, {
   useState,
 } from "react";
 import ReactDOM from "react-dom";
-import { Balloon, BalloonProps } from "@intellij-platform/core";
-import { StyledBalloonsStack } from "@intellij-platform/core/Balloon/StyledBalloonsStack";
+import { Balloon, BalloonProps } from "./Balloon";
+import { StyledBalloonsStack } from "./StyledBalloonsStack";
 
 interface BalloonsAPI {
   /**

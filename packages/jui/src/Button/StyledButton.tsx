@@ -1,4 +1,5 @@
-import { styled, UnknownThemeProp } from "@intellij-platform/core";
+import { styled } from "@intellij-platform/core/styled";
+import { UnknownThemeProp } from "@intellij-platform/core/Theme";
 
 export const StyledButton = styled.button<{ isDisabled?: boolean }>`
   box-sizing: border-box;
