@@ -2,7 +2,7 @@ import { atom, useSetRecoilState } from "recoil";
 import { BalloonActionLink, useBalloons } from "@intellij-platform/core";
 import React, { useEffect } from "react";
 // @ts-expect-error caf doesn't have typing :/
-import CAF from "caf";
+import { CAF } from "caf";
 import { persistentFsPreference, switchToPersistentFS } from "./fs/fs";
 import path from "path";
 

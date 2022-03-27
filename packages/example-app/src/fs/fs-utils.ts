@@ -4,7 +4,7 @@ import path from "path";
 import FS from "browserfs/dist/node/core/FS";
 import { PromisifiedFS } from "./browser-fs";
 // @ts-expect-error caf doesn't have typing :/
-import CAF from "caf";
+import { CAF } from "caf";
 
 type CopyFsParams = {
   source: FS;
