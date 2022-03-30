@@ -125,28 +125,31 @@ export const FileEditor = () => {
           }}
         </EditorTabs>
       )}
-      {activeTab && (
-        <Editor
-          height="100%"
-          path={activeTab.filePath}
-          onMount={(monacoEditor, monaco) => {
-            monacoEditor.focus();
-            enableJsx(monaco);
-            editorRef.current = monacoEditor;
-            monacoEditor.onDidChangeCursorPosition((e) => {
-              setCursorPositionState(e.position);
-            });
-            monacoEditor.onDidChangeModel(() => {
-              const position = editorRef.current?.getPosition();
-              if (position) {
-                setCursorPositionState(position);
-              }
-            });
-          }}
-          onChange={updateContent}
-          value={typeof content === "string" ? content : "UNSUPPORTED CONTENT"}
-        />
-      )}
+      {activeTab &&
+        (typeof content === "string" ? (
+          <Editor
+            height="100%"
+            path={activeTab.filePath}
+            onMount={(monacoEditor, monaco) => {
+              monacoEditor.focus();
+              enableJsx(monaco);
+              editorRef.current = monacoEditor;
+              monacoEditor.onDidChangeCursorPosition((e) => {
+                setCursorPositionState(e.position);
+              });
+              monacoEditor.onDidChangeModel(() => {
+                const position = editorRef.current?.getPosition();
+                if (position) {
+                  setCursorPositionState(position);
+                }
+              });
+            }}
+            onChange={updateContent}
+            value={content}
+          />
+        ) : (
+          content && "UNSUPPORTED CONTENT"
+        ))}
       {contentLoadable.state === "loading" && <FileEditorLoading />}
     </StyledFileEditorContainer>
   );
