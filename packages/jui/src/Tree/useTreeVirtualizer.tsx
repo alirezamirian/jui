@@ -1,11 +1,12 @@
 import { TreeState } from "@intellij-platform/core/Tree/__tmp__useTreeState";
 import React, { HTMLAttributes, useMemo } from "react";
-import { LayoutNode, ListLayout } from "@react-stately/layout";
+import { LayoutNode } from "@react-stately/layout";
 import { Node } from "@react-types/shared";
 import { VirtualizerProps } from "@react-aria/virtualizer";
 import { LayoutInfo, Rect } from "@react-stately/virtualizer";
+import { VariableWidthListLayout } from "@intellij-platform/core/VariableWidthListLayout";
 
-class FlattenedTreeLayout<T> extends ListLayout<T> {
+class FlattenedTreeLayout<T> extends VariableWidthListLayout<T> {
   buildChild(node: Node<T>, x: number, y: number): LayoutNode {
     const layoutNode = super.buildChild(node, x, y);
     if (
@@ -22,15 +23,6 @@ class FlattenedTreeLayout<T> extends ListLayout<T> {
       .getVisibleLayoutInfos(rect)
       .filter((layoutInfo) => this.collection.getItem(layoutInfo.key) != null);
   }
-  // related to https://github.com/alirezamirian/jui/issues/6
-  // getContentSize(): Size {
-  //   return new Size(400, super.getContentSize().height);
-  // }
-  // buildNode(node: Node<T>, x: number, y: number): LayoutNode {
-  //   let layoutNode = super.buildNode(node, x, y);
-  //   layoutNode.layoutInfo.rect.width = 400;
-  //   return layoutNode;
-  // }
 }
 
 export const useTreeVirtualizer = <T extends object>({
@@ -66,6 +58,12 @@ export const useTreeVirtualizer = <T extends object>({
       collection: state.collection,
       layout,
       sizeToFit: "height",
+      scrollToItem: (key) => {
+        return layout.virtualizer.scrollToItem(key, {
+          shouldScrollX: false,
+          duration: 0,
+        });
+      },
       scrollDirection: "both",
     },
   };
