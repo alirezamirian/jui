@@ -1,7 +1,7 @@
 import { LayoutNode, ListLayout } from "@react-stately/layout";
+import React, { Key } from "react";
+import { InvalidationContext, Rect, Size } from "@react-stately/virtualizer";
 import { Node } from "@react-types/shared";
-import React from "react";
-import { LayoutInfo, Size } from "@react-stately/virtualizer";
 
 /**
  * Extends `ListLayout` and allows items of the list to have width based on the content. `ListLayout` by default
@@ -14,58 +14,62 @@ import { LayoutInfo, Size } from "@react-stately/virtualizer";
  * overridden like how `buildItem` is.
  */
 export class VariableWidthListLayout<T> extends ListLayout<T> {
+  /**
+   * content width of items are stored here, if the content width is bigger than the Virtualizer's visible rect's width.
+   */
+  keyToWidth = new Map<Key, number>();
+  private visibleContentWidth: number = 0;
+
   buildItem(node: Node<T>, x: number, y: number): LayoutNode {
-    const previousLayoutNode = this.layoutNodes.get(node.key);
     const layoutNode = super.buildItem(node, x, y);
-    if (previousLayoutNode) {
-      layoutNode.layoutInfo.rect.width =
-        previousLayoutNode.layoutInfo.rect.width;
+    if (this.visibleContentWidth) {
+      layoutNode.layoutInfo.rect.width = this.visibleContentWidth;
     }
     return layoutNode;
   }
 
   buildCollection(): LayoutNode[] {
+    this.visibleContentWidth = this.getVisibleContentWidth();
     const layoutNodes = super.buildCollection();
-    this.contentSize.width = Math.max(
-      ...this.virtualizer.visibleViews.map(
-        (view) => this.layoutInfos.get(view.layoutInfo?.key!)?.rect.width || 0
-      )
-    );
+    this.contentSize.width = this.visibleContentWidth;
     return layoutNodes;
   }
 
-  /**
-   * Because we keep the content width for each item in its layoutInfo, but we need the final layout info to have the
-   * same width as the list, we copy the layout and override the width. Not sure if the referential instability of the
-   * layoutInfo objects for the same key can have a performance implication, but it seemed it's at least not noticeable.
-   */
-  getLayoutInfo(key: React.Key): LayoutInfo {
-    const layoutInfo = super.getLayoutInfo(key).copy();
-    layoutInfo.rect.width = this.contentSize.width;
-    return layoutInfo;
+  shouldInvalidate(newRect: Rect, oldRect: Rect): boolean {
+    const shouldInvalidate = super.shouldInvalidate(newRect, oldRect);
+    return (
+      shouldInvalidate ||
+      this.getVisibleContentWidth() !== this.visibleContentWidth
+    );
+  }
+
+  // Setting lastWidth doesn't seem to be important, but we set it based on the content anyway.
+  validate(invalidationContext: InvalidationContext<Node<T>, unknown>) {
+    super.validate(invalidationContext);
+    this.lastWidth = this.contentSize.width;
   }
 
   updateItemSize(key: React.Key, size: Size): boolean {
     const changed = super.updateItemSize(key, size);
     let layoutInfo = this.layoutInfos.get(key);
-    // If no layoutInfo, item has been deleted/removed.
-    if (!layoutInfo) {
+    if (layoutInfo && size.width > this.contentSize.width) {
+      this.keyToWidth.set(key, size.width);
+      const newLayoutInfo = layoutInfo.copy();
+      this.layoutInfos.set(key, newLayoutInfo);
+      this.updateLayoutNode(key, layoutInfo, newLayoutInfo);
+      return true;
+    } else {
+      this.keyToWidth.delete(key);
       return changed;
     }
-    if (
-      layoutInfo.rect.width !== size.width ||
-      size.width !== this.contentSize.width
-    ) {
-      // Copy layout info rather than mutating so that later caches are invalidated.
-      const newLayoutInfo = layoutInfo.copy();
-      newLayoutInfo.rect.width = size.width;
-      this.layoutInfos.set(key, newLayoutInfo);
+  }
 
-      // Invalidate layout only for this layout node
-      this.updateLayoutNode(key, layoutInfo, newLayoutInfo);
-
-      return true;
-    }
-    return changed;
+  private getVisibleContentWidth() {
+    return Math.max(
+      this.virtualizer.visibleRect.width,
+      ...this.virtualizer.visibleViews.map(
+        (view) => this.keyToWidth.get(view.layoutInfo?.key!) || 0
+      )
+    );
   }
 }
