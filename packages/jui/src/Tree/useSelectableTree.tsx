@@ -1,7 +1,12 @@
 import React, { Key, RefObject, useMemo, useState } from "react";
-import { KeyboardDelegate, KeyboardEvent, Node } from "@react-types/shared";
+import {
+  DOMProps,
+  KeyboardDelegate,
+  KeyboardEvent,
+  Node,
+} from "@react-types/shared";
 import { useFocusWithin, useKeyboard } from "@react-aria/interactions";
-import { mergeProps } from "@react-aria/utils";
+import { filterDOMProps, mergeProps } from "@react-aria/utils";
 import { useCollator } from "@react-aria/i18n";
 import { useSelectableCollection } from "../selection/useSelectableCollection";
 import { TreeKeyboardDelegate } from "./TreeKeyboardDelegate";
@@ -10,7 +15,7 @@ import { TreeState } from "./__tmp__useTreeState";
 import { useLatest } from "@intellij-platform/core/utils/useLatest";
 import { TreeContextType } from "./TreeContext";
 
-export type SelectableTreeProps<T> = {
+export interface SelectableTreeProps<T> extends DOMProps {
   isVirtualized?: boolean;
   keyboardDelegate?: KeyboardDelegate;
   /**
@@ -19,7 +24,7 @@ export type SelectableTreeProps<T> = {
    */
   onAction?: (key: Key) => void;
   onNodeKeyDown?: (event: KeyboardEvent, node: Node<T>) => void;
-};
+}
 
 /**
  * NOTE: at the time of writing this hook, react-aria didn't have support for Tree. When useTree is implemented in
@@ -30,6 +35,7 @@ export function useSelectableTree<T>(
   state: TreeState<T>,
   ref: RefObject<HTMLElement>
 ) {
+  const domProps = filterDOMProps(props);
   const collator = useCollator({ usage: "search", sensitivity: "base" });
 
   const [focused, setFocused] = useState(false);
@@ -141,7 +147,12 @@ export function useSelectableTree<T>(
 
   return {
     // order of merging here is important. navigation handling should precede selection handling
-    treeProps: mergeProps(focusWithinProps, collectionProps, keyboardProps),
+    treeProps: mergeProps(
+      focusWithinProps,
+      collectionProps,
+      keyboardProps,
+      domProps
+    ),
     treeContext,
     focused,
   };
