@@ -57,6 +57,10 @@ export const useTreeVirtualizer = <T extends object>({
       focusedKey: state.selectionManager.focusedKey,
       collection: state.collection,
       layout,
+      // Not clear how this sizeToFit is supposed to work, due to lack of documentation, but don't be tempted to
+      // think it solves the problem VariableWidthListLayout is trying to solve, because it doesn't :D
+      // Also, note that setting this to "width" prevents re-layout when container width is increased, which
+      // causes issues.
       sizeToFit: "height",
       scrollToItem: (key) => {
         return layout.virtualizer.scrollToItem(key, {

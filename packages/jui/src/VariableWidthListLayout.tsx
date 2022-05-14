@@ -30,15 +30,21 @@ export class VariableWidthListLayout<T> extends ListLayout<T> {
 
   buildCollection(): LayoutNode[] {
     this.visibleContentWidth = this.getVisibleContentWidth();
+    // in buildChild, if invalidateEverything is false and y is not changed, it will reuse the existing layoutInfo.
+    // which can be problematic, if it was created in a time when the visible content width was different.
+    // A more efficient approach (instead of rebuilding the whole collection), might be to set layout width to
+    // visibleContentWidth, in getVisibleLayoutInfos, if mutation is ok.
+    // UPDATE: using getFinalLayoutInfo seems to be a legitimate last minute way to mutate layout infos.
+    this.invalidateEverything =
+      this.contentSize?.width !== this.visibleContentWidth;
     const layoutNodes = super.buildCollection();
     this.contentSize.width = this.visibleContentWidth;
     return layoutNodes;
   }
 
   shouldInvalidate(newRect: Rect, oldRect: Rect): boolean {
-    const shouldInvalidate = super.shouldInvalidate(newRect, oldRect);
     return (
-      shouldInvalidate ||
+      super.shouldInvalidate(newRect, oldRect) ||
       this.getVisibleContentWidth() !== this.visibleContentWidth
     );
   }
@@ -51,12 +57,9 @@ export class VariableWidthListLayout<T> extends ListLayout<T> {
 
   updateItemSize(key: React.Key, size: Size): boolean {
     const changed = super.updateItemSize(key, size);
-    let layoutInfo = this.layoutInfos.get(key);
+    const layoutInfo = this.layoutInfos.get(key);
     if (layoutInfo && size.width > this.contentSize.width) {
       this.keyToWidth.set(key, size.width);
-      const newLayoutInfo = layoutInfo.copy();
-      this.layoutInfos.set(key, newLayoutInfo);
-      this.updateLayoutNode(key, layoutInfo, newLayoutInfo);
       return true;
     } else {
       this.keyToWidth.delete(key);
@@ -67,9 +70,18 @@ export class VariableWidthListLayout<T> extends ListLayout<T> {
   private getVisibleContentWidth() {
     return Math.max(
       this.virtualizer.visibleRect.width,
-      ...this.virtualizer.visibleViews.map(
-        (view) => this.keyToWidth.get(view.layoutInfo?.key!) || 0
-      )
+      ...this.virtualizer.visibleViews.map((view) => {
+        const layoutInfo = view.layoutInfo;
+        const itemContentWidth =
+          layoutInfo && this.keyToWidth.get(layoutInfo.key);
+        if (
+          itemContentWidth &&
+          layoutInfo.rect.intersects(this.virtualizer.getVisibleRect())
+        ) {
+          return itemContentWidth;
+        }
+        return 0;
+      })
     );
   }
 }
