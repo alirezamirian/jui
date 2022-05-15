@@ -43,4 +43,7 @@ jobs:
       if: failure()
       with:
         name: cypress-screenshots
-        path: "**/__image_snapshots__"
+        path: |
+          packages/jui/**/__image_snapshots__
+          packages/jui/cypress/videos
+          packages/jui/cypress/screenshots
