@@ -14,7 +14,7 @@ const libSrcAlias = require("../../../config/lib-src-webpack-alias");
  */
 module.exports = {
   mode: "development",
-  devtool: false,
+  devtool: "inline-cheap-source-map",
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
     alias: {

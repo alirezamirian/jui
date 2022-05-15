@@ -37,7 +37,7 @@ describe("Tree", () => {
     matchImageSnapshot("Tree-horizontal-scrolled-midway");
     cy.get("[data-testid=tree]").scrollTo("bottom");
     matchImageSnapshot("Tree-horizontal-scrolled-all-the-way");
-    cy.get("[data-testid=tree]").scrollTo(0, 0);
+    cy.get("[data-testid=tree]").scrollTo("top");
     cy.get("[data-testid=tree]").should(notBeHorizontallyScrollable);
     mount(<ScrollAndContainerWidth width={200} />);
     cy.get("[data-testid=tree]").should(beHorizontallyScrollable);
