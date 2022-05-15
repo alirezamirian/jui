@@ -1,4 +1,5 @@
 {
+  "projectId": "o1ooqz",
   "component": {
     "testFiles": "**/*.cy-test.{js,ts,jsx,tsx}",
     "componentFolder": "src"

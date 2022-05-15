@@ -11,7 +11,7 @@
     "start": "yarn run storybook:start",
     "storybook:start": "start-storybook -p 6008",
     "storybook:build": "build-storybook",
-    "test": "yarn run jest && yarn run cypress",
+    "test": "yarn run jest && yarn run cypress --record",
     "type-check": "tsc && yarn run cypress:type-check",
     "jest": "jest",
     "jest:watch": "jest --watch",
