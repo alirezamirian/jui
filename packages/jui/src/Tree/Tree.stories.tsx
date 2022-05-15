@@ -1,5 +1,5 @@
 import { Item } from "@react-stately/collections";
-import { Meta } from "@storybook/react";
+import { Meta, Story } from "@storybook/react";
 import React, { Key, useState } from "react";
 import { Tree } from "./Tree";
 import { treeItems } from "./story-helpers";
@@ -97,3 +97,34 @@ export const Dynamic = () => {
     </div>
   );
 };
+
+const containerWidthItems: typeof treeItems = [
+  ...Array(30)
+    .fill(null)
+    .map((_, index) => ({ name: Array(index).fill("~~").join(" ") })),
+];
+export const ScrollAndContainerWidth: Story<{ width: number }> = ({
+  width,
+}) => {
+  return (
+    <>
+      <div style={{ width, height: 200 }}>
+        <Tree
+          data-testid="tree"
+          selectionMode="multiple"
+          fillAvailableSpace
+          items={containerWidthItems}
+          defaultSelectedKeys={["~~ ~~"]}
+        >
+          {(item) => (
+            <Item key={item.name} title={item.name} childItems={item.children}>
+              {item.name}
+            </Item>
+          )}
+        </Tree>
+      </div>
+    </>
+  );
+};
+ScrollAndContainerWidth.args = { width: 400 };
+ScrollAndContainerWidth.storyName = "Scroll & Container Width";

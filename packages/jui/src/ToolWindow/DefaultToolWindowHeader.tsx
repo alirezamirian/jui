@@ -22,6 +22,7 @@ const StyledToolWindowHeader = styled.div<{ active: boolean }>`
   display: flex;
   align-items: center;
   padding: 0 2px 0 4px;
+  overflow: hidden; // for the negative margin applied on StyledToolWindowHeaderActions
   border-bottom: 1px solid
     ${({ theme }) =>
       theme.color("ToolWindow.Header.borderColor" as UnknownThemeProp) ||

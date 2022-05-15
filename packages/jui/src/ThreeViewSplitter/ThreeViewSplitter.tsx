@@ -111,7 +111,11 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
   const normalizeSize = (
     size: number | undefined | null
   ): CSSProperties["width" | "height"] =>
-    size != null && isFractionSize(size) ? `${size * 100}%` : size ?? undefined;
+    size != null
+      ? isFractionSize(size)
+        ? `${size * 100}%`
+        : Math.round(size)
+      : undefined;
 
   const getSize = (elem: HTMLElement): number =>
     value(elem.offsetWidth, elem.offsetHeight);
