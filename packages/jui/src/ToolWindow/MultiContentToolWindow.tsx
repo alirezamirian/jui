@@ -1,11 +1,12 @@
 import React, { Key, useEffect, useState } from "react";
 import { useControlledState } from "@react-stately/utils";
-import { DefaultToolWindow } from "./DefaultToolWindow";
+import { DefaultToolWindow, DefaultToolWindowProps } from "./DefaultToolWindow";
 import { TabItem } from "../Tabs/TabItem";
 import { usePrevious } from "../utils/usePrevious";
 import { ToolWindowTabs } from "../Tabs/ToolWindowTabs/ToolWindowTabs";
 
-export interface MultiContentToolWindowProps {
+export interface MultiContentToolWindowProps
+  extends Pick<DefaultToolWindowProps, "additionalActions"> {
   /**
    * List of contents that will be accessible with a list of grouped or ungrouped tabs in the tool window header.
    */
@@ -130,6 +131,7 @@ export const MultiContentToolWindow = ({
           </>
         )
       }
+      additionalActions={props.additionalActions}
     >
       {activeContent?.props.children}
     </DefaultToolWindow>
@@ -146,8 +148,10 @@ export interface MultiContentToolWindowContentProps {
   children: React.ReactNode;
 }
 
-export const MultiContentToolWindowContent = ({}: MultiContentToolWindowContentProps) => {
+const MultiContentToolWindowContent = ({}: MultiContentToolWindowContentProps) => {
   throw new Error(
     "MultiContentToolWindowContent is not meant to be rendered directly. You should only use it in MultiContentToolWindow"
   );
 };
+
+MultiContentToolWindow.Content = MultiContentToolWindowContent;

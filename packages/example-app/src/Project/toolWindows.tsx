@@ -5,7 +5,6 @@ import { ProjectViewActionButtons } from "../ProjectView/ProjectViewActionButton
 import {
   DefaultToolWindow,
   MultiContentToolWindow,
-  MultiContentToolWindowContent,
   ToolWindowState,
   toolWindowState,
 } from "@intellij-platform/core";
@@ -52,7 +51,7 @@ const windows: ToolWindowDescriptor[] = [
     icon: "toolwindows/toolWindowCommit",
     element: (
       <MultiContentToolWindow>
-        <MultiContentToolWindowContent
+        <MultiContentToolWindow.Content
           tabContent={
             <>
               Commit to <CurrentBranchName />
@@ -61,7 +60,7 @@ const windows: ToolWindowDescriptor[] = [
           key="commit"
         >
           <ChangesViewPane />
-        </MultiContentToolWindowContent>
+        </MultiContentToolWindow.Content>
       </MultiContentToolWindow>
     ),
     initialState: toolWindowState({ anchor: "left", isVisible: false }),

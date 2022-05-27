@@ -3,10 +3,7 @@ import { Meta } from "@storybook/react";
 import { StyledIconLiveIndicator } from "../../Icon";
 import { SpeedSearchList } from "../../List/SpeedSearchList/SpeedSearchList";
 import { ToolWindowTabContent } from "../../Tabs/ToolWindowTabs";
-import {
-  MultiContentToolWindow,
-  MultiContentToolWindowContent,
-} from "../MultiContentToolWindow";
+import { MultiContentToolWindow } from "../MultiContentToolWindow";
 import {
   FakeExecutionToolbar,
   RunConsoleOutput,
@@ -26,6 +23,7 @@ import {
   ToolWindowsState,
   toolWindowState,
 } from "../ToolWindowsState/ToolWindowsState";
+import { HighlightedTextValue } from "@intellij-platform/core";
 
 export default {
   title: "Components/ToolWindow",
@@ -208,7 +206,7 @@ export const MultiContent = (
             }}
           >
             {executions.map((execution) => (
-              <MultiContentToolWindowContent
+              <MultiContentToolWindow.Content
                 key={execution.id}
                 tabContent={
                   <ToolWindowTabContent
@@ -231,20 +229,22 @@ export const MultiContent = (
                   )}
                   <RunConsoleOutput />
                 </VerticalFlexContainer>
-              </MultiContentToolWindowContent>
+              </MultiContentToolWindow.Content>
             ))}
           </MultiContentToolWindow>
         );
       }}
     >
-      <div style={{ padding: 8 }}>
+      <div style={{ marginTop: 25, width: 300 }}>
         <SpeedSearchList
           onAction={(key) => runScript(`${key}`)}
           selectionMode="single"
         >
           <Section title="Run a script">
             {Object.keys(packageJson.scripts).map((name) => (
-              <Item key={name}>{name}</Item>
+              <Item key={name} textValue={name}>
+                <HighlightedTextValue />
+              </Item>
             ))}
           </Section>
         </SpeedSearchList>
