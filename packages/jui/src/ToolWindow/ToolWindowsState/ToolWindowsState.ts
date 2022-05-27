@@ -34,20 +34,37 @@ export type WindowBounds = {
  * NOTE: consider renaming to `WindowState` to avoid confusion with `ToolWindowsState`
  */
 export interface ToolWindowState {
+  /**
+   * The order of the tool window in its group. The group is specified by `anchor` and `isSplit`.
+   */
   order: number;
   /**
    * Whether the tool window is visible (open) or not.
+   * NOTE: A maximum of 1 **docked** tool window within the same group (same `anchor` and `isSplit`) can be visible.
+   * You will get a render error in `ToolWindows` component otherwise.
    */
   isVisible: boolean;
+  /**
+   * Relative size (in the scale of 0-1) of the tool window in its anchor, when rendered is primary group, i.e. when
+   * `isSplit` is false
+   */
   weight: number;
+  /**
+   * Relative size (in the scale of 0-1) of the tool window in its anchor, when rendered is the secondary group. i.e.
+   * when `isSplit` is true.
+   */
   sideWeight: number;
+  /**
+   * The side of the tool window, being "left", "right", "top" or "bottom"
+   */
   anchor: Anchor;
   /**
-   * if the tool window should be shown in the split view, when rendered not in
-   * "float", or "window" mode.
+   * Specifies whether the tool window should be shown in the split view, aka "Secondary group".
    */
   isSplit: boolean;
   /**
+   * Tool windows view mode. See {@link ViewMode}
+   *
    * NOTE: in Intellij Platform, there is a window `type` and also `docked` and
    * `autoHide`.
    * keeping one viewMode makes more sense and prevents invalid combinations
@@ -55,7 +72,7 @@ export interface ToolWindowState {
    */
   viewMode: ViewMode;
   /**
-   * Boundaries of the tool window, when rendered in "float" or "window" modes.
+   * Boundaries of the tool window, when rendered in "float" view mode.
    */
   floatingBounds?: WindowBounds;
 }

@@ -25,15 +25,6 @@ const config = {
     "@docusaurus/theme-live-codeblock",
     myPlugin,
     isomorphicGitWebpackConfigPlugin,
-    [
-      // We might as well remove this and add the alias in our custom plugin, now that we have one
-      "docusaurus-plugin-module-alias",
-      {
-        alias: {
-          "@intellij-platform/core": path.resolve(__dirname, "../jui/src"),
-        },
-      },
-    ],
   ],
   presets: [
     [
@@ -58,6 +49,9 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      tableOfContents: {
+        maxHeadingLevel: 4,
+      },
       announcementBar: {
         id: "library-state-warning",
         content:
@@ -154,12 +148,18 @@ function myPlugin() {
   return {
     name: "my-docusaurus-plugin",
     configureWebpack(config, isServer) {
+      const resolve = {
+        alias: {
+          "@intellij-platform/core": path.resolve(__dirname, "../jui/src"),
+        },
+      };
       if (config.mode === "production" && !isServer) {
         return {
           devtool: "source-map",
+          resolve,
         };
       }
-      return {};
+      return { resolve };
     },
   };
 }

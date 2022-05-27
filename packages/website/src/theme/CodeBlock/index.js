@@ -10,7 +10,6 @@ import { useTheme } from "styled-components";
 import Playground from "@theme/Playground";
 import ReactLiveScope from "@theme/ReactLiveScope";
 import CodeBlock from "@theme-init/CodeBlock";
-import { withExampleContext } from "../../components/ExampleContext";
 
 const withLiveEditor = (Component) => {
   function WithLiveEditor(props) {
@@ -42,6 +41,4 @@ const withThemeBackground = (Component) => {
   return WithThemeBackground;
 };
 
-export default withExampleContext(
-  withThemeBackground(withLiveEditor(CodeBlock))
-);
+export default withThemeBackground(withLiveEditor(CodeBlock));

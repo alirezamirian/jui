@@ -9,6 +9,9 @@ export interface DefaultToolWindowProps {
    * title to be shown on the left side of the tool window header.
    */
   headerContent?: React.ReactNode;
+  /**
+   * additional action buttons to be rendered before the default gear and hide buttons.
+   */
   additionalActions?: React.ReactNode;
   onFocusChange?: (focused: boolean) => void;
 }

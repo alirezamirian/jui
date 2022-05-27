@@ -17,13 +17,15 @@ export const ExampleContext: React.FC<{
     darcula: darculaTheme,
   } as const)[themeName];
 
-  // @ts-expect-error ThemeJson type is not accurate ATM
+  // IMPORTANT: passing a function that returns Theme is crucial in get it working. Otherwise, ThemeProvider will try
+  // to "merge" themes, and the end result is an POJO, with prototype link lost.
+  // @ts-expect-error ThemeJson type is not accurate ATM.
   const theme = useMemo(() => new Theme(themeJson), [themeJson]);
 
   useFixDocusaurusStyleBleeds();
   return (
     <SSRProvider>
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+      <ThemeProvider theme={() => theme}>{children}</ThemeProvider>
     </SSRProvider>
   );
 };
@@ -62,8 +64,12 @@ const useFixDocusaurusStyleBleeds = () => {
   useEffect(() => {
     const FLAG_CLASSNAME = "example-context-patch";
     if (!document.body.classList.contains(FLAG_CLASSNAME)) {
-      undoUseKeyboardNavigation();
-      document.body.classList.add(FLAG_CLASSNAME);
+      try {
+        undoUseKeyboardNavigation();
+        document.body.classList.add(FLAG_CLASSNAME);
+      } catch (e) {
+        console.error("Could not undo useKeyboardNavigation");
+      }
     }
   }, []);
 };

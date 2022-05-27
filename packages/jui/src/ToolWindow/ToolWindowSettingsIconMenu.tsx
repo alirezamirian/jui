@@ -166,12 +166,16 @@ export function ToolWindowSettingsIconMenu({
     id: "MaximizeToolWindow",
     title: "Maximize Tool Window",
     shortcut: "⇧⌘'",
-    perform: () => {},
+    perform: () => {
+      // TODO(release): either remove the action or implement it
+      alert("Not implemented");
+    },
   });
   const removeFromSideBarAction: ActionItem = {
     id: "removeFromSidebar",
     title: "Remove from Sidebar",
     perform: () => {
+      // TODO(release): either remove the action or implement it
       alert("Not implemented");
     },
   };
