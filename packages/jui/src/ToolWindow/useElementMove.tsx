@@ -68,7 +68,7 @@ export function useElementMove<S>({
           typeof ghostOption === "function"
             ? ghostOption(defaultGhost) || defaultGhost
             : defaultGhost;
-        ghost.style.position = "absolute";
+        ghost.style.position = "fixed";
         document.body.append(ghost);
         updateGhostPosition(from);
       }
