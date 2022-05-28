@@ -1,6 +1,6 @@
 import React from "react";
-import { Meta } from "@storybook/react";
-import { List } from "./List";
+import { Meta, Story } from "@storybook/react";
+import { List, ListProps } from "./List";
 import { legends } from "../../test-data";
 import { Item, Section } from "@react-stately/collections";
 import { Divider } from "../Collections/Divider";
@@ -16,10 +16,15 @@ export default {
   component: List,
 } as Meta;
 
-export const Default = () => {
+export const Default: Story<ListProps<never>> = (props) => {
   return (
     <Pane>
-      <List selectionMode="single" items={legends} fillAvailableSpace>
+      <List
+        selectionMode="single"
+        items={legends}
+        fillAvailableSpace
+        {...props}
+      >
         {itemRenderer(renderItemText)}
       </List>
     </Pane>

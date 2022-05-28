@@ -27,6 +27,7 @@ export function ListItem<T>({
   const { itemProps } = useSelectableItem({
     key: item.key,
     ref,
+    onAction,
     selectionManager: state.selectionManager,
   });
   let { pressProps } = usePress({
@@ -42,7 +43,6 @@ export function ListItem<T>({
       disabled={disabled}
       aria-disabled={disabled}
       aria-selected={selected}
-      onDoubleClick={onAction}
       {...pressProps}
       ref={ref}
     >

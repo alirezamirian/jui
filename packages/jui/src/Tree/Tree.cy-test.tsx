@@ -45,6 +45,16 @@ describe("Tree", () => {
     cy.get("[data-testid=tree]").should(notBeHorizontallyScrollable);
     matchImageSnapshot("Tree-horizontal-scrolled-resized");
   });
+
+  it("calls onAction for leaves on click or Enter", () => {
+    const onAction = cy.stub().as("onAction");
+    mount(<Static onAction={onAction} />);
+
+    cy.contains("index.ts").dblclick();
+    cy.get("@onAction").should("be.calledOnceWith", "index.ts");
+    cy.contains("index.ts").type("{enter}");
+    cy.get("@onAction").should("be.calledTwice");
+  });
 });
 
 const notBeHorizontallyScrollable = ($el: JQuery) => {

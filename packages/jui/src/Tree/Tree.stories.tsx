@@ -1,7 +1,7 @@
 import { Item } from "@react-stately/collections";
 import { Meta, Story } from "@storybook/react";
 import React, { Key, useState } from "react";
-import { Tree } from "./Tree";
+import { Tree, TreeProps } from "./Tree";
 import { treeItems } from "./story-helpers";
 import { Pane, SelectionLog } from "../story-components";
 
@@ -10,7 +10,7 @@ export default {
   Component: Tree,
 } as Meta;
 
-export const Static = () => {
+export const Static: Story<TreeProps<never>> = (props) => {
   const [selectedKeys, setSelectedKeys] = useState<"all" | Set<Key>>(
     new Set(["Theme", "index.ts"])
   );
@@ -24,6 +24,7 @@ export const Static = () => {
           selectedKeys={selectedKeys}
           disabledKeys={["SpeedSearchList.tsx"]}
           onSelectionChange={setSelectedKeys}
+          {...props}
         >
           <Item key="index.ts">index.ts</Item>
           <Item title="List" key="List">
