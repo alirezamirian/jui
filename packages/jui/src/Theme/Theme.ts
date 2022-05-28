@@ -12,7 +12,7 @@ import { isMac } from "@react-aria/utils";
 import { cache } from "./cache.decorator";
 
 /**
- * Just to able locate all keys that are not yet typed and maybe fix them later at some point.
+ * Just to be able to locate all keys that are not yet typed and maybe fix them later at some point.
  */
 export type UnknownThemeProp = any;
 
@@ -117,8 +117,8 @@ export class Theme<P extends string = string> {
    * Resolves platform icon path to svg.
    * by default it fetches the svg icon from Github, but there are other Theme implementations
    */
-  @cache
-  async getSvgIcon(path: string): Promise<string> {
+  @cache({ cacheAsyncErrors: true })
+  getSvgIcon(path: string): Promise<string> {
     return this.iconResolver.resolve(
       !path.endsWith(".svg") ? `${path}.svg` : path
     );
@@ -130,7 +130,7 @@ export class Theme<P extends string = string> {
    * - Supports both of these forms: {"x.y": "value"} and {x: {y: "value"}}
    * @example `theme.value("Menu.borderColor")`
    */
-  @cache
+  @cache()
   value<T extends ThemePropertyValue>(path: P): T {
     return resolveOsDependentValue(
       resolvePath(path, this.themeJson.ui),
