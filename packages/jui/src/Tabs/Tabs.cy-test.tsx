@@ -69,7 +69,9 @@ describe("Tabs", () => {
     compareSnapshot("tabs-selected-tab-scrolled-into-view-aligned-to-start");
 
     // Clicking on half shown tab, at the end, should scroll it enough so that it's aligned to the end
-    cy.get('[role="tab"]').contains("#7").click({ scrollBehavior: false });
+    cy.get('[role="tab"]')
+      .contains("#7")
+      .click("left", { scrollBehavior: false });
     assertPageNotScrolled();
     compareSnapshot("tabs-selected-tab-scrolled-into-view-aligned-to-end");
   });
