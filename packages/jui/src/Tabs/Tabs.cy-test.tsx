@@ -35,6 +35,7 @@ describe("Tabs", () => {
   });
 
   it("makes sure selected tab is scrolled into view as expected", () => {
+    cy.viewport(520, 520);
     mount(
       <div>
         <div style={{ height: 200 }} />
