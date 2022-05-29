@@ -22,6 +22,7 @@ describe("Menu", () => {
 
   it("supports keyboard", () => {
     mount(<Nested />);
+    cy.get('[role="menu"]').focused(); // make sure the menu is auto-focused
     cy.realPress("ArrowDown"); // initially menu has focus. This moves focus to the first item.
     testKeyboardNavigation("menu--keyboard-behaviour");
   });
@@ -98,7 +99,9 @@ describe("Menu with trigger", () => {
  */
 function testKeyboardNavigation(snapshotsName: string) {
   cy.realPress("Enter"); // open submenu with enter
-  cy.focused().should("have.attr", "role", "menu"); // focus should now be on the submenu
+  cy.focused()
+    .should("have.attr", "role", "menu")
+    .should("contain.text", "Undock"); // focus should now be on the submenu
   cy.realPress("ArrowDown"); // move focus to first item in the submenu
   cy.realPress("ArrowDown"); // move focus to the second item in the submenu
 
