@@ -126,10 +126,12 @@ export const Tabs = <T extends object>({
 
   useEffect(() => {
     if (!noScroll) {
-      if (ref.current) {
-        ref.current
-          .querySelector(`[data-key="${state.selectedKey}"]`)
-          ?.scrollIntoView?.();
+      const scrollableContainer = ref.current;
+      const selectedTabElement = scrollableContainer?.querySelector(
+        `[data-key="${state.selectedKey}"]`
+      ) as HTMLElement;
+      if (scrollableContainer && selectedTabElement) {
+        scrollIntoView(scrollableContainer, selectedTabElement);
       }
     } else {
       // TODO maybe? sample use case: project tool window tabs, when not grouped.

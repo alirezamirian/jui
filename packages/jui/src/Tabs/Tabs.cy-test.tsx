@@ -1,3 +1,4 @@
+/// <reference types="cypress-plugin-snapshots" />
 import { mount } from "@cypress/react";
 import { composeStories } from "@storybook/testing-react";
 import React from "react";
@@ -32,9 +33,49 @@ describe("Tabs", () => {
     cy.get('[role="tab"]').contains("#7").should("be.visible");
     matchImageSnapshot("tabs-multi-row");
   });
+
+  it("makes sure selected tab is scrolled into view as expected", () => {
+    mount(
+      <div>
+        <div style={{ height: 200 }} />
+        <Overflow id="tabs" />
+        <div style={{ height: 1200 }} />
+      </div>
+    );
+    // We should make sure whatever "scroll into view" logic we have, doesn't mess with the page's scroll
+    const assertPageNotScrolled = () =>
+      cy.window().its("scrollY").should("equal", 0);
+
+    // because there are lots of empty space to test scrolling, it would be more accruate to only compare
+    // elements snapshot, instead of the whole page. It would probably not something to consider, if switched
+    // to Percy or any other visual testing service.
+    const compareSnapshot = (name: string) => {
+      cy.get("[data-loading-icon]").should("not.exist");
+      cy.get("#tabs").toMatchImageSnapshot({ name });
+    };
+
+    assertPageNotScrolled();
+
+    // Clicking on an overflowed tab, from the menu, should scroll it enough so that it's aligned to the end
+    cy.get('button[aria-haspopup="true"]').click({ scrollBehavior: false });
+    cy.get('[role="menuitem"]').contains("#7").click({ scrollBehavior: false });
+    assertPageNotScrolled();
+    compareSnapshot("tabs-selected-tab-scrolled-into-view-aligned-to-end");
+
+    // Clicking on half shown tab, at the start, should scroll it enough so that it's aligned to the start
+    cy.get('[role="tab"]').contains("#4").click({ scrollBehavior: false });
+    assertPageNotScrolled();
+    compareSnapshot("tabs-selected-tab-scrolled-into-view-aligned-to-start");
+
+    // Clicking on half shown tab, at the end, should scroll it enough so that it's aligned to the end
+    cy.get('[role="tab"]').contains("#7").click({ scrollBehavior: false });
+    assertPageNotScrolled();
+    compareSnapshot("tabs-selected-tab-scrolled-into-view-aligned-to-end");
+  });
 });
 
 function matchImageSnapshot(snapshotsName: string) {
+  cy.get("[data-loading-icon]").should("not.exist");
   cy.document().toMatchImageSnapshot({
     name: snapshotsName,
     // imageConfig: {
