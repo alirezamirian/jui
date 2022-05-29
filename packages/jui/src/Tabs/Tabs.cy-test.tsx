@@ -38,7 +38,7 @@ describe("Tabs", () => {
     mount(
       <div>
         <div style={{ height: 200 }} />
-        <Overflow id="tabs" />
+        <Overflow />
         <div style={{ height: 1200 }} />
       </div>
     );
@@ -46,12 +46,10 @@ describe("Tabs", () => {
     const assertPageNotScrolled = () =>
       cy.window().its("scrollY").should("equal", 0);
 
-    // because there are lots of empty space to test scrolling, it would be more accruate to only compare
-    // elements snapshot, instead of the whole page. It would probably not something to consider, if switched
-    // to Percy or any other visual testing service.
+    // Local visual testing turned out problematic. switching to percy, at least for this test case
     const compareSnapshot = (name: string) => {
       cy.get("[data-loading-icon]").should("not.exist");
-      cy.get("#tabs").toMatchImageSnapshot({ name });
+      cy.percySnapshot(name);
     };
 
     assertPageNotScrolled();
