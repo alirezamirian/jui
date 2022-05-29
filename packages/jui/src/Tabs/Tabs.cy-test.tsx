@@ -3,9 +3,15 @@ import { composeStories } from "@storybook/testing-react";
 import React from "react";
 import * as stories from "./2-Tabs.stories";
 
-const { Overflow } = composeStories(stories);
+const { Overflow, StaticItems } = composeStories(stories);
 
 describe("Tabs", () => {
+  it("passes common dom props to the root element", () => {
+    mount(<StaticItems id="tabs" data-foo="bar" />);
+    cy.get("#tabs");
+    cy.get("[data-foo=bar]");
+  });
+
   it("shows overflowed items in overflow menu", () => {
     mount(<Overflow />);
     matchImageSnapshot("tabs-overflow-menu");

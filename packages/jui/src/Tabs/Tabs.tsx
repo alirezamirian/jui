@@ -1,6 +1,6 @@
 import React, { Key, useEffect } from "react";
 import { useTabList } from "@react-aria/tabs";
-import { mergeProps } from "@react-aria/utils";
+import { filterDOMProps, mergeProps, scrollIntoView } from "@react-aria/utils";
 import { useTabListState } from "@react-stately/tabs";
 import { AriaTabListProps } from "@react-types/tabs";
 import { StyledHorizontalOverflowShadows } from "./StyledHorizontalOverflowShadows";
@@ -142,7 +142,7 @@ export const Tabs = <T extends object>({
     throw new Error("noScroll is not supported yet.");
   }
   return (
-    <TabsComponent noBorders={noBorders}>
+    <TabsComponent noBorders={noBorders} {...filterDOMProps(props)}>
       <StyledHorizontalOverflowShadows
         hasOverflowAtStart={isScrolled.left}
         hasOverflowAtEnd={isScrolled.right}
