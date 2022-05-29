@@ -1,4 +1,4 @@
-import { mount } from "@cypress/react";
+import { mount, MountReturn } from "@cypress/react";
 import { composeStories } from "@storybook/testing-react";
 import * as React from "react";
 import * as stories from "./Tree.stories";
@@ -29,21 +29,22 @@ describe("Tree", () => {
    * instead of implicitly determined based on the content.
    */
   it("takes the necessary width based on the visible item's content", () => {
-    mount(<ScrollAndContainerWidth />);
-    cy.get("[data-testid=tree]").should(notBeHorizontallyScrollable);
-    cy.get("[data-testid=tree]").scrollTo(0, 230);
-    cy.get("[data-testid=tree]").should(beHorizontallyScrollable);
-    cy.get("[data-testid=tree]").scrollTo("right");
-    matchImageSnapshot("Tree-horizontal-scrolled-midway");
-    cy.get("[data-testid=tree]").scrollTo("bottom");
-    matchImageSnapshot("Tree-horizontal-scrolled-all-the-way");
-    cy.get("[data-testid=tree]").scrollTo("top");
-    cy.get("[data-testid=tree]").should(notBeHorizontallyScrollable);
-    mount(<ScrollAndContainerWidth width={200} />);
-    cy.get("[data-testid=tree]").should(beHorizontallyScrollable);
-    mount(<ScrollAndContainerWidth width={300} />);
-    cy.get("[data-testid=tree]").should(notBeHorizontallyScrollable);
-    matchImageSnapshot("Tree-horizontal-scrolled-resized");
+    mount(<ScrollAndContainerWidth />).then(({ rerender }) => {
+      cy.get("[data-testid=tree]").should(notBeHorizontallyScrollable);
+      cy.get("[data-testid=tree]").scrollTo(0, 230);
+      cy.get("[data-testid=tree]").should(beHorizontallyScrollable);
+      cy.get("[data-testid=tree]").scrollTo("right");
+      matchImageSnapshot("Tree-horizontal-scrolled-midway");
+      cy.get("[data-testid=tree]").scrollTo("bottom");
+      matchImageSnapshot("Tree-horizontal-scrolled-all-the-way");
+      cy.get("[data-testid=tree]").scrollTo("top");
+      cy.get("[data-testid=tree]").should(notBeHorizontallyScrollable);
+      rerender(<ScrollAndContainerWidth width={200} />);
+      cy.get("[data-testid=tree]").should(beHorizontallyScrollable);
+      rerender(<ScrollAndContainerWidth width={300} />);
+      cy.get("[data-testid=tree]").should(notBeHorizontallyScrollable);
+      matchImageSnapshot("Tree-horizontal-scrolled-resized");
+    });
   });
 
   it("calls onAction for leaves on click or Enter", () => {
