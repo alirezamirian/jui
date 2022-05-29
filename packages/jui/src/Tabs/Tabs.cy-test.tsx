@@ -62,7 +62,9 @@ describe("Tabs", () => {
     compareSnapshot("tabs-selected-tab-scrolled-into-view-aligned-to-end");
 
     // Clicking on half shown tab, at the start, should scroll it enough so that it's aligned to the start
-    cy.get('[role="tab"]').contains("#4").click({ scrollBehavior: false });
+    cy.get('[role="tab"]')
+      .contains("#4")
+      .click("right", { scrollBehavior: false });
     assertPageNotScrolled();
     compareSnapshot("tabs-selected-tab-scrolled-into-view-aligned-to-start");
 
