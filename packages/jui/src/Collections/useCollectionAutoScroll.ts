@@ -1,5 +1,6 @@
 import { SelectionManager } from "@react-stately/selection";
 import { RefObject, useEffect } from "react";
+import { scrollIntoView } from "@react-aria/utils";
 
 type CollectionAutoScrollProps = {
   isVirtualized?: boolean;
@@ -22,34 +23,4 @@ export function useCollectionAutoScroll(
       }
     }
   }, [isVirtualized, ref, selectionManager.focusedKey]);
-}
-
-/**
- * Scrolls `scrollView` so that `element` is visible.
- * Similar to `element.scrollIntoView({block: 'nearest'})` (not supported in Edge),
- * but doesn't affect parents above `scrollView`.
- */
-function scrollIntoView(scrollView: HTMLElement, element: HTMLElement) {
-  let offsetX = element.offsetLeft - scrollView.offsetLeft;
-  let offsetY = element.offsetTop - scrollView.offsetTop;
-  let width = element.offsetWidth;
-  let height = element.offsetHeight;
-  let x = scrollView.scrollLeft;
-  let y = scrollView.scrollTop;
-  let maxX = x + scrollView.offsetWidth;
-  let maxY = y + scrollView.offsetHeight;
-
-  if (offsetX <= x) {
-    x = offsetX;
-  } else if (offsetX + width > maxX) {
-    x += offsetX + width - maxX;
-  }
-  if (offsetY <= y) {
-    y = offsetY;
-  } else if (offsetY + height > maxY) {
-    y += offsetY + height - maxY;
-  }
-
-  scrollView.scrollLeft = x;
-  scrollView.scrollTop = y;
 }

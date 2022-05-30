@@ -1,8 +1,9 @@
-import { Meta } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import { MenuItemLayout, PlatformIcon } from "@intellij-platform/core";
 import React from "react";
 import { TabContentLayout, TabItem, TabsProps } from ".";
 import { Tabs } from "./Tabs";
+import { DOMProps } from "@react-types/shared";
 
 type StoryProps<T extends TabsProps<unknown> = TabsProps<unknown>> = Pick<
   T,
@@ -12,6 +13,7 @@ type StoryProps<T extends TabsProps<unknown> = TabsProps<unknown>> = Pick<
   | "multiRow"
   | "noOverflowMenu"
   | "noBorders"
+  | keyof DOMProps
 >;
 
 export default {
@@ -22,7 +24,7 @@ export default {
   },
 } as Meta;
 
-export const StaticItems = (props: StoryProps) => {
+export const StaticItems: StoryFn<StoryProps> = (props) => {
   return (
     <Tabs {...props}>
       <TabItem>Tab 1</TabItem>
@@ -43,10 +45,10 @@ export const DynamicItems = (props: StoryProps) => {
   );
 };
 
-export const Overflow = ({
+export const Overflow: StoryFn<StoryProps & { maxWidth: number }> = ({
   maxWidth = 800,
   ...props
-}: StoryProps & { maxWidth: number }) => {
+}) => {
   const tabs = Array(10)
     .fill(null)
     .map((_, index) => ({

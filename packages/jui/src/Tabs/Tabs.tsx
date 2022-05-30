@@ -1,6 +1,6 @@
 import React, { Key, useEffect } from "react";
 import { useTabList } from "@react-aria/tabs";
-import { mergeProps } from "@react-aria/utils";
+import { filterDOMProps, mergeProps, scrollIntoView } from "@react-aria/utils";
 import { useTabListState } from "@react-stately/tabs";
 import { AriaTabListProps } from "@react-types/tabs";
 import { StyledHorizontalOverflowShadows } from "./StyledHorizontalOverflowShadows";
@@ -126,10 +126,12 @@ export const Tabs = <T extends object>({
 
   useEffect(() => {
     if (!noScroll) {
-      if (ref.current) {
-        ref.current
-          .querySelector(`[data-key="${state.selectedKey}"]`)
-          ?.scrollIntoView?.();
+      const scrollableContainer = ref.current;
+      const selectedTabElement = scrollableContainer?.querySelector(
+        `[data-key="${state.selectedKey}"]`
+      ) as HTMLElement;
+      if (scrollableContainer && selectedTabElement) {
+        scrollIntoView(scrollableContainer, selectedTabElement);
       }
     } else {
       // TODO maybe? sample use case: project tool window tabs, when not grouped.
@@ -142,7 +144,7 @@ export const Tabs = <T extends object>({
     throw new Error("noScroll is not supported yet.");
   }
   return (
-    <TabsComponent noBorders={noBorders}>
+    <TabsComponent noBorders={noBorders} {...filterDOMProps(props)}>
       <StyledHorizontalOverflowShadows
         hasOverflowAtStart={isScrolled.left}
         hasOverflowAtEnd={isScrolled.right}

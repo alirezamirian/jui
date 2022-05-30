@@ -1,5 +1,5 @@
 import { Item } from "@react-stately/collections";
-import { Meta } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import React from "react";
 import { ActionButton } from "../ActionButton/ActionButton";
 import { ActionToolbar } from "../ActionToolbar/ActionToolbar";
@@ -18,7 +18,7 @@ export default {
   },
 } as Meta;
 
-export const Static = () => {
+export const Static: StoryFn = () => {
   return (
     <Menu disabledKeys={["jumpToExternalEditor"]}>
       <Item textValue="Cut">
@@ -65,7 +65,7 @@ export const Static = () => {
   );
 };
 
-export const StaticWithTextItems = () => (
+export const StaticWithTextItems: StoryFn = () => (
   <Menu>
     <Item>Restart Typescript Service</Item>
     <Item title="Compile">
@@ -118,7 +118,7 @@ const items: Array<MenuItem> = [
   },
 ];
 
-export const Nested = () => {
+export const Nested: StoryFn = () => {
   return (
     <Menu items={items} selectedKeys={["Pinned"]} autoFocus>
       {renderItem}
@@ -134,15 +134,11 @@ export const Position = ({ offsetRight = 230 }: { offsetRight: number }) => {
   );
 };
 
-export const MenuWithTrigger = ({
-  offsetRight,
-  offsetBottom,
-  restoreFocus,
-}: {
+export const MenuWithTrigger: StoryFn<{
   offsetRight?: number;
   offsetBottom?: number;
   restoreFocus?: boolean;
-}) => {
+}> = ({ offsetRight, offsetBottom, restoreFocus }) => {
   return (
     <div
       style={{
