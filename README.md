@@ -80,8 +80,8 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
             <td>✅</td>
         </tr>
         <tr>
-            <td colspan="2">Tree node checkboxes <sup>3</sup></td>
-            <td>❌</td>
+            <td colspan="2">Tree with checkboxes 🧬</td>
+            <td>✅</td>
         </tr>
         <tr>
             <td colspan="3"><a href="https://jetbrains.github.io/ui/controls/tooltip/">Tooltip</a></td>
@@ -209,7 +209,7 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
             <td>✅</td>
         </tr>
         <tr>
-            <td rowspan="16"><a href="https://jetbrains.github.io/ui/components/tool_window/">Tool window</a></td>
+            <td rowspan="19"><a href="https://jetbrains.github.io/ui/components/tool_window/">Tool window</a></td>
         </tr>
         <tr>
             <td colspan="2">Basic functionality</td>
@@ -236,7 +236,15 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
         </tr>
         <tr>
             <td colspan="2">Hide action</td>
-            <td>✔️</td>
+            <td>✅️</td>
+        </tr>
+        <tr>
+            <td colspan="2">Remove from sidebar action</td>
+            <td>️❌</td>
+        </tr>
+        <tr>
+            <td colspan="2">Maximize action</td>
+            <td>❌</td>
         </tr>
         <tr>
             <td colspan="2">Resize</td>
@@ -263,7 +271,11 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
             <td>❌</td>
         </tr>
         <tr>
-            <td colspan="2">Multiple content view with tab/dropdown switcher in the header</td>
+            <td colspan="2">Multiple view with tab switcher in the header</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td colspan="2">Multiple view with dropdown switcher in the header</td>
             <td>❌</td>
         </tr>
         <tr>
@@ -278,9 +290,8 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
 1. Not exactly a list feature. But more about checking feasibility of it
 2. It seems in Intellij UI, such menu lists are only used in popups. Maybe only
    FlatSpeedSearchPopup
-3. Probably not a feature of Tree itself
-4. Most probably will not be implemented.
-5. Keyboard shortcuts for resizing windows depend on action system implementation and not done yet.
+3. Most probably will not be implemented.
+4. Keyboard shortcuts for resizing windows depend on action system implementation and not done yet.
    Also "Remove from sidebar" doesn't fit with how tool windows is implemented at the moment.
 
 [//]: # "TODO: Contribution: - document code generation commands"
