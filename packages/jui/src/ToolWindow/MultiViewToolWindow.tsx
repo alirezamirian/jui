@@ -37,9 +37,7 @@ export interface MultiContentToolWindowProps
    */
   headerContent?:
     | React.ReactNode
-    | ((props: {
-        renderedContentSwitcher: React.ReactNode;
-      }) => React.ReactNode);
+    | ((props: { renderedViewSwitcher: React.ReactNode }) => React.ReactNode);
 }
 
 /**
@@ -50,7 +48,7 @@ export interface MultiContentToolWindowProps
  * - Grouped mode is not implemented currently, as we don't have a dropdown component. Though it seems it's just a
  *   MenuTrigger and some trigger with a arrow icon.
  */
-export const MultiContentToolWindow = ({
+export const MultiViewToolWindow = ({
   groupTabs,
   children,
   headerContent,
@@ -72,7 +70,7 @@ export const MultiContentToolWindow = ({
       if (!validChild) {
         // FIXME: only warn in dev mode
         console.warn(
-          "You are not supposed to render anything but MultiContentToolWindowContent inside MultiContentToolWindow. Rendered: ",
+          "You are not supposed to render anything but MultiContentToolWindowContent inside MultiViewToolWindow. Rendered: ",
           child
         );
       }
@@ -82,7 +80,7 @@ export const MultiContentToolWindow = ({
   const renderContentSwitcher = () => {
     if (groupTabs) {
       console.error(
-        "groupTab is not supported yet in MultiContentToolWindow. Will fallback to ungrouped tabs"
+        "groupTab is not supported yet in MultiViewToolWindow. Will fallback to ungrouped tabs"
       );
     }
     return (
@@ -97,7 +95,7 @@ export const MultiContentToolWindow = ({
       </ToolWindowTabs>
     );
   };
-  const renderedContentSwitcher = renderContentSwitcher();
+  const renderedViewSwitcher = renderContentSwitcher();
 
   // We set the active key if it's not set or is invalid. A common scenario is when tabs are closable, and when the
   // active tab is closed. You would always want to previous tab to get activated in such cases, instead of the first
@@ -123,11 +121,11 @@ export const MultiContentToolWindow = ({
       onFocusChange={setToolWindowFocused}
       headerContent={
         typeof headerContent === "function" ? (
-          headerContent({ renderedContentSwitcher })
+          headerContent({ renderedViewSwitcher })
         ) : (
           <>
             {headerContent}
-            {renderedContentSwitcher}
+            {renderedViewSwitcher}
           </>
         )
       }
@@ -150,8 +148,8 @@ export interface MultiContentToolWindowContentProps {
 
 const MultiContentToolWindowContent = ({}: MultiContentToolWindowContentProps) => {
   throw new Error(
-    "MultiContentToolWindowContent is not meant to be rendered directly. You should only use it in MultiContentToolWindow"
+    "MultiContentToolWindowContent is not meant to be rendered directly. You should only use it in MultiViewToolWindow"
   );
 };
 
-MultiContentToolWindow.Content = MultiContentToolWindowContent;
+MultiViewToolWindow.View = MultiContentToolWindowContent;

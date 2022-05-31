@@ -120,7 +120,7 @@ const App = () => {
 render(<App />);
 ```
 
-### MultiContentToolWindow
+### MultiViewToolWindow
 
 Built on top of [DefaultToolWindow](#defaulttoolwindow), extends it to support multiple views within the same tool
 window, switched by either [Tabs](./tabs#tool-window-theme) or a dropdown.
@@ -130,57 +130,57 @@ Grouping tabs in a dropdown is not implemented at the moment, and passing `true`
 [Github issue](https://github.com/alirezamirian/jui/issues/18)
 :::
 
-Use `MultiContentToolWindow.Content` in a `MultiContentToolWindow`, to render many views. Each view must have a unique
+Use `MultiViewToolWindow.View` in a `MultiViewToolWindow`, to render many views. Each view must have a unique
 key.
-You can control the active view of a `MultiContentToolWindow` through `activeKey`, and `onActiveKeyChange` props.
+You can control the active view of a `MultiViewToolWindow` through `activeKey`, and `onActiveKeyChange` props.
 Or you can leave it uncontrolled and set `defaultActiveKey` if needed.
 
 ```tsx
-<MultiContentToolWindow>
-  <MultiContentToolWindow.Content tabContent={<>First view</>} key="v1">
+<MultiViewToolWindow>
+  <MultiViewToolWindow.View tabContent={<>First view</>} key="v1">
     ...
-  </MultiContentToolWindow.Content>
-  <MultiContentToolWindow.Content tabContent={<>Second view</>} key="v2">
+  </MultiViewToolWindow.View>
+  <MultiViewToolWindow.View tabContent={<>Second view</>} key="v2">
     ...
-  </MultiContentToolWindow.Content>
-</MultiContentToolWindow>
+  </MultiViewToolWindow.View>
+</MultiViewToolWindow>
 ```
 
 `ToolWindowTabContent` can be used in tabContent, to show a tab with an icon, a text and maybe a optional close button.
 
-#### Multi content tool window header
+#### Multi view tool window header
 
 Similar to [DefaultToolWindow](#defaulttoolwindow), `additionalActions` and `headerContent` props can be used to
-define the content that goes into the header of a multi content tool window. However, content switcher UI (whether
+define the content that goes into the header of a multi view tool window. View switcher UI (whether
 it be tabs or dropdown) is rendered immediately after `headerContent`.
-If you need more flexibility, you can pass a render function to `headerContent`. Rendered content switcher
+If you need more flexibility, you can pass a render function to `headerContent`. Rendered view switcher
 is then passed to that function to be placed in the returned UI:
 
 ```tsx
-<MultiContentToolWindow
-  headerContent={({ renderedContentSwitcher }) => (
+<MultiViewToolWindow
+  headerContent={({ renderedViewSwitcher }) => (
     <>
       {<span style={{ marginRight: 4 }}>Some title:</span>}
       {/* if there is only one view, render something else instead of the content switcher */}
-      {executions.length > 1 ? renderedContentSwitcher : <SomethingElse />}
+      {executions.length > 1 ? renderedViewSwitcher : <SomethingElse />}
     </>
   )}
 >
   {executions.map((execution) => (
-    <MultiContentToolWindow.Content
+    <MultiViewToolWindow.View
       key={execution.id}
       tabContent={execution.title}
     >
       ...
-    </MultiContentToolWindow.Content>
+    </MultiViewToolWindow.View>
   ))}
-</MultiContentToolWindow>
+</MultiViewToolWindow>
 <></> // FIXME: this is a hack for fixing webstorm issue in formatting mdx files.
 ```
 
-#### MultiContentToolWindow story
+#### MultiViewToolWindow story
 
-<EmbeddedStory storyId="components-toolwindow--multi-content" height={450} />
+<EmbeddedStory storyId="components-toolwindow--multi-view" height={450} />
 
 ## ToolWindowsState
 

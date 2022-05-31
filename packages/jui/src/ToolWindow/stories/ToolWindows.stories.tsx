@@ -3,7 +3,7 @@ import { Meta } from "@storybook/react";
 import { StyledIconLiveIndicator } from "../../Icon";
 import { SpeedSearchList } from "../../List/SpeedSearchList/SpeedSearchList";
 import { ToolWindowTabContent } from "../../Tabs/ToolWindowTabs";
-import { MultiContentToolWindow } from "../MultiContentToolWindow";
+import { MultiViewToolWindow } from "../MultiViewToolWindow";
 import {
   FakeExecutionToolbar,
   RunConsoleOutput,
@@ -146,7 +146,7 @@ const open = (toolWindow: typeof windows[number]): typeof windows[number] => ({
   initialState: { ...toolWindow.initialState, isVisible: true },
 });
 
-export const MultiContent = (
+export const MultiView = (
   props: Pick<ToolWindowsProps, "hideToolWindowBars" | "useWidescreenLayout">
 ) => {
   const filteredWindows = indexBy(
@@ -183,9 +183,9 @@ export const MultiContent = (
       )}
       renderWindow={(id) => {
         return (
-          <MultiContentToolWindow
+          <MultiViewToolWindow
             key={id}
-            headerContent={({ renderedContentSwitcher }) => {
+            headerContent={({ renderedViewSwitcher }) => {
               return (
                 <>
                   {
@@ -194,7 +194,7 @@ export const MultiContent = (
                     </span>
                   }
                   {executions.length > 1 ? (
-                    renderedContentSwitcher
+                    renderedViewSwitcher
                   ) : (
                     <FakeExecutionToolbar
                       execution={executions[0]}
@@ -206,7 +206,7 @@ export const MultiContent = (
             }}
           >
             {executions.map((execution) => (
-              <MultiContentToolWindow.Content
+              <MultiViewToolWindow.View
                 key={execution.id}
                 tabContent={
                   <ToolWindowTabContent
@@ -229,9 +229,9 @@ export const MultiContent = (
                   )}
                   <RunConsoleOutput />
                 </VerticalFlexContainer>
-              </MultiContentToolWindow.Content>
+              </MultiViewToolWindow.View>
             ))}
-          </MultiContentToolWindow>
+          </MultiViewToolWindow>
         );
       }}
     >
@@ -253,10 +253,10 @@ export const MultiContent = (
   );
 };
 
-MultiContent.parameters = {
+MultiView.parameters = {
   layout: "fullscreen",
   controls: { exclude: styledComponentsControlsExclude },
-  component: MultiContentToolWindow,
+  component: MultiViewToolWindow,
 };
 
 Default.parameters = {
