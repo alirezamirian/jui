@@ -1,7 +1,7 @@
-diff --git a/node_modules/@react-stately/layout/dist/module.js b/node_modules/@react-stately/layout/dist/module.js
-index b3e3992..45fd465 100644
---- a/node_modules/@react-stately/layout/dist/module.js
-+++ b/node_modules/@react-stately/layout/dist/module.js
+diff --git a/dist/module.js b/dist/module.js
+index b3e3992e52cb0f7c533ccef8ba3411d2e474b34b..45fd4651e801b0293ec9e85437d6a59271d165d0 100644
+--- a/dist/module.js
++++ b/dist/module.js
 @@ -51,7 +51,8 @@ class $279c20a4a0c8d128$export$cacbb3924155d68e extends $dqiJs$Layout {
      buildCollection() {
          let y = this.padding;
