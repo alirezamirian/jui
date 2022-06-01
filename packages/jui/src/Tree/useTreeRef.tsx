@@ -1,6 +1,6 @@
-import { SelectableTreeProps } from "./useSelectableTree";
-import { useLatest } from "@intellij-platform/core/utils/useLatest";
 import { ForwardedRef, Key, useImperativeHandle } from "react";
+import { SelectionManager } from "@react-stately/selection";
+import { useLatest } from "@intellij-platform/core/utils/useLatest";
 
 export interface TreeRef {
   focus(key: Key): void;
@@ -12,7 +12,7 @@ export interface TreeRef {
  * specific key, etc.
  */
 export function useTreeRef(
-  props: Pick<SelectableTreeProps<unknown>, "selectionManager">,
+  props: { selectionManager: SelectionManager },
   forwardedRef?: ForwardedRef<TreeRef>
 ) {
   const latestState = useLatest(props);

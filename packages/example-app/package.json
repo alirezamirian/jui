@@ -1,6 +1,7 @@
 {
   "name": "jui-example-app",
   "version": "0.0.0",
+  "private": true,
   "scripts": {
     "test": "echo \"Not implemented\""
   },
@@ -14,6 +15,7 @@
     "monaco-editor": "^0.28.1",
     "pify": "^5.0.0",
     "ramda": "^0.27.1",
+    "react": "17",
     "recoil": "^0.6.1",
     "styled-components": "^5.2.3",
     "xterm-for-react": "^1.0.4"

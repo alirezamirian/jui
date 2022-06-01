@@ -28,18 +28,24 @@ jobs:
     - name: Install Dependencies 🔧
       run: yarn
 
+    - name: Type Check ʦ
+      run: yarn run type-check
+
+    - name: Build 🔨
+      run: yarn run build
+
     - name: Run Tests ✅
       if: ${{ env.IS_PR_MERGED == 'true' || env.IS_PR_WITH_PERCY == 'true' }}
       env:
         PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-      run: yarn workspaces run test
+      run: yarn run test
 
     - name: Run Tests (without percy) ✅
       if: ${{ !(env.IS_PR_MERGED == 'true' || env.IS_PR_WITH_PERCY == 'true') }}
       env:
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-      run: yarn workspaces run test
+      run: yarn run test
 
     - uses: actions/upload-artifact@v2
       name: Upload Cypress screenshots if tests failed 🤕

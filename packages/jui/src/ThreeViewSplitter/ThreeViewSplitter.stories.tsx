@@ -84,11 +84,12 @@ export const RelativeSizing = (props: Partial<ThreeViewSplitterProps>) => {
 const argTypes: ComponentArgTypes<ThreeViewSplitterProps> = {
   orientation: {
     defaultValue: "horizontal",
-    type: "radio",
-    options: [
-      "horizontal",
-      "vertical",
-    ] as ThreeViewSplitterProps["orientation"][],
+    type: {
+      name: "enum",
+      value: ["horizontal", "vertical"] as Array<
+        Required<ThreeViewSplitterProps>["orientation"]
+      >,
+    },
   },
   innerViewMinSize: { defaultValue: 50, type: "number" },
   firstView: { defaultValue: "First view", type: "string" },

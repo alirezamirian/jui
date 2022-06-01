@@ -1,8 +1,8 @@
+import React from "react";
 import {
   SpeedSearchTree,
   SpeedSearchTreeProps,
 } from "@intellij-platform/core/Tree";
-import React from "react";
 import { NestedSelectionState } from "./NestedSelection";
 
 /**
