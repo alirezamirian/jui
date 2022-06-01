@@ -7,7 +7,7 @@
     "build": "yarn workspaces foreach --no-private exec parcel build",
     "type-check": "yarn workspaces foreach run type-check",
     "test": "yarn workspaces foreach run test",
-    "publish": "yarn workspaces foreach npm publish --tolerate-republish"
+    "release": "yarn workspaces foreach --no-private npm publish --tolerate-republish"
   },
   "devDependencies": {
     "@parcel/packager-ts": "^2.6.0",

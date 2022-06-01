@@ -1,6 +1,6 @@
 {
   "name": "@intellij-platform/core",
-  "version": "1.0.0",
+  "version": "0.0.1-rc.2",
   "description": "Intellij Platform implementation in React.js",
   "keywords": [],
   "license": "ISC",
@@ -106,5 +106,8 @@
   "peerDependencies": {
     "react": ">=16.8",
     "react-dom": ">=16.8"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -1,0 +1,49 @@
+name: CD (after merge to master)
+on:
+  push:
+    branches:
+      - master
+jobs:
+  deploy-website:
+    name: Deploy website to Github Pages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.1
+
+      - name: Install and Build 🔧
+        run: |
+          yarn
+          yarn workspace website run build
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          branch: gh-pages
+          folder: packages/website/build
+  maybe-release-packages:
+    name: Release package(s) if needed
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.1
+
+      - name: Check NPM Auth 🔐
+        run: |
+          yarn npm whoami
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Install Dependencies 🔧
+        run: |
+          yarn
+
+      - name: Build 🔨
+        run: |
+          yarn run build
+
+      - name: Publish on NPM 📦
+        run: |
+          yarn run release
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
