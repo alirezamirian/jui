@@ -1,4 +1,4 @@
-import { Meta } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import React, { Key, useState } from "react";
 import {
   Pane,
@@ -15,7 +15,7 @@ export default {
   Component: SpeedSearchTree,
 } as Meta;
 
-export const Static = () => {
+export const Static: StoryFn = () => {
   const [selectedKeys, setSelectedKeys] = useState<"all" | Set<Key>>(
     new Set(["Theme", "index.ts"])
   );
@@ -35,7 +35,7 @@ export const Static = () => {
   );
 };
 
-export const Dynamic = () => {
+export const Dynamic: StoryFn = () => {
   // Note: selection being initialized to "Theme" and "index.ts" is important in testing some stuff in cypress tests.
   // It must not be changed.
   const [selectedKeys, setSelectedKeys] = useState<"all" | Set<Key>>(

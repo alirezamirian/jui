@@ -1,7 +1,7 @@
-diff --git a/node_modules/@react-aria/overlays/dist/module.js b/node_modules/@react-aria/overlays/dist/module.js
-index a7d107b..b4f2ec5 100644
---- a/node_modules/@react-aria/overlays/dist/module.js
-+++ b/node_modules/@react-aria/overlays/dist/module.js
+diff --git a/dist/module.js b/dist/module.js
+index a7d107bc7d0c45b07fe85da4153fe4e7f33bb372..b4f2ec555c204f9758184ccdc710f76ff5411aa1 100644
+--- a/dist/module.js
++++ b/dist/module.js
 @@ -232,7 +232,7 @@ function $57cf16c65f4d0c5c$export$18fc8428861184da(opts) {
              // Ignore if scrolling an scrollable region outside the trigger's tree.
              let target = e.target;

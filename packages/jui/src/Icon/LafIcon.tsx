@@ -13,7 +13,8 @@ interface IconModifiers {
   Editable?: boolean;
   Pressed?: boolean;
 }
-interface ThemeIconProps extends IconProps {
+
+export interface ThemeIconProps extends IconProps {
   /**
    * Icon which will be resolved against the default icon location based on theme type
    */

@@ -1,0 +1,13 @@
+diff --git a/src/utils/tasks/imageSnapshots.js b/src/utils/tasks/imageSnapshots.js
+index d1d5dfa9580a797cec2380c48e27d78eb00ed969..bef4de84b6c41b1daed365ebce5acb72a38e69d7 100644
+--- a/src/utils/tasks/imageSnapshots.js
++++ b/src/utils/tasks/imageSnapshots.js
+@@ -106,7 +106,7 @@ function compareImages(expected, actual, diffFilename, config) {
+
+     const imageConfig = merge({}, DEFAULT_IMAGE_CONFIG, config);
+     const pixelmatchConfig = {
+-      threshold: 0.01,
++      threshold: 0.1,
+     };
+
+     const imageWidth = actual.image.width;

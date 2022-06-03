@@ -47,5 +47,6 @@ export const useControllableSet = <T>(
     onChange! // bad typing in useControlledState
   );
 
+  // @ts-expect-error FIXME https://github.com/adobe/react-spectrum/issues/2320
   return [value, useSetStateSetter(setValue)] as const;
 };
