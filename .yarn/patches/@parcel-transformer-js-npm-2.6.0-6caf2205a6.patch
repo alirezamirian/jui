@@ -1,0 +1,14 @@
+# Workaround for building example-app standalone.
+# The published bundle is still broken until this is fixed: https://github.com/parcel-bundler/parcel/issues/4399
+diff --git a/src/esmodule-helpers.js b/src/esmodule-helpers.js
+index 21b672e3afbba91c6743408f713fa590481f6e7c..76ec57d9aa8adec74fc176a247dd5dcd1f1065e8 100644
+--- a/src/esmodule-helpers.js
++++ b/src/esmodule-helpers.js
+@@ -26,6 +26,7 @@ exports.exportAll = function (source, dest) {
+ exports.export = function (dest, destName, get) {
+   Object.defineProperty(dest, destName, {
+     enumerable: true,
++    configurable: true,
+     get: get,
+   });
+ };

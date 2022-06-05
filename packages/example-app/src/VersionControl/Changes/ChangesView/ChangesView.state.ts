@@ -6,7 +6,7 @@ import { groupings } from "./changesGroupings";
 import { VcsDirectoryMapping } from "../../file-status";
 import { dfsVisit } from "../../../TreeUtils/tree-utils";
 import { NestedSelection, NestedSelectionState } from "@intellij-platform/core";
-import { createMapSetInterface } from "@intellij-platform/core/utils/useSet";
+import { createSetInterface } from "@intellij-platform/core";
 
 export interface ChangeBrowserNode<T extends string> {
   type: T;
@@ -107,7 +107,7 @@ export const selectedChangesNestedSelection = selector<
     return new NestedSelection(
       {
         items: selectedChangeKeys,
-        ...createMapSetInterface(setSelectedKeys),
+        ...createSetInterface(setSelectedKeys),
       },
       {
         rootNodes,

@@ -4,8 +4,10 @@ import { ImmutableSet } from "./immutableSet";
 
 /**
  * Creates map interface out of a setter of form (currentValue: Map) => Map
+ * Use {@link useControllableSet} instead if you need a Set state in a React component.
+ * This is useful for use outside React components, such as state management libraries.
  */
-export const createMapSetInterface = <T>(
+export const createSetInterface = <T>(
   set: (value: (prevState: Set<T>) => Set<T>) => void
 ) => ({
   add: (...values: T[]) =>
@@ -26,10 +28,10 @@ export const createMapSetInterface = <T>(
     ),
 });
 
-export function useSetStateSetter<T>(
+function useStateSetterForSet<T>(
   setValue: (value: (prevState: Set<T>) => Set<T>, ...args: any[]) => void
 ) {
-  return useMemo(() => createMapSetInterface(setValue), [setValue]);
+  return useMemo(() => createSetInterface(setValue), [setValue]);
 }
 
 /**
@@ -48,5 +50,5 @@ export const useControllableSet = <T>(
   );
 
   // @ts-expect-error FIXME https://github.com/adobe/react-spectrum/issues/2320
-  return [value, useSetStateSetter(setValue)] as const;
+  return [value, useStateSetterForSet(setValue)] as const;
 };

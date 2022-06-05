@@ -6,6 +6,9 @@ import { SampleRepoInitializer } from "./SampleRepoInitializer";
 import { BalloonsProvider } from "@intellij-platform/core";
 import { WaitForFs } from "./fs/fs";
 
+/**
+ * Example app root component. It expects ThemeProvider to be provided based on where it's rendered.
+ */
 export const App = () => {
   return (
     // TODO: add an error boundary
@@ -22,3 +25,5 @@ export const App = () => {
     </DefaultSuspense>
   );
 };
+
+export default App;

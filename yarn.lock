@@ -2666,7 +2666,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@intellij-platform/core@workspace:packages/jui":
+"@intellij-platform/core@workspace:^, @intellij-platform/core@workspace:packages/jui":
   version: 0.0.0-use.local
   resolution: "@intellij-platform/core@workspace:packages/jui"
   dependencies:
@@ -2733,7 +2733,6 @@ __metadata:
     react: 17.0.2
     react-dom: 17.0.2
     storybook-addon-themes: 6.1.0
-    styled-components: ^5.2.3
     ts-loader: ^8
     typescript: "*"
     webpack: 4
@@ -2741,6 +2740,7 @@ __metadata:
   peerDependencies:
     react: ">=16.8"
     react-dom: ">=16.8"
+    styled-components: ^5
   languageName: unknown
   linkType: soft
 
@@ -4469,6 +4469,27 @@ __metadata:
   peerDependencies:
     "@parcel/core": ^2.6.0
   checksum: 837f93d04dc86c28697dca82f4da6575316fbb693bcff4c9a60a0232fcfb07dd61bf76938a7a4a0d65a043e78f28a9feeb6a8160af5111564da93632118e4263
+  languageName: node
+  linkType: hard
+
+"@parcel/transformer-js@patch:@parcel/transformer-js@npm:2.6.0#.yarn/patches/@parcel-transformer-js-npm-2.6.0-6caf2205a6.patch::locator=root-workspace-0b6124%40workspace%3A.":
+  version: 2.6.0
+  resolution: "@parcel/transformer-js@patch:@parcel/transformer-js@npm%3A2.6.0#.yarn/patches/@parcel-transformer-js-npm-2.6.0-6caf2205a6.patch::version=2.6.0&hash=40f8b0&locator=root-workspace-0b6124%40workspace%3A."
+  dependencies:
+    "@parcel/diagnostic": 2.6.0
+    "@parcel/plugin": 2.6.0
+    "@parcel/source-map": ^2.0.0
+    "@parcel/utils": 2.6.0
+    "@parcel/workers": 2.6.0
+    "@swc/helpers": ^0.3.15
+    browserslist: ^4.6.6
+    detect-libc: ^1.0.3
+    nullthrows: ^1.1.1
+    regenerator-runtime: ^0.13.7
+    semver: ^5.7.1
+  peerDependencies:
+    "@parcel/core": ^2.6.0
+  checksum: 590c8df6f5ff0f176e80fa962b04b74150fe496e88ecfdfb7a5b74fc61d6c6cdddd80a7a9b00a5f4b46863fa30c9a0a3e5254508ef48ac4b4b7bda4a4f774de1
   languageName: node
   linkType: hard
 
@@ -17127,6 +17148,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "jui-example-app@workspace:packages/example-app"
   dependencies:
+    "@intellij-platform/core": "workspace:^"
     "@isomorphic-git/lightning-fs": ^4.4.1
     "@monaco-editor/react": ^4.2.2
     "@types/isomorphic-git__lightning-fs": ^4.4.2
@@ -17138,6 +17160,7 @@ __metadata:
     pify: ^5.0.0
     ramda: ^0.27.1
     react: 17
+    react-dom: 17
     recoil: ^0.6.1
     styled-components: ^5.2.3
     xterm-for-react: ^1.0.4
@@ -21024,7 +21047,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:17.0.2, react-dom@npm:^17.0.1":
+"react-dom@npm:17, react-dom@npm:17.0.2, react-dom@npm:^17.0.1":
   version: 17.0.2
   resolution: "react-dom@npm:17.0.2"
   dependencies:
@@ -25298,6 +25321,7 @@ __metadata:
     "@docusaurus/module-type-aliases": ^2.0.0-beta.20
     "@docusaurus/preset-classic": ^2.0.0-beta.20
     "@docusaurus/theme-live-codeblock": ^2.0.0-beta.20
+    "@intellij-platform/core": "workspace:^"
     "@mdx-js/react": ^1.6.21
     "@react-aria/ssr": ^3.1.0
     "@svgr/webpack": ^5.5.0

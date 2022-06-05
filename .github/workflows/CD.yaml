@@ -40,10 +40,10 @@ jobs:
 
       - name: Build 🔨
         run: |
-          yarn run build
+          yarn run build:public
 
       - name: Publish on NPM 📦
         run: |
-          yarn run release
+          yarn run release:public
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

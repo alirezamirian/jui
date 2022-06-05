@@ -1,10 +1,9 @@
 import React, { useEffect, useMemo } from "react";
-import { ThemeProvider } from "styled-components";
 import { SSRProvider } from "@react-aria/ssr";
 import darculaTheme from "../../../jui/themes/darcula.theme.json";
 import highContrastTheme from "../../../jui/themes/HighContrast.theme.json";
 import lightTheme from "../../../jui/themes/intellijlaf.theme.json";
-import { Theme } from "../../../jui/src";
+import { Theme, ThemeProvider } from "../../../jui/src";
 
 export type ExampleContextThemeName = "light" | "darcula" | "highContrast";
 
@@ -25,7 +24,7 @@ export const ExampleContext: React.FC<{
   useFixDocusaurusStyleBleeds();
   return (
     <SSRProvider>
-      <ThemeProvider theme={() => theme}>{children}</ThemeProvider>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </SSRProvider>
   );
 };

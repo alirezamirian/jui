@@ -1,7 +1,7 @@
 import { Meta } from "@storybook/react";
 import React from "react";
 import { styledComponentsControlsExclude } from "./story-helpers";
-import { App } from "jui-example-app/src";
+import { App } from "jui-example-app/src/App";
 
 export default {
   title: "Demos/Example App",
