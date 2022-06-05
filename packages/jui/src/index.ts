@@ -1,4 +1,6 @@
 export { useContextOrThrow } from "./utils/useContextOrThrow";
+export { useLatest } from "./utils/useLatest";
+export { createSetInterface, useControllableSet } from "./utils/useSet";
 export { ResizableView } from "./ResizableView";
 export * from "./List";
 export * from "./Menu";
@@ -14,6 +16,7 @@ export * from "./CollectionSpeedSearch";
 export * from "./Collections";
 export * from "./Img";
 export * from "./styled";
+export { MAC_WINDOW_SHADOW } from "./style-constants";
 export * from "./Tree";
 export * from "./Tabs";
 export * from "./Theme";

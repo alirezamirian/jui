@@ -3,9 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "test": "echo \"Not implemented\""
+    "test": "echo \"Not implemented\"",
+    "serve": "../../node_modules/.bin/parcel serve"
   },
+  "source": "src/index.html",
   "dependencies": {
+    "@intellij-platform/core": "0.0.1-rc.2",
     "@isomorphic-git/lightning-fs": "^4.4.1",
     "@monaco-editor/react": "^4.2.2",
     "browserfs": "^2.0.0",

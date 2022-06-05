@@ -4,7 +4,7 @@ import path from "path";
 import FS from "browserfs/dist/node/core/FS";
 import { PromisifiedFS } from "./browser-fs";
 // @ts-expect-error caf doesn't have typing :/
-import { CAF } from "caf";
+import { CAF } from "caf/dist/esm/index.mjs"; // Neither webpack@4 (used in storybook) nor Parcel (used in example-app) support package exports. So we use the full path. More info: https://github.com/parcel-bundler/parcel/issues/4155
 
 type CopyFsParams = {
   source: FS;

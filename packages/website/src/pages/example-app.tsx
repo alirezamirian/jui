@@ -7,7 +7,7 @@ import {
   ExampleContextThemeName,
 } from "../components/ExampleContext";
 
-const App = React.lazy(() => import("../../../example-app/src"));
+const App = React.lazy(() => import("../../../example-app/src/App"));
 
 const ColumnContainer = styled.div`
   display: flex;

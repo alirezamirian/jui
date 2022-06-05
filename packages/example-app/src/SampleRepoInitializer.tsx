@@ -4,7 +4,7 @@ import { fs } from "./fs/fs";
 import { clone } from "isomorphic-git";
 import http from "isomorphic-git/http/web";
 import styled from "styled-components";
-import { MAC_WINDOW_SHADOW } from "@intellij-platform/core/style-constants";
+import { MAC_WINDOW_SHADOW } from "@intellij-platform/core";
 
 const StyledDialog = styled.div`
   position: fixed;
