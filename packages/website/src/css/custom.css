@@ -4,8 +4,6 @@
  * work well for content-centric websites.
  */
 
-@import "./global-style-fixes.css";
-
 /* You can override the default Infima variables here. */
 :root {
   --ifm-color-primary: #0075c5;

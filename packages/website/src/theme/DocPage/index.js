@@ -1,8 +1,7 @@
 import DocPage from "@theme-original/DocPage";
 // import { useColorMode } from "@docusaurus/theme-common";
 import React, { useMemo } from "react";
-import { ThemeProvider } from "styled-components";
-import { Theme } from "../../../../jui/src/Theme";
+import { Theme, ThemeProvider } from "../../../../jui/src/Theme";
 import darculaTheme from "../../../../jui/themes/darcula.theme.json";
 import lafLightTheme from "../../../../jui/themes/intellijlaf.theme.json";
 

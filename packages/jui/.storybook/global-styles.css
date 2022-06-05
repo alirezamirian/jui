@@ -1,7 +1,0 @@
-body {
-  margin: 0;
-  /* These styles should probably go to Theme component or in any other way be a part of the library */
-  font-family: system-ui;
-  font-size: 13px;
-  text-rendering: optimizeLegibility;
-}
