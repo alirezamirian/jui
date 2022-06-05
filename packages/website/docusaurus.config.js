@@ -150,6 +150,15 @@ function myPlugin() {
     configureWebpack(config, isServer) {
       const resolve = {
         alias: {
+          /**
+           * without this alias also we would be linked to the package source, but two things to consider:
+           * - `module`, `browser` and `main` fields are linked to `dist` folder, which means we would need to have
+           *   the library built on every change, in development, if we want it truly linked.
+           * - At the moment build is broken, due to duplicate exported identifiers.
+           *
+           * It's probably nicer to have this alias configured in website's package.json, but it didn't work as expected
+           * in the first attempt at least.
+           */
           "@intellij-platform/core": path.resolve(__dirname, "../jui/src"),
         },
       };

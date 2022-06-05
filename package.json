@@ -4,10 +4,11 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "yarn workspaces foreach --no-private exec parcel build",
     "type-check": "yarn workspaces foreach run type-check",
     "test": "yarn workspaces foreach run test",
-    "release": "yarn workspaces foreach --no-private npm publish --tolerate-republish"
+    "build": "yarn workspaces foreach run build",
+    "build:public": "yarn workspaces foreach --no-private run build",
+    "release:public": "yarn workspaces foreach --no-private npm publish --tolerate-republish"
   },
   "devDependencies": {
     "@parcel/packager-ts": "^2.6.0",

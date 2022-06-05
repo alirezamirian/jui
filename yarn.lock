@@ -2666,7 +2666,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@intellij-platform/core@0.0.1-rc.2, @intellij-platform/core@workspace:packages/jui":
+"@intellij-platform/core@workspace:^, @intellij-platform/core@workspace:packages/jui":
   version: 0.0.0-use.local
   resolution: "@intellij-platform/core@workspace:packages/jui"
   dependencies:
@@ -2740,7 +2740,7 @@ __metadata:
   peerDependencies:
     react: ">=16.8"
     react-dom: ">=16.8"
-    styled-components: ^5.2.3
+    styled-components: ^5
   languageName: unknown
   linkType: soft
 
@@ -17148,7 +17148,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "jui-example-app@workspace:packages/example-app"
   dependencies:
-    "@intellij-platform/core": 0.0.1-rc.2
+    "@intellij-platform/core": "workspace:^"
     "@isomorphic-git/lightning-fs": ^4.4.1
     "@monaco-editor/react": ^4.2.2
     "@types/isomorphic-git__lightning-fs": ^4.4.2
@@ -17160,6 +17160,7 @@ __metadata:
     pify: ^5.0.0
     ramda: ^0.27.1
     react: 17
+    react-dom: 17
     recoil: ^0.6.1
     styled-components: ^5.2.3
     xterm-for-react: ^1.0.4
@@ -21046,7 +21047,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:17.0.2, react-dom@npm:^17.0.1":
+"react-dom@npm:17, react-dom@npm:17.0.2, react-dom@npm:^17.0.1":
   version: 17.0.2
   resolution: "react-dom@npm:17.0.2"
   dependencies:
@@ -25320,6 +25321,7 @@ __metadata:
     "@docusaurus/module-type-aliases": ^2.0.0-beta.20
     "@docusaurus/preset-classic": ^2.0.0-beta.20
     "@docusaurus/theme-live-codeblock": ^2.0.0-beta.20
+    "@intellij-platform/core": "workspace:^"
     "@mdx-js/react": ^1.6.21
     "@react-aria/ssr": ^3.1.0
     "@svgr/webpack": ^5.5.0

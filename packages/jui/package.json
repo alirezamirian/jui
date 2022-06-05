@@ -1,6 +1,6 @@
 {
   "name": "@intellij-platform/core",
-  "version": "0.0.1-rc.2",
+  "version": "0.0.1-rc.3",
   "description": "Intellij Platform implementation in React.js",
   "keywords": [],
   "license": "ISC",
@@ -11,7 +11,6 @@
   "source": "src/index.ts",
   "files": [
     "dist",
-    "src",
     "themes"
   ],
   "alias": {
@@ -20,6 +19,8 @@
   "sideEffects": false,
   "scripts": {
     "start": "yarn run storybook:start",
+    "build": "../../node_modules/.bin/parcel build",
+    "prepublish": "npm run build",
     "storybook:start": "start-storybook -p 6008",
     "storybook:build": "build-storybook",
     "storybook:typecheck": "tsc --project tsconfig.stories.json",
@@ -105,7 +106,7 @@
   "peerDependencies": {
     "react": ">=16.8",
     "react-dom": ">=16.8",
-    "styled-components": "^5.2.3"
+    "styled-components": "^5"
   },
   "publishConfig": {
     "access": "public"

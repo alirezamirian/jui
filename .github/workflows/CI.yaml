@@ -32,7 +32,7 @@ jobs:
       run: yarn run type-check
 
     - name: Build 🔨
-      run: yarn run build
+      run: yarn run build:public
 
     - name: Run Tests ✅
       if: ${{ env.IS_PR_MERGED == 'true' || env.IS_PR_WITH_PERCY == 'true' }}
