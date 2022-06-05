@@ -7,6 +7,9 @@
     "serve": "../../node_modules/.bin/parcel serve"
   },
   "source": "src/index.html",
+  "alias": {
+    "caf": "caf/dist/esm/index.mjs"
+  },
   "dependencies": {
     "@intellij-platform/core": "0.0.1-rc.2",
     "@isomorphic-git/lightning-fs": "^4.4.1",

@@ -2,7 +2,7 @@ import { atom, useSetRecoilState } from "recoil";
 import { BalloonActionLink, useBalloons } from "@intellij-platform/core";
 import React, { useEffect } from "react";
 // @ts-expect-error caf doesn't have typing :/
-import { CAF } from "caf/dist/esm/index.mjs"; // Neither webpack@4 (used in storybook) nor Parcel (used in example-app) support package exports. So we use the full path. More info: https://github.com/parcel-bundler/parcel/issues/4155
+import { CAF } from "caf";
 import { persistentFsPreference, switchToPersistentFS } from "./fs/fs";
 import path from "path";
 

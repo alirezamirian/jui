@@ -22,6 +22,11 @@ module.exports = {
     config.resolve.alias = {
       ...config.resolve.alias,
       ...alias,
+      /**
+       * caf uses [package exports](https://webpack.js.org/guides/package-exports/) which is not supported in
+       * webpack@4. We manually fix it like this.
+       */
+      caf: "caf/dist/esm/index.mjs",
     };
     config.plugins?.push(
       new CircularDependencyPlugin({
