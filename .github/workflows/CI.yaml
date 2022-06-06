@@ -1,4 +1,4 @@
-name: CI (on PRs)
+name: CI (on PRs and master branch)
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 env:
   IS_PR_WITH_PERCY: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.title, 'no-percy') && !contains(github.event.pull_request.body, 'no-percy') }}
-  IS_PR_MERGED: ${{ github.ref_name == 'master' && contains(github.event.head_commit.message, 'Merge pull request') && !contains(github.event.head_commit.message, 'no-percy') }}
+  IS_PR_JUST_MERGED: ${{ github.ref_name == 'master' && contains(github.event.head_commit.message, 'Merge pull request') && !contains(github.event.head_commit.message, 'no-percy') }}
 
 jobs:
   build:
@@ -35,14 +35,14 @@ jobs:
       run: yarn run build:public
 
     - name: Run Tests ✅
-      if: ${{ env.IS_PR_MERGED == 'true' || env.IS_PR_WITH_PERCY == 'true' }}
+      if: ${{ env.IS_PR_JUST_MERGED == 'true' || env.IS_PR_WITH_PERCY == 'true' }}
       env:
         PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
       run: yarn run test
 
     - name: Run Tests (without percy) ✅
-      if: ${{ !(env.IS_PR_MERGED == 'true' || env.IS_PR_WITH_PERCY == 'true') }}
+      if: ${{ !(env.IS_PR_JUST_MERGED == 'true' || env.IS_PR_WITH_PERCY == 'true') }}
       env:
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
       run: yarn run test
