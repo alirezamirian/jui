@@ -9,8 +9,9 @@ import {
   Menu,
   MenuItemLayout,
   MenuTrigger,
-} from "@intellij-platform/core/Menu";
-import { ProgressBar, ProgressBarPauseButton } from "@intellij-platform/core";
+  ProgressBar,
+  ProgressBarPauseButton,
+} from "@intellij-platform/core";
 import { StatusBar, StatusBarProps } from "./StatusBar";
 
 const StyledContainer = styled.div`
