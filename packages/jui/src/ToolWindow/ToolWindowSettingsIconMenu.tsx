@@ -1,7 +1,11 @@
 import React, { ReactNode } from "react";
-import { Divider, DividerItem } from "../Collections/Divider";
-import { PlatformIcon } from "../Icon";
-import { Item, Menu, MenuItemLayout } from "../Menu";
+import {
+  Divider,
+  DividerItem,
+  Item,
+} from "@intellij-platform/core/Collections";
+import { Menu, MenuItemLayout } from "@intellij-platform/core/Menu";
+import { PlatformIcon } from "@intellij-platform/core/Icon";
 import { useToolWindowState } from "./ToolWindowsState/ToolWindowStateProvider";
 import { ViewMode } from "./ToolWindowsState/ToolWindowsState";
 import { Anchor, isHorizontalToolWindow } from "./utils";

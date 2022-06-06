@@ -1,2 +1,2 @@
 export * from "./Checkbox";
-export { CheckboxIcon } from "@intellij-platform/core/Checkbox/CheckboxIcon";
+export { CheckboxIcon } from "./CheckboxIcon";
