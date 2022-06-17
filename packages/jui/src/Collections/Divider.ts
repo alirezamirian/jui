@@ -15,10 +15,13 @@ import { ReactElement } from "react";
 import { PartialNode } from "@react-stately/collections";
 
 interface DividerProps {}
-export function Divider({}: DividerProps): ReactElement {
+function Divider({}: DividerProps): ReactElement {
   // eslint-disable-line @typescript-eslint/no-unused-vars
   return null as any;
 }
+// We don't want getCollectionNode to show up in the type definition
+let _Divider = Divider as <T>(props: ItemProps<T>) => JSX.Element;
+export { _Divider as Divider };
 
 Divider.getCollectionNode = function* getCollectionNode<T>(
   props: ItemProps<T>
