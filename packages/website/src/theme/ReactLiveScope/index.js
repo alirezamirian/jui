@@ -6,6 +6,11 @@
  */
 
 import * as juiComponents from "@intellij-platform/core";
+import ExampleApp from "jui-example-app/src/App";
+import darculaThemeJson from "@intellij-platform/core/themes/darcula.theme.json";
+import lightThemeJson from "@intellij-platform/core/themes/intellijlaf.theme.json";
+import highContrastThemeJson from "@intellij-platform/core/themes/HighContrast.theme.json";
+
 import React from "react";
 
 // Add react-live imports you need here
@@ -13,6 +18,10 @@ const ReactLiveScope = {
   React,
   ...React,
   ...juiComponents,
+  ExampleApp,
+  darculaThemeJson,
+  lightThemeJson,
+  highContrastThemeJson,
 };
 
 export default ReactLiveScope;

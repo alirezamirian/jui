@@ -10,6 +10,8 @@ import { useTheme } from "styled-components";
 import Playground from "@theme/Playground";
 import ReactLiveScope from "@theme/ReactLiveScope";
 import CodeBlock from "@theme-init/CodeBlock";
+import clsx from "clsx";
+import styles from "../Playground/style-overrides.module.css";
 
 const withLiveEditor = (Component) => {
   function WithLiveEditor(props) {
@@ -30,12 +32,20 @@ const withThemeBackground = (Component) => {
   function WithThemeBackground(props) {
     const theme = useTheme();
     const content = <Component {...props} />;
-    const style = props.themed
-      ? {
-          "--ifm-pre-background": theme.color("*.background"),
-        }
-      : {};
-    return <div style={style}>{content}</div>;
+    const style = { "--ifm-list-item-margin": 0 };
+    if (props.themed) {
+      style["--ifm-pre-background"] = theme.color("*.background");
+    }
+    return (
+      <div
+        style={style}
+        className={clsx(styles.playground, {
+          [styles.noPadding]: props.noPadding,
+        })}
+      >
+        {content}
+      </div>
+    );
   }
 
   return WithThemeBackground;

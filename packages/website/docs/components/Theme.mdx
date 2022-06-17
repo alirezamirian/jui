@@ -1,7 +1,136 @@
 ---
 ---
 
+import { ApiDescription } from "../../src/components/ApiDescription.tsx";
+import { ThemeProvider } from "@intellij-platform/core";
 import { RefToIntellijPlatform } from "../../src/components/RefToIntellijPlatform.tsx";
 import { Example } from "../../src/components/ExampleContext";
 
 # Theme
+
+Styling in JUI is implemented with [styled-components][styled-components-1], and it requires an object of type
+`Theme` to be provided by the [theme context][styled-components-2].
+`Theme` class implements the interface for accessing common colors, resolving theme values, icons, etc.
+
+## ThemeProvider
+
+<ApiDescription of={ThemeProvider} />
+
+## Creating a theme
+
+### Theme json
+
+The only required arguments for creating a Theme is a plain theme object of type `ThemeJson`, which is usually read from
+a `.theme.json` file. There are the following built in `.theme.json` files shipped with JUI, which are copied from
+[Intellij Community][intellij_community]:
+
+- [`@intellij-platform/core/themes/darcula.theme.json`][theme_darcula]
+- [`@intellij-platform/core/themes/intelijlaf.theme.json`][theme_intelijlaf]
+- [`@intellij-platform/core/themes/Light.theme.json`][theme_light]
+- [`@intellij-platform/core/themes/HighContrast.theme.json`][theme_highcontrast]
+
+You can also find many [theme plugins](https://plugins.jetbrains.com/search?tags=Theme), each containing a
+`.theme.json` file.
+
+#### Nord theme example
+
+In the example below, [nord.theme.json](https://github.com/arcticicestudio/nord-jetbrains/blob/main/src/nord.theme.json)
+from [Nord theme](https://plugins.jetbrains.com/plugin/10321-nord)'s github repo is fetched and used:
+
+```tsx live noPadding
+function NordThemeDemo() {
+  const [theme, setTheme] = useState(null);
+
+  useEffect(() => {
+    fetch(
+      "https://raw.githubusercontent.com/arcticicestudio/nord-jetbrains/main/src/nord.theme.json"
+    )
+      .then((result) => result.json())
+      .then((themeJson) => setTheme(new Theme(themeJson)));
+  }, [setTheme]);
+
+  if (!theme) {
+    return "Loading...";
+  }
+  return (
+    <ThemeProvider theme={theme}>
+      <ExampleApp />
+    </ThemeProvider>
+  );
+}
+```
+
+### IconResolver
+
+`getSvgIcon` method of `Theme` objects loads and caches svg icons. It resolves svg icons using an instance of
+`IconResolver`. A default implementation of `IconResolver`, `GithubIconResolver` is shipped with
+`@intellij-platform/core` and used to create the default value of `iconResolver` argument in `Theme`'s constructor.
+It fetches icons from [Intellij Community repo][intellij_community].
+
+```ts
+import { Theme, IconResolver } from "@intellij-platform/core";
+
+class MyIconResolver implements IconResolver {
+  //...
+}
+const theme = new Theme(themeJson, new MyIconResolver());
+```
+
+### Operating system
+
+Properties in `ThemeJson` can have os-dependent values. See [selectionBackground in darcula theme][osdependentexample]
+as an example. In order to resolve os-dependent values, a theme needs to know what the current operating system is.
+While the default value is detected based on the `window.navigator`, you can override that and set the value in
+`Theme`'s constructor:
+
+```ts
+const theme = new Theme(
+  themeJson,
+  undefined /* going with the default icon resolver */,
+  "windows"
+);
+```
+
+## Theming your own components
+
+### Resolving values
+
+🚧 TODO: explain `.color()` and more generic `.value()` methods. 🚧
+
+#### Fallback when resolving values
+
+🚧 TODO: explain star fallback and difference with `fallback` argument. 🚧
+
+### Access to theme object
+
+The best way to use theme in styling your own components is to use styled components:
+
+```ts
+import { styled } from "@intellij-platform/core";
+
+const MyComponent = styled`
+  background: ${({ theme }) => theme.color("Panel.background")};
+`;
+```
+
+You can also use any other styled-component API for [getting the theme without styled components][styled-components-4].
+The most common being `useTheme` hook. You would need to explicitly cast returned theme to `Theme`,
+
+:::tip types
+In order to get the right type for `theme` in your styled components, import `styled`, `css` or `useTheme`, etc. from
+**@intellij-platform/core**, instead of **styled-components**. They are the same as the ones from styled-components,
+with types adjusted.
+If you wish to import from `styled-components`, you need to [create a declarations file][styled-components-3] to
+extend styled-component's `DefaultTheme`.
+:::
+
+[theme_darcula]: https://github.com/JetBrains/intellij-community/blob/master/platform/platform-impl/src/com/intellij/ide/ui/laf/darcula/darcula.theme.json
+[theme_intelijlaf]: https://github.com/JetBrains/intellij-community/blob/master/platform/platform-impl/src/com/intellij/ide/ui/laf/intellijlaf.theme.json
+[theme_light]: https://github.com/JetBrains/intellij-community/blob/master/platform/platform-resources/src/themes/Light.theme.json
+[theme_highcontrast]: https://github.com/JetBrains/intellij-community/blob/master/platform/platform-resources/src/themes/HighContrast.theme.json
+[intellij_community]: https://github.com/JetBrains/intellij-community
+[osdependentexample]: https://github.com/JetBrains/intellij-community/blob/03f8a6f1783337b01aa457af36771a132384f289/platform/platform-impl/src/com/intellij/ide/ui/laf/darcula/darcula.theme.json#L18-L21
+[styled-components-1]: https://styled-components.com
+[styled-components-2]: https://styled-components.com/docs/advanced#theming
+[styled-components-3]: https://styled-components.com/docs/api#create-a-declarations-file
+[styled-components-4]: https://styled-components.com/docs/advanced#getting-the-theme-without-styled-components

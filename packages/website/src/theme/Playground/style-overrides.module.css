@@ -1,0 +1,13 @@
+/**
+* NOTE: It seemed not possible to override the css module imported here:
+* https://github.com/facebook/docusaurus/blob/aeb6c971c052ae6c50f9f65e5e9d9ab215f0f8a9/packages/docusaurus-theme-live-codeblock/src/theme/Playground/index.tsx#L18
+* So we are using very inconvenient selectors to style Playground parts.
+* Selectors used:
+* "> div > div:nth-child(2)" => preview div
+*/
+.playground > div > div:nth-child(2) {
+  position: relative;
+}
+.noPadding > div > div:nth-child(2) {
+  padding: 0;
+}
