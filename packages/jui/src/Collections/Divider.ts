@@ -20,7 +20,7 @@ function Divider({}: DividerProps): ReactElement {
   return null as any;
 }
 // We don't want getCollectionNode to show up in the type definition
-let _Divider = Divider as <T>(props: ItemProps<T>) => JSX.Element;
+let _Divider = Divider as (props: DividerProps) => JSX.Element;
 export { _Divider as Divider };
 
 Divider.getCollectionNode = function* getCollectionNode<T>(
