@@ -10,6 +10,7 @@ module.exports = (api) => {
       ["@babel/plugin-proposal-class-properties", { loose }],
       "@babel/plugin-transform-typescript",
       ["babel-plugin-styled-components", { displayName: true }],
+      ["react-docgen"], // adds __docgenInfo property to exports. Temporary, until api-extractor are used.
     ],
   };
 };
