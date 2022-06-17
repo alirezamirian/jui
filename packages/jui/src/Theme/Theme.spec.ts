@@ -1,3 +1,4 @@
+import { GithubIconResolver } from "./GithubIconResolver";
 import { Theme } from "./Theme";
 import { ThemeJson } from "./types";
 
@@ -38,15 +39,21 @@ describe(Theme, () => {
   });
 
   it("resolves os-dependent values based on os", () => {
-    expect(new Theme(themeJson, "windows").value("Cmp1.prop2")).toEqual(
-      "windows"
-    );
+    expect(
+      new Theme(themeJson, new GithubIconResolver(), "windows").value(
+        "Cmp1.prop2"
+      )
+    ).toEqual("windows");
   });
   it("resolves os-dependent values to default when os doesn't match", () => {
-    expect(new Theme(themeJson, "mac").value("Cmp1.prop2")).toEqual("default");
+    expect(
+      new Theme(themeJson, new GithubIconResolver(), "mac").value("Cmp1.prop2")
+    ).toEqual("default");
   });
   it("resolves os-dependent values to first one when os doesn't match and there is no default", () => {
-    expect(new Theme(themeJson, "mac").value("Cmp1.prop3")).toEqual("windows");
+    expect(
+      new Theme(themeJson, new GithubIconResolver(), "mac").value("Cmp1.prop3")
+    ).toEqual("windows");
   });
   it("resolves os-dependent values to default or first one when os is null", () => {
     expect(new Theme(themeJson).value("Cmp1.prop2")).toEqual("default");
