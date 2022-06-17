@@ -5,6 +5,8 @@
   "keywords": [],
   "license": "ISC",
   "author": "Alireza Mirian <alireza.mirian@gmail.com>",
+  "repository": "https://github.com/alirezamirian/jui",
+  "homepage": "https://alirezamirian.github.io/jui/",
   "main": "dist/main.js",
   "module": "dist/module.js",
   "types": "dist/types.d.ts",
@@ -18,8 +20,7 @@
   },
   "sideEffects": false,
   "scripts": {
-    "start": "yarn run storybook:start",
-    "build": "../../node_modules/.bin/parcel build",
+    "build": "yarn parcel build && yarn run api-docs:extract",
     "prepublish": "npm run build",
     "storybook:start": "start-storybook -p 6008",
     "storybook:build": "build-storybook",
@@ -30,7 +31,10 @@
     "jest:watch": "jest --watch",
     "cypress": "ELECTRON_EXTRA_LAUNCH_ARGS=--disable-color-correct-rendering percy exec -- cypress run-ct --browser=electron",
     "cypress:open": "ELECTRON_EXTRA_LAUNCH_ARGS=--disable-color-correct-rendering cypress open-ct --browser=electron",
-    "cypress:type-check": "tsc --project tsconfig.cypress.json"
+    "cypress:type-check": "tsc --project tsconfig.cypress.json",
+    "api-docs:extract": "yarn api-extractor run -c ./api-extractor.json --local",
+    "parcel": "../../node_modules/.bin/parcel",
+    "api-extractor": "../../node_modules/.bin/api-extractor"
   },
   "dependencies": {
     "@react-aria/button": "^3.4.1",

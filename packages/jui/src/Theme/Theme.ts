@@ -30,8 +30,8 @@ export class Theme<P extends string = string> {
 
   constructor(
     public readonly themeJson: ThemeJson,
-    protected readonly os: OS | null = detectOs(),
-    protected readonly iconResolver: IconResolver = new GithubIconResolver()
+    protected readonly iconResolver: IconResolver = new GithubIconResolver(),
+    protected readonly os: OS | null = detectOs()
   ) {
     this.commonColors = this.getCommonColors();
     Object.entries(defaultValues).forEach(([key, value]) => {
@@ -115,7 +115,7 @@ export class Theme<P extends string = string> {
 
   /**
    * Resolves platform icon path to svg.
-   * by default it fetches the svg icon from Github, but there are other Theme implementations
+   * by default, it fetches the svg icon from Github, but there are other Theme implementations
    */
   @cache({ cacheAsyncErrors: true })
   getSvgIcon(path: string): Promise<string> {
@@ -188,8 +188,8 @@ export class Theme<P extends string = string> {
   }
 }
 
-export function detectOs(): OS | null {
-  return isMac() ? "mac" : null;
+function detectOs(): OS | null {
+  return isMac() ? "mac" : null; // TODO: seems like os detection logic is left uncompleted
 }
 
 function resolveOsDependentValue(

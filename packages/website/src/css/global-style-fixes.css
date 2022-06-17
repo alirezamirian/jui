@@ -3,12 +3,10 @@ This file fixes some global styles that are applied from Docusaurus styles with 
 with examples.
 */
 
-[role="menu"] kbd {
-  background: unset;
-  color: unset;
-  box-shadow: unset;
-  padding: unset;
-  border: unset;
-  border-radius: unset;
-  font-size: unset;
+/* It would be nicer to only reset kbd styles within the embedded examples, but it seemed not possible due to menues
+being rendered in overlay, and any selector that would target kbds inside overlays would be more specific than the
+simple class selector used in the library. So it would reset more than it should
+*/
+kbd {
+  all: revert;
 }

@@ -24,6 +24,7 @@ const StyledSeparator = styled.hr(({ theme }) => ({
   boxSizing: "border-box",
   margin: 0,
   border: "none",
+  flexShrink: 0,
 }));
 
 export const StyledHorizontalSeparator = styled(StyledSeparator)`

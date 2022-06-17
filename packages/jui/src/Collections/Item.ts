@@ -8,12 +8,19 @@ import { Item as StatelyItem, PartialNode } from "@react-stately/collections";
  * context passed to useCollection. Control over cache invalidation policy can be enabled by using
  * `useCollectionCacheInvalidation` for creating such context object.
  */
-export function Item<T>(props: ItemProps<T>): ReactElement {
+function Item<T>(props: ItemProps<T>): ReactElement {
   return (null as any) as React.ReactElement;
 }
 
 export type CacheInvalidationContext = { invalidated?: boolean };
 
+// We don't want getCollectionNode to show up in the type definition
+let _Item = Item as <T>(props: ItemProps<T>) => JSX.Element;
+export { _Item as Item };
+
+/**
+ * @private @preapproved
+ */
 Item.getCollectionNode = function* getCollectionNode<T>(
   props: ItemProps<T>,
   context: CacheInvalidationContext

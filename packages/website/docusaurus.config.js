@@ -69,7 +69,7 @@ const config = {
         items: [
           {
             type: "doc",
-            docId: "intro",
+            docId: "getting-started",
             position: "left",
             label: "Docs",
           },
@@ -99,8 +99,8 @@ const config = {
             title: "Docs",
             items: [
               {
-                label: "Tutorial",
-                to: "/docs/intro",
+                label: "Getting started",
+                to: "/docs/getting-started",
               },
             ],
           },
@@ -159,6 +159,10 @@ function myPlugin() {
            * It's probably nicer to have this alias configured in website's package.json, but it didn't work as expected
            * in the first attempt at least.
            */
+          "@intellij-platform/core/themes": path.resolve(
+            __dirname,
+            "../jui/themes"
+          ),
           "@intellij-platform/core": path.resolve(__dirname, "../jui/src"),
         },
       };

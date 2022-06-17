@@ -3,9 +3,13 @@ import { RecoilRoot } from "recoil";
 import { DefaultSuspense } from "./DefaultSuspense";
 import { Project } from "./Project/Project";
 import { SampleRepoInitializer } from "./SampleRepoInitializer";
-import { BalloonsProvider } from "@intellij-platform/core";
+import { BalloonsProvider, StyledBalloonsStack } from "@intellij-platform/core";
 import { WaitForFs } from "./fs/fs";
+import styled from "styled-components";
 
+const StyledBalloonContainer = styled(StyledBalloonsStack)`
+  position: absolute;
+`;
 /**
  * Example app root component. It expects ThemeProvider to be provided based on where it's rendered.
  */
@@ -16,7 +20,10 @@ export const App = () => {
       <WaitForFs>
         <SampleRepoInitializer>
           <RecoilRoot>
-            <BalloonsProvider>
+            <BalloonsProvider
+              disablePortal
+              BalloonsContainer={StyledBalloonContainer}
+            >
               <Project />
             </BalloonsProvider>
           </RecoilRoot>

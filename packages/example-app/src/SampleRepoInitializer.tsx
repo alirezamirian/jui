@@ -7,7 +7,7 @@ import styled from "styled-components";
 import { MAC_WINDOW_SHADOW } from "@intellij-platform/core";
 
 const StyledDialog = styled.div`
-  position: fixed;
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -79,19 +79,21 @@ export const SampleRepoInitializer: React.FC = ({ children }) => {
     return <>{children}</>;
   }
   return (
-    <StyledDialog>
-      <StyledDialogHeader>Cloning sample repo</StyledDialogHeader>
-      <StyledDialogContent>
-        {state === "cloning" ? (
-          <>
-            Cloning <b>{sampleRepo.url}</b>. <br />
-            It may take several seconds.
-          </>
-        ) : (
-          <>Something went wrong!</>
-        )}
-      </StyledDialogContent>
-    </StyledDialog>
+    <div style={{ minHeight: "100vh", position: "relative" }}>
+      <StyledDialog>
+        <StyledDialogHeader>Cloning sample repo</StyledDialogHeader>
+        <StyledDialogContent>
+          {state === "cloning" ? (
+            <>
+              Cloning <b>{sampleRepo.url}</b>. <br />
+              It may take several seconds.
+            </>
+          ) : (
+            <>Something went wrong!</>
+          )}
+        </StyledDialogContent>
+      </StyledDialog>
+    </div>
   );
 };
 
