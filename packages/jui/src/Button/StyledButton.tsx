@@ -27,6 +27,8 @@ export const StyledButton = styled.button<{ isDisabled?: boolean }>`
       : ""};
   white-space: nowrap; // https://jetbrains.github.io/ui/controls/button/#29
 
+  min-width: min-content; // button should not shrink or its label should not overflow
+
   &:focus {
     border-color: ${({ theme }) =>
       theme.color("Button.focusedBorderColor", "#87afda")};
