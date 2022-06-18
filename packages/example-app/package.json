@@ -24,7 +24,7 @@
     "react": "17",
     "react-dom": "17",
     "recoil": "^0.6.1",
-    "styled-components": "^5.2.3",
+    "styled-components": "^5",
     "xterm-for-react": "^1.0.4"
   },
   "devDependencies": {
