@@ -6,11 +6,17 @@
  */
 
 import * as juiComponents from "@intellij-platform/core";
-import ExampleApp from "jui-example-app/src/App";
 import darculaThemeJson from "@intellij-platform/core/themes/darcula.theme.json";
 import lightThemeJson from "@intellij-platform/core/themes/intellijlaf.theme.json";
 import highContrastThemeJson from "@intellij-platform/core/themes/HighContrast.theme.json";
 
+const LazyExampleApp = React.lazy(() => import("jui-example-app/src/App"));
+const ExampleApp = () => (
+  // Because ReactLive doesn't render a Suspense around what it renders.
+  <React.Suspense fallback="loading">
+    <LazyExampleApp />
+  </React.Suspense>
+);
 import React from "react";
 
 // Add react-live imports you need here
