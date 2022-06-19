@@ -14,7 +14,7 @@ const config = {
   tagline: "Web implementation of Intellij Platform",
   url: "https://alirezamirian.github.io",
   baseUrl: "/jui/",
-  onBrokenLinks: "warn",
+  onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "throw",
   favicon: "jui/img/favicon.ico", // FIXME
   organizationName: "alirezamirian",
