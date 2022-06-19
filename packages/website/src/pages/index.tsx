@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import clsx from "clsx";
 import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
@@ -13,15 +13,18 @@ function HomepageHeader() {
       <div className="container">
         <h1 className="hero__title">{siteConfig.title}</h1>
         <p className="hero__subtitle">
-          Web implementation of{" "}
-          <Link
-            href="https://www.jetbrains.com/opensource/idea/"
-            className={styles.link}
-            target="_blank"
-          >
-            Intellij Platform
-          </Link>
-          .
+          {linkify(siteConfig.tagline, {
+            text: "Intellij Platform",
+            element: (
+              <Link
+                href="https://www.jetbrains.com/opensource/idea/"
+                className={styles.link}
+                target="_blank"
+              >
+                Intellij Platform
+              </Link>
+            ),
+          })}
         </p>
         <div className={styles.buttons}>
           <Link
@@ -33,6 +36,24 @@ function HomepageHeader() {
         </div>
       </div>
     </header>
+  );
+}
+
+function linkify(
+  input: string,
+  link: { text: string; element: React.ReactElement } // can be extended to accept an array of links
+): React.ReactElement {
+  return (
+    <>
+      {input
+        .replace(link.text, `===${link.text}===`)
+        .split("===")
+        .map((part) => (
+          <React.Fragment key={part}>
+            {part === link.text ? link.element : part}
+          </React.Fragment>
+        ))}
+    </>
   );
 }
 

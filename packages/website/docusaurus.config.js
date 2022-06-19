@@ -11,7 +11,7 @@ const repoUrl = "https://github.com/alirezamirian/jui";
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "JUI",
-  tagline: "Web implementation of Intellij Platform",
+  tagline: "A react-web implementation of Intellij Platform",
   url: "https://alirezamirian.github.io",
   baseUrl: "/jui/",
   onBrokenLinks: "throw",
@@ -83,6 +83,10 @@ const config = {
             target: "_blank",
             label: "Storybook",
             position: "left",
+          },
+          {
+            type: "search",
+            position: "right",
           },
           // { to: "/blog", label: "Blog", position: "left" },
           {

@@ -7,7 +7,7 @@
     "start": "docusaurus start",
     "build": "yarn run build:docusaurus && yarn run build:embed-storybook",
     "build:docusaurus": "docusaurus build",
-    "build:embed-storybook": "cd ../jui && npm run storybook:build && cp -rp storybook-static ../website/build/storybook",
+    "build:embed-storybook": "rm -rf build/storybook.html && rm -rf build/storybook && cd ../jui && cp -rp storybook-static/ ../website/build/storybook",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
