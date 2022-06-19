@@ -1,15 +1,21 @@
 ---
+sidebar_position: 0.1
 ---
 
-import { ApiDescription } from "../../src/components/ApiDescription.tsx";
+import { ApiDescription } from "@site/src/components/ApiDescription.tsx";
 import { ThemeProvider } from "@intellij-platform/core";
-import { RefToIntellijPlatform } from "../../src/components/RefToIntellijPlatform.tsx";
-import { Example } from "../../src/components/ExampleContext";
+import { RefToIntellijPlatform } from "@site/src/components/RefToIntellijPlatform.tsx";
+import { Example } from "@site/src/components/ExampleContext";
 
-# Theme
+# Theming
+
+In this guide you will learn about theming in JUI. You will read about what a theme is, how to create and provide it,
+and how to use it to created your own themed components.
+
+## Theme
 
 Styling in JUI is implemented with [styled-components][styled-components-1], and it requires an object of type
-`Theme` to be provided by the [theme context][styled-components-2].
+`Theme` to be provided by styled-component's [theme context][styled-components-2].
 `Theme` class implements the interface for accessing common colors, resolving theme values, icons, etc.
 
 ## ThemeProvider
@@ -18,11 +24,20 @@ Styling in JUI is implemented with [styled-components][styled-components-1], and
 
 ## Creating a theme
 
+Use `Theme` constructor to create a theme object:
+
+```ts
+import { Theme } from "@intellij-platform/core";
+import darculaThemeJson from "@intellij-platform/core/themes/darcula.theme.json";
+
+const theme = new Theme(darculaThemeJson);
+```
+
 ### Theme json
 
-The only required arguments for creating a Theme is a plain theme object of type `ThemeJson`, which is usually read from
-a `.theme.json` file. There are the following built in `.theme.json` files shipped with JUI, which are copied from
-[Intellij Community][intellij_community]:
+The only required arguments for creating a Theme is a plain theme object of type `ThemeJson`, which is usually imported
+from a `.theme.json` file. The following `.theme.json` files from [Intellij Community][intellij_community] are
+available out of the box:
 
 - [`@intellij-platform/core/themes/darcula.theme.json`][theme_darcula]
 - [`@intellij-platform/core/themes/intelijlaf.theme.json`][theme_intelijlaf]
@@ -62,10 +77,9 @@ function NordThemeDemo() {
 
 ### IconResolver
 
-`getSvgIcon` method of `Theme` objects loads and caches svg icons. It resolves svg icons using an instance of
-`IconResolver`. A default implementation of `IconResolver`, `GithubIconResolver` is shipped with
-`@intellij-platform/core` and used to create the default value of `iconResolver` argument in `Theme`'s constructor.
-It fetches icons from [Intellij Community repo][intellij_community].
+Theme depends on an `IconResolver` implementation for resolving svg icons. By default `GithubIconResolver` is used,
+which fetches icons from [Intellij Community repo][intellij_community].
+An alternative implementation can be passed to the `iconResolver` argument in `Theme`'s constructor:
 
 ```ts
 import { Theme, IconResolver } from "@intellij-platform/core";
@@ -101,7 +115,7 @@ const theme = new Theme(
 
 🚧 TODO: explain star fallback and difference with `fallback` argument. 🚧
 
-### Access to theme object
+### Accessing theme in components
 
 The best way to use theme in styling your own components is to use styled components:
 
@@ -113,13 +127,21 @@ const MyComponent = styled`
 `;
 ```
 
-You can also use any other styled-component API for [getting the theme without styled components][styled-components-4].
-The most common being `useTheme` hook. You would need to explicitly cast returned theme to `Theme`,
+You can also use styled-component API for [getting the theme without styled components][styled-components-4]:
+
+```tsx
+import { useTheme } from "@intellij-platform/core";
+
+function MyComponent() {
+  const theme = useTheme();
+  // ...
+}
+```
 
 :::tip types
 In order to get the right type for `theme` in your styled components, import `styled`, `css` or `useTheme`, etc. from
 **@intellij-platform/core**, instead of **styled-components**. They are the same as the ones from styled-components,
-with types adjusted.
+only with the adjusted theme type.
 If you wish to import from `styled-components`, you need to [create a declarations file][styled-components-3] to
 extend styled-component's `DefaultTheme`.
 :::

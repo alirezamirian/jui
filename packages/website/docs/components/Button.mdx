@@ -1,8 +1,8 @@
 ---
 ---
 
-import { RefToIntellijPlatform } from "../../src/components/RefToIntellijPlatform.tsx";
-import { Example } from "../../src/components/ExampleContext";
+import { RefToIntellijPlatform } from "@site/src/components/RefToIntellijPlatform.tsx";
+import { Example } from "@site/src/components/ExampleContext";
 
 # Button
 
@@ -16,21 +16,24 @@ Standalone [Button](https://jetbrains.github.io/ui/controls/button/) with a text
 #### Remaining
 
 - [ ] [Default button behaviour](https://jetbrains.github.io/ui/controls/button/#default) is not implemented yet. It's
-  just the appearance at the moment.
+      just the appearance at the moment.
 - [ ] Platform Specific UI. It's based on Mac UI at the moment.
 - [ ] Support for mnemonics.
 
-
 ```jsx live themed
 <>
-  <Button>Button</Button> <br /><br />
-  <Button isDefault>Default</Button> <br /><br />
-  <Button isDisabled>Disabled</Button> <br /><br />
-  <Button excludeFromTabOrder>Exclude from tab order</Button> <br /><br />
-  <Button preventFocusOnPress>Prevent focus on press</Button> <br /><br />
+  <Button>Button</Button> <br />
+  <br />
+  <Button isDefault>Default</Button> <br />
+  <br />
+  <Button isDisabled>Disabled</Button> <br />
+  <br />
+  <Button excludeFromTabOrder>Exclude from tab order</Button> <br />
+  <br />
+  <Button preventFocusOnPress>Prevent focus on press</Button> <br />
+  <br />
 </>
 ```
-
 
 :::caution Accessibility Caveat
 Following the original implementation, there is currently no visual feedback for pressed (active) state. That's more of

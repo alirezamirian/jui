@@ -1,4 +1,5 @@
 ---
+id: getting-started
 sidebar_position: 0
 ---
 
@@ -24,7 +25,7 @@ npm i @intellij-platform/core styled-components
 
 ### Configuring theme
 
-All components rely on [Theme](./components/Theme) to be provided. So you need to wrap your application code in a
+All components rely on [Theme](guides/Theming.mdx#theme) to be provided. So you need to wrap your application code in a
 `ThemeProvider`:
 
 ```tsx
@@ -42,7 +43,7 @@ The only required value for creating a `Theme` object is a theme json object. Yo
 [valid theme json][theme-json-schema] but
 [the default themes](https://www.jetbrains.com/help/idea/user-interface-themes.html) are
 available under `@intellij-platform/core/themes`.
-See more options for creating theme in [Theme docs](./components/Theme#creating-a-theme).
+See more options for creating theme in [theming docs](guides/Theming.mdx#creating-a-theme).
 
 :::tip
 Set `resolveJsonModule` to `true` in your `tsconfig.json` to allow importing theme json files.
@@ -70,9 +71,9 @@ function App() {
 
 ## Next steps
 
-A good next step would be to check out [Tool Windows](./components/ToolWindows), as it's the centric component in
+A good next step would be to check out [Tool Windows](components/ToolWindows.mdx). It's the centric component in
 most apps. A few other commonly used components to start with would be
-[SpeedSearchTree](./components/Tree#speedsearchtree), [SpeedSearchList](./components/List#speedsearchlist) and
-[Tabs](./components/Tabs).
+[SpeedSearchTree](components/Tree.mdx#speedsearchtree), [SpeedSearchList](components/List.mdx#speedsearchlist) and
+[Tabs](components/Tabs.mdx).
 
 [theme-json-schema]: https://raw.githubusercontent.com/JetBrains/intellij-community/e3c7d96daba1d5d84d5650bde6c220aed225bfda/plugins/devkit/devkit-core/resources/schemes/theme.schema.json
