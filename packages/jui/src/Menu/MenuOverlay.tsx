@@ -22,6 +22,9 @@ export function MenuOverlay({
   overlayRef: React.Ref<HTMLDivElement>;
   state: MenuTriggerState;
 }) {
+  if (!state.isOpen) {
+    return null;
+  }
   return (
     <OverlayContainer>
       <FocusScope

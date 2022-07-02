@@ -82,15 +82,13 @@ export const MenuTrigger: React.FC<MenuTriggerProps> = ({
   return (
     <>
       {children(buttonProps, triggerRef)}
-      {state.isOpen && (
-        <MenuOverlay
-          overlayProps={mergeProps(overlayProps, positionProps)}
-          overlayRef={overlayRef}
-          state={state}
-        >
-          {renderMenu({ menuProps })}
-        </MenuOverlay>
-      )}
+      <MenuOverlay
+        overlayProps={mergeProps(overlayProps, positionProps)}
+        overlayRef={overlayRef}
+        state={state}
+      >
+        {renderMenu({ menuProps })}
+      </MenuOverlay>
     </>
   );
 };
