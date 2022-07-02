@@ -1,5 +1,5 @@
 import { Key } from "react";
-import { SelectionManager } from "../selection/SelectionManager";
+import { SelectionManager } from "@intellij-platform/core/selection";
 
 export function createSpeedSearchSelectionManager(
   wrappedSelectionManager: SelectionManager,

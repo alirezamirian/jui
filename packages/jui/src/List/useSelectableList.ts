@@ -10,13 +10,21 @@
  * governing permissions and limitations under the License.
  */
 
-import { Collection, FocusStrategy, KeyboardDelegate, Node, } from "@react-types/shared";
+import {
+  Collection,
+  FocusStrategy,
+  KeyboardDelegate,
+  Node,
+} from "@react-types/shared";
 import { HTMLAttributes, Key, RefObject, useMemo } from "react";
 import { ListKeyboardDelegate } from "@react-aria/selection";
-import { MultipleSelectionManager, SelectionManager, } from "@react-stately/selection";
+import {
+  MultipleSelectionManager,
+  SelectionManager,
+} from "@react-stately/selection";
 import { useCollator } from "@react-aria/i18n";
-import { useSelectableCollection } from "../selection/useSelectableCollection";
-import { useCollectionAutoScroll } from "../Collections/useCollectionAutoScroll";
+import { useSelectableCollection } from "@intellij-platform/core/selection";
+import { useCollectionAutoScroll } from "@intellij-platform/core/Collections/useCollectionAutoScroll";
 
 interface SelectableListOptions {
   /**

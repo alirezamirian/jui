@@ -8,7 +8,7 @@ import {
 import { useFocusWithin, useKeyboard } from "@react-aria/interactions";
 import { filterDOMProps, mergeProps } from "@react-aria/utils";
 import { useCollator } from "@react-aria/i18n";
-import { useSelectableCollection } from "../selection/useSelectableCollection";
+import { useSelectableCollection } from "@intellij-platform/core/selection";
 import { TreeKeyboardDelegate } from "./TreeKeyboardDelegate";
 import { useCollectionAutoScroll } from "../Collections/useCollectionAutoScroll";
 import { TreeState } from "./__tmp__useTreeState";
