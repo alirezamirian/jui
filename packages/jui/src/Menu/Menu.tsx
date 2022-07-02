@@ -1,7 +1,7 @@
 import { useMenu } from "@react-aria/menu";
 import { AriaMenuProps } from "@react-types/menu";
 import { Node } from "@react-types/shared";
-import React, { Key, useEffect } from "react";
+import React, { Key, useContext, useEffect } from "react";
 import { ListDivider } from "../List/ListDivider";
 import { useTreeState } from "../Tree/__tmp__useTreeState";
 import { MenuItem } from "./MenuItem";
@@ -27,6 +27,13 @@ export interface MenuProps<T>
   defaultExpandedKey?: Key;
   expandOn?: "hover" | "press"; // hover delay doesn't seem to be needed as an option
 }
+
+/**
+ * Can be provided by the overlay where the menu is rendered in. If provided, menu will call the provided close function
+ * on actions. Note that there is no `closeOnSelect` option as of now, on this context, since no use case seems to exist
+ * for keeping the menu overlay open after a menu item is selected.
+ */
+export const MenuOverlayContext = React.createContext({ close: () => {} });
 
 /**
  * UI for menus which are normally shown in a popover. Being rendered as an overlay is not handled here.
@@ -58,6 +65,11 @@ export function Menu<T extends object>({
   expandOn = "hover",
   ...props
 }: MenuProps<T>) {
+  const { close } = useContext(MenuOverlayContext);
+  const onAction: MenuProps<T>["onAction"] = (...args) => {
+    close();
+    return props.onAction?.(...args);
+  };
   if (expandOn === "press") {
     // The only discovered use case so far is in "Branches" menu. Perhaps it's not even implemented as a Menu
     // in Intellij Platform, but it seems it very well can be, by supporting expand on press.
@@ -97,7 +109,7 @@ export function Menu<T extends object>({
                 item={item}
                 state={state}
                 expandOn={expandOn}
-                onAction={props.onAction}
+                onAction={onAction}
               />
             );
           case "section":
@@ -108,7 +120,7 @@ export function Menu<T extends object>({
                 item={item}
                 state={state}
                 expandOn={expandOn}
-                onAction={props.onAction}
+                onAction={onAction}
               />
             );
           case "divider":

@@ -39,8 +39,8 @@ const widgets = (
     <StatusBarWidget label="LF" />
     <StatusBarWidget label="UTF-8" />
     <MenuTrigger
-      renderMenu={({ menuProps, close }) => (
-        <Menu {...menuProps} onAction={close}>
+      renderMenu={({ menuProps }) => (
+        <Menu {...menuProps}>
           <Item>Configure Indents for Typescript</Item>
           <Item>Disable Indents Detection for Project</Item>
         </Menu>
@@ -51,8 +51,8 @@ const widgets = (
       )}
     </MenuTrigger>
     <MenuTrigger
-      renderMenu={({ menuProps, close }) => (
-        <Menu {...menuProps} onAction={close}>
+      renderMenu={({ menuProps }) => (
+        <Menu {...menuProps}>
           <Item title="Compile">
             <Item>packages/jui/tsconfig.json</Item>
             <Item>packages/jui/src/StatusBar/StatusBar.stories.tsx</Item>

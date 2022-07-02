@@ -12,12 +12,11 @@ export const ChangeListsActionButton = (): React.ReactElement => {
 
   return (
     <ActionButtonWithMenu
-      renderMenu={({ menuProps, close }) => (
+      renderMenu={({ menuProps }) => (
         <Menu
           {...menuProps}
           onAction={(key) => {
             alert("Not implemented");
-            close();
           }}
         >
           <Item key="new">

@@ -1,3 +1,4 @@
+import React, { Key } from "react";
 import { useHover, useKeyboard } from "@react-aria/interactions";
 import { useMenuItem } from "@react-aria/menu";
 import { OverlayContainer, useOverlayPosition } from "@react-aria/overlays";
@@ -5,12 +6,11 @@ import { mergeProps } from "@react-aria/utils";
 import { Item } from "@react-stately/collections";
 import { TreeState } from "@react-stately/tree";
 import { Node } from "@react-types/shared";
-import React, { Key } from "react";
-import { ItemStateContext } from "../Collections/ItemStateContext";
-import { LafIcon, PlatformIcon } from "../Icon";
+import { FocusScope } from "@intellij-platform/core/utils/FocusScope";
+import { ItemStateContext } from "@intellij-platform/core/Collections/ItemStateContext";
 
+import { LafIcon, PlatformIcon } from "../Icon";
 import { styled } from "../styled";
-import { FocusScope } from "../ToolWindow/FocusScope";
 import { Menu } from "./Menu";
 import { MENU_BORDER_WIDTH, MENU_VERTICAL_PADDING } from "./StyledMenu";
 import { StyledMenuItem } from "./StyledMenuItem";
@@ -156,7 +156,7 @@ export function MenuItem<T>({
          * So we need to render in a portal and that's done by OverlayContainer. We also need to render a FocusScope,
          * because now that we are rendering in a portal, we are dom-wise outside the focus scope of the menu in
          * MenuTrigger (or any other implementation that renders menu in an overlay with a focus scope), and therefore
-         * the auto focus behaviour for the nested menu doesn't work. That's because FocusScope works based on dom
+         * the autofocus behaviour for the nested menu doesn't work. That's because FocusScope works based on dom
          * tree, not react tree. Although it's not clear why this problem persists while `contain` is not set on the
          * FocusScope in MenuTrigger.
          * So we need focus scope. Rendering a FocusScope here messes with the `restoreFocus` behaviour of the one

@@ -155,13 +155,12 @@ export const MenuWithTrigger: StoryFn<{
       <ActionToolbar>
         <MenuTrigger
           restoreFocus={restoreFocus}
-          renderMenu={({ menuProps, close }) => (
+          renderMenu={({ menuProps }) => (
             <Menu
               items={items}
               {...menuProps}
               onAction={(key) => {
                 console.log(key);
-                close();
               }}
             >
               {renderItem}

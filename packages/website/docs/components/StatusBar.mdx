@@ -31,8 +31,8 @@ It doesn't seem center is really necessary, so only left and right are supported
         <StatusBarWidget label="UTF-8" />
         <MenuTrigger
           direction="top"
-          renderMenu={({ menuProps, close }) => (
-            <Menu {...menuProps} onAction={close}>
+          renderMenu={({ menuProps }) => (
+            <Menu {...menuProps}>
               <Item>Configure Indents for Typescript</Item>
               <Item>Disable Indents Detection for Project</Item>
             </Menu>

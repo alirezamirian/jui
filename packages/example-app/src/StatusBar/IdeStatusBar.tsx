@@ -85,12 +85,11 @@ export const IdeStatusBar = () => {
           />
           <StatusBarWidget label="UTF-8" />
           <MenuTrigger
-            renderMenu={({ menuProps, close }) => (
+            renderMenu={({ menuProps }) => (
               <Menu
                 {...menuProps}
                 onAction={() => {
                   alert("Not implemented");
-                  close();
                 }}
               >
                 <Item>Configure Indents for Typescript</Item>
@@ -103,12 +102,11 @@ export const IdeStatusBar = () => {
             )}
           </MenuTrigger>
           <MenuTrigger
-            renderMenu={({ menuProps, close }) => (
+            renderMenu={({ menuProps }) => (
               <Menu
                 {...menuProps}
                 onAction={() => {
                   alert("Not implemented");
-                  close();
                 }}
               >
                 <Item title="Compile">
