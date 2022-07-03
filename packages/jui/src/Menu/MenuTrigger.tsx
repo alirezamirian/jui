@@ -86,6 +86,7 @@ export const MenuTrigger: React.FC<MenuTriggerProps> = ({
         overlayProps={mergeProps(overlayProps, positionProps)}
         overlayRef={overlayRef}
         state={state}
+        restoreFocus={restoreFocus}
       >
         {renderMenu({ menuProps })}
       </MenuOverlay>
