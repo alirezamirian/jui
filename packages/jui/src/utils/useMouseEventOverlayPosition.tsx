@@ -40,7 +40,7 @@ export function useMouseEventOverlayPosition(
         width: "0px",
         height: "0px",
         pointerEvents: "none",
-        position: "absolute",
+        position: "fixed",
         visibility: "hidden",
       });
       document.body.appendChild(fakeTarget);
