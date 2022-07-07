@@ -41,6 +41,9 @@ export function useGhostInput({
         !isTypeableElement(event.target))
     ) {
       if (event.key.length === 1) {
+        // Seems reasonable to prevent default here generally, but the specific case this is added for is the space key,
+        // scrolling the page.
+        event.preventDefault();
         return onChange(`${valueRef.current}${event.key}`);
       }
       if (event.key === "Backspace") {
