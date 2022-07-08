@@ -12,6 +12,10 @@ const HighlightedMatch = styled.span`
   border-radius: 3px;
 `;
 
+/**
+ * Renders the children (which must be a string), with highlights wrapped in spans with the highlight style.
+ * Note: this component doesn't render a container. It just highlights the specified ranges.
+ */
 export function TextWithHighlights({
   children,
   highlights,

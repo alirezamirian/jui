@@ -3,7 +3,7 @@ import { composeStories } from "@storybook/testing-react";
 import * as React from "react";
 import * as stories from "./SpeedSearchTree.stories";
 
-const { Dynamic } = composeStories(stories);
+const { Dynamic, HighlightsWithSpace } = composeStories(stories);
 
 // Should probably be moved into a common test utility
 const OS_NORMALIZED_META = Cypress.platform === "darwin" ? "Meta" : "Control";
@@ -50,6 +50,12 @@ describe("SpeedSearchTree", () => {
     // moving up now should move selection to the first match, which is "index.ts"
     cy.realPress("Escape");
     matchImageSnapshot("SpeedSearchTree-8-search-exited");
+  });
+  it("preserves space before/after highlights", () => {
+    mount(<HighlightsWithSpace />);
+    cy.contains("Paco de Lucia").type("de");
+    // local snapshot is disappointing.
+    cy.percySnapshot("SpeedSearchTree-highlights-with-space");
   });
 });
 

@@ -46,7 +46,16 @@ export const SpeedSearchItemHighlightsProvider: React.FC<{ itemKey: Key }> = ({
  * Used inside Item content, to render the textValue of the Item, potentially with highlighted ranges if it's a match
  * in current search.
  */
-export const HighlightedTextValue = function () {
+export const HighlightedTextValue = function ({
+  Component = "span",
+}: {
+  /**
+   * When rendering in a flex parent (which is the case for tree or list), rendering a container is necessary to have
+   * the right spacing around highlights, when the highlighter span is immediately followed or proceeded by a white
+   * space. By default, a "span" is rendered.
+   */
+  Component?: React.ElementType;
+}) {
   const speedSearchContext = React.useContext(CollectionSpeedSearchItemContext);
   if (!speedSearchContext) {
     throw new Error(
@@ -54,11 +63,15 @@ export const HighlightedTextValue = function () {
     );
   }
   const { highlightedRanges, text } = speedSearchContext;
-  return highlightedRanges ? (
-    <TextWithHighlights highlights={highlightedRanges}>
-      {text}
-    </TextWithHighlights>
-  ) : (
-    <>{text}</>
+  return (
+    <Component>
+      {highlightedRanges ? (
+        <TextWithHighlights highlights={highlightedRanges}>
+          {text}
+        </TextWithHighlights>
+      ) : (
+        text
+      )}
+    </Component>
   );
 };
