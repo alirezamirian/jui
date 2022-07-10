@@ -34,7 +34,7 @@ describe("Tabs", () => {
     matchImageSnapshot("tabs-multi-row");
   });
 
-  it.only("makes sure selected tab is scrolled into view as expected", () => {
+  it("makes sure selected tab is scrolled into view as expected", () => {
     cy.viewport(520, 520);
     mount(
       <div>
