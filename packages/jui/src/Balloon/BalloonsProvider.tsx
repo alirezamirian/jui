@@ -12,7 +12,7 @@ import { StyledBalloonsStack } from "./StyledBalloonsStack";
 
 type ShowProps = Pick<
   BalloonProps,
-  "title" | "body" | "actions" | "headerActions"
+  "title" | "icon" | "body" | "actions" | "headerActions"
 >;
 
 interface BalloonsAPI {

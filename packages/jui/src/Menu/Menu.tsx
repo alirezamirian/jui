@@ -1,7 +1,7 @@
 import { useMenu } from "@react-aria/menu";
 import { AriaMenuProps } from "@react-types/menu";
 import { Node } from "@react-types/shared";
-import React, { Key, useEffect } from "react";
+import React, { Key, useContext, useEffect } from "react";
 import { ListDivider } from "../List/ListDivider";
 import { useTreeState } from "../Tree/__tmp__useTreeState";
 import { MenuItem } from "./MenuItem";
@@ -13,7 +13,10 @@ export interface MenuProps<T>
     AriaMenuProps<T>,
     // selection is not properly supported for nested menus. Plus, it's not even that meaningful for a nested menu
     // at least the way it's implemented now.
-    "onSelectionChange" | "defaultSelection" | "selectionMode"
+    | "onSelectionChange"
+    | "defaultSelection"
+    | "selectionMode"
+    | "disallowEmptySelection"
   > {
   /**
    * Indicates currently expanded menu item (controlled).
@@ -27,6 +30,25 @@ export interface MenuProps<T>
   defaultExpandedKey?: Key;
   expandOn?: "hover" | "press"; // hover delay doesn't seem to be needed as an option
 }
+
+/**
+ * Can be provided by the overlay where the menu is rendered in. If provided, menu will call the provided close function
+ * on actions. Note that there is no `closeOnSelect` option as of now, on this context, since no use case seems to exist
+ * for keeping the menu overlay open after a menu item is selected.
+ * **Update**: there are use cases where the menu is not closed after an item is clicked. Most of the toggle-able
+ * actions (the ones with a checkmark) seem to be like this.
+ * TODO: Make "close on selection" more flexible. Some ideas:
+ *  - instead of calling close, pass it to `onAction` handler. Then on each action, one would need to call close if
+ *    needed.
+ *  - Offer a `MenuItem` component to be used instead of generic `Item`, where it accepts `closeOnSelect` boolean, which
+ *    is true by default.
+ *  - pass a `keepOpen` function to `onAction`.
+ *  - Allow signaling whether the menu should kept open, via the returned value of onAction. e.g. return false means keep open.
+ *  Last two suggestions are based on the assumption that most of the menu items are not selectable.
+ *  Note that MenuOverlayContext could be used directly in action handlers too, but baking it into the menu makes it
+ *  much more convenient, which seems more important than breaking the nice separation between Menu and MenuTrigger.
+ */
+export const MenuOverlayContext = React.createContext({ close: () => {} });
 
 /**
  * UI for menus which are normally shown in a popover. Being rendered as an overlay is not handled here.
@@ -58,6 +80,11 @@ export function Menu<T extends object>({
   expandOn = "hover",
   ...props
 }: MenuProps<T>) {
+  const { close } = useContext(MenuOverlayContext);
+  const onAction: MenuProps<T>["onAction"] = (...args) => {
+    close();
+    return props.onAction?.(...args);
+  };
   if (expandOn === "press") {
     // The only discovered use case so far is in "Branches" menu. Perhaps it's not even implemented as a Menu
     // in Intellij Platform, but it seems it very well can be, by supporting expand on press.
@@ -97,7 +124,7 @@ export function Menu<T extends object>({
                 item={item}
                 state={state}
                 expandOn={expandOn}
-                onAction={props.onAction}
+                onAction={onAction}
               />
             );
           case "section":
@@ -108,7 +135,7 @@ export function Menu<T extends object>({
                 item={item}
                 state={state}
                 expandOn={expandOn}
-                onAction={props.onAction}
+                onAction={onAction}
               />
             );
           case "divider":

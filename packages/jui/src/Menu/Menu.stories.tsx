@@ -1,5 +1,5 @@
 import { Item } from "@react-stately/collections";
-import { Meta, StoryFn } from "@storybook/react";
+import { Meta, Story } from "@storybook/react";
 import React from "react";
 import { ActionButton } from "../ActionButton/ActionButton";
 import { ActionToolbar } from "../ActionToolbar/ActionToolbar";
@@ -9,6 +9,7 @@ import { styledComponentsControlsExclude } from "../story-helpers";
 import { Menu } from "./Menu";
 import { MenuItemLayout } from "./MenuItemLayout";
 import { MenuTrigger } from "./MenuTrigger";
+import { ContextMenuContainer, styled } from "@intellij-platform/core";
 
 export default {
   title: "Components/Menu",
@@ -18,7 +19,7 @@ export default {
   },
 } as Meta;
 
-export const Static: StoryFn = () => {
+export const Static: Story = () => {
   return (
     <Menu disabledKeys={["jumpToExternalEditor"]}>
       <Item textValue="Cut">
@@ -65,7 +66,7 @@ export const Static: StoryFn = () => {
   );
 };
 
-export const StaticWithTextItems: StoryFn = () => (
+export const StaticWithTextItems: Story = () => (
   <Menu>
     <Item>Restart Typescript Service</Item>
     <Item title="Compile">
@@ -118,7 +119,7 @@ const items: Array<MenuItem> = [
   },
 ];
 
-export const Nested: StoryFn = () => {
+export const Nested: Story = () => {
   return (
     <Menu items={items} selectedKeys={["Pinned"]} autoFocus>
       {renderItem}
@@ -134,7 +135,7 @@ export const Position = ({ offsetRight = 230 }: { offsetRight: number }) => {
   );
 };
 
-export const MenuWithTrigger: StoryFn<{
+export const MenuWithTrigger: Story<{
   offsetRight?: number;
   offsetBottom?: number;
   restoreFocus?: boolean;
@@ -155,13 +156,12 @@ export const MenuWithTrigger: StoryFn<{
       <ActionToolbar>
         <MenuTrigger
           restoreFocus={restoreFocus}
-          renderMenu={({ menuProps, close }) => (
+          renderMenu={({ menuProps }) => (
             <Menu
               items={items}
               {...menuProps}
               onAction={(key) => {
                 console.log(key);
-                close();
               }}
             >
               {renderItem}
@@ -179,6 +179,66 @@ export const MenuWithTrigger: StoryFn<{
   );
 };
 
+const StyledContainer = styled.div`
+  color: ${({ theme }) => theme.commonColors.labelForeground};
+  background: ${({ theme }) => theme.commonColors.panelBackground};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+`;
+
+export const ContextMenu: Story = () => {
+  return (
+    <>
+      <div
+        style={{
+          height: "25vh",
+          background: `repeating-linear-gradient(45deg, #aaa, #aaa 10px, #999 10px, #999 20px)`,
+        }}
+      />
+      <ContextMenuContainer
+        id="context-menu-container"
+        renderMenu={() => (
+          <Menu aria-label="Editor Context Menu">
+            <Item textValue="Column Selection Mode">
+              <MenuItemLayout content="Column Selection Mode" shortcut="⇧⌘8" />
+            </Item>
+            <Divider />
+            <Item textValue="Go to">
+              <Item textValue="Navigation Bar">
+                <MenuItemLayout content="Navigation Bar" shortcut="`⌘↑`" />
+              </Item>
+              <Item textValue="Implementation(s)">
+                <MenuItemLayout content="Implementation(s)" shortcut="⌥⌘B" />
+              </Item>
+            </Item>
+            <Item textValue="Generate">
+              <MenuItemLayout content="Generate" shortcut="⌘N" />
+            </Item>
+            <Divider />
+            <Item title="Local History">
+              <Item>Show History</Item>
+              <Item>Put Label...</Item>
+            </Item>
+            <Divider />
+            <Item textValue="Compare with Clipboard">
+              <MenuItemLayout
+                icon={<PlatformIcon icon={"actions/diff"} />}
+                content="Compare with Clipboard"
+              />
+            </Item>
+          </Menu>
+        )}
+      >
+        <StyledContainer>Right click somewhere.</StyledContainer>
+      </ContextMenuContainer>
+    </>
+  );
+};
+ContextMenu.parameters = {
+  layout: "fullscreen",
+};
 const renderItem = (item: MenuItem) => {
   if (item instanceof DividerItem) {
     return <Divider key={item.key} />;

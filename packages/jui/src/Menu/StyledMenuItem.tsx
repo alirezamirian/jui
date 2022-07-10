@@ -26,10 +26,6 @@ export const StyledMenuItem = styled.li<{
         "MenuItem.selectionBackground" as UnknownThemeProp
       )};
       color: ${undefined};
-      // Kind of a solution for hard coded fill values in svg icons. Is there a better approaches?
-      svg {
-        filter: brightness(2);
-      }
     `}
   // would be nice to have a visual clue for focus visible state, but it's not like that in intellij platform
   //border-left: 3px solid transparent;
@@ -37,7 +33,7 @@ export const StyledMenuItem = styled.li<{
   //  border-left: 3px solid rgba(255, 255, 255, 0.1);
   //}
   padding: 0 20px 0 27px;
-  line-height: 1.35; // to make the item have the right height
+  line-height: 1.5; // to make the item have the right height
   display: flex;
   align-items: center;
 `;

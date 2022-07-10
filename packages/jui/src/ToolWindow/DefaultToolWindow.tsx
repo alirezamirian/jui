@@ -1,8 +1,8 @@
 import React, { useContext, useMemo, useRef } from "react";
 import { styled } from "../styled";
-import { FocusScope } from "./FocusScope";
 import { DefaultToolWindowHeader } from "./DefaultToolWindowHeader";
 import { useToolWindow } from "./useToolWindow";
+import { FocusScope } from "@intellij-platform/core/utils/FocusScope";
 
 export interface DefaultToolWindowProps {
   /**

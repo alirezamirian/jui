@@ -1,9 +1,9 @@
-import { TreeRef } from "@intellij-platform/core/Tree";
+import React, { ForwardedRef, useRef } from "react";
 import { Node } from "@react-types/shared";
 import { Virtualizer } from "@react-aria/virtualizer";
-import React, { ForwardedRef, useRef } from "react";
+import { TreeRef } from "@intellij-platform/core/Tree";
+import { replaceSelectionManager } from "@intellij-platform/core/selection";
 import { StyledTree } from "../StyledTree";
-import { replaceSelectionManager } from "../../selection/replaceSelectionManager";
 import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
 import { useTreeState } from "../__tmp__useTreeState";
 import { TreeProps } from "../Tree";

@@ -84,10 +84,8 @@ const WIDTH_RESIZE_STEP = 13 * 5;
  * TODO: add support for extra actions when action system is progressed a little.
  */
 export function ToolWindowSettingsIconMenu({
-  close,
   menuProps,
 }: {
-  close: () => void;
   menuProps: React.HTMLAttributes<HTMLElement>;
 }) {
   const {

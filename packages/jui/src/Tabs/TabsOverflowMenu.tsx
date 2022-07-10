@@ -18,7 +18,7 @@ export const TabsOverflowMenu = <T extends unknown>({
     {overflowedKeys.size > 0 && (
       <MenuTrigger
         align="end"
-        renderMenu={({ menuProps, close }) => {
+        renderMenu={({ menuProps }) => {
           const items: Iterable<Node<unknown>> = [
             ...collection,
           ].filter((menuItem) => overflowedKeys.has(menuItem.key));
@@ -26,7 +26,6 @@ export const TabsOverflowMenu = <T extends unknown>({
             <Menu
               {...menuProps}
               onAction={(key) => {
-                close();
                 onSelect(key);
               }}
               items={items}

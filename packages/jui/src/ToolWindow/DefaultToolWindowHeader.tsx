@@ -81,13 +81,8 @@ export const DefaultToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
             </ActionButton>
           )}
           <MenuTrigger
-            renderMenu={({ close, menuProps }) => {
-              return (
-                <ToolWindowSettingsIconMenu
-                  close={close}
-                  menuProps={menuProps}
-                />
-              );
+            renderMenu={({ menuProps }) => {
+              return <ToolWindowSettingsIconMenu menuProps={menuProps} />;
             }}
           >
             {(props, ref) => (

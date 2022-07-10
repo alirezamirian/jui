@@ -1,6 +1,7 @@
 import React from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
+  ContextMenuContainer,
   HighlightedTextValue,
   Item,
   PlatformIcon,
@@ -29,6 +30,7 @@ import { IntlMessageFormat } from "intl-messageformat";
 import { CurrentBranchName } from "../../CurrentBranchName";
 import { StyledCurrentBranchTag } from "./StyledCurrentBranchTag";
 import * as path from "path";
+import { ChangesViewTreeContextMenu } from "./ChangesViewTreeContextMenu";
 
 /**
  * Necessary properties for each node, to be passed to `Item`s rendered in tree.
@@ -155,41 +157,46 @@ export const ChangeViewTree = (): JSX.Element => {
   const nestedSelection = useRecoilValue(selectedChangesNestedSelection);
 
   return (
-    <SpeedSearchTreeWithCheckboxes
-      items={rootNodes}
-      selectionMode="multiple"
-      selectedKeys={selectedKeys}
-      expandedKeys={expandedKeys}
-      onExpandedChange={setExpandedKeys}
-      onSelectionChange={setSelectedKeys}
-      nestedSelection={nestedSelection}
-      disallowEmptySelection
-      fillAvailableSpace
+    <ContextMenuContainer
+      renderMenu={() => <ChangesViewTreeContextMenu />}
+      style={{ height: "100%" }}
     >
-      {(node) => {
-        // Would make sense to handle missing renderer case if implementation is changed to be extensible with regard
-        // to node types
-        const { textValue, element } = nodeRenderers[node.type](node, {
-          fileCount: fileCountsMap.get(node.key) || 0,
-          dirCount: 0, // It seems it's only used for ignored files subtree
-        });
-        return (
-          <Item
-            key={node.key}
-            childItems={node.children}
-            hasChildItems={node.children?.length > 0}
-            textValue={textValue}
-          >
-            {node.children?.length !== 0 && (
-              <TreeNodeCheckbox
-                selectionState={nestedSelection.getSelectionState(node)}
-                onToggle={() => nestedSelection.toggle(node)}
-              />
-            )}
-            {element}
-          </Item>
-        );
-      }}
-    </SpeedSearchTreeWithCheckboxes>
+      <SpeedSearchTreeWithCheckboxes
+        items={rootNodes}
+        selectionMode="multiple"
+        selectedKeys={selectedKeys}
+        expandedKeys={expandedKeys}
+        onExpandedChange={setExpandedKeys}
+        onSelectionChange={setSelectedKeys}
+        nestedSelection={nestedSelection}
+        disallowEmptySelection
+        fillAvailableSpace
+      >
+        {(node) => {
+          // Would make sense to handle missing renderer case if implementation is changed to be extensible with regard
+          // to node types
+          const { textValue, element } = nodeRenderers[node.type](node, {
+            fileCount: fileCountsMap.get(node.key) || 0,
+            dirCount: 0, // It seems it's only used for ignored files subtree
+          });
+          return (
+            <Item
+              key={node.key}
+              childItems={node.children}
+              hasChildItems={node.children?.length > 0}
+              textValue={textValue}
+            >
+              {node.children?.length !== 0 && (
+                <TreeNodeCheckbox
+                  selectionState={nestedSelection.getSelectionState(node)}
+                  onToggle={() => nestedSelection.toggle(node)}
+                />
+              )}
+              {element}
+            </Item>
+          );
+        }}
+      </SpeedSearchTreeWithCheckboxes>
+    </ContextMenuContainer>
   );
 };

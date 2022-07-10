@@ -27,14 +27,13 @@ export const GroupByActionButton = (): React.ReactElement => {
 
   return (
     <ActionButtonWithMenu
-      renderMenu={({ menuProps, close }) => (
+      renderMenu={({ menuProps }) => (
         <Menu
           {...menuProps}
           selectedKeys={availableGroupings
             .filter(({ isActive }) => isActive)
             .map(({ grouping }) => grouping.id)}
           onAction={(key) => {
-            close();
             const id = availableGroupings.find(
               ({ grouping }) => grouping.id === key
             )?.grouping.id;

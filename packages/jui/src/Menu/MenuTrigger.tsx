@@ -1,32 +1,31 @@
+import React, { HTMLProps, RefObject } from "react";
 import { useButton } from "@react-aria/button";
 import { useMenuTrigger } from "@react-aria/menu";
-import {
-  OverlayContainer,
-  useOverlay,
-  useOverlayPosition,
-} from "@react-aria/overlays";
+import { useOverlay, useOverlayPosition } from "@react-aria/overlays";
 import { mergeProps } from "@react-aria/utils";
 import { useMenuTriggerState } from "@react-stately/menu";
 import { MenuTriggerProps as AriaMenuTriggerProps } from "@react-types/menu";
-import React, { HTMLProps, RefObject } from "react";
-import { FocusScope } from "../ToolWindow/FocusScope";
 
-export interface MenuTriggerProps extends AriaMenuTriggerProps {
+import { MenuOverlay } from "./MenuOverlay";
+
+export interface MenuTriggerProps
+  extends Omit<AriaMenuTriggerProps, "closeOnSelect"> {
   restoreFocus?: boolean;
   children: (
     props: HTMLProps<HTMLElement>,
     ref: RefObject<any> // Using a generic didn't seem to work for some reason
   ) => React.ReactNode;
   renderMenu: (props: {
-    close: () => void;
     menuProps: React.HTMLAttributes<HTMLElement>;
   }) => React.ReactNode;
 }
 
-// FIXME: closeOnSelect should either work or be removed
 // FIXME: Escape doesn't close the menu
 // FIXME: Focus is not restored if nested menu are opened. It may be solved by using useOverlay and closing submenu in click outside.
-// TODO: introduce a more generic Overlay component and use it here too.
+/**
+ * Makes its children a trigger for a menu, rendered via {@link MenuTriggerProps#renderMenu} prop.
+ * Closes the menu when a menu action is triggered.
+ */
 export const MenuTrigger: React.FC<MenuTriggerProps> = ({
   children,
   renderMenu,
@@ -83,19 +82,14 @@ export const MenuTrigger: React.FC<MenuTriggerProps> = ({
   return (
     <>
       {children(buttonProps, triggerRef)}
-      {state.isOpen && (
-        <OverlayContainer>
-          <FocusScope
-            restoreFocus={restoreFocus}
-            forceRestoreFocus={restoreFocus}
-            autoFocus
-          >
-            <div {...mergeProps(overlayProps, positionProps)} ref={overlayRef}>
-              {renderMenu({ menuProps, close: () => state.close() })}
-            </div>
-          </FocusScope>
-        </OverlayContainer>
-      )}
+      <MenuOverlay
+        overlayProps={mergeProps(overlayProps, positionProps)}
+        overlayRef={overlayRef}
+        state={state}
+        restoreFocus={restoreFocus}
+      >
+        {renderMenu({ menuProps })}
+      </MenuOverlay>
     </>
   );
 };

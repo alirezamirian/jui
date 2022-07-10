@@ -1,7 +1,7 @@
 import { Node } from "@react-types/shared";
 import { ListState } from "@react-stately/list";
 import React from "react";
-import { useSelectableItem } from "@react-aria/selection";
+import { useSelectableItem } from "@intellij-platform/core/selection";
 import { usePress } from "@react-aria/interactions";
 import { StyledListItem } from "./StyledListItem";
 

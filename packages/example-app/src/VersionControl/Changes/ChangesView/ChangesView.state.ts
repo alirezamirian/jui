@@ -1,12 +1,20 @@
 import { atom, atomFamily, isRecoilValue, RecoilValue, selector } from "recoil";
 import { Selection } from "@react-types/shared";
 import { Key } from "react";
-import { Change, ChangeListObj, changeListsState } from "../change-lists.state";
+import {
+  allChangesState,
+  Change,
+  ChangeListObj,
+  changeListsState,
+} from "../change-lists.state";
 import { groupings } from "./changesGroupings";
 import { VcsDirectoryMapping } from "../../file-status";
 import { dfsVisit } from "../../../TreeUtils/tree-utils";
-import { NestedSelection, NestedSelectionState } from "@intellij-platform/core";
-import { createSetInterface } from "@intellij-platform/core";
+import {
+  createSetInterface,
+  NestedSelection,
+  NestedSelectionState,
+} from "@intellij-platform/core";
 
 export interface ChangeBrowserNode<T extends string> {
   type: T;
@@ -76,11 +84,36 @@ export const changesGroupingState = atomFamily<boolean, GroupingIds>({
 });
 
 /**
- * Selection state for the changes tree. Selection here means UI selection of tree nodes.
+ * Selection state for the changes tree. Selection here means UI selection of tree nodes, not the checkboxes.
  */
 export const selectedKeysState = atom<Selection>({
   key: "changesView.selectedKeys",
   default: new Set<Key>([]),
+});
+
+export const changesUnderSelectedKeys = selector<ReadonlyArray<Change>>({
+  key: "changesView.selectedKeys.changes",
+  get: ({ get }) => {
+    const selectedKeys = get(selectedKeysState);
+    const { byKey } = get(changesTreeNodesState);
+    if (selectedKeys === "all") {
+      return get(allChangesState);
+    }
+    const allChanges: Change[] = [];
+    const processNode = (node: AnyNode | undefined) => {
+      if (!node) {
+        return;
+      }
+      if (node.type === "change") {
+        allChanges.push(node.change);
+      }
+      if (isGroupNode(node)) {
+        node.children.forEach(processNode);
+      }
+    };
+    [...selectedKeys].map((key) => byKey.get(key)).forEach(processNode);
+    return allChanges;
+  },
 });
 
 /**
@@ -93,6 +126,10 @@ export const selectedChangesState = atom<Set<string>>({
   default: new Set<string>([]),
 });
 
+/**
+ * A NestedSelection state, inferred based on selected changes. NestedSelection holds the checkmark state of all nodes
+ * based on the selected leaf nodes.
+ */
 export const selectedChangesNestedSelection = selector<
   NestedSelectionState<AnyNode>
 >({
@@ -154,9 +191,12 @@ export const availableGroupingsState = selector({
 const changeBrowserNodeKey = (type: string, id: string): string =>
   `${type}_${id}`;
 
+export const getNodeKeyForChange = (change: Change) =>
+  changeBrowserNodeKey("change", change.after.path);
+
 export const changeNode = (change: Change): ChangeNode => ({
   type: "change",
-  key: changeBrowserNodeKey("change", change.after.path),
+  key: getNodeKeyForChange(change),
   change,
 });
 
@@ -225,7 +265,8 @@ const getChildren = (node: AnyNode) =>
 
 export const changesTreeNodesState = selector<{
   rootNodes: ChangeListNode[];
-  fileCountsMap: Map<string, number>;
+  fileCountsMap: Map<Key, number>;
+  byKey: Map<Key, AnyNode>;
 }>({
   key: "changesView.treeNodes",
   get: ({ get }) => {
@@ -245,6 +286,7 @@ export const changesTreeNodesState = selector<{
       changeListNode(changeList, groupChanges)
     );
     const fileCountsMap = new Map();
+    const byKey = new Map();
     const getFileCount = (node: GroupNode<any>): number => {
       return node.children.reduce(
         (totalSum, child) =>
@@ -255,6 +297,7 @@ export const changesTreeNodesState = selector<{
     dfsVisit<AnyNode, number>(
       (root) => (root === null ? rootNodes : getChildren(root)),
       (node, childrenFileCount) => {
+        byKey.set(node.key, node);
         if (!childrenFileCount) {
           return 1;
         }
@@ -266,7 +309,7 @@ export const changesTreeNodesState = selector<{
         return fileCount;
       }
     );
-    return { rootNodes, fileCountsMap };
+    return { rootNodes, fileCountsMap, byKey };
   },
 });
 

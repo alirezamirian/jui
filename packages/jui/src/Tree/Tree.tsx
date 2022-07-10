@@ -1,15 +1,15 @@
+import React, { ForwardedRef, useRef } from "react";
 import { Node } from "@react-types/shared";
 import { Virtualizer } from "@react-aria/virtualizer";
 import { TreeProps as StatelyTreeProps } from "@react-stately/tree";
-import { TreeRef } from "@intellij-platform/core/Tree/useTreeRef";
-import React, { ForwardedRef, useRef } from "react";
+import { replaceSelectionManager } from "@intellij-platform/core/selection";
+import { StyledTree } from "./StyledTree";
+import { TreeRef } from "./useTreeRef";
 import { TreeNode } from "./TreeNode";
 import { TreeContext } from "./TreeContext";
 import { useTreeState } from "./__tmp__useTreeState";
 import { SelectableTreeProps, useSelectableTree } from "./useSelectableTree";
-import { replaceSelectionManager } from "../selection/replaceSelectionManager";
 import { useTreeVirtualizer } from "./useTreeVirtualizer";
-import { StyledTree } from "@intellij-platform/core/Tree/StyledTree";
 import { CollectionCacheInvalidationProps } from "@intellij-platform/core/Collections/useCollectionCacheInvalidation";
 
 export interface TreeProps<T extends object>

@@ -5,9 +5,12 @@ import * as React from "react";
 import * as stories from "./Menu.stories";
 import { Menu } from "@intellij-platform/core";
 
-const { Nested, MenuWithTrigger, StaticWithTextItems } = composeStories(
-  stories
-);
+const {
+  Nested,
+  MenuWithTrigger,
+  StaticWithTextItems,
+  ContextMenu,
+} = composeStories(stories);
 
 describe("Menu", () => {
   beforeEach(() => {
@@ -92,6 +95,54 @@ describe("Menu with trigger", () => {
       cy.realPress("Enter"); // open second level submenu
       matchImageSnapshot(`menu-with-trigger--position-${num}`);
     }
+  });
+});
+
+describe("ContextMenu", () => {
+  it("opens in the right position", () => {
+    // NOTE: currently menu positioning doesn't exactly match the reference implementation. It flips instead of move
+    // to viewport.
+    mount(<ContextMenu />);
+    cy.scrollTo("bottom", { duration: 0 });
+    cy.get("#context-menu-container").rightclick("bottomRight", {
+      scrollBehavior: false,
+    });
+    matchImageSnapshot(`'context-menu-opened'`);
+    cy.get("#context-menu-container").rightclick("topLeft", {
+      scrollBehavior: false,
+    });
+  });
+
+  it("is closed by escape key", () => {
+    mount(<ContextMenu />);
+    cy.scrollTo("bottom", { duration: 0 });
+    cy.get("#context-menu-container").rightclick("center", {
+      scrollBehavior: false,
+    });
+    cy.get("[role=menu]");
+    cy.realPress("Escape");
+    cy.get("[role=menu]").should("not.exist");
+  });
+
+  it("is closed by clicking outside", () => {
+    mount(<ContextMenu />);
+    cy.scrollTo("bottom", { duration: 0 });
+    cy.get("#context-menu-container").rightclick("center", {
+      scrollBehavior: false,
+    });
+    cy.get("[role=menu]");
+    cy.get("#context-menu-container").click("topLeft");
+    cy.get("[role=menu]").should("not.exist");
+  });
+
+  it("is closed after an action is triggered", () => {
+    mount(<ContextMenu />);
+    cy.scrollTo("bottom", { duration: 0 });
+    cy.get("#context-menu-container").rightclick("center", {
+      scrollBehavior: false,
+    });
+    cy.contains("Generate").click();
+    cy.get("[role=menu]").should("not.exist");
   });
 });
 

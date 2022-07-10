@@ -29,6 +29,7 @@ const Icon = styled.span`
 const Shortcut = styled.kbd<{ selected: boolean }>`
   font-family: system-ui, sans-serif;
   margin-left: 30px;
+  margin-right: -0.625rem;
   color: ${({ theme, selected }) =>
     selected
       ? theme.color("MenuItem.selectionForeground" as UnknownThemeProp)

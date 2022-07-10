@@ -22,14 +22,13 @@ export const ViewOptionsActionButton = (): React.ReactElement => {
 
   return (
     <ActionButtonWithMenu
-      renderMenu={({ menuProps, close }) => (
+      renderMenu={({ menuProps }) => (
         <Menu
           {...menuProps}
           selectedKeys={Object.keys(viewOptions).filter(
             (key) => viewOptions[key as keyof typeof viewOptions]
           )}
           onAction={(key) => {
-            close();
             switch (key) {
               case "showIgnoredFiles":
                 return setShowIgnoredFiles((value) => !value);

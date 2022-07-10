@@ -1,5 +1,5 @@
 import { usePress } from "@react-aria/interactions";
-import { useSelectableItem } from "@react-aria/selection";
+import { useSelectableItem } from "@intellij-platform/core/selection";
 import { mergeProps } from "@react-aria/utils";
 import { SelectionManager } from "@react-stately/selection";
 import { Node } from "@react-types/shared";

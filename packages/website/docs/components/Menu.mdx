@@ -20,21 +20,297 @@ import { Example } from "@site/src/components/ExampleContext";
 
 #### Remaining
 
-- [ ] Context Menu. Positioning with respect to a click point.
 - [ ] Advanced hover behaviour, which detects attempt to go to submenu and doesn't close the menu on mouse out.
 
-## Examples
+#### Known differences
 
-### Simple flat menu with static items
+- In the reference impl, hovering over disabled items removes previously highlighted menu item. Here it preserves
+  it.
+- In the reference impl, there is a delay in opening submenu
+- Moving mouse out of the menu de-highlights currently highlighted menu, if it's not a menu item with a nested menu.
+  Here menu items are not de-highlighted when mouse goes away from the menu.
 
-<Example>
-  <Static />
-</Example>
+## Menu
 
-### Menu with a trigger
+`Menu` component implements the UI of the menu itself. While [MenuTrigger](#menutrigger) implements how the menu is opened via a
+trigger and positioned with respect to it.
 
-This is the most common use case of a menu.
+Similar to all [collection components](../guides/Collections), there are two ways for defining menu items: as jsx, in
+children (static), and via `items` prop (dynamic).
 
-<Example>
-  <MenuWithTrigger />
-</Example>
+### Static API
+
+`Item` component can be rendered in the children of `Menu` to define the menu items. It's best suited for the use cases
+where the menu items are static. Use `key` to give each item a unique identifier, which is used in props on `onAction`,
+or `disabledKeys`. If `key` is not provided, an index-based auto-generated key will be assigned to each item.
+
+:::tip
+If the content of an `Item` is not plain text, use `textValue` to specify the plain text value for the item. It's needed
+for making the menu item accessible via type-to-select.
+:::
+
+:::tip
+Render `Item`s inside another `Item` to create nested menu. The parent item's content is provided via `title` prop, in
+this case.
+:::
+
+```tsx live themed
+// import { Item, Menu } from "@intellij-platform/core";
+
+<Menu>
+  <Item key="copy">Copy</Item>
+  <Item key="cut" textValue="Cut">
+    <span>Cut</span>
+  </Item>
+  <Item title="History">
+    <Item>Show History</Item>
+    <Item>Put Label</Item>
+  </Item>
+</Menu>
+```
+
+### Dynamic API
+
+While you can also dynamically map a list of objects to rendered `Item`s, `items` prop is designed for dynamically
+rendering menu items based on an array of objects. Then you use a render function in children, to specify how each
+item should be mapped to an `Item` or `Section`.
+
+```tsx live themed
+// import { Item, Menu } from "@intellij-platform/core";
+
+<Menu
+  items={[
+    { name: "Copy" },
+    { name: "Cut" },
+    {
+      name: "History",
+      children: [{ name: "Show History" }, { name: "Put Label" }],
+    },
+  ]}
+>
+  {(item) => (
+    <Item key={item.name} childItems={item.children}>
+      {item.name}
+    </Item>
+  )}
+</Menu>
+```
+
+### MenuItemLayout
+
+`MenuItemLayout` can be rendered inside `Item`, when plain text is not enough for a menu item. `MenuItemLayout` has
+three parts:
+
+- An icon rendered before the menu item text
+- The text content of the menu item
+- Shortcut rendered on the right side.
+
+```tsx live themed
+<Menu>
+  <Item>
+    <MenuItemLayout
+      icon={<PlatformIcon icon={"actions/copy"} />}
+      content="Copy"
+      shortcut={"⌘C"}
+    />
+  </Item>
+</Menu>
+```
+
+### Selection
+
+Menu items can be marked as selected via `selectedKeys`:
+
+```tsx live themed
+<Menu selectedKeys={["enablePreviewTab"]}>
+  <Item key="enablePreviewTab">Enable Preview Tab</Item>
+  <Item key="fileNesting">File Nesting...</Item>
+</Menu>
+```
+
+There is no `onSelectedKeys` change callback. You should use `onAction` and adjust `selectedKeys` if needed.
+
+:::note
+If a selected menu item renders `MenuItemLayout` with an icon, the checkmark icon will replace the menu item icon.
+:::
+
+### Disabled items
+
+Menu items can be disabled through `disabledKeys` prop on the `Menu`:
+
+```tsx live themed
+<Menu disabledKeys={["paste"]}>
+  <Item key="copy">Copy</Item>
+  <Item key="paste">Paste</Item>
+  <Item key="cut">Cut</Item>
+</Menu>
+```
+
+### Full Example
+
+```tsx live themed
+<Menu
+  disabledKeys={["jumpToExternalEditor"]}
+  onAction={(key) => alert(`Selected: ${key}`)}
+>
+  <Item textValue="Cut">
+    <MenuItemLayout
+      icon={<PlatformIcon icon={"actions/menu-cut"} />}
+      content="Cut"
+      shortcut={"⌘X"}
+    />
+  </Item>
+  <Item textValue="Copy">
+    <MenuItemLayout
+      icon={<PlatformIcon icon={"actions/copy"} />}
+      content="Copy"
+      shortcut={"⌘C"}
+    />
+  </Item>
+  <Item textValue="Paste">
+    <MenuItemLayout
+      icon={<PlatformIcon icon={"actions/menu-paste"} />}
+      content="Paste"
+      shortcut={"⌘V"}
+    />
+  </Item>
+  <Divider />
+  <Item>Reformat Code</Item>
+  <Item textValue="Optimize Imports">
+    <MenuItemLayout content="Optimize Imports" shortcut={"⌃⌥O"} />
+  </Item>
+  <Item textValue="Delete">
+    <MenuItemLayout content="Delete" shortcut={"⌫"} />
+  </Item>
+  <Divider />
+  <Item textValue="Compare with...">
+    <MenuItemLayout
+      icon={<PlatformIcon icon={"actions/diff"} />}
+      content="Compare with..."
+    />
+  </Item>
+  <Divider />
+  <Item key="jumpToExternalEditor" textValue="Jump to external editor">
+    <MenuItemLayout content="Jump to external editor" shortcut={"⌥⌘F4"} />
+  </Item>
+  <Divider />
+  <Item title={<MenuItemLayout content="History" />}>
+    <Item>Show History</Item>
+    <Item>Put label</Item>
+  </Item>
+</Menu>
+```
+
+## MenuTrigger
+
+`MenuTrigger` links a menu to a trigger for the menu. It handles the opening/closing logic and renders the menu as an
+overlay, positioned with respect to the trigger element. `children` of `MenuTrigger` must be a render function which
+renders the trigger. It's invoked with props and ref to be passed down to the trigger element.
+
+:::info
+Currently, menu is closed when a menu action is triggered. For some actions (e.g. toggleable view options), that's not
+the best UX. In future releases, there will be a way to control if the menu should be kept open after the triggered
+action.
+:::
+
+```tsx live themed
+<MenuTrigger
+  renderMenu={({ menuProps }) => (
+    <Menu
+      {...menuProps}
+      onAction={(key) => {
+        console.log(key);
+      }}
+    >
+      <Item textValue="Cut">
+        <MenuItemLayout
+          icon={<PlatformIcon icon={"actions/menu-cut"} />}
+          content="Cut"
+          shortcut={"⌘X"}
+        />
+      </Item>
+      <Item textValue="Copy">
+        <MenuItemLayout
+          icon={<PlatformIcon icon={"actions/copy"} />}
+          content="Copy"
+          shortcut={"⌘C"}
+        />
+      </Item>
+      <Item textValue="Paste">
+        <MenuItemLayout
+          icon={<PlatformIcon icon={"actions/menu-paste"} />}
+          content="Paste"
+          shortcut={"⌘V"}
+        />
+      </Item>
+    </Menu>
+  )}
+>
+  {(props, ref) => (
+    <ActionButton {...props} ref={ref}>
+      <PlatformIcon icon={"general/gearPlain"} />
+    </ActionButton>
+  )}
+</MenuTrigger>
+```
+
+### Positioning options
+
+TODO
+
+### Controlled and uncontrolled
+
+TODO
+
+### Focus restoration
+
+Use `restoreFocus` to have focus restored to the trigger, after the menu is closed. While it's an accessibility best
+practice to restore the focus, `restoreFocus` is `false` by default. That is based on the observed majority of the use
+cases in Intellij Platform applications.
+
+## ContextMenu
+
+`ContextMenuContainer` provides a generic container component that is capable of opening a context menu. You can use it
+as a wrapper for [List](./List), [Tree](./Tree), or anything else, to let them have a context menu.
+
+```tsx live noPadding
+<ContextMenuContainer
+  renderMenu={() => (
+    <Menu>
+      <Item textValue="Open in Right Split">
+        <MenuItemLayout
+          icon={<PlatformIcon icon={"actions/splitVertically.svg"} />}
+          content="Open in Right Split"
+          shortcut={"⇧⏎"}
+        />
+      </Item>
+      <Item textValue="Open in Right Split">
+        <MenuItemLayout
+          content="Open in Split with Chooser..."
+          shortcut={"⌥⇧⏎"}
+        />
+      </Item>
+      <Item title="Open in">
+        <Item>Finder</Item>
+        <Item>Terminal</Item>
+        <Item textValue="Github">
+          <MenuItemLayout
+            icon={<PlatformIcon icon={"vcs/vendors/github.svg"} />}
+            content="Github"
+          />
+        </Item>
+      </Item>
+    </Menu>
+  )}
+>
+  <div style={{ padding: "5vw", textAlign: "center" }}>
+    Right click somewhere to open the context menu.
+  </div>
+</ContextMenuContainer>
+```
+
+:::info
+In future versions, there might be an integrated support for context menu in List, Tree, etc. But for now it's done
+just by composition of those components and `ContextMenuContainer`. A caveat to have in mind is the extra wrapper
+element that will be added if you want context menu, which may need some styling to have no effect on the layout.
+:::

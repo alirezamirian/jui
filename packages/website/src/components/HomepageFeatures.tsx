@@ -48,7 +48,7 @@ const FeatureList: FeatureItem[] = [
         >
           any theme
         </a>{" "}
-        in form of the a json file and it works.
+        in form of a json file and it works.
       </>
     ),
   },

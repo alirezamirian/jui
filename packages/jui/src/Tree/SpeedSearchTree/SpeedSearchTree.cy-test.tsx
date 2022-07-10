@@ -3,7 +3,7 @@ import { composeStories } from "@storybook/testing-react";
 import * as React from "react";
 import * as stories from "./SpeedSearchTree.stories";
 
-const { Dynamic } = composeStories(stories);
+const { Dynamic, HighlightsWithSpace } = composeStories(stories);
 
 // Should probably be moved into a common test utility
 const OS_NORMALIZED_META = Cypress.platform === "darwin" ? "Meta" : "Control";
@@ -12,7 +12,7 @@ describe("SpeedSearchTree", () => {
   it("supports Speed Search in dynamic items mode", () => {
     mount(<Dynamic />);
 
-    cy.contains("index.ts").focus(); // move focus to an element in tree. it could be the tree itself too.
+    cy.get("#tree").focus(); // move focus to an element in tree. it could be the tree itself too.
 
     // do a search where the first item and two more are matched.
     cy.realType("d");
@@ -50,6 +50,12 @@ describe("SpeedSearchTree", () => {
     // moving up now should move selection to the first match, which is "index.ts"
     cy.realPress("Escape");
     matchImageSnapshot("SpeedSearchTree-8-search-exited");
+  });
+  it("preserves space before/after highlights", () => {
+    mount(<HighlightsWithSpace />);
+    cy.contains("Paco de Lucia").type("de");
+    // local snapshot is disappointing.
+    cy.percySnapshot("SpeedSearchTree-highlights-with-space");
   });
 });
 

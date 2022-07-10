@@ -1,7 +1,6 @@
 ---
 ---
 
-import { RefToIntellijPlatform } from "@site/src/components/RefToIntellijPlatform.tsx";
 import { Default } from "@intellij-platform/core/List/List.stories";
 import { ExampleContext } from "@site/src/components/ExampleContext";
 
@@ -26,6 +25,76 @@ a list of items with a single attribute. Here is some examples from JetBrains ID
 </ExampleContext>
 
 ## SpeedSearchList
+
+## ContextMenu
+
+In order to have context menu for list items, just wrap the list in a `ContextMenuContainer`. When the context menu
+is triggered on an item, the selection is also updated right before the context menu opens, so you can render the
+context menu based on the selected item(s).
+
+```tsx live themed noPadding
+function ListContextMenuExample() {
+  const [selectedKeys, setSelectedKeys] = useState(new Set());
+
+  return (
+    <ContextMenuContainer
+      renderMenu={() => {
+        const selectedKey = Array.from(selectedKeys)[0];
+        if (!selectedKey) {
+          return (
+            <Menu>
+              <Item>Nothing here</Item>
+            </Menu>
+          );
+        }
+        return (
+          <Menu>
+            <Item textValue={`Run '${selectedKey}'`}>
+              <MenuItemLayout
+                icon={<PlatformIcon icon="debugger/threadRunning.svg" />}
+                content={`Run '${selectedKey}'`}
+                shortcut="⇧⏎"
+              />
+            </Item>
+            <Item textValue={`Debug '${selectedKey}'`}>
+              <MenuItemLayout
+                icon={<PlatformIcon icon="actions/startDebugger.svg" />}
+                content={`Debug '${selectedKey}'`}
+                shortcut="⌃⇧D"
+              />
+            </Item>
+            <Item textValue={`Edit '${selectedKey}' Settings...`}>
+              <MenuItemLayout
+                icon={<PlatformIcon icon="actions/editSource.svg" />}
+                content={`Edit '${selectedKey}' Settings...`}
+              />
+            </Item>
+            <Divider />
+            <Item textValue="Jump to source">
+              <MenuItemLayout
+                icon={<PlatformIcon icon="actions/editSource.svg" />}
+                content="Jump to source"
+                shortcut="⌘↓"
+              />
+            </Item>
+          </Menu>
+        );
+      }}
+    >
+      <List
+        selectionMode="single"
+        selectedKeys={selectedKeys}
+        onSelectionChange={setSelectedKeys}
+      >
+        <Item key="start">start</Item>
+        <Item key="build">build</Item>
+        <Item key="test">test</Item>
+        <Item key="deploy">deploy</Item>
+      </List>
+    </ContextMenuContainer>
+  );
+}
+```
 
 ## Advanced use
 

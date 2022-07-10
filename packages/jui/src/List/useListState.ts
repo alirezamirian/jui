@@ -3,7 +3,7 @@ import {
   ListState,
   useListState as originalUseListState,
 } from "@react-stately/list";
-import { replaceSelectionManager } from "../selection/replaceSelectionManager";
+import { replaceSelectionManager } from "@intellij-platform/core/selection";
 
 export function useListState<T extends object>(
   props: ListProps<T>
