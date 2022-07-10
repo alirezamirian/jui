@@ -1,9 +1,15 @@
 import { atom, CallbackInterface, selector, useRecoilCallback } from "recoil";
-import { statusMatrix, StatusRow } from "isomorphic-git";
+import { checkout, statusMatrix, StatusRow } from "isomorphic-git";
 import { fs } from "../../fs/fs";
-import { vcsRootsState } from "../file-status.state";
+import {
+  useUpdateFileStatus,
+  VcsRootForFile,
+  vcsRootsState,
+} from "../file-status.state";
 import { useEffect } from "react";
 import path from "path";
+import { groupBy } from "ramda";
+import { fileContent } from "../../fs/fs.state";
 
 export type Revision = {
   path: string;
@@ -113,7 +119,66 @@ export interface ChangeListManager {
   mergeChangeLists(sourceId: string, targetId: string): void;
   moveChange(change: Change, toChangeListId: string): void;
   refresh(): Promise<void>;
+  rollback(changes: readonly Change[]): Promise<void>;
 }
+
+/**
+ * react hook that returns a rollback function which accepts a list of changes to rollback.
+ */
+export const useRollbackChanges = () => {
+  const updateFileStatus = useUpdateFileStatus();
+  return useRecoilCallback(
+    ({ snapshot, reset, set }) => async (changes: readonly Change[]) => {
+      const changesWithRepoRoots = await Promise.all(
+        changes
+          .filter((change) => !change.after.isDir)
+          .map(async (change) => {
+            const repoRoot = (await snapshot.getPromise(
+              VcsRootForFile(change.after.path)
+            ))!; // FIXME: handle null
+            return {
+              repoRoot,
+              fullPath: change.after.path,
+              relativePath: path.relative(repoRoot, change.after.path),
+            };
+          })
+      );
+      const groupedChanges = groupBy(
+        ({ repoRoot }) => repoRoot,
+        changesWithRepoRoots
+      );
+      await Promise.all(
+        Object.entries(groupedChanges).map(async ([repoRoot, items]) => {
+          await checkout({
+            fs,
+            dir: repoRoot,
+            force: true,
+            filepaths: items.map(({ relativePath }) => relativePath),
+          });
+          await Promise.all(
+            items.map(({ fullPath }) => {
+              reset(fileContent(fullPath)); // Since fileContent is an atom, resetting to default reads the value again. Could be a selector that we would refresh
+              return updateFileStatus(fullPath);
+            })
+          );
+        })
+      );
+
+      // Remove all changes from changelists. It's much more efficient than refresh.
+      set(changeListsState, (changeLists) =>
+        changeLists.map((changeList) => {
+          return {
+            ...changeList,
+            changes: changeList.changes.filter(
+              (change) => !changes.includes(change)
+            ),
+          };
+        })
+      );
+    },
+    []
+  );
+};
 
 /**
  * Exposes actions related to managing change lists, such as CRUD on change lists or refreshing the list of changes, etc.
@@ -126,6 +191,7 @@ export interface ChangeListManager {
  */
 export const useChangeListManager = (): ChangeListManager => {
   const refresh = useRecoilCallback(refreshChanges, []);
+  const rollback = useRollbackChanges();
 
   const addChangeList = (name: string, comment: string) => {
     throw new Error("Not implemented");
@@ -156,6 +222,7 @@ export const useChangeListManager = (): ChangeListManager => {
     removeChangeList,
     setActiveChangeList,
     refresh,
+    rollback,
   };
 };
 

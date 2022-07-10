@@ -17,7 +17,7 @@ import {
   selectedChangesState,
 } from "./ChangesView.state";
 import { StatusColor } from "../../FileStatusColor";
-import React from "react";
+import React, { useContext, useImperativeHandle, useRef } from "react";
 import { ChangeViewTree } from "./ChangeViewTree";
 import { ChangesViewToolbar } from "./ChangesViewToolbar";
 
@@ -80,10 +80,17 @@ const StyledChangesSummaryContainer = styled.span`
   z-index: 1;
 `;
 
+const ChangeViewContext = React.createContext({
+  focusCommitMessage: () => {},
+});
+
+export const useChangeViewContext = () => useContext(ChangeViewContext);
+
 export const ChangesViewSplitter = () => {
   const {
     state: { anchor },
   } = useToolWindowState();
+  const editorRef = useRef<{ focus: () => void }>(null);
   const orientation = getAnchorOrientation(anchor);
   const [commitMessageSize, setCommitMessageSize] = useRecoilState(
     commitMessageSizeState(orientation)
@@ -91,22 +98,32 @@ export const ChangesViewSplitter = () => {
   // TODO(lib-candidate): ToolWindowAwareSplitter. A wrapper around ThreeViewSplitter which sets orientation based
   //  on anchor orientation from useToolWindowState.
   return (
-    <ThreeViewSplitter
-      orientation={orientation}
-      innerView={
-        <StyledContainer>
-          <ChangesViewToolbar />
-          <StyledTreeViewWrapper>
-            <ChangeViewTree />
-          </StyledTreeViewWrapper>
-          <CommitActionsRow />
-        </StyledContainer>
-      }
-      innerViewMinSize={50}
-      lastView={<CommitMessageEditorAndButtons />}
-      lastSize={commitMessageSize}
-      onLastResize={setCommitMessageSize}
-    />
+    <ChangeViewContext.Provider
+      value={{
+        focusCommitMessage: () => {
+          setTimeout(() => {
+            editorRef.current?.focus();
+          });
+        },
+      }}
+    >
+      <ThreeViewSplitter
+        orientation={orientation}
+        innerView={
+          <StyledContainer>
+            <ChangesViewToolbar />
+            <StyledTreeViewWrapper>
+              <ChangeViewTree />
+            </StyledTreeViewWrapper>
+            <CommitActionsRow />
+          </StyledContainer>
+        }
+        innerViewMinSize={50}
+        lastView={<CommitMessageEditorAndButtons editorRef={editorRef} />}
+        lastSize={commitMessageSize}
+        onLastResize={setCommitMessageSize}
+      />
+    </ChangeViewContext.Provider>
   );
 };
 
@@ -152,14 +169,30 @@ function CommitActionsRow() {
   );
 }
 
-function CommitMessageEditorAndButtons() {
+function CommitMessageEditorAndButtons({
+  editorRef,
+}: {
+  editorRef: React.RefObject<{ focus: () => void }>;
+}) {
+  const commitMessageTextAreaRef = useRef<HTMLTextAreaElement>(null);
   const [commitMessage, setCommitMessage] = useRecoilState(commitMessageState);
 
   const { hasFocus } = useDefaultToolWindowContext();
 
+  useImperativeHandle(
+    editorRef,
+    () => ({
+      focus: () => {
+        commitMessageTextAreaRef.current?.focus();
+      },
+    }),
+    []
+  );
+
   return (
     <StyledCommitMessageContainer>
       <StyledCommitMessageTextArea
+        ref={commitMessageTextAreaRef}
         value={commitMessage}
         onChange={(event) => {
           setCommitMessage(event.target.value);
