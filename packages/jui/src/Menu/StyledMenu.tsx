@@ -38,6 +38,9 @@ export const StyledMenu = styled.ul`
       `${
         theme.value("PopupMenuSeparator.stripeIndent" as UnknownThemeProp) ?? 1
       }px 0`};
-    margin: 0 0.5rem;
+    margin: ${({ theme }) =>
+      `0 ${
+        theme.value("PopupMenuSeparator.withToEdge" as UnknownThemeProp) ?? 1
+      }px`};
   }
 `;
