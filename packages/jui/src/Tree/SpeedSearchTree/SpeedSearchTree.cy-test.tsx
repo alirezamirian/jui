@@ -12,7 +12,7 @@ describe("SpeedSearchTree", () => {
   it("supports Speed Search in dynamic items mode", () => {
     mount(<Dynamic />);
 
-    cy.contains("index.ts").focus(); // move focus to an element in tree. it could be the tree itself too.
+    cy.get("#tree").focus(); // move focus to an element in tree. it could be the tree itself too.
 
     // do a search where the first item and two more are matched.
     cy.realType("d");

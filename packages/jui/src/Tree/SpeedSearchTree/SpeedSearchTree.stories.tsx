@@ -45,6 +45,7 @@ export const Dynamic: Story = () => {
     <div style={{ display: "flex" }}>
       <Pane id="component-container">
         <SpeedSearchTree
+          id="tree"
           items={treeItems}
           fillAvailableSpace
           selectionMode="multiple"
