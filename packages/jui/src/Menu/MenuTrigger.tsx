@@ -24,7 +24,7 @@ export interface MenuTriggerProps
 // FIXME: Focus is not restored if nested menu are opened. It may be solved by using useOverlay and closing submenu in click outside.
 /**
  * Makes its children a trigger for a menu, rendered via {@link MenuTriggerProps#renderMenu} prop.
- * Closes the menu when an menu action is triggered.
+ * Closes the menu when a menu action is triggered.
  */
 export const MenuTrigger: React.FC<MenuTriggerProps> = ({
   children,
