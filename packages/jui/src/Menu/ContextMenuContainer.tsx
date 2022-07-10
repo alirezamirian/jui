@@ -4,7 +4,7 @@ import { useMenuTriggerState } from "@react-stately/menu";
 import { OverlayTriggerProps } from "@react-types/overlays";
 
 import { useContextMenu } from "./useContextMenu";
-import { MenuOverlay } from "@intellij-platform/core/Menu/MenuOverlay";
+import { MenuOverlay } from "./MenuOverlay";
 
 interface ContextMenuContainerProps extends HTMLProps<HTMLDivElement> {
   /**

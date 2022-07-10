@@ -4,7 +4,6 @@ export { createSetInterface, useControllableSet } from "./utils/useSet";
 export { ResizableView } from "./ResizableView";
 export * from "./List";
 export * from "./Menu";
-export * from "./ContextMenu";
 export * from "./ToolWindow";
 export * from "./ActionButton/ActionButton";
 export * from "./ActionToolbar/ActionToolbar";

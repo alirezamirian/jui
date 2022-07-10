@@ -1,8 +1,8 @@
-import { MenuTriggerState } from "@react-stately/menu";
 import React, { useRef } from "react";
-import { useMouseEventOverlayPosition } from "@intellij-platform/core/utils/useMouseEventOverlayPosition";
+import { MenuTriggerState } from "@react-stately/menu";
 import { useOverlay } from "@react-aria/overlays";
 import { mergeProps } from "@react-aria/utils";
+import { useMouseEventOverlayPosition } from "@intellij-platform/core/utils/useMouseEventOverlayPosition";
 
 /**
  * Functionality and accessibility of context menu.
