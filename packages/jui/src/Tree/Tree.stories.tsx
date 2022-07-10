@@ -4,6 +4,12 @@ import React, { Key, useState } from "react";
 import { Tree, TreeProps } from "./Tree";
 import { treeItems } from "./story-helpers";
 import { Pane, SelectionLog } from "../story-components";
+import {
+  ContextMenuContainer,
+  Menu,
+  MenuItemLayout,
+  PlatformIcon,
+} from "@intellij-platform/core";
 
 export default {
   title: "Components/Tree (Basic)",
@@ -68,7 +74,7 @@ export const Static: Story<TreeProps<never>> = (props) => {
   );
 };
 
-export const Dynamic = () => {
+export const Dynamic: Story = () => {
   const [selectedKeys, setSelectedKeys] = useState<"all" | Set<Key>>(
     new Set(["Theme", "index.ts"])
   );
@@ -129,3 +135,64 @@ export const ScrollAndContainerWidth: Story<{ width: number }> = ({
 };
 ScrollAndContainerWidth.args = { width: 400 };
 ScrollAndContainerWidth.storyName = "Scroll & Container Width";
+
+export const WithContextMenu: Story = () => {
+  const [selectedKeys, setSelectedKeys] = useState<"all" | Set<Key>>(
+    new Set([])
+  );
+  return (
+    <Pane>
+      <ContextMenuContainer
+        renderMenu={() => {
+          const renderActions = () => {
+            if (typeof selectedKeys !== "string" && selectedKeys.size === 0) {
+              return <Item>Nothing here</Item>;
+            } else {
+              let text = "";
+              if (selectedKeys === "all") {
+                text = "all";
+              } else if (selectedKeys.size > 1) {
+                text = `${selectedKeys.size} items`;
+              }
+              return [
+                <Item textValue={`Cut ${text}`} key="Cut">
+                  <MenuItemLayout
+                    icon={<PlatformIcon icon={"actions/menu-cut"} />}
+                    content={`Cut ${text}`}
+                    shortcut={"⌘X"}
+                  />
+                </Item>,
+                <Item textValue={`Copy ${text}`} key="Copy">
+                  <MenuItemLayout
+                    icon={<PlatformIcon icon={"actions/copy"} />}
+                    content={`Copy ${text}`}
+                    shortcut={"⌘C"}
+                  />
+                </Item>,
+                <Item textValue={`Delete ${text}`} key="Paste">
+                  <MenuItemLayout content={`Delete ${text}`} shortcut="⌫" />
+                </Item>,
+              ];
+            }
+          };
+          return <Menu aria-label="Tree Context Menu">{renderActions()}</Menu>;
+        }}
+      >
+        <Tree
+          fillAvailableSpace
+          selectionMode="multiple"
+          defaultExpandedKeys={["List", "Theme", "BasicList", "Foo"]}
+          items={treeItems}
+          selectedKeys={selectedKeys}
+          onSelectionChange={setSelectedKeys}
+        >
+          {(item) => (
+            <Item key={item.name} title={item.name} childItems={item.children}>
+              {item.name}
+            </Item>
+          )}
+        </Tree>{" "}
+      </ContextMenuContainer>
+    </Pane>
+  );
+};
