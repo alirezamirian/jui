@@ -2,10 +2,8 @@ import React, { useContext } from "react";
 import { Checkbox } from "@intellij-platform/core/Checkbox";
 import { TreeContext } from "@intellij-platform/core/Tree/TreeContext";
 import { SelectionState } from "@intellij-platform/core/TreeCheckboxes/NestedSelection";
-import {
-  ItemStateContext,
-  StyledListIconWrapper,
-} from "@intellij-platform/core/Collections";
+import { ItemStateContext } from "@intellij-platform/core/Collections";
+import styled from "styled-components";
 
 export type TreeNodeCheckboxProps<T extends unknown> = {
   selectionState?: SelectionState;
@@ -13,6 +11,11 @@ export type TreeNodeCheckboxProps<T extends unknown> = {
   onToggle: () => void;
   // maybe a isDisabled prop to be merged with isDisabled from the item?
 };
+
+const StyledCheckboxWrapper = styled.span`
+  margin-right: 0.125rem;
+  display: inline-flex;
+`;
 
 /**
  * Checkbox to be used with {@link SpeedSearchTreeWithCheckboxes}. `SpeedSearchTreeWithCheckboxes` doesn't add the
@@ -45,7 +48,7 @@ export const TreeNodeCheckbox = <T extends unknown>({
   }
 
   return (
-    <StyledListIconWrapper>
+    <StyledCheckboxWrapper>
       <Checkbox
         preventFocus
         aria-label={`Select ${itemContext.node.textValue}`}
@@ -68,6 +71,6 @@ export const TreeNodeCheckbox = <T extends unknown>({
           }
         }}
       />
-    </StyledListIconWrapper>
+    </StyledCheckboxWrapper>
   );
 };

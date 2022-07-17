@@ -11,6 +11,7 @@ import { NestedSelectionState } from "./NestedSelection";
  * See [design-decisions.md](../Tree/design-decisions.md) for more thoughts about how should different features
  * like this be supported.
  *
+ * @alpha
  */
 export const SpeedSearchTreeWithCheckboxes = <T extends object>({
   nestedSelection,
