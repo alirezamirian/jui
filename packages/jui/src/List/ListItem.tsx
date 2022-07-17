@@ -4,6 +4,7 @@ import React from "react";
 import { useSelectableItem } from "@intellij-platform/core/selection";
 import { usePress } from "@react-aria/interactions";
 import { StyledListItem } from "./StyledListItem";
+import { ItemStateContext } from "@intellij-platform/core";
 
 export interface ListItemProps<T> {
   listFocused: boolean;
@@ -21,8 +22,8 @@ export function ListItem<T>({
   children,
 }: ListItemProps<T>) {
   const ref = React.useRef(null);
-  const disabled = state.disabledKeys.has(item.key);
-  const selected = state.selectionManager.isSelected(item.key);
+  const isDisabled = state.disabledKeys.has(item.key);
+  const isSelected = state.selectionManager.isSelected(item.key);
 
   const { itemProps } = useSelectableItem({
     key: item.key,
@@ -32,21 +33,30 @@ export function ListItem<T>({
   });
   let { pressProps } = usePress({
     ...itemProps,
-    isDisabled: disabled,
+    isDisabled,
     preventFocusOnPress: false,
   });
 
   return (
     <StyledListItem
       containerFocused={listFocused}
-      selected={selected}
-      disabled={disabled}
-      aria-disabled={disabled}
-      aria-selected={selected}
+      selected={isSelected}
+      disabled={isDisabled}
+      aria-disabled={isDisabled}
+      aria-selected={isSelected}
       {...pressProps}
       ref={ref}
     >
-      {children || item.rendered}
+      <ItemStateContext.Provider
+        value={{
+          isDisabled,
+          isSelected,
+          isFocused: listFocused,
+          node: item,
+        }}
+      >
+        {children || item.rendered}
+      </ItemStateContext.Provider>
     </StyledListItem>
   );
 }
