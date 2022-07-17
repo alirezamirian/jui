@@ -17,6 +17,11 @@ export interface TreeProps<T extends object>
     CollectionCacheInvalidationProps,
     Omit<SelectableTreeProps<T>, "keyboardDelegate" | "isVirtualized"> {
   fillAvailableSpace?: boolean;
+  /**
+   * Shows the tree in focused style, even when it's not focused. Should be avoided in general, but there might be
+   * special valid use cases.
+   */
+  alwaysShowAsFocused?: boolean;
 }
 
 /**
@@ -28,7 +33,11 @@ export interface TreeProps<T extends object>
  */
 export const Tree = React.forwardRef(
   <T extends object>(
-    { fillAvailableSpace = false, ...props }: TreeProps<T>,
+    {
+      fillAvailableSpace = false,
+      alwaysShowAsFocused = false,
+      ...props
+    }: TreeProps<T>,
     forwardedRef: ForwardedRef<TreeRef>
   ) => {
     const state = replaceSelectionManager(useTreeState(props, forwardedRef));
@@ -54,7 +63,11 @@ export const Tree = React.forwardRef(
           {...treeProps}
         >
           {(itemType: string, item: object) => (
-            <TreeNode key={(item as Node<T>).key} item={item as Node<T>} />
+            <TreeNode
+              key={(item as Node<T>).key}
+              item={item as Node<T>}
+              alwaysShowAsFocused={alwaysShowAsFocused}
+            />
           )}
         </StyledTree>
       </TreeContext.Provider>
