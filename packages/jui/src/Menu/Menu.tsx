@@ -14,7 +14,7 @@ export interface MenuProps<T>
     // selection is not properly supported for nested menus. Plus, it's not even that meaningful for a nested menu
     // at least the way it's implemented now.
     | "onSelectionChange"
-    | "defaultSelection"
+    | "defaultSelectedKeys"
     | "selectionMode"
     | "disallowEmptySelection"
   > {
