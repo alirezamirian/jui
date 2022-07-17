@@ -22,7 +22,7 @@ interface SpeedSearchListProps<T extends object> extends ListProps<T> {
  */
 export function SpeedSearchList<T extends object>({
   disallowEmptySelection = true,
-  alwaysShowListAsFocused = false,
+  alwaysShowAsFocused = false,
   fillAvailableSpace = false,
   onAction,
   ...inputProps
@@ -55,7 +55,7 @@ export function SpeedSearchList<T extends object>({
                     key={item.key}
                     item={item}
                     state={state}
-                    listFocused={alwaysShowListAsFocused || focused}
+                    listFocused={alwaysShowAsFocused || focused}
                     onAction={() => onAction?.(item.key)}
                   />
                 </SpeedSearchItemHighlightsProvider>

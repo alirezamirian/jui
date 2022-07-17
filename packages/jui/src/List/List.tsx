@@ -18,13 +18,13 @@ export type ListProps<T extends object> = Omit<
   /**
    * By default, if list is not focused, it shows a different style on the selected item,
    * which acts as a visual clue for list's focus state. This behaviour can be suppressed by setting
-   * `alwaysShowListAsFocused` to `true`. One use case is in master-detail views where you don't
+   * `alwaysShowAsFocused` to `true`. One use case is in master-detail views where you don't
    * want the list to appear as blurred, when interacting with the details view of the selected
    * list item. Note that in such use cases, there won't be any visual clue to distinguish focused
    * state of the link, which is not great from UX perspective, but it's kept like this to match
    * Jetbrains UI behaviour.
    */
-  alwaysShowListAsFocused?: boolean;
+  alwaysShowAsFocused?: boolean;
   /**
    * Called when the action for the item should be triggered, which can be by double click or pressing Enter.
    * Enter not implemented yet :D
@@ -41,7 +41,7 @@ export type ListProps<T extends object> = Omit<
  */
 export function List<T extends object>({
   disallowEmptySelection = true,
-  alwaysShowListAsFocused = false,
+  alwaysShowAsFocused = false,
   fillAvailableSpace = false,
   onAction,
   ...inputProps
@@ -65,7 +65,7 @@ export function List<T extends object>({
               item={item}
               state={state}
               onAction={() => onAction?.(item.key)}
-              listFocused={alwaysShowListAsFocused || focused}
+              listFocused={alwaysShowAsFocused || focused}
             />
           ),
         })
