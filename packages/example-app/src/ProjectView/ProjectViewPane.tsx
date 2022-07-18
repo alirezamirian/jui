@@ -1,10 +1,10 @@
 import {
   HighlightedTextValue,
   Item,
+  ItemLayout,
   ItemStateContext,
   PlatformIcon,
   SpeedSearchTree,
-  StyledListIconWrapper,
   TreeRef,
 } from "@intellij-platform/core";
 import { identity, sortBy } from "ramda";
@@ -26,8 +26,6 @@ import {
   selectedKeysState,
 } from "./ProjectView.state";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
-import { StyledTreeNodeWrapper } from "../TreeUtils/StyledTreeNodeWrapper";
-import { StyledTreeNodeHint } from "../TreeUtils/StyledTreeNodeHint";
 
 export const ProjectViewPane = (): React.ReactElement => {
   const project = useRecoilValue(currentProjectState);
@@ -72,14 +70,14 @@ export const ProjectViewPane = (): React.ReactElement => {
               "children" in item ? sortItems(item.children) : undefined
             }
           >
-            <StyledTreeNodeWrapper>
+            <ItemLayout>
               {<ProjectViewNodeIcon node={item} />}
               {item.type === "project" ? (
                 <>
                   <b>
                     <HighlightedTextValue />
                   </b>
-                  <StyledTreeNodeHint>{project.path}</StyledTreeNodeHint>
+                  <ItemLayout.Hint>{project.path}</ItemLayout.Hint>
                 </>
               ) : (
                 <FileTreeNodeText node={item} />
@@ -90,7 +88,7 @@ export const ProjectViewPane = (): React.ReactElement => {
                     <Img height={16} src={loading} darkSrc={loadingDark} />
                   </TreeNodeHint>
                 )}*/}
-            </StyledTreeNodeWrapper>
+            </ItemLayout>
           </Item>
         )}
       </SpeedSearchTree>
@@ -146,9 +144,5 @@ function ProjectViewNodeIcon({
   node: ProjectTreeNode;
 }): React.ReactElement {
   const icon = findNodeIcon(node);
-  return (
-    <StyledListIconWrapper>
-      {icon && <PlatformIcon icon={icon} />}
-    </StyledListIconWrapper>
-  );
+  return <>{icon && <PlatformIcon icon={icon} />}</>;
 }

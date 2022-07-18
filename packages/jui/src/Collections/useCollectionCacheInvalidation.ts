@@ -1,5 +1,5 @@
-import { CacheInvalidationContext } from "@intellij-platform/core/Collections/Item";
 import { usePrevious } from "@intellij-platform/core/utils/usePrevious";
+import { CacheInvalidationContext } from "./Item";
 
 export interface CollectionCacheInvalidationProps {
   /**

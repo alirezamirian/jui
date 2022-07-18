@@ -1,5 +1,5 @@
-import { SelectionManager } from "@react-stately/selection";
 import { RefObject, useEffect } from "react";
+import { SelectionManager } from "@react-stately/selection";
 import { scrollIntoView } from "@react-aria/utils";
 
 type CollectionAutoScrollProps = {
