@@ -1,9 +1,12 @@
 import React from "react";
-import { Color, styled, UnknownThemeProp } from "@intellij-platform/core";
-import { SelectionAwareSpan } from "../../../TreeUtils/SelectionAwareSpan";
+import {
+  Color,
+  SelectionAwareSpan,
+  styled,
+  UnknownThemeProp,
+} from "@intellij-platform/core";
 
 export const StyledCurrentBranchTag = styled(SelectionAwareSpan)`
-  margin-left: 0.3rem;
   display: inline-flex;
   align-self: center;
   height: 1.1rem;

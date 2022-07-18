@@ -29,7 +29,8 @@ export const StyledButton = styled.button<{ isDisabled?: boolean }>`
 
   min-width: min-content; // button should not shrink or its label should not overflow
 
-  &:focus {
+  &:focus,
+  &.focus /* for testing purposes*/ {
     border-color: ${({ theme }) =>
       theme.color("Button.focusedBorderColor", "#87afda")};
     outline: none;
@@ -48,7 +49,8 @@ export const StyledDefaultButton = styled(StyledButton)`
     !isDisabled && theme.color("Button.default.foreground")};
   border-color: ${({ theme, isDisabled }) =>
     !isDisabled && theme.color("Button.default.startBorderColor", "#BFBFBF")};
-  &:focus {
+  &:focus,
+  &.focus /* for testing purposes*/ {
     border-color: ${({ theme }) =>
       theme.color("Button.default.focusedBorderColor", "#87afda")};
   }

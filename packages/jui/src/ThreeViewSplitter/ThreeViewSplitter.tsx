@@ -65,6 +65,7 @@ const StyledSplitterInnerView = styled.div`
  * - Change handling only when resize is done.
  *
  * TODO: max and min size not implemented
+ * TODO: add support for uncontrolled version
  */
 export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
   orientation = "horizontal",

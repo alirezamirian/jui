@@ -6,6 +6,8 @@ import { StyledDebuggerTab } from "./DebuggerTabs/StyledDebuggerTab";
 import { StyledDefaultTab } from "./StyledDefaultTab";
 import { StyledDefaultTabs } from "./StyledDefaultTabs";
 import { StyledToolWindowTab } from "./ToolWindowTabs/StyledToolWindowTab";
+import { StyledEditorTabs } from "./EditorTabs/StyledEditorTabs";
+import { StyledToolWindowTabs } from "./ToolWindowTabs/StyledToolWindowTabs";
 
 export default {
   title: "Components/Tabs/Styled Components",
@@ -33,25 +35,25 @@ export const StyledComponents = (): React.ReactElement => {
       <br />
 
       <h3>StyledEditorTab</h3>
-      <StyledDefaultTabs>
+      <StyledEditorTabs>
         <StyledEditorTab>Default tab</StyledEditorTab>
         <StyledEditorTab selected>Selected tab</StyledEditorTab>
         <StyledEditorTab disabled>Disabled tab</StyledEditorTab>
         <StyledEditorTab selected active>
           Selected & active tab
         </StyledEditorTab>
-      </StyledDefaultTabs>
+      </StyledEditorTabs>
       <br />
 
       <h3>StyledToolWindowTab</h3>
-      <StyledDefaultTabs>
+      <StyledToolWindowTabs>
         <StyledToolWindowTab>Default tab</StyledToolWindowTab>
         <StyledToolWindowTab selected>Selected tab</StyledToolWindowTab>
         <StyledToolWindowTab disabled>Disabled tab</StyledToolWindowTab>
         <StyledToolWindowTab selected active>
           Selected & active tab
         </StyledToolWindowTab>
-      </StyledDefaultTabs>
+      </StyledToolWindowTabs>
       <br />
 
       <h3>StyledDebuggerTab</h3>

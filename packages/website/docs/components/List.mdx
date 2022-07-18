@@ -24,6 +24,25 @@ a list of items with a single attribute. Here is some examples from JetBrains ID
   <Default />
 </ExampleContext>
 
+## ItemLayout
+
+While you can render any custom content in `Item`s of a list, `ItemLayout` is a useful helper component implementing
+the most common cases. Render different parts of an item, such as icon, text, etc. inside a `ItemLayout` and it handles
+the layout, and the spacing between them. Some common parts that require a special style are implemented as components
+accessible on `ItemLayout`.
+
+```tsx live themed
+<SpeedSearchList selectionMode="multiple">
+  <Item textValue="jui">
+    <ItemLayout>
+      <PlatformIcon icon="nodes/folder" />
+      <HighlightedTextValue />
+      <ItemLayout.Hint>~/workspace/jui</ItemLayout.Hint>
+    </ItemLayout>
+  </Item>
+</SpeedSearchList>
+```
+
 ## SpeedSearchList
 
 ## ContextMenu

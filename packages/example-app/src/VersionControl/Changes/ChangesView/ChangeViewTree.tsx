@@ -4,13 +4,12 @@ import {
   ContextMenuContainer,
   HighlightedTextValue,
   Item,
+  ItemLayout,
   PlatformIcon,
   SpeedSearchTreeWithCheckboxes,
-  StyledListIconWrapper,
   TreeNodeCheckbox,
 } from "@intellij-platform/core";
 import { DIR_ICON, getIconForFile } from "../../../file-utils";
-import { StyledTreeNodeWrapper } from "../../../TreeUtils/StyledTreeNodeWrapper";
 import {
   AnyNode,
   ChangeBrowserNode,
@@ -25,7 +24,6 @@ import {
   selectedKeysState,
 } from "./ChangesView.state";
 import { RepoColorIcon } from "./StyledRepoColorSquare";
-import { StyledTreeNodeHint } from "../../../TreeUtils/StyledTreeNodeHint";
 import { IntlMessageFormat } from "intl-messageformat";
 import { CurrentBranchName } from "../../CurrentBranchName";
 import { StyledCurrentBranchTag } from "./StyledCurrentBranchTag";
@@ -59,16 +57,14 @@ const repoNodeItemProps: NodeRenderer<RepositoryNode> = (
 ) => ({
   textValue: path.basename(node.repository.dir),
   element: (
-    <>
+    <ItemLayout>
       <RepoColorIcon rootPath={node.repository.dir} />
       <HighlightedTextValue />
-      <StyledTreeNodeHint>
-        {fileCountMsg.format({ fileCount })}
-      </StyledTreeNodeHint>
+      <ItemLayout.Hint>{fileCountMsg.format({ fileCount })}</ItemLayout.Hint>
       <StyledCurrentBranchTag>
         <CurrentBranchName repo={node.repository} />
       </StyledCurrentBranchTag>
-    </>
+    </ItemLayout>
   ),
 });
 
@@ -78,15 +74,11 @@ const directoryNodeItemProps: NodeRenderer<DirectoryNode> = (
 ) => ({
   textValue: path.relative(node.parentNodePath, node.dirPath),
   element: (
-    <StyledTreeNodeWrapper>
-      <StyledListIconWrapper>
-        <PlatformIcon icon={DIR_ICON} />
-      </StyledListIconWrapper>
+    <ItemLayout>
+      <PlatformIcon icon={DIR_ICON} />
       <HighlightedTextValue />
-      <StyledTreeNodeHint>
-        {fileCountMsg.format({ fileCount })}
-      </StyledTreeNodeHint>
-    </StyledTreeNodeWrapper>
+      <ItemLayout.Hint>{fileCountMsg.format({ fileCount })}</ItemLayout.Hint>
+    </ItemLayout>
   ),
 });
 
@@ -96,15 +88,15 @@ const changeListNodeItemProps: NodeRenderer<ChangeListNode> = (
 ) => ({
   textValue: node.changeList.name,
   element: (
-    <StyledTreeNodeWrapper>
+    <ItemLayout>
       <span style={{ fontWeight: node.changeList.active ? "bold" : undefined }}>
         <HighlightedTextValue />
       </span>
-      <StyledTreeNodeHint>
+      <ItemLayout.Hint>
         {fileCountMsg.format({ fileCount })}{" "}
         {/*in IntelliJ it's not shown if it's empty, but why not!*/}
-      </StyledTreeNodeHint>
-    </StyledTreeNodeWrapper>
+      </ItemLayout.Hint>
+    </ItemLayout>
   ),
 });
 
@@ -113,25 +105,19 @@ const ChangeNodeHint = ({ node }: { node: ChangeNode }): React.ReactElement => {
     changesGroupingState("directory")
   );
   return (
-    <>
-      {!isGroupedByDirectory && (
-        <StyledTreeNodeHint>
-          {path.dirname(node.change.after.path)}
-        </StyledTreeNodeHint>
-      )}
-    </>
+    <ItemLayout.Hint>
+      {!isGroupedByDirectory && path.dirname(node.change.after.path)}
+    </ItemLayout.Hint>
   );
 };
 const changeNodeItemProps: NodeRenderer<ChangeNode> = (node) => ({
   textValue: path.basename(node.change.after.path),
   element: (
-    <StyledTreeNodeWrapper>
-      <StyledListIconWrapper>
-        <PlatformIcon icon={getIconForFile(node.change.after.path)} />
-      </StyledListIconWrapper>
+    <ItemLayout>
+      <PlatformIcon icon={getIconForFile(node.change.after.path)} />
       <HighlightedTextValue />
       <ChangeNodeHint node={node} />
-    </StyledTreeNodeWrapper>
+    </ItemLayout>
   ),
 });
 

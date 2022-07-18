@@ -1,5 +1,5 @@
-import { ItemProps } from "@react-types/shared";
 import React, { ReactElement } from "react";
+import { ItemProps } from "@react-types/shared";
 import { Item as StatelyItem, PartialNode } from "@react-stately/collections";
 
 // noinspection JSUnusedLocalSymbols

@@ -11,6 +11,7 @@ import { TreeContext } from "./TreeContext";
 
 type TreeNodeProps<T> = {
   item: Node<T>;
+  alwaysShowAsFocused?: boolean;
 };
 const StyledTreeNode = styled(StyledListItem).attrs({ as: "div" })<{
   level: number;
@@ -20,7 +21,10 @@ const StyledTreeNode = styled(StyledListItem).attrs({ as: "div" })<{
   padding-left: ${({ level }) => `${(level + 1) * TREE_ICON_SIZE + 8}px`};
 `;
 
-export function TreeNode<T>({ item }: TreeNodeProps<T>) {
+export function TreeNode<T>({
+  item,
+  alwaysShowAsFocused = false,
+}: TreeNodeProps<T>) {
   const ref = useRef(null);
   const {
     state: {
@@ -71,7 +75,7 @@ export function TreeNode<T>({ item }: TreeNodeProps<T>) {
       <StyledTreeNode
         ref={ref}
         {...treeNodeProps}
-        containerFocused={containerFocused}
+        containerFocused={containerFocused || alwaysShowAsFocused}
         disabled={isDisabled}
         selected={isSelected}
         aria-disabled={isDisabled}

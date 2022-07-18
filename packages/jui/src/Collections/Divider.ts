@@ -10,8 +10,8 @@
  * governing permissions and limitations under the License.
  */
 
-import { ItemProps } from "@react-types/shared";
 import { ReactElement } from "react";
+import { ItemProps } from "@react-types/shared";
 import { PartialNode } from "@react-stately/collections";
 
 interface DividerProps {}

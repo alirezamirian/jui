@@ -47,7 +47,7 @@ export const AlwaysShownAsFocused = () => {
         selectionMode="single"
         items={legends}
         fillAvailableSpace
-        // alwaysShowListAsFocused
+        // alwaysShowAsFocused
       >
         {itemRenderer(renderItemCustomUI)}
       </List>
@@ -74,7 +74,7 @@ export const WithStaticData = () => {
 export const MultiSelect = ({
   fillAvailableSpace,
   shouldFocusWrap,
-  alwaysShowListAsFocused,
+  alwaysShowAsFocused,
 }: any) => {
   return (
     <Pane>
@@ -83,7 +83,7 @@ export const MultiSelect = ({
         items={legends}
         fillAvailableSpace={fillAvailableSpace}
         shouldFocusWrap={shouldFocusWrap}
-        alwaysShowListAsFocused={alwaysShowListAsFocused}
+        alwaysShowAsFocused={alwaysShowAsFocused}
       >
         {itemRenderer(renderItemText)}
       </List>

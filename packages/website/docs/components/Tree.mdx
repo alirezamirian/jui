@@ -5,6 +5,25 @@
 
 ## SpeedSearchTree
 
+## ItemLayout
+
+While you can render any custom content in `Item`s of a tree, `ItemLayout` is a useful helper component implementing
+the most common cases. Render different parts of an item, such as icon, text, etc. inside a `ItemLayout` and it handles
+the layout, and the spacing between them. Some common parts that require a special style are implemented as components
+accessible on `ItemLayout`.
+
+```tsx live themed
+<SpeedSearchTree selectionMode="multiple">
+  <Item textValue="jui">
+    <ItemLayout>
+      <PlatformIcon icon="nodes/folder" />
+      <HighlightedTextValue />
+      <ItemLayout.Hint>~/workspace/jui</ItemLayout.Hint>
+    </ItemLayout>
+  </Item>
+</SpeedSearchTree>
+```
+
 ## Context Menu
 
 In order to have context menu for tree nodes, just wrap the tree in a `ContextMenuContainer`. When the context menu
@@ -97,11 +116,10 @@ function TreeContextMenuExample() {
       >
         {(item) => (
           <Item key={item.name} textValue={item.name} childItems={item.items}>
-            <PlatformIcon
-              icon="runConfigurations/testPassed.svg"
-              style={{ marginRight: ".25rem", alignSelf: "center" }}
-            />
-            <HighlightedTextValue />
+            <ItemLayout>
+              <PlatformIcon icon="runConfigurations/testPassed.svg" />
+              <HighlightedTextValue />
+            </ItemLayout>
           </Item>
         )}
       </SpeedSearchTree>

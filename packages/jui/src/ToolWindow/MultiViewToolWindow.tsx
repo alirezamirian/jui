@@ -60,23 +60,28 @@ export const MultiViewToolWindow = ({
     props.defaultActiveKey!,
     props.onActiveKeyChange!
   );
-  const contents = React.Children.toArray(children).filter(
-    (
-      child
-    ): child is React.ReactElement<MultiContentToolWindowContentProps> => {
-      const validChild =
-        React.isValidElement(child) &&
-        child.type === MultiContentToolWindowContent;
-      if (!validChild) {
-        // FIXME: only warn in dev mode
-        console.warn(
-          "You are not supposed to render anything but MultiContentToolWindowContent inside MultiViewToolWindow. Rendered: ",
-          child
-        );
+  const contents = React.Children.toArray(children)
+    .filter(
+      (
+        child
+      ): child is React.ReactElement<MultiContentToolWindowContentProps> => {
+        const validChild =
+          React.isValidElement(child) &&
+          child.type === MultiContentToolWindowContent;
+        if (!validChild) {
+          // FIXME: only warn in dev mode
+          console.warn(
+            "You are not supposed to render anything but MultiContentToolWindowContent inside MultiViewToolWindow. Rendered: ",
+            child
+          );
+        }
+        return validChild;
       }
-      return validChild;
-    }
-  );
+    )
+    // The following map is because of what React.Children.toArray does to keys: https://stackoverflow.com/q/33791401/1493081
+    // It doesn't look like a good idea since and there might be better ways to fix this, or at least make sure it would
+    // work in all cases. FIXME
+    .map((content) => ({ ...content, key: `${content.key}`.slice(2) as Key }));
   const renderContentSwitcher = () => {
     if (groupTabs) {
       console.error(
