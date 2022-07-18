@@ -10,9 +10,6 @@ const getDefaultLinkColor = ({ theme }: { theme: Theme }) =>
 export const StyledLink = styled.a`
   cursor: pointer;
   text-decoration: none;
-  &:hover {
-    text-decoration: underline;
-  }
   outline: none;
   // &:focus-visible didn't work as expected, so FocusRing is used
   &.focus-visible {
@@ -26,7 +23,9 @@ export const StyledLink = styled.a`
   }
   color: ${getDefaultLinkColor};
 
-  &:hover {
+  &:hover,
+  &.hover /* for testing purposes*/ {
+    text-decoration: underline;
     color: ${({ theme }) =>
       theme.color(
         "Link.hoverForeground",

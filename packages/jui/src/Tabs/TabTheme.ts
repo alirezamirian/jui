@@ -80,8 +80,10 @@ export const getTabThemeStyles = ({
     ${({ disabled, active }) =>
       !disabled &&
       css`
-      &:hover {
-        background: ${hoverInactiveBackground};
-        background: ${active && hoverBackground}
-    `}
+        &:hover,
+        &.hover /* for testing purposes */ {
+          background: ${hoverInactiveBackground};
+          background: ${active && hoverBackground};
+        }
+      `}
   `;
