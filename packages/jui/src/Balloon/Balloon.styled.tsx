@@ -42,8 +42,9 @@ export const StyledBalloonContainer = styled.div`
       )};
   border-radius: ${({ theme }) =>
     `${
-      (theme.value<number>("Notification.arc" as UnknownThemeProp) ??
-        CORNER_RADIUS) / 2
+      (theme.value<number>(
+        "Notification.arc" as UnknownThemeProp<"Notification.arc">
+      ) ?? CORNER_RADIUS) / 2
     }px`};
   //display: inline-flex;
   width: 23.3125rem;
@@ -51,7 +52,7 @@ export const StyledBalloonContainer = styled.div`
   background-color: ${bgColor};
   color: ${({ theme }) =>
     theme.color(
-      "Notification.foreground" as UnknownThemeProp,
+      "Notification.foreground" as UnknownThemeProp<"Notification.foreground">,
       !theme.dark ? "#000" : "rgb(191,191,191)"
     )};
 

@@ -14,7 +14,9 @@ import { cache } from "./cache.decorator";
 /**
  * Just to be able to locate all keys that are not yet typed and maybe fix them later at some point.
  */
-export type UnknownThemeProp = any;
+export type UnknownThemeProp<T> = T extends KnownThemePropertyPath
+  ? unknown
+  : KnownThemePropertyPath;
 
 const defaultValues: { [key in KnownThemePropertyPath]?: string } = {
   "*.disabledForeground": "#8C8C8C",

@@ -9,27 +9,29 @@ import {
 export const editorTabTheme = ({ theme }: { theme: Theme }): TabTheme => ({
   borderColor: theme.color("EditorTabs.borderColor"),
   underlineHeight: theme.value<number>("EditorTabs.underlineHeight"),
-  background: theme.color("EditorTabs.background" as UnknownThemeProp),
+  background: theme.color(
+    "EditorTabs.background" as UnknownThemeProp<"EditorTabs.background">
+  ),
   underlinedTabInactiveBackground: theme.color(
-    "EditorTabs.underlinedTabBackground" as UnknownThemeProp // that's correctly not underlinedTabInactiveBackground!
+    "EditorTabs.underlinedTabBackground" // that's correctly not underlinedTabInactiveBackground!
   ), // TODO: use EditorColorsScheme when available
   underlinedTabBackground: theme.color("EditorTabs.underlinedTabBackground"), // TODO: use EditorColorsScheme when available
   hoverInactiveBackground: theme.color(
-    "EditorTabs.hoverInactiveBackground" as UnknownThemeProp
+    "EditorTabs.hoverInactiveBackground" as UnknownThemeProp<"EditorTabs.hoverInactiveBackground">
   ),
   hoverBackground: theme.color(
-    "EditorTabs.hoverBackground" as UnknownThemeProp
+    "EditorTabs.hoverBackground" as UnknownThemeProp<"EditorTabs.hoverBackground">
   ),
   inactiveUnderlineColor: theme.color(
-    "EditorTabs.inactiveUnderlineColor" as UnknownThemeProp
+    "EditorTabs.inactiveUnderlineColor" as UnknownThemeProp<"EditorTabs.inactiveUnderlineColor">
   ), // TODO: use EditorColorsScheme when available
   underlineColor: theme.color("EditorTabs.underlineColor"), // TODO: use EditorColorsScheme when available
 
   underlinedTabInactiveForeground: theme.color(
-    "EditorTabs.underlinedTabForeground" as UnknownThemeProp // that's correctly not underlinedTabInactiveForeground!
+    "EditorTabs.underlinedTabForeground" as UnknownThemeProp<"EditorTabs.underlinedTabForeground"> // that's correctly not underlinedTabInactiveForeground!
   ), // TODO: use EditorColorsScheme when available
   underlinedTabForeground: theme.color(
-    "EditorTabs.underlinedTabForeground" as UnknownThemeProp
+    "EditorTabs.underlinedTabForeground" as UnknownThemeProp<"EditorTabs.underlinedTabForeground">
   ), // TODO: use EditorColorsScheme when available
 });
 export const StyledEditorTab = styled(StyledDefaultTab)`

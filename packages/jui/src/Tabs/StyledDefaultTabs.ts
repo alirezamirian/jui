@@ -5,7 +5,7 @@ import { getTabsThemeStyles } from "./TabTheme";
 const defaultTabsTheme = ({ theme }: { theme: Theme }) =>
   getTabsThemeStyles({
     borderColor: theme.color(
-      "DefaultTabs.borderColor" as UnknownThemeProp,
+      "DefaultTabs.borderColor" as UnknownThemeProp<"DefaultTabs.borderColor">,
       theme.commonColors.contrastBorder
     ),
     background: theme.color("DefaultTabs.background"),

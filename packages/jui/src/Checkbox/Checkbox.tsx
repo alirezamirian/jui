@@ -89,7 +89,7 @@ const StyledCheckboxLabelText = styled.span<{
   color: ${({ theme, isDisabled }) =>
     isDisabled
       ? theme.color(
-          "CheckBox.disabledText" as UnknownThemeProp,
+          "CheckBox.disabledText" as UnknownThemeProp<"CheckBox.disabledText">,
           "#808080" /* this default value was a bit tricky. Still not clear from where it comes in darcular 
           theme when there is no clue of Checkbox.disabledText or *.disabledText. Note that using 
           CheckBox.disabledForeground is not a good option, because it's something other than #808080 for darcula */

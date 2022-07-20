@@ -25,22 +25,33 @@ export const StyledMenu = styled.ul`
       theme.dark ? "rgba(0, 0, 0, 0.15)" : undefined};
   `}
   background: ${({ theme }) =>
-    theme.color("PopupMenu.background" as UnknownThemeProp)};
+    theme.color(
+      "PopupMenu.background" as UnknownThemeProp<"PopupMenu.background">
+    )};
   color: ${({ theme }) =>
-    theme.color("PopupMenu.foreground" as UnknownThemeProp)};
+    theme.color(
+      "PopupMenu.foreground" as UnknownThemeProp<"PopupMenu.foreground">
+    )};
 
   ${StyledVerticalSeparator} {
-    background-color: ${({ theme }) =>
-      theme.color("Menu.separatorColor" as UnknownThemeProp)};
+    background-color: ${({ theme }) => theme.color("Menu.separatorColor")};
     height: ${({ theme }) =>
-      `${theme.value("PopupMenuSeparator.height" as UnknownThemeProp) ?? 3}px`};
+      `${
+        theme.value(
+          "PopupMenuSeparator.height" as UnknownThemeProp<"PopupMenuSeparator.height">
+        ) ?? 3
+      }px`};
     padding: ${({ theme }) =>
       `${
-        theme.value("PopupMenuSeparator.stripeIndent" as UnknownThemeProp) ?? 1
+        theme.value(
+          "PopupMenuSeparator.stripeIndent" as UnknownThemeProp<"PopupMenuSeparator.stripeIndent">
+        ) ?? 1
       }px 0`};
     margin: ${({ theme }) =>
       `0 ${
-        theme.value("PopupMenuSeparator.withToEdge" as UnknownThemeProp) ?? 1
+        theme.value(
+          "PopupMenuSeparator.withToEdge" as UnknownThemeProp<"PopupMenuSeparator.withToEdge">
+        ) ?? 1
       }px`};
   }
 `;

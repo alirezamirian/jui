@@ -35,12 +35,12 @@ const StyledStatusBar = styled.div`
   justify-content: space-between; // because there is left and right sides
   background-color: ${({ theme }) =>
     theme.color(
-      "StatusBar.background" as UnknownThemeProp,
+      "StatusBar.background" as UnknownThemeProp<"StatusBar.background">,
       theme.color("Panel.background")
     ) || "#fff"};
   color: ${({ theme }) =>
     theme.color(
-      "StatusBar.Widget.foreground" as UnknownThemeProp,
+      "StatusBar.Widget.foreground" as UnknownThemeProp<"StatusBar.Widget.foreground">,
       theme.commonColors.labelForeground
     )};
   border-top: 1px solid
