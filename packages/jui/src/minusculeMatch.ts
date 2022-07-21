@@ -20,6 +20,7 @@ export const minusculeMatch = (
   let continuous = false;
   let inputIndex = 0,
     patternIndex = 0;
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     if (matches.length === pattern.length) {
       return createRangesFromIndices(matches.map(({ inputIndex: i }) => i));
