@@ -13,6 +13,7 @@ ruleTester.run("no-empty-catch", noEmptyCatchRule, {
   invalid: [
     {
       code: "const x = 'foo' as UnknownThemeProp<'bar'>",
+      output: "const x = 'foo' as UnknownThemeProp<'foo'>",
       // we can use messageId from the rule object
       errors: [{ messageId: "wrongGenericArg" }],
     },
