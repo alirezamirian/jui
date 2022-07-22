@@ -10,7 +10,11 @@ const themes = [
 ];
 
 const props = [
-  ...new Set(themes.flatMap((theme) => Object.keys(flattenObj(theme.ui)))),
+  ...new Set(
+    themes
+      .flatMap((theme) => Object.keys(flattenObj(theme.ui)))
+      .filter((key) => !/os\.(windows|mac|linux|default)$/.test(key))
+  ),
 ].sort();
 
 const source = `export type GeneratedKnownThemeProps = ${props
