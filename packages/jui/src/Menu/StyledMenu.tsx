@@ -36,22 +36,10 @@ export const StyledMenu = styled.ul`
   ${StyledVerticalSeparator} {
     background-color: ${({ theme }) => theme.color("Menu.separatorColor")};
     height: ${({ theme }) =>
-      `${
-        theme.value(
-          "PopupMenuSeparator.height" as UnknownThemeProp<"PopupMenuSeparator.height">
-        ) ?? 3
-      }px`};
+      `${theme.value("PopupMenuSeparator.height") ?? 3}px`};
     padding: ${({ theme }) =>
-      `${
-        theme.value(
-          "PopupMenuSeparator.stripeIndent" as UnknownThemeProp<"PopupMenuSeparator.stripeIndent">
-        ) ?? 1
-      }px 0`};
+      `${theme.value("PopupMenuSeparator.stripeIndent") ?? 1}px 0`};
     margin: ${({ theme }) =>
-      `0 ${
-        theme.value(
-          "PopupMenuSeparator.withToEdge" as UnknownThemeProp<"PopupMenuSeparator.withToEdge">
-        ) ?? 1
-      }px`};
+      `0 ${theme.value("PopupMenuSeparator.withToEdge") ?? 1}px`};
   }
 `;

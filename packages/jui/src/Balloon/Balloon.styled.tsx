@@ -52,7 +52,7 @@ export const StyledBalloonContainer = styled.div`
   background-color: ${bgColor};
   color: ${({ theme }) =>
     theme.color(
-      "Notification.foreground" as UnknownThemeProp<"Notification.foreground">,
+      "Notification.foreground",
       !theme.dark ? "#000" : "rgb(191,191,191)"
     )};
 

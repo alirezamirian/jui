@@ -36,7 +36,7 @@ const StyledStatusBar = styled.div`
   background-color: ${({ theme }) =>
     theme.color(
       "StatusBar.background" as UnknownThemeProp<"StatusBar.background">,
-      theme.color("Panel.background")
+      theme.color("Panel.background" as UnknownThemeProp<"Panel.background">)
     ) || "#fff"};
   color: ${({ theme }) =>
     theme.color(

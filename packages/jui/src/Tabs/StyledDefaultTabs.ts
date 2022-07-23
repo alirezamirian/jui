@@ -1,11 +1,11 @@
-import { Theme, UnknownThemeProp } from "../Theme";
+import { Theme } from "../Theme";
 import { styled } from "@intellij-platform/core/styled";
 import { getTabsThemeStyles } from "./TabTheme";
 
 const defaultTabsTheme = ({ theme }: { theme: Theme }) =>
   getTabsThemeStyles({
     borderColor: theme.color(
-      "DefaultTabs.borderColor" as UnknownThemeProp<"DefaultTabs.borderColor">,
+      "DefaultTabs.borderColor",
       theme.commonColors.contrastBorder
     ),
     background: theme.color("DefaultTabs.background"),

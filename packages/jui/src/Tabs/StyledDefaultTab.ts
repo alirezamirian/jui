@@ -23,9 +23,7 @@ const defaultTabTheme = ({ theme }: { theme: Theme }) =>
     underlinedTabInactiveForeground: theme.color(
       "DefaultTabs.underlinedTabInactiveForeground" as UnknownThemeProp<"DefaultTabs.underlinedTabInactiveForeground">
     ),
-    underlinedTabForeground: theme.color(
-      "DefaultTabs.underlinedTabForeground" as UnknownThemeProp<"DefaultTabs.underlinedTabForeground">
-    ),
+    underlinedTabForeground: theme.color("DefaultTabs.underlinedTabForeground"),
 
     background: theme.color(
       "DefaultTabs.background",

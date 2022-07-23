@@ -28,9 +28,7 @@ const StyledToolWindowHeader = styled.div<{ active: boolean }>`
       theme.color(
         "ToolWindow.Header.borderColor" as UnknownThemeProp<"ToolWindow.Header.borderColor">
       ) ||
-      theme.color(
-        "DefaultTabs.borderColor" as UnknownThemeProp<"DefaultTabs.borderColor">
-      ) ||
+      theme.color("DefaultTabs.borderColor") ||
       theme.commonColors.contrastBorder};
   background: ${({ theme, active }) =>
     active
