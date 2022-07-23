@@ -11,6 +11,7 @@ const themeJson: ThemeJson = {
   ui: {
     "*": {
       prop5: "globalValue5",
+      selectionBackground: "#ff0000",
     },
     Cmp1: {
       prop1: "val1",
@@ -74,5 +75,14 @@ describe(Theme, () => {
   it("should fallback to *.property if Component.property doesn't exist", () => {
     expect(new Theme(themeJson).value("Cmp2.prop2")).toEqual("value2");
     expect(new Theme(themeJson).color("Cmp2.prop5")).toEqual("globalValue5");
+  });
+
+  it("should provides value for basic *.property colors when not specified in the theme json", () => {
+    const theme = new Theme(themeJson);
+    expect(theme.color("Cmp2.background")).toEqual(
+      // @ts-expect-error DEFAULTS is private to avoid external usage. tests are exception
+      theme.DEFAULTS["background"]
+    );
+    expect(theme.color("Cmp2.selectionBackground")).toEqual("#ff0000");
   });
 });
