@@ -183,7 +183,10 @@ export class Theme<P extends string = string> {
         "Component.infoForeground",
         theme.dark ? "#787878" : "#999999"
       ),
-      panelBackground: theme.color("Panel.background") || "#fff",
+      panelBackground:
+        theme.color(
+          "Panel.background" as UnknownThemeProp<"Panel.background">
+        ) || "#fff",
       focusBorderColor: theme.color(
         "Component.focusedBorderColor",
         !theme.dark ? "#87AFDA" : "#466D94"
