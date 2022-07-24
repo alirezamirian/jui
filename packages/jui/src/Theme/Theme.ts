@@ -204,6 +204,7 @@ export class Theme<P extends string = string> {
         "Label.foreground",
         theme.dark ? "#bbb" : "#000"
       ),
+      labelSelectedForeground: theme.color("Label.selectedForeground", "#fff"),
       contextHelpForeground: theme.color(
         "Label.infoForeground",
         theme.dark ? "#8c8c8c" : "#787878"
