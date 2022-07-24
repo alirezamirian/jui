@@ -21,24 +21,22 @@ const defaultTabTheme = ({ theme }: { theme: Theme }) =>
     ),
 
     underlinedTabInactiveForeground: theme.color(
-      "DefaultTabs.underlinedTabInactiveForeground" as UnknownThemeProp
+      "DefaultTabs.underlinedTabInactiveForeground" as UnknownThemeProp<"DefaultTabs.underlinedTabInactiveForeground">
     ),
-    underlinedTabForeground: theme.color(
-      "DefaultTabs.underlinedTabForeground" as UnknownThemeProp
-    ),
+    underlinedTabForeground: theme.color("DefaultTabs.underlinedTabForeground"),
 
     background: theme.color(
       "DefaultTabs.background",
       theme.dark ? "#3C3F41" : "#ECECEC"
     ),
     underlinedTabInactiveBackground: theme.color(
-      "DefaultTabs.underlinedTabInactiveBackground" as UnknownThemeProp
+      "DefaultTabs.underlinedTabInactiveBackground" as UnknownThemeProp<"DefaultTabs.underlinedTabInactiveBackground">
     ),
     underlinedTabBackground: theme.color(
-      "DefaultTabs.underlinedTabBackground" as UnknownThemeProp
+      "DefaultTabs.underlinedTabBackground" as UnknownThemeProp<"DefaultTabs.underlinedTabBackground">
     ),
     hoverInactiveBackground: theme.color(
-      "DefaultTabs.hoverInactiveBackground" as UnknownThemeProp,
+      "DefaultTabs.hoverInactiveBackground" as UnknownThemeProp<"DefaultTabs.hoverInactiveBackground">,
       theme.dark ? "rgba(0,0,0,.35)" : "rgba(0,0,0,.1)"
     ),
     hoverBackground: theme.color(
@@ -62,7 +60,9 @@ export const StyledDefaultTab = styled.div<StyledTabProps>`
   // disabled state doesn't seem to be supported in Intellij Platform at all.
   opacity: ${({ disabled }) => (disabled ? ".5" : "1")};
   color: ${({ theme }) =>
-    theme.color("DefaultTabs.foreground" as UnknownThemeProp)};
+    theme.color(
+      "DefaultTabs.foreground" as UnknownThemeProp<"DefaultTabs.foreground">
+    )};
 
   position: relative;
   &::after {

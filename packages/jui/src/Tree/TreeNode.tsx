@@ -2,24 +2,16 @@ import { usePress } from "@react-aria/interactions";
 import { Node } from "@react-types/shared";
 import React, { useContext, useRef } from "react";
 import { ItemStateContext } from "../Collections/ItemStateContext";
-import { StyledListItem } from "../List/StyledListItem";
-import { styled } from "../styled";
-import { TREE_ICON_SIZE, TreeNodeIcon } from "./TreeNodeIcon";
+import { TreeNodeIcon } from "./TreeNodeIcon";
 import { useTreeNode } from "./useTreeNode";
 import { useTreeNodeToggleButton } from "./useTreeNodeToggleButton";
 import { TreeContext } from "./TreeContext";
+import { StyledTreeNode } from "@intellij-platform/core/Tree/StyledTreeNode";
 
 type TreeNodeProps<T> = {
   item: Node<T>;
   alwaysShowAsFocused?: boolean;
 };
-const StyledTreeNode = styled(StyledListItem).attrs({ as: "div" })<{
-  level: number;
-}>`
-  // There are some theme properties for tree node padding (theme.ui.Tree.leftChildIndent and
-  // theme.ui.Tree.leftChildIndent), but they doesn't seem to be applicable.
-  padding-left: ${({ level }) => `${(level + 1) * TREE_ICON_SIZE + 8}px`};
-`;
 
 export function TreeNode<T>({
   item,

@@ -32,7 +32,9 @@ const Shortcut = styled.kbd<{ selected: boolean }>`
   margin-right: -0.625rem;
   color: ${({ theme, selected }) =>
     selected
-      ? theme.color("MenuItem.selectionForeground" as UnknownThemeProp)
+      ? theme.color(
+          "MenuItem.selectionForeground" as UnknownThemeProp<"MenuItem.selectionForeground">
+        )
       : theme.color("MenuItem.acceleratorForeground")};
 `;
 

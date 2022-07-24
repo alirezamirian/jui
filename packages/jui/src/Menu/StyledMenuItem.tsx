@@ -15,15 +15,19 @@ export const StyledMenuItem = styled.li<{
       return theme.color("MenuItem.disabledForeground");
     }
     if (isActive) {
-      return theme.color("MenuItem.selectionForeground" as UnknownThemeProp);
+      return theme.color(
+        "MenuItem.selectionForeground" as UnknownThemeProp<"MenuItem.selectionForeground">
+      );
     }
-    return theme.color("MenuItem.foreground" as UnknownThemeProp);
+    return theme.color(
+      "MenuItem.foreground" as UnknownThemeProp<"MenuItem.foreground">
+    );
   }};
   ${({ isActive, theme }) =>
     isActive &&
     css`
       background: ${theme.color(
-        "MenuItem.selectionBackground" as UnknownThemeProp
+        "MenuItem.selectionBackground" as UnknownThemeProp<"MenuItem.selectionBackground">
       )};
       color: ${undefined};
     `}

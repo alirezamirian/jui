@@ -4,7 +4,10 @@ import { styled } from "@intellij-platform/core/styled";
 const getDefaultLinkColor = ({ theme }: { theme: Theme }) =>
   theme.color(
     "Link.activeForeground",
-    theme.color("link.foreground" as UnknownThemeProp, "#589DF6")
+    theme.color(
+      "link.foreground" as UnknownThemeProp<"link.foreground">,
+      "#589DF6"
+    )
   );
 
 export const StyledLink = styled.a`
@@ -16,7 +19,7 @@ export const StyledLink = styled.a`
     outline: 1px solid
       ${({ theme }) =>
         theme.color(
-          "Link.focusedBorderColor" as UnknownThemeProp,
+          "Link.focusedBorderColor" as UnknownThemeProp<"Link.focusedBorderColor">,
           theme.commonColors.focusBorderColor
         )};
     border-radius: 2px; // Registry.intValue("ide.link.button.focus.round.arc", 4)
@@ -30,7 +33,7 @@ export const StyledLink = styled.a`
       theme.color(
         "Link.hoverForeground",
         theme.color(
-          "link.hover.foreground" as UnknownThemeProp,
+          "link.hover.foreground" as UnknownThemeProp<"link.hover.foreground">,
           "" /*FIXME: check*/
         )
       )};
@@ -41,7 +44,7 @@ export const StyledLink = styled.a`
       theme.color(
         "Link.pressedForeground",
         theme.color(
-          "link.pressed.foreground" as UnknownThemeProp,
+          "link.pressed.foreground" as UnknownThemeProp<"link.pressed.foreground">,
           !theme.dark ? "#F00000" : "#BA6F25"
         )
       )};
@@ -52,10 +55,10 @@ export const StyledLink = styled.a`
     text-decoration: none;
     color: ${({ theme }) =>
       theme.color(
-        "Link.disabledForeground" as UnknownThemeProp,
+        "Link.disabledForeground" as UnknownThemeProp<"Link.disabledForeground">,
         theme.color(
-          "Label.disabledForeground",
-          theme.color("Label.disabledText" as UnknownThemeProp, "#999")
+          "Label.disabledForeground" as UnknownThemeProp<"Label.disabledForeground">,
+          theme.color("Label.disabledText", "#999")
         )
       )};
   }
@@ -66,9 +69,9 @@ export const StyledLink = styled.a`
   &.visited {
     color: ${({ theme }) =>
       theme.color(
-        "Link.visitedForeground" as UnknownThemeProp,
+        "Link.visitedForeground",
         theme.color(
-          "link.visited.foreground" as UnknownThemeProp,
+          "link.visited.foreground" as UnknownThemeProp<"link.visited.foreground">,
           !theme.dark ? "#800080" : "#9776A9"
         )
       )};

@@ -27,7 +27,7 @@ export const StyledCurrentBranchTag = styled(SelectionAwareSpan)`
       .toString()};
   color: ${({ theme }) =>
     theme.color(
-      "VersionControl.RefLabel.foreground" as UnknownThemeProp,
+      "VersionControl.RefLabel.foreground" as UnknownThemeProp<"VersionControl.RefLabel.foreground">,
       theme.dark ? "#909090" : "#7a7a7a"
     )};
 `;

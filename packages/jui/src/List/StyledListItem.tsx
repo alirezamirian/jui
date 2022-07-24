@@ -1,4 +1,5 @@
 import { styled } from "../styled";
+import { UnknownThemeProp } from "@intellij-platform/core";
 
 export type StyledListItemProps = {
   containerFocused: boolean;
@@ -11,16 +12,29 @@ export const StyledListItem = styled.li<StyledListItemProps>(
     let backgroundColor;
     let color = disabled
       ? theme.color("*.disabledForeground")
-      : theme.color("*.textForeground", theme.color("*.foreground"));
+      : theme.color(
+          "List.foreground" as UnknownThemeProp<"List.foreground">,
+          theme.commonColors.labelForeground
+        );
     if (selected) {
       if (containerFocused) {
-        color = theme.color(
-          "*.selectionForeground",
-          theme.color("*.acceleratorSelectionForeground")
+        color =
+          theme.color(
+            "List.selectionForeground" as UnknownThemeProp<"List.selectionForeground">
+          ) ||
+          theme.commonColors
+            .labelSelectedForeground /* Prioritizing "*.selectionForeground" over labelSelectedForeground*/;
+        backgroundColor = theme.color(
+          "List.selectionBackground" as UnknownThemeProp<"List.selectionBackground">
         );
-        backgroundColor = theme.color("*.selectionBackground");
       } else {
-        backgroundColor = theme.color("*.selectionBackgroundInactive");
+        color = theme.color(
+          "List.selectionInactiveForeground" as UnknownThemeProp<"List.selectionInactiveForeground">,
+          color
+        );
+        backgroundColor = theme.color(
+          "List.selectionBackgroundInactive" as UnknownThemeProp<"List.selectionBackgroundInactive">
+        );
       }
     }
     return {
