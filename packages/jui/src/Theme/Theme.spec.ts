@@ -7,6 +7,8 @@ const themeJson: ThemeJson = {
   dark: false,
   colors: {
     foreground: "#000000",
+    panel: "grey15",
+    grey15: "#f2f2f2",
   },
   ui: {
     "*": {
@@ -24,6 +26,7 @@ const themeJson: ThemeJson = {
         "os.linux": "linux",
       },
       prop4: "foreground",
+      prop5: "panel",
       "SubCmp.prop1": "nested",
     },
     "Cmp2.prop1": 3,
@@ -63,6 +66,7 @@ describe(Theme, () => {
 
   it("resolves color values", () => {
     expect(new Theme(themeJson).color("Cmp1.prop4")).toEqual("#000000");
+    expect(new Theme(themeJson).color("Cmp1.prop5")).toEqual("#f2f2f2");
   });
 
   it("doesn't require 'colors' field", () => {
