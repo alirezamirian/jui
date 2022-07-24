@@ -14,7 +14,9 @@ import { cache } from "./cache.decorator";
 /**
  * Just to be able to locate all keys that are not yet typed and maybe fix them later at some point.
  */
-export type UnknownThemeProp = any;
+export type UnknownThemeProp<T> = T extends KnownThemePropertyPath
+  ? unknown
+  : KnownThemePropertyPath;
 
 const defaultValues: { [key in KnownThemePropertyPath]?: string } = {
   "*.disabledForeground": "#8C8C8C",
@@ -92,13 +94,14 @@ export class Theme<P extends string = string> {
     // More info: https://github.com/JetBrains/intellij-community/blob/58dbd93e9ea527987466072fa0bfbf70864cd35f/platform/platform-impl/src/com/intellij/ide/ui/UITheme.java#L371-L371
     // NOTE: Maybe this fallback to *.{prop} is something we should have for any type of property, not
     // only colors. Can be refactored if it turned out to be the case.
-    const dereference = (maybeReferencedValue: string | null) =>
+    const dereference = (maybeReferencedValue: string | null): string | null =>
       maybeReferencedValue &&
-      (this.themeJson.colors?.[maybeReferencedValue] || maybeReferencedValue);
+      (dereference(this.themeJson.colors?.[maybeReferencedValue] || null) ||
+        maybeReferencedValue);
 
-    // we could return Color object and it works because of overridden toString. but there
+    // we could return Color object, and it works because of overridden toString. but there
     // will be ts type errors because color css properties expect the value to be string.
-    // Of course we can call .toString() on each usage but doesn't seem nice.
+    // Of course, we can call .toString() on each usage but doesn't seem nice.
     return (
       dereference(this.value<string>(path)) ||
       // NOTE: fallback is intentionally prioritized over *-based fallback. It's complicated in the original impl,
@@ -138,13 +141,34 @@ export class Theme<P extends string = string> {
     ) as T;
   }
 
+  /**
+   * Corresponds to `DEFAULT_RENDERER_*` fields in JBUI class, in the reference impl. Used as a fallback for common
+   * colors, if a theme definition lacks those colors in "ui.*".
+   * NOTE: These colors are used directly as a last-resort fallback **directly in each use case**. But based on how
+   * they are used, it seems they could just be considered as a fallback for some "*.SOME_COLOR". So we are technically
+   * deviating from how star-colors are resolved, by including this fallback mechanism, but it should work the same,
+   * based on how these colors are used in the reference impl. We can reconsider this, if exceptions found.
+   * @private
+   */
+  private readonly DEFAULTS = {
+    background: !this.dark ? "#FFF" : "#3C3F41",
+    selectionBackground: !this.dark ? "#3875D6" : "#2F65CA",
+    selectionInactiveBackground: !this.dark ? "#D4D4D4" : "#0D293E",
+    selectionBackgroundInactive: !this.dark ? "#D4D4D4" : "#0D293E",
+    hoverBackground: !this.dark ? "#EDF5FC" : "#464A4D",
+    hoverInactiveBackground: !this.dark ? "#F5F5F5" : "#464A4D",
+  };
+
   private getFallbackFromStar(path: P) {
     // FIXME: after refactoring about flattening themeJson.ui properties are done, this should also
     //  be changed.
-    const fallbackKey = Object.keys(this.themeJson.ui["*"] || {}).find((key) =>
-      path.endsWith(`.${key}` /* strip first star*/)
-    );
-    return fallbackKey ? this.value(`*.${fallbackKey}` as P) : null;
+    const fallbackKey = Object.keys(this.themeJson.ui["*"] || {})
+      .concat(Object.keys(this.DEFAULTS))
+      .find((key) => path.endsWith(`.${key}` /* strip first star*/));
+    return fallbackKey
+      ? this.value(`*.${fallbackKey}` as P) ||
+          this.DEFAULTS[fallbackKey as keyof Theme["DEFAULTS"]]
+      : null;
   }
 
   private getCommonColors() {
@@ -159,7 +183,10 @@ export class Theme<P extends string = string> {
         "Component.infoForeground",
         theme.dark ? "#787878" : "#999999"
       ),
-      panelBackground: theme.color("Panel.background") || "#fff",
+      panelBackground:
+        theme.color(
+          "Panel.background" as UnknownThemeProp<"Panel.background">
+        ) || "#fff",
       focusBorderColor: theme.color(
         "Component.focusedBorderColor",
         !theme.dark ? "#87AFDA" : "#466D94"
@@ -180,6 +207,7 @@ export class Theme<P extends string = string> {
         "Label.foreground",
         theme.dark ? "#bbb" : "#000"
       ),
+      labelSelectedForeground: theme.color("Label.selectedForeground", "#fff"),
       contextHelpForeground: theme.color(
         "Label.infoForeground",
         theme.dark ? "#8c8c8c" : "#787878"

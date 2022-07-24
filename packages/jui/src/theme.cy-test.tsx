@@ -9,7 +9,7 @@ import { Theme, ThemeProvider } from "@intellij-platform/core/Theme";
 
 describe("theme", () => {
   it(`matches the expected styles in ${darculaJson.name} theme`, () => {
-    testTheme(new Theme(darculaJson));
+    testTheme(new Theme(darculaJson as any));
   });
   it(`matches the expected styles in ${lightThemeJson.name} theme`, () => {
     testTheme(new Theme(lightThemeJson as any));

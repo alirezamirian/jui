@@ -10,7 +10,9 @@ export const StyledButton = styled.button<{ isDisabled?: boolean }>`
   color: ${({ theme, isDisabled }) =>
     isDisabled
       ? theme.color("Button.disabledText")
-      : theme.color("Button.foreground" as UnknownThemeProp)};
+      : theme.color(
+          "Button.foreground" as UnknownThemeProp<"Button.foreground">
+        )};
   border: 1px solid
     ${({ theme, isDisabled }) =>
       isDisabled
@@ -38,7 +40,10 @@ export const StyledButton = styled.button<{ isDisabled?: boolean }>`
       `0 0 0 2px ${
         // NOTE: by not using the second argument for default value, we prioritize *.focusColor over the rest.
         theme.color("Component.focusColor") ??
-        theme.color("Focus.borderColor" as UnknownThemeProp, "#8ab2eb")
+        theme.color(
+          "Focus.borderColor" as UnknownThemeProp<"Focus.borderColor">,
+          "#8ab2eb"
+        )
       }`};
   }
 `;

@@ -25,14 +25,16 @@ const StyledToolWindowHeader = styled.div<{ active: boolean }>`
   overflow: hidden; // for the negative margin applied on StyledToolWindowHeaderActions
   border-bottom: 1px solid
     ${({ theme }) =>
-      theme.color("ToolWindow.Header.borderColor" as UnknownThemeProp) ||
-      theme.color("DefaultTabs.borderColor" as UnknownThemeProp) ||
+      theme.color(
+        "ToolWindow.Header.borderColor" as UnknownThemeProp<"ToolWindow.Header.borderColor">
+      ) ||
+      theme.color("DefaultTabs.borderColor") ||
       theme.commonColors.contrastBorder};
   background: ${({ theme, active }) =>
     active
       ? theme.color("ToolWindow.Header.background") ||
         theme.color(
-          "ToolWindow.header.active.background" as UnknownThemeProp
+          "ToolWindow.header.active.background" as UnknownThemeProp<"ToolWindow.header.active.background">
         ) ||
         "#E2E6EC"
       : theme.color("ToolWindow.Header.inactiveBackground") ||

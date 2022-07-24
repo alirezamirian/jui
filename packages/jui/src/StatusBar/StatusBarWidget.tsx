@@ -45,31 +45,32 @@ const StyledStatusBarWidget = styled.span`
   display: inline-flex;
   align-items: center;
   padding: ${({ theme }) =>
-    theme.inset("StatusBar.Widget.widgetInsets" as UnknownThemeProp) ??
-    "0 0.375rem"};
+    theme.inset(
+      "StatusBar.Widget.widgetInsets" as UnknownThemeProp<"StatusBar.Widget.widgetInsets">
+    ) ?? "0 0.375rem"};
   height: 1.125rem;
   white-space: nowrap;
   &:hover {
     background-color: ${({ theme }) =>
       theme.color(
-        "StatusBar.Widget.hoverBackground" as UnknownThemeProp,
+        "StatusBar.Widget.hoverBackground" as UnknownThemeProp<"StatusBar.Widget.hoverBackground">,
         theme.color("ActionButton.hoverBackground", "#dfdfdf")
       )};
     color: ${({ theme }) =>
       theme.color(
-        "StatusBar.Widget.hoverForeground" as UnknownThemeProp,
+        "StatusBar.Widget.hoverForeground" as UnknownThemeProp<"StatusBar.Widget.hoverForeground">,
         theme.commonColors.labelForeground
       )};
   }
   &.pressed {
     background-color: ${({ theme }) =>
       theme.color(
-        "StatusBar.Widget.pressedBackground" as UnknownThemeProp,
+        "StatusBar.Widget.pressedBackground" as UnknownThemeProp<"StatusBar.Widget.pressedBackground">,
         theme.color("ActionButton.pressedBackground", "#cfcfcf")
       )};
     color: ${({ theme }) =>
       theme.color(
-        "StatusBar.Widget.pressedForeground" as UnknownThemeProp,
+        "StatusBar.Widget.pressedForeground" as UnknownThemeProp<"StatusBar.Widget.pressedForeground">,
         theme.commonColors.labelForeground
       )};
   }
@@ -77,6 +78,7 @@ const StyledStatusBarWidget = styled.span`
 
 const StyledStatusBarIconWidget = styled(StyledStatusBarWidget)`
   padding: ${({ theme }) =>
-    theme.inset("StatusBar.Widget.widgetInsets" as UnknownThemeProp) ??
-    "0 0.25rem"};
+    theme.inset(
+      "StatusBar.Widget.widgetInsets" as UnknownThemeProp<"StatusBar.Widget.widgetInsets">
+    ) ?? "0 0.25rem"};
 `;
