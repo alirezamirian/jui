@@ -120,8 +120,25 @@ export class Theme<P extends string = string> {
    * Resolves platform icon path to svg.
    * by default, it fetches the svg icon from Github, but there are other Theme implementations
    */
+  @cache()
+  async getSvgIcon(path: string, onSelection?: boolean): Promise<string> {
+    const svgString = await this.resolveSvgIcon(path);
+    if (onSelection) {
+      return Object.entries(this.themeJson.iconColorsOnSelection || {}).reduce(
+        (soFar, [key, value]) => {
+          return soFar.replace(new RegExp(key, "ig"), value);
+        },
+        svgString
+      );
+    }
+    return svgString;
+  }
+
+  /**
+   * A tiny wrapper around iconResolve.resolve(), to ensure caching no matter how iconResolve is implemented
+   */
   @cache({ cacheAsyncErrors: true })
-  getSvgIcon(path: string): Promise<string> {
+  private resolveSvgIcon(path: string) {
     return this.iconResolver.resolve(
       !path.endsWith(".svg") ? `${path}.svg` : path
     );

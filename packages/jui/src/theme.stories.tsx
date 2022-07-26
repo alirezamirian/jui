@@ -482,6 +482,7 @@ export const Theme: Story = () => {
               <Menu
                 disabledKeys={["jumpToExternalEditor"]}
                 selectedKeys={["Reformat Code"]}
+                aria-label="Dummy menu"
                 autoFocus
               >
                 <Item textValue="Copy" key="copy">

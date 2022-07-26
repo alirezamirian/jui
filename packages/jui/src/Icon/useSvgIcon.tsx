@@ -1,6 +1,6 @@
-import { RefObject, useEffect } from "react";
-import { useTheme } from "styled-components";
-import { Theme } from "../Theme/Theme";
+import { RefObject, useContext, useEffect } from "react";
+import { useTheme } from "@intellij-platform/core/styled";
+import { ItemStateContext } from "@intellij-platform/core/Collections";
 
 export function useSvgIcon(
   { path, fallbackPath }: { path: string; fallbackPath?: string },
@@ -12,7 +12,9 @@ export function useSvgIcon(
    */
   ref: RefObject<HTMLElement>
 ) {
-  const theme = useTheme() as Theme; // TODO: investigate why useTheme is typed like this
+  const theme = useTheme();
+  const itemState = useContext(ItemStateContext);
+  const selected = itemState?.isSelected || itemState?.isFocused;
   useEffect(() => {
     let unmounted = false;
     const fetchIcon = async () => {
@@ -24,9 +26,9 @@ export function useSvgIcon(
         // For querying for icons that are not loaded yet. Especially useful for visual testing
         ref.current.dataset.loadingIcon = "true";
       }
-      const svg = await theme.getSvgIcon(path).catch((e) => {
+      const svg = await theme.getSvgIcon(path, selected).catch((e) => {
         if (fallbackPath) {
-          return theme.getSvgIcon(fallbackPath);
+          return theme.getSvgIcon(fallbackPath, selected);
         }
         throw e;
       });
@@ -49,5 +51,5 @@ export function useSvgIcon(
     return () => {
       unmounted = true;
     };
-  }, [path]);
+  }, [path, selected]);
 }

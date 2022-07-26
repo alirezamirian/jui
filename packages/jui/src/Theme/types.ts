@@ -36,6 +36,7 @@ export type ThemeJson = {
   editorScheme?: string;
 
   colors?: Record<string, string>;
+  iconColorsOnSelection?: Record<string, string>;
   ui: { "*": ThemeProperties } & {
     [key: string]: ThemeProperties | ThemePropertyRawValue;
   };
