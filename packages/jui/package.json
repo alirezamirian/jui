@@ -30,6 +30,7 @@
     "jest": "jest",
     "jest:watch": "jest --watch",
     "generate:known-theme-props": "node ./scripts/generate-known-theme-properties.js",
+    "generate:component": "hygen component new",
     "cypress": "ELECTRON_EXTRA_LAUNCH_ARGS=--disable-color-correct-rendering percy exec -- cypress run-ct --browser=electron",
     "cypress:open": "ELECTRON_EXTRA_LAUNCH_ARGS=--disable-color-correct-rendering cypress open-ct --browser=electron",
     "cypress:type-check": "tsc --project tsconfig.cypress.json",
