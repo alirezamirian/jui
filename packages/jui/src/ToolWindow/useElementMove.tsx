@@ -1,5 +1,9 @@
-import { useMove, UseMoveOptions, XY } from "./useMove";
 import { RefObject } from "react";
+import {
+  useMove,
+  UseMoveOptions,
+  XY,
+} from "../utils/interaction-utils/useMove";
 import { findEffectiveBackgroundColor } from "./findEffectiveBackgroundColor";
 
 type Rect = Omit<ClientRect, "toJSON" | "x" | "y">;
@@ -96,7 +100,7 @@ export function useElementMove<S>({
     },
     onMoveEnd: ({ startState: { ghost, startState } }) => {
       ghost?.remove();
-      onMoveEnd({ startState });
+      onMoveEnd?.({ startState });
     },
   });
 }

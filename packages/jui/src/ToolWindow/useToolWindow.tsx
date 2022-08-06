@@ -8,7 +8,7 @@ import React, {
   useState,
 } from "react";
 import { useToolWindowState } from "./ToolWindowsState/ToolWindowStateProvider";
-import { useToolWindowMoveHandle } from "./useToolWindowMoveHandle";
+import { useWindowMoveHandle } from "@intellij-platform/core/Window";
 
 export function useToolWindow(
   {
@@ -69,7 +69,7 @@ export function useToolWindow(
     }
   }, []);
 
-  const { moveHandleProps } = useToolWindowMoveHandle();
+  const { moveHandleProps } = useWindowMoveHandle();
 
   return {
     contentHasFocus,

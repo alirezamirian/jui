@@ -1,9 +1,6 @@
 import React, { MouseEventHandler } from "react";
-import {
-  disableTextSelection,
-  restoreTextSelection,
-} from "../utils/interaction-utils/textSelection";
-import { useLatest } from "../utils/useLatest";
+import { disableTextSelection, restoreTextSelection } from "./textSelection";
+import { useLatest } from "../useLatest";
 
 export type XY = { x: number; y: number };
 export type UseMoveOptions<S> = {
@@ -16,7 +13,7 @@ export type UseMoveOptions<S> = {
   disabled?: boolean;
   onMoveStart: (args: { from: XY }) => S;
   onMove: (args: { from: XY; to: XY; movement: XY; startState: S }) => void;
-  onMoveEnd: (args: { startState: S }) => void;
+  onMoveEnd?: (args: { startState: S }) => void;
 };
 
 // TODO: cleanup if unmount happens during drag.
@@ -33,12 +30,12 @@ export type UseMoveOptions<S> = {
  * features and API.
  * NOTE: initially the API was designed in a way that onMove and onMove end callbacks were
  * returned from onMoveStart, instead of being directly passed in the options.
- * This would enabled capturing the initial state of each move transaction, by defining whatever
+ * This would enable capturing the initial state of each move transaction, by defining whatever
  * variable in onMoveStart and closing over them by onMove and onMoveEnd.
  * The problem with this approach was that although you could capture the initial state of the
  * movement, by closure, any other variable in the outer scopes was also closed over, and you were
  * stuck with the values from the particular render in which the movement was started.
- * Of course you could workaround it by using refs, but it would be non-intuitive.
+ * Of course, you could work around it by using refs, but it would be unintuitive.
  * So because of that issue, it's redesigned to have onMoveStart, onMove, and onMoveEnd all
  * directly passed as options, but you can return anything from `onMoveStart` which will be passed
  * to onMove and onMoveEnd as `startState`.
@@ -84,7 +81,7 @@ export function useMove<S>({
       () => {
         restoreTextSelection();
         if (dragStarted) {
-          handlersRef.current.onMoveEnd({ startState });
+          handlersRef.current.onMoveEnd?.({ startState });
         }
         document.removeEventListener("mousemove", onMouseMove);
       },
