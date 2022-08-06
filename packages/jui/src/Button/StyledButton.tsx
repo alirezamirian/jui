@@ -29,7 +29,7 @@ export const StyledButton = styled.button<{ isDisabled?: boolean }>`
       : ""};
   white-space: nowrap; // https://jetbrains.github.io/ui/controls/button/#29
 
-  min-width: min-content; // button should not shrink or its label should not overflow
+  flex-shrink: 0; // button should not shrink when rendered in a flex container
 
   &:focus,
   &.focus /* for testing purposes*/ {
