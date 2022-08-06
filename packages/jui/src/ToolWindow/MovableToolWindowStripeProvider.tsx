@@ -197,7 +197,7 @@ export function useMovableStripeButtons<T>(props: MovableStripeProps<T>) {
   const getProps = (
     key: Key
   ): Pick<
-    UseElementMoveOptions<unknown>,
+    Required<UseElementMoveOptions<unknown>>,
     "onMoveStart" | "onMove" | "onMoveEnd"
   > & { moveDisabled: boolean } => ({
     moveDisabled: !context,
