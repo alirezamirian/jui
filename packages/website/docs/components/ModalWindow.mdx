@@ -1,0 +1,57 @@
+---
+---
+
+# ModalWindow
+
+### Features
+
+- 🚧 TODO
+
+#### Remaining
+
+- [ ] 🚧 TODO
+
+### Live example
+
+```tsx live themed
+function ModalWindowExample() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button onPress={() => setOpen(true)}>Open</Button>
+      {open && (
+        <ModalWindow
+          title="Window title"
+          interactions="all" // try "none" or "move"
+          onClose={() => setOpen(false)}
+          footer={
+            <WindowLayout.Footer
+              hasBorder
+              left={
+                <>
+                  <Button variant="icon">?</Button>
+                  <Checkbox>Some settings</Checkbox>
+                </>
+              }
+              right={
+                <>
+                  <Button autoFocus onPress={() => setOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button variant="default">OK</Button>
+                </>
+              }
+            />
+          }
+        >
+          <div style={{ padding: "1rem" }}>Window content</div>
+        </ModalWindow>
+      )}
+    </>
+  );
+}
+```
+
+:::info Some note maybe
+
+:::

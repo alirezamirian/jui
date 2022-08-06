@@ -41,6 +41,7 @@
   "dependencies": {
     "@react-aria/button": "^3.4.1",
     "@react-aria/checkbox": "^3.3.1",
+    "@react-aria/dialog": "^3.2.1",
     "@react-aria/focus": "^3.5.2",
     "@react-aria/i18n": "^3.3.7",
     "@react-aria/interactions": "^3.8.1",
