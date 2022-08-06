@@ -201,7 +201,11 @@ function CommitMessageEditorAndButtons({
         data-gramm="false"
       />
       <StyledCommitActionsRow>
-        <Button preventFocusOnPress isDefault={hasFocus} onPress={() => {}}>
+        <Button
+          preventFocusOnPress
+          variant={hasFocus ? "default" : undefined}
+          onPress={() => {}}
+        >
           Commit
         </Button>
         <Button preventFocusOnPress onPress={() => alert("Not implemented")}>

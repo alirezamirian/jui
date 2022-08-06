@@ -27,7 +27,7 @@ describe("Button", () => {
   });
 
   it('supports "default" variant', () => {
-    mount(<SimpleUsage isDefault />, { styles: "body{padding: 10px}" });
+    mount(<SimpleUsage variant="default" />, { styles: "body{padding: 10px}" });
     matchImageSnapshot("Button-default");
     cy.get("button").click();
     cy.get("button").focused();
