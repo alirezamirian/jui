@@ -75,7 +75,11 @@ export function useSpeedSearch(
     onKeyDown: (e) => {
       // intellij UI implementation removes the searchTerm by left/right arrows. Maybe do the same?
       if (e.key === "Escape") {
-        clear();
+        if (searchTerm) {
+          clear();
+        } else {
+          e.continuePropagation();
+        }
       } else {
         ghostInputKeydown(e);
       }

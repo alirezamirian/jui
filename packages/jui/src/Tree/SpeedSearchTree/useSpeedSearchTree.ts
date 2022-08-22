@@ -42,6 +42,8 @@ export function useSpeedSearchTree<T>(
       if (["Enter", "ArrowLeft", "ArrowRight"].includes(e.key)) {
         speedSearch.setSearchTerm("");
         speedSearch.setActive(false);
+      } else {
+        e.continuePropagation();
       }
     },
   });
