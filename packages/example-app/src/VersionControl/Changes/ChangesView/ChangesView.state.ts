@@ -1,4 +1,11 @@
-import { atom, atomFamily, isRecoilValue, RecoilValue, selector } from "recoil";
+import {
+  atom,
+  atomFamily,
+  CallbackInterface,
+  isRecoilValue,
+  RecoilValue,
+  selector,
+} from "recoil";
 import { Selection } from "@react-types/shared";
 import { Key } from "react";
 import {
@@ -15,6 +22,7 @@ import {
   NestedSelection,
   NestedSelectionState,
 } from "@intellij-platform/core";
+import { rollbackViewState } from "../Rollback/rollbackView.state";
 
 export interface ChangeBrowserNode<T extends string> {
   type: T;
@@ -121,29 +129,40 @@ export const changesUnderSelectedKeys = selector<ReadonlyArray<Change>>({
  * TODO: for both this and tree selection state, value should be updated to exclude removed keys, when the tree data
  *  is changed
  */
-export const selectedChangesState = atom<Set<string>>({
-  key: "changesView.selectedChanges",
+export const includedChangeKeysState = atom<Set<string>>({
+  key: "changesView.includedChangeKeys",
   default: new Set<string>([]),
+});
+
+export const includedChangesState = selector<ReadonlyArray<Change>>({
+  key: "changesView.includedChanges",
+  get: ({ get }) => {
+    const includedChangeKeys = get(includedChangeKeysState);
+    const allChanges = get(allChangesState);
+    return allChanges.filter((change) =>
+      includedChangeKeys.has(getNodeKeyForChange(change))
+    );
+  },
 });
 
 /**
  * A NestedSelection state, inferred based on selected changes. NestedSelection holds the checkmark state of all nodes
  * based on the selected leaf nodes.
  */
-export const selectedChangesNestedSelection = selector<
+export const includedChangesNestedSelection = selector<
   NestedSelectionState<AnyNode>
 >({
   key: "changesView.selectedChanges.nestedSelectionState",
   get: ({ get, getCallback }) => {
     const { rootNodes } = get(changesTreeNodesState);
-    const selectedChangeKeys = get(selectedChangesState);
+    const includedChangeKeys = get(includedChangeKeysState);
     const setSelectedKeys = getCallback(
       ({ set }) => (setValue: (currentValue: Set<string>) => Set<string>) =>
-        set(selectedChangesState, setValue)
+        set(includedChangeKeysState, setValue)
     );
     return new NestedSelection(
       {
-        items: selectedChangeKeys,
+        items: includedChangeKeys,
         ...createSetInterface(setSelectedKeys),
       },
       {
@@ -340,3 +359,14 @@ export const commitMessageState = atom({
   key: "changesView/commitMessage",
   default: "",
 });
+
+export const openRollbackWindowForSelectionCallback = ({
+  set,
+  snapshot,
+}: CallbackInterface) => () => {
+  const changesUnderSelection = snapshot
+    .getLoadable(changesUnderSelectedKeys)
+    .getValue();
+  set(rollbackViewState.initiallyIncludedChanges, changesUnderSelection);
+  set(rollbackViewState.isOpen, true);
+};

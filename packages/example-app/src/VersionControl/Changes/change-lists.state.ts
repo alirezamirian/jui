@@ -1,5 +1,5 @@
 import { atom, CallbackInterface, selector, useRecoilCallback } from "recoil";
-import { checkout, statusMatrix, StatusRow } from "isomorphic-git";
+import { checkout, resetIndex, statusMatrix, StatusRow } from "isomorphic-git";
 import { fs } from "../../fs/fs";
 import {
   useUpdateFileStatus,
@@ -9,7 +9,7 @@ import {
 import { useEffect } from "react";
 import path from "path";
 import { groupBy } from "ramda";
-import { fileContent } from "../../fs/fs.state";
+import { reloadFileFromDiskCallback } from "../../fs/fs.state";
 
 export type Revision = {
   path: string;
@@ -128,7 +128,10 @@ export interface ChangeListManager {
 export const useRollbackChanges = () => {
   const updateFileStatus = useUpdateFileStatus();
   return useRecoilCallback(
-    ({ snapshot, reset, set }) => async (changes: readonly Change[]) => {
+    (callbackInterface) => async (changes: readonly Change[]) => {
+      const { snapshot, set } = callbackInterface;
+      const reloadFileFromDisk = reloadFileFromDiskCallback(callbackInterface);
+
       const changesWithRepoRoots = await Promise.all(
         changes
           .filter((change) => !change.after.isDir)
@@ -156,8 +159,9 @@ export const useRollbackChanges = () => {
             filepaths: items.map(({ relativePath }) => relativePath),
           });
           await Promise.all(
-            items.map(({ fullPath }) => {
-              reset(fileContent(fullPath)); // Since fileContent is an atom, resetting to default reads the value again. Could be a selector that we would refresh
+            items.map(async ({ fullPath, relativePath }) => {
+              await resetIndex({ fs, dir: repoRoot, filepath: relativePath });
+              await reloadFileFromDisk(fullPath); // Since fileContent is an atom, we set the value. Could be a selector that we would refresh
               return updateFileStatus(fullPath);
             })
           );

@@ -1,8 +1,9 @@
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilCallback, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   changesUnderSelectedKeys,
   getNodeKeyForChange,
-  selectedChangesState,
+  includedChangeKeysState,
+  openRollbackWindowForSelectionCallback,
   selectedKeysState,
 } from "./ChangesView.state";
 import {
@@ -10,23 +11,23 @@ import {
   Menu,
   MenuItemLayout,
   PlatformIcon,
-  useBalloons,
 } from "@intellij-platform/core";
 import React from "react";
 
 import { useChangeViewContext } from "./ChangesViewSplitter";
-import { useChangeListManager } from "../change-lists.state";
 import { useEditorStateManager } from "../../../Editor/editor.state";
 
 export const ChangesViewTreeContextMenu = () => {
   const selectedChanges = useRecoilValue(changesUnderSelectedKeys);
-  const setSelectedChanges = useSetRecoilState(selectedChangesState);
+  const setIncludedChangeKeys = useSetRecoilState(includedChangeKeysState);
   const selectedKeys = useRecoilValue(selectedKeysState);
   const disabledKeys = ["moveToChangelist"];
   const { focusCommitMessage } = useChangeViewContext();
   const editorStateManager = useEditorStateManager();
-  const { rollback } = useChangeListManager();
-  const { show } = useBalloons();
+  const openRollbackWindowForSelection = useRecoilCallback(
+    openRollbackWindowForSelectionCallback,
+    []
+  );
   if (selectedChanges.length === 0) {
     disabledKeys.push("commit");
   }
@@ -41,21 +42,13 @@ export const ChangesViewTreeContextMenu = () => {
       onAction={(key) => {
         switch (key) {
           case "commit":
-            setSelectedChanges(
+            setIncludedChangeKeys(
               new Set(selectedChanges.map(getNodeKeyForChange))
             );
             focusCommitMessage();
             break;
           case "rollback":
-            rollback(selectedChanges).catch((e) => {
-              show({
-                title: "Reverting changes failed",
-                icon: "Error",
-                body:
-                  "Could not revert selected changes. See console for more info",
-              });
-              console.error("Git revert error:", e);
-            });
+            openRollbackWindowForSelection();
             break;
           case "jumpToSource":
             selectedChanges.forEach((change, index, arr) => {

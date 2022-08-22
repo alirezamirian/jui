@@ -14,12 +14,12 @@ import {
   amendCommitState,
   commitMessageSizeState,
   commitMessageState,
-  selectedChangesState,
+  includedChangesState,
 } from "./ChangesView.state";
-import { StatusColor } from "../../FileStatusColor";
 import React, { useContext, useImperativeHandle, useRef } from "react";
 import { ChangeViewTree } from "./ChangeViewTree";
 import { ChangesViewToolbar } from "./ChangesViewToolbar";
+import { ChangesSummary } from "../ChangesSummary";
 
 const StyledContainer = styled.div`
   display: flex;
@@ -127,25 +127,9 @@ export const ChangesViewSplitter = () => {
   );
 };
 
-const ChangesSummary = () => {
-  const selectedChanges = useRecoilValue(selectedChangesState);
-  // FIXME: handle different types of changes.
-  const modifiedCount = selectedChanges.size;
-  const addedCount = 0;
-  const deletedCount = 0;
-  return (
-    <>
-      {addedCount > 0 && (
-        <StatusColor status="ADDED">{addedCount} added</StatusColor>
-      )}
-      {modifiedCount > 0 && (
-        <StatusColor status="MODIFIED">{modifiedCount} modified</StatusColor>
-      )}
-      {deletedCount > 0 && (
-        <StatusColor status="DELETED">{deletedCount} deleted</StatusColor>
-      )}
-    </>
-  );
+const ChangesViewChangesSummary = () => {
+  const changes = useRecoilValue(includedChangesState);
+  return <ChangesSummary changes={changes} />;
 };
 
 function CommitActionsRow() {
@@ -163,7 +147,7 @@ function CommitActionsRow() {
         <PlatformIcon icon="vcs/historyInline.svg" />
       </ActionButton>
       <StyledChangesSummaryContainer>
-        <ChangesSummary />
+        <ChangesViewChangesSummary />
       </StyledChangesSummaryContainer>
     </StyledActionsRow>
   );

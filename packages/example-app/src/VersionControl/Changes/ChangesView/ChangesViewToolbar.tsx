@@ -5,6 +5,7 @@ import {
   changesTreeNodesState,
   expandedKeysState,
   GroupNode,
+  openRollbackWindowForSelectionCallback,
 } from "./ChangesView.state";
 import { getExpandAllKeys } from "../../../TreeUtils/tree-utils";
 import {
@@ -20,7 +21,10 @@ import React from "react";
 
 export function ChangesViewToolbar() {
   const { refresh } = useChangeListManager();
-
+  const openRollbackWindow = useRecoilCallback(
+    openRollbackWindowForSelectionCallback,
+    []
+  );
   const setExpandedKeys = useSetRecoilState(expandedKeysState);
   const collapseAll = () => setExpandedKeys(new Set()); // in Intellij, it also changes selection sometimes.
   const expandAll = useRecoilCallback(
@@ -46,7 +50,7 @@ export function ChangesViewToolbar() {
       <ActionButton onPress={refresh}>
         <PlatformIcon icon="actions/refresh.svg" />
       </ActionButton>
-      <ActionButton onPress={() => alert("Not implemented")}>
+      <ActionButton onPress={openRollbackWindow}>
         <PlatformIcon icon="actions/rollback.svg" />
       </ActionButton>
       <ActionButton onPress={() => alert("Not implemented")}>
