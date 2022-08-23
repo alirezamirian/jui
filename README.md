@@ -290,7 +290,12 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
             <td colspan="2">Gear icon actions</td>
             <td>✅<sup>5</sup></td>
         </tr>
+        <tr>
+            <td rowspan="1" colspan="3"><a href="https://jetbrains.github.io/ui/components/dialog_window//">ModalWindow</a></td>
+            <td>✅</td>
+        </tr>
     </tbody>
+
 </table>
 
 🧬: higher level "molecule" components that capture a common usage of two or more atomic components, together.
