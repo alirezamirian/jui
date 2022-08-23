@@ -26,13 +26,13 @@ import {
   getNodeKeyForChange,
   isGroupNode,
 } from "../ChangesView/ChangesView.state";
-import { ChangesViewTreeContextMenu } from "../ChangesView/ChangesViewTreeContextMenu";
 import { getChangeListTreeItemProps } from "../ChangesView/changesTreeNodeRenderers";
 import { rollbackViewState } from "./rollbackView.state";
 import { allChangesState, useChangeListManager } from "../change-lists.state";
 import { getExpandAllKeys } from "../../../TreeUtils/tree-utils";
 import { ChangesSummary } from "../ChangesSummary";
 import { groupings } from "../ChangesView/changesGroupings";
+import { RollbackTreeContextMenu } from "./RollbackTreeContextMenu";
 
 const StyledContainer = styled.div`
   box-sizing: border-box;
@@ -197,7 +197,7 @@ export function RollbackWindow() {
 
         <StyledFrame>
           <ContextMenuContainer
-            renderMenu={() => <ChangesViewTreeContextMenu />}
+            renderMenu={() => <RollbackTreeContextMenu />}
             style={{ height: "100%" }}
           >
             <SpeedSearchTreeWithCheckboxes
