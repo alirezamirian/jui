@@ -144,6 +144,20 @@ describe("ContextMenu", () => {
     cy.contains("Generate").click();
     cy.get("[role=menu]").should("not.exist");
   });
+
+  it("restores focus when closed", () => {
+    mount(
+      <ContextMenu>
+        <button autoFocus>button</button>
+      </ContextMenu>
+    );
+    cy.scrollTo("bottom", { duration: 0 });
+    cy.contains("button").rightclick("center", {
+      scrollBehavior: false,
+    });
+    cy.realPress("{esc}");
+    cy.contains("button").should("have.focus");
+  });
 });
 
 /**

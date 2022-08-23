@@ -1,6 +1,6 @@
 import { Item } from "@react-stately/collections";
 import { Meta, Story } from "@storybook/react";
-import React from "react";
+import React, { ReactNode } from "react";
 import { ActionButton } from "../ActionButton/ActionButton";
 import { ActionToolbar } from "../ActionToolbar/ActionToolbar";
 import { Divider, DividerItem } from "../Collections/Divider";
@@ -188,7 +188,7 @@ const StyledContainer = styled.div`
   height: 100vh;
 `;
 
-export const ContextMenu: Story = () => {
+export const ContextMenu: Story<{ children?: ReactNode }> = ({ children }) => {
   return (
     <>
       <div
@@ -231,7 +231,7 @@ export const ContextMenu: Story = () => {
           </Menu>
         )}
       >
-        <StyledContainer>Right click somewhere.</StyledContainer>
+        <StyledContainer>Right click somewhere. {children}</StyledContainer>
       </ContextMenuContainer>
     </>
   );

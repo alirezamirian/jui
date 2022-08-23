@@ -37,6 +37,7 @@ export const ContextMenuContainer = ({
         state={state}
         overlayRef={overlayRef}
         overlayProps={overlayProps}
+        restoreFocus
       >
         {renderMenu()}
       </MenuOverlay>
