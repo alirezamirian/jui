@@ -30,6 +30,7 @@
     "jest": "jest",
     "jest:watch": "jest --watch",
     "generate:known-theme-props": "node ./scripts/generate-known-theme-properties.js",
+    "generate:component": "hygen component new",
     "cypress": "ELECTRON_EXTRA_LAUNCH_ARGS=--disable-color-correct-rendering percy exec -- cypress run-ct --browser=electron",
     "cypress:open": "ELECTRON_EXTRA_LAUNCH_ARGS=--disable-color-correct-rendering cypress open-ct --browser=electron",
     "cypress:type-check": "tsc --project tsconfig.cypress.json",
@@ -40,6 +41,7 @@
   "dependencies": {
     "@react-aria/button": "^3.4.1",
     "@react-aria/checkbox": "^3.3.1",
+    "@react-aria/dialog": "^3.2.1",
     "@react-aria/focus": "^3.5.2",
     "@react-aria/i18n": "^3.3.7",
     "@react-aria/interactions": "^3.8.1",

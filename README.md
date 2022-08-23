@@ -26,7 +26,7 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
     </thead>
     <tbody>
         <tr>
-            <td rowspan=10><a href="https://jetbrains.github.io/ui/controls/list/">List</a></td> 
+            <td rowspan="11"><a href="https://jetbrains.github.io/ui/controls/list/">List</a></td> 
         </tr>
         <tr>
             <td colspan="2"><a href="https://jetbrains.github.io/ui/principles/speed_search/">Speed Search</a></td>
@@ -65,7 +65,11 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
             <td>❌</td>
         </tr>
         <tr>
-            <td rowspan="5"><a href="https://jetbrains.github.io/ui/controls/tree/">Tree</a></td>
+            <td colspan="2">Showing item overflow on hover</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td rowspan="6"><a href="https://jetbrains.github.io/ui/controls/tree/">Tree</a></td>
         </tr>
         <tr>
             <td colspan="2">Base</td>
@@ -82,6 +86,10 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
         <tr>
             <td colspan="2">Tree with checkboxes 🧬</td>
             <td>✅</td>
+        </tr>
+        <tr>
+            <td colspan="2">Showing item overflow on hover</td>
+            <td>❌</td>
         </tr>
         <tr>
             <td colspan="3"><a href="https://jetbrains.github.io/ui/controls/tooltip/">Tooltip</a></td>

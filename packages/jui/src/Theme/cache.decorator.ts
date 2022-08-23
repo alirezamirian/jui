@@ -22,7 +22,9 @@ export const cache: (
       this[cacheKey] = this[cacheKey] || {};
       const cacheObj: Record<string, any> = this[cacheKey];
 
-      const allArgsAreString = args.every((arg) => typeof arg === "string");
+      const allArgsAreString = args.every((arg) =>
+        ["string", "number", "boolean", "undefined"].includes(typeof arg)
+      );
       if (allArgsAreString) {
         const key = args.join("_");
         if (!cacheObj[key]) {

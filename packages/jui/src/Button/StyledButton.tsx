@@ -1,21 +1,21 @@
 import { styled } from "@intellij-platform/core/styled";
 import { UnknownThemeProp } from "@intellij-platform/core/Theme";
 
-export const StyledButton = styled.button<{ isDisabled?: boolean }>`
+export const StyledButton = styled.button<{ disabled?: boolean }>`
   box-sizing: border-box;
   min-width: 4.5rem; // https://jetbrains.github.io/ui/controls/button/#28
   padding: 0.25rem 0.875rem; // https://jetbrains.github.io/ui/controls/button/#28
-  background-color: ${({ theme, isDisabled }) =>
-    isDisabled ? "transparent" : theme.color("Button.startBackground")};
-  color: ${({ theme, isDisabled }) =>
-    isDisabled
+  background-color: ${({ theme, disabled }) =>
+    disabled ? "transparent" : theme.color("Button.startBackground")};
+  color: ${({ theme, disabled }) =>
+    disabled
       ? theme.color("Button.disabledText")
       : theme.color(
           "Button.foreground" as UnknownThemeProp<"Button.foreground">
         )};
   border: 1px solid
-    ${({ theme, isDisabled }) =>
-      isDisabled
+    ${({ theme, disabled }) =>
+      disabled
         ? theme.color("Button.disabledBorderColor")
         : theme.color("Button.startBorderColor")};
   border-radius: ${({ theme }) =>
@@ -29,7 +29,7 @@ export const StyledButton = styled.button<{ isDisabled?: boolean }>`
       : ""};
   white-space: nowrap; // https://jetbrains.github.io/ui/controls/button/#29
 
-  min-width: min-content; // button should not shrink or its label should not overflow
+  flex-shrink: 0; // button should not shrink when rendered in a flex container
 
   &:focus,
   &.focus /* for testing purposes*/ {
@@ -48,15 +48,24 @@ export const StyledButton = styled.button<{ isDisabled?: boolean }>`
   }
 `;
 export const StyledDefaultButton = styled(StyledButton)`
-  background-color: ${({ theme, isDisabled }) =>
-    !isDisabled && theme.color("Button.default.startBackground", "#384f6b")};
-  color: ${({ theme, isDisabled }) =>
-    !isDisabled && theme.color("Button.default.foreground")};
-  border-color: ${({ theme, isDisabled }) =>
-    !isDisabled && theme.color("Button.default.startBorderColor", "#BFBFBF")};
+  background-color: ${({ theme, disabled }) =>
+    !disabled && theme.color("Button.default.startBackground", "#384f6b")};
+  color: ${({ theme, disabled }) =>
+    !disabled && theme.color("Button.default.foreground")};
+  border-color: ${({ theme, disabled }) =>
+    !disabled && theme.color("Button.default.startBorderColor", "#BFBFBF")};
   &:focus,
   &.focus /* for testing purposes*/ {
     border-color: ${({ theme }) =>
       theme.color("Button.default.focusedBorderColor", "#87afda")};
   }
+`;
+
+export const StyledIconButton = styled(StyledButton)`
+  border-radius: 1000px;
+  padding: 0;
+  line-height: 0;
+  min-width: 0;
+  height: 1.5rem;
+  width: 1.5rem;
 `;

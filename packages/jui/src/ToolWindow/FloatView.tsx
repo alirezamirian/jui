@@ -1,5 +1,5 @@
 import { isMac } from "@react-aria/utils";
-import React, { HTMLProps, useState } from "react";
+import React, { HTMLProps } from "react";
 import { css } from "styled-components";
 import { MAC_WINDOW_SHADOW } from "../style-constants";
 import { styled } from "../styled";
@@ -7,10 +7,10 @@ import { Theme } from "../Theme/Theme";
 import { FloatWindowState } from "./ToolWindowsState/ToolWindowsLayoutState";
 import { WindowBounds } from "./ToolWindowsState/ToolWindowsState";
 import {
-  BoundsInteractionHandlerProps,
-  WindowInteractionHandlerContext,
+  useResizableMovableWindow,
   WindowResizeHandles,
-} from "./WindowResizeHandles";
+  WindowInteractionHandler,
+} from "@intellij-platform/core/Window";
 
 const StyledFloatView = styled.div`
   position: absolute;
@@ -29,52 +29,30 @@ const StyledFloatView = styled.div`
 /**
  * Container for tool windows in float view mode. It handles some visual aspects like the border and shadow, as well as
  * UI interactions for changing the floatingBound of the tool window.
- * @param children
- * @param bounds
- * @param onBoundsChange
- * @constructor
  */
 export const FloatView: React.FC<
   {
     state: FloatWindowState;
     onBoundsChange: (bounds: WindowBounds) => void;
   } & Omit<HTMLProps<HTMLDivElement>, "ref" | "as">
-> = ({
-  children,
-  state: { bounds: boundsProp },
-  onBoundsChange,
-  ...otherProps
-}) => {
-  // local state of bounds for when window is in a UI interaction, like movement or resize with mouse.
-  // We don't want to update toolWindowsState repeatedly in such transactions and we just want to trigger one
-  // update when the UI interaction is done.
-  // it's maintained during a UI interaction and then reset to null.
-  const [bounds, setBounds] = useState<null | WindowBounds>(null);
-  const onInteractionEnd = () => {
-    if (bounds) {
-      onBoundsChange(bounds);
-    }
-    setBounds(null);
-  };
-  const effectiveBounds = bounds || boundsProp;
-  const boundsContextValue: BoundsInteractionHandlerProps = {
-    startInteraction: () => {
-      setBounds(boundsProp);
-      return boundsProp;
-    },
-    updateBounds: setBounds,
-    finishInteraction: onInteractionEnd,
-  };
+> = ({ children, state: { bounds }, onBoundsChange, ...otherProps }) => {
+  const {
+    bounds: effectiveBounds,
+    windowInteractionHandlerProps,
+  } = useResizableMovableWindow({
+    bounds,
+    onBoundsChange,
+  });
 
   return (
     <StyledFloatView
       {...otherProps}
       style={{ ...otherProps.style, ...effectiveBounds }}
     >
-      <WindowInteractionHandlerContext.Provider value={boundsContextValue}>
+      <WindowInteractionHandler {...windowInteractionHandlerProps}>
         <WindowResizeHandles />
         {children}
-      </WindowInteractionHandlerContext.Provider>
+      </WindowInteractionHandler>
     </StyledFloatView>
   );
 };

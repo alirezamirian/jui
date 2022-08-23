@@ -1,5 +1,6 @@
 import {
   atomFamily,
+  CallbackInterface,
   selectorFamily,
   useRecoilRefresher_UNSTABLE,
 } from "recoil";
@@ -44,6 +45,21 @@ export const dirContentState = selectorFamily({
   },
 });
 
+export const reloadFileFromDiskCallback = ({
+  set,
+}: CallbackInterface) => async (path: string) =>
+  set(fileContent(path), await fetchFileContent(path));
+
+const fetchFileContent = async (filepath: string) => {
+  if (!filepath) {
+    return "";
+  }
+  // @ts-expect-error return type is wrong
+  return fs.promises.readFile(filepath, {
+    encoding: "utf8",
+  }) as Promise<string>;
+};
+
 /**
  * **Note**: Still not quite clear if we should use atom and [synchronize with source of truth (FS)][recoil-atom-effects],
  * or if we should use selector and refresh it when needed. We probably need a proper [VFS][vfs] implementation at
@@ -61,13 +77,7 @@ export const dirContentState = selectorFamily({
  **/
 export const fileContent = atomFamily<string, string>({
   key: "fileContent",
-  default: (filepath: string) => {
-    if (!filepath) {
-      return "";
-    }
-    // @ts-expect-error return type is wrong
-    return fs.promises.readFile(filepath, { encoding: "utf8" }) as string;
-  },
+  default: fetchFileContent,
   effects: (filepath) => [
     ({ onSet }) => {
       onSet((content) => {

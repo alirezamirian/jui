@@ -41,6 +41,18 @@ const StyledMenuItemText = styled.span`
   flex: 1;
 `;
 
+const StyledMenuItemPlatformIcon = styled(PlatformIcon)`
+  svg path {
+    stroke: currentColor;
+  }
+`;
+
+const StyledMenuItemLafIcon = styled(LafIcon)`
+  svg path {
+    stroke: currentColor;
+  }
+`;
+
 export function MenuItem<T>({
   item,
   state,
@@ -123,7 +135,7 @@ export function MenuItem<T>({
       >
         {isSelected && (
           <StyledSelectedMark>
-            <LafIcon
+            <StyledMenuItemLafIcon
               icon={{
                 name: "checkmark",
                 modifiers: { Selected: isFocused },
@@ -142,7 +154,7 @@ export function MenuItem<T>({
         </ItemStateContext.Provider>
         {item.hasChildNodes && (
           <StyledNestedArrow>
-            <PlatformIcon icon="icons/ide/menuArrow" />
+            <StyledMenuItemPlatformIcon icon="icons/ide/menuArrow" />
           </StyledNestedArrow>
         )}
       </StyledMenuItem>

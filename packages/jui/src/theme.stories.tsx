@@ -452,12 +452,12 @@ export const Theme: Story = () => {
           <div style={{ display: "flex", gap: 8 }}>
             <StyledButton>Button</StyledButton>
             <StyledButton className="focus">Focused Button</StyledButton>
-            <StyledButton isDisabled>Disabled Button</StyledButton>
+            <StyledButton disabled>Disabled Button</StyledButton>
             <StyledDefaultButton>Default Button</StyledDefaultButton>
             <StyledDefaultButton className="focus">
               Focused Default Button
             </StyledDefaultButton>
-            <StyledDefaultButton isDisabled>
+            <StyledDefaultButton disabled>
               Disabled Default Button
             </StyledDefaultButton>
           </div>
@@ -482,6 +482,7 @@ export const Theme: Story = () => {
               <Menu
                 disabledKeys={["jumpToExternalEditor"]}
                 selectedKeys={["Reformat Code"]}
+                aria-label="Dummy menu"
                 autoFocus
               >
                 <Item textValue="Copy" key="copy">

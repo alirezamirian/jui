@@ -1,4 +1,4 @@
-import { useMove } from "../ToolWindow/useMove";
+import { useMove } from "../utils/interaction-utils/useMove";
 import { ResizerProps } from "./ResizerProps";
 
 type UseResizerProps = Pick<

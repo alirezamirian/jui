@@ -22,6 +22,9 @@ export interface MenuTriggerProps
 
 // FIXME: Escape doesn't close the menu
 // FIXME: Focus is not restored if nested menu are opened. It may be solved by using useOverlay and closing submenu in click outside.
+// FIXME: use PressResponder and replace render prop children with a normal react dom children. Issues with current impl:
+//  disabled trigger doesn't work as expected. props passed to children fn is html props, which is limiting for button
+//  components that don't accept arbitrary dom props.
 /**
  * Makes its children a trigger for a menu, rendered via {@link MenuTriggerProps#renderMenu} prop.
  * Closes the menu when a menu action is triggered.

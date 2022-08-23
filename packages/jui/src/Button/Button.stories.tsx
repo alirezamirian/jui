@@ -21,7 +21,7 @@ export const Disabled = Template.bind({});
 Disabled.args = { isDisabled: true, children: "Disabled" };
 
 export const Default = Template.bind({});
-Default.args = { isDefault: true, children: "Default" };
+Default.args = { variant: "default", children: "Default" };
 
 export const PreventFocusOnPress = (props: ButtonProps) => (
   <div>
@@ -60,4 +60,9 @@ NotFocusable.args = {
   excludeFromTabOrder: true,
   preventFocusOnPress: true,
   children: "Not focusable",
+};
+
+export const AutoFocus = Template.bind({});
+AutoFocus.args = {
+  autoFocus: true,
 };

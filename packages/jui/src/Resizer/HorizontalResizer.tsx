@@ -5,6 +5,7 @@ import { ResizerViewProps } from "./useResizer";
 type HorizontalResizerViewProps = ResizerViewProps<"horizontal">;
 
 const StyledHorizontalResizer = styled.div`
+  top: 0;
   height: 100%;
   width: 0;
   position: relative;
