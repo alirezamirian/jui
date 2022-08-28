@@ -1,4 +1,4 @@
-import React, { HTMLProps } from "react";
+import React, { HTMLAttributes, HTMLProps } from "react";
 import { mergeProps } from "@react-aria/utils";
 import { useMenuTriggerState } from "@react-stately/menu";
 import { OverlayTriggerProps } from "@react-types/overlays";
@@ -11,6 +11,13 @@ interface ContextMenuContainerProps extends HTMLProps<HTMLDivElement> {
    * Will be called to return the Menu when context menu is triggered. Use {@link Menu} component to render a menu.
    */
   renderMenu: () => React.ReactNode;
+  /**
+   * If children is a function, context menu props is passed to it, to be passed to the underlying element.
+   * Otherwise, a div container will be rendered.
+   */
+  children:
+    | React.ReactNode
+    | ((props: HTMLAttributes<HTMLElement>) => React.ReactNode);
 }
 
 /**
@@ -29,10 +36,14 @@ export const ContextMenuContainer = ({
     {},
     state
   );
-
+  const allProps = mergeProps(props, containerProps);
   return (
-    <div {...mergeProps(props, containerProps)}>
-      {children}
+    <>
+      {typeof children === "function" ? (
+        children(allProps)
+      ) : (
+        <div {...allProps}>{children}</div>
+      )}
       <MenuOverlay
         state={state}
         overlayRef={overlayRef}
@@ -41,6 +52,6 @@ export const ContextMenuContainer = ({
       >
         {renderMenu()}
       </MenuOverlay>
-    </div>
+    </>
   );
 };
