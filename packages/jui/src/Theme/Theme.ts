@@ -79,6 +79,20 @@ export class Theme<P extends string = string> {
   }
 
   /**
+   * Converts font size delta value to a string (or null), that can be used as css font size value.
+   * @example
+   * theme.inset('some.path') === "calc(1em + 2px)" // assuming "some.path" is resolved to 2
+   * theme.inset('some.path') === undefined // assuming "some.path" is resolved to 0
+   */
+  fontSizeDelta<T extends ThemePropertyValue>(path: P): string | null {
+    const value = this.value(path);
+    if (typeof value === "number") {
+      return `calc(1em + ${value}px)`;
+    }
+    return null;
+  }
+
+  /**
    * - Resolves values that are references to theme.colors
    */
   color<T extends string | undefined>(
