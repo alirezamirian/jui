@@ -1,9 +1,7 @@
-import { isMac } from "@react-aria/utils";
-import { css } from "styled-components";
-import { MAC_WINDOW_SHADOW } from "../style-constants";
+import { WINDOW_SHADOW } from "../style-constants";
 import { styled } from "../styled";
 import { StyledVerticalSeparator } from "../StyledSeparator";
-import { Theme, UnknownThemeProp } from "../Theme/Theme";
+import { UnknownThemeProp } from "../Theme/Theme";
 
 export const MENU_VERTICAL_PADDING = 5;
 export const MENU_BORDER_WIDTH = 1;
@@ -18,12 +16,9 @@ export const StyledMenu = styled.ul`
   min-width: 100px;
   border: ${MENU_BORDER_WIDTH}px solid
     ${({ theme }) => theme.color("Menu.borderColor")};
-  ${isMac() &&
-  css<{ theme: Theme }>`
-    ${MAC_WINDOW_SHADOW};
-    border-color: ${({ theme }) =>
-      theme.dark ? "rgba(0, 0, 0, 0.15)" : undefined};
-  `}
+  ${WINDOW_SHADOW};
+  border-color: ${({ theme }) =>
+    theme.dark ? "rgba(0, 0, 0, 0.15)" : undefined};
   background: ${({ theme }) =>
     theme.color(
       "PopupMenu.background" as UnknownThemeProp<"PopupMenu.background">

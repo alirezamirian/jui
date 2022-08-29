@@ -16,7 +16,7 @@ export * from "./CollectionSpeedSearch";
 export * from "./Collections";
 export * from "./Img";
 export * from "./styled";
-export { MAC_WINDOW_SHADOW } from "./style-constants";
+export { WINDOW_SHADOW } from "./style-constants";
 export * from "./Tree";
 export * from "./Tabs";
 export * from "./Theme";
@@ -30,3 +30,4 @@ export * from "./StatusBar";
 export * from "./ProgressBar";
 export * from "./ModalWindow";
 
+export * from "./Tooltip";

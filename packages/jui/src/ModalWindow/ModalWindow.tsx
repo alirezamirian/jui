@@ -9,7 +9,7 @@ import { FocusScope } from "@react-aria/focus";
 import { useDialog } from "@react-aria/dialog";
 import { AriaDialogProps } from "@react-types/dialog"; // temporary phantom dependency
 import { styled } from "@intellij-platform/core/styled";
-import { MAC_WINDOW_SHADOW } from "@intellij-platform/core/style-constants";
+import { WINDOW_SHADOW } from "@intellij-platform/core/style-constants";
 import { mergeProps } from "@react-aria/utils";
 import {
   Bounds,
@@ -69,7 +69,7 @@ const StyledWindowContainer = styled.div`
   background-color: ${({ theme }) => theme.color("*.background")};
   color: ${({ theme }) => theme.color("*.foreground")};
   border-radius: 8px;
-  ${MAC_WINDOW_SHADOW}; // FIXME: OS-dependant style?
+  ${WINDOW_SHADOW}; // FIXME: OS-dependant style?
   outline: 1px solid #555; // FIXME
 `;
 

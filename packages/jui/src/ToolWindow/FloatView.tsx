@@ -1,7 +1,7 @@
 import { isMac } from "@react-aria/utils";
 import React, { HTMLProps } from "react";
 import { css } from "styled-components";
-import { MAC_WINDOW_SHADOW } from "../style-constants";
+import { WINDOW_SHADOW } from "../style-constants";
 import { styled } from "../styled";
 import { Theme } from "../Theme/Theme";
 import { FloatWindowState } from "./ToolWindowsState/ToolWindowsLayoutState";
@@ -18,9 +18,9 @@ const StyledFloatView = styled.div`
   // border color doesn't seem to be correct and needs more investigation. might be even os-specific and outside
   // theme colors.
   border: ${({ theme }) => `1px solid ${theme.color("Component.borderColor")}`};
+  ${WINDOW_SHADOW};
   ${isMac() &&
   css<{ theme: Theme }>`
-    ${MAC_WINDOW_SHADOW};
     border-radius: 8px;
   `}
   z-index: 2;
