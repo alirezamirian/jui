@@ -23,9 +23,9 @@ export default {
   args: {
     children: <SpeedSearchTreeSample />,
     title: "Dialog title",
-  } as ModalWindowProps,
+  },
   // argTypes: {},
-} as Meta;
+} as Meta<ModalWindowProps>;
 
 const StyledContainer = styled.div`
   box-sizing: border-box;

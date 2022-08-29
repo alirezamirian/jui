@@ -10,6 +10,7 @@
     "lint:lib": "yarn eslint packages/jui",
     "build": "yarn workspaces foreach run build",
     "build:public": "yarn workspaces foreach --no-private run build",
+    "deduplicate": "yarn dedupe '@react-aria/*' '@react-stately/*' '@react-types/*'",
     "release:public": "yarn workspaces foreach --no-private npm publish --tolerate-republish"
   },
   "devDependencies": {
