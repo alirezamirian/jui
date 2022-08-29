@@ -57,7 +57,7 @@ export const StyledLink = styled.a`
       theme.color(
         "Link.disabledForeground" as UnknownThemeProp<"Link.disabledForeground">,
         theme.color(
-          "Label.disabledForeground" as UnknownThemeProp<"Label.disabledForeground">,
+          "Label.disabledForeground",
           theme.color("Label.disabledText", "#999")
         )
       )};
