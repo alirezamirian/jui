@@ -59,9 +59,8 @@ describe(Theme, () => {
       new Theme(themeJson, new GithubIconResolver(), "mac").value("Cmp1.prop3")
     ).toBeUndefined();
   });
-  it("resolves os-dependent values to default or first one when os is null", () => {
+  it("resolves os-dependent values to default when os is null", () => {
     expect(new Theme(themeJson).value("Cmp1.prop2")).toEqual("default");
-    expect(new Theme(themeJson).value("Cmp1.prop3")).toEqual("windows");
   });
 
   it("resolves color values", () => {
