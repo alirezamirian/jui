@@ -93,7 +93,7 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
         </tr>
         <tr>
             <td colspan="3"><a href="https://jetbrains.github.io/ui/controls/tooltip/">Tooltip</a></td>
-            <td>❌</td>
+            <td>✅</td>
         </tr>
         <tr>
             <td colspan="3"><a href="https://jetbrains.github.io/ui/controls/progress_bar/">Progress Bar</a></td>
@@ -291,7 +291,7 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
             <td>✅<sup>5</sup></td>
         </tr>
         <tr>
-            <td rowspan="1" colspan="3"><a href="https://jetbrains.github.io/ui/components/dialog_window//">ModalWindow</a></td>
+            <td rowspan="1" colspan="3"><a href="https://jetbrains.github.io/ui/components/dialog_window/">ModalWindow</a></td>
             <td>✅</td>
         </tr>
     </tbody>
