@@ -1,11 +1,12 @@
 import React, { HTMLProps } from "react";
-import { ActionButton } from "../ActionButton/ActionButton";
-import { ActionToolbar } from "../ActionToolbar/ActionToolbar";
-import { PlatformIcon } from "../Icon";
-import { MenuTrigger } from "../Menu/MenuTrigger";
-import { styled } from "../styled";
-import { StyledHorizontalSeparator } from "../StyledSeparator";
-import { UnknownThemeProp } from "../Theme/Theme";
+import { ActionButton } from "@intellij-platform/core/ActionButton/ActionButton";
+import { ActionToolbar } from "@intellij-platform/core/ActionToolbar/ActionToolbar";
+import { PlatformIcon } from "@intellij-platform/core/Icon";
+import { MenuTrigger } from "@intellij-platform/core/Menu/MenuTrigger";
+import { ActionTooltip, TooltipTrigger } from "@intellij-platform/core/Tooltip";
+import { styled } from "@intellij-platform/core/styled";
+import { StyledHorizontalSeparator } from "@intellij-platform/core/StyledSeparator";
+import { UnknownThemeProp } from "@intellij-platform/core/Theme/Theme";
 import { useToolWindowState } from "./ToolWindowsState/ToolWindowStateProvider";
 import {
   anchors,
@@ -71,16 +72,18 @@ export const DefaultToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
             </>
           )}
           {state.viewMode === "float" && (
-            <ActionButton onPress={() => changeViewMode("docked_pinned")}>
-              <PlatformIcon
-                icon={`actions/${
-                  anchors.find(
-                    ({ anchor, isSplit }) =>
-                      anchor === state.anchor && isSplit === state.isSplit
-                  )?.id
-                }`}
-              />
-            </ActionButton>
+            <TooltipTrigger tooltip={<ActionTooltip actionName="Dock" />}>
+              <ActionButton onPress={() => changeViewMode("docked_pinned")}>
+                <PlatformIcon
+                  icon={`actions/${
+                    anchors.find(
+                      ({ anchor, isSplit }) =>
+                        anchor === state.anchor && isSplit === state.isSplit
+                    )?.id
+                  }`}
+                />
+              </ActionButton>
+            </TooltipTrigger>
           )}
           <MenuTrigger
             renderMenu={({ menuProps }) => {
@@ -88,14 +91,20 @@ export const DefaultToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
             }}
           >
             {(props, ref) => (
-              <ActionButton {...props} ref={ref}>
-                <PlatformIcon icon="general/gearPlain" />
-              </ActionButton>
+              <TooltipTrigger
+                tooltip={<ActionTooltip actionName="Show Options Menu" />}
+              >
+                <ActionButton {...props} ref={ref}>
+                  <PlatformIcon icon="general/gearPlain" />
+                </ActionButton>
+              </TooltipTrigger>
             )}
           </MenuTrigger>
-          <ActionButton onPress={hide}>
-            <PlatformIcon icon="general/hideToolWindow" />
-          </ActionButton>
+          <TooltipTrigger tooltip={<ActionTooltip actionName="Hide" />}>
+            <ActionButton onPress={hide}>
+              <PlatformIcon icon="general/hideToolWindow" />
+            </ActionButton>
+          </TooltipTrigger>
         </ActionToolbar>
       </StyledToolWindowHeaderActions>
     </StyledToolWindowHeader>

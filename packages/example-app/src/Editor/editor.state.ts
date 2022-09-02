@@ -18,7 +18,7 @@ interface TextEditorState {
 }
 type EditorState = TextEditorState;
 
-interface EditorTabState {
+export interface EditorTabState {
   editorState: EditorState;
   filePath: string;
 }
@@ -79,6 +79,7 @@ export interface EditorStateManager {
   tabs: EditorTabState[];
   openPath(filePath: string, focus?: boolean): void;
   closePath(path: string): void;
+  closeOthersTabs(index: number): void;
   closeTab(index: number): void;
   select(index: number): void;
 }
@@ -127,12 +128,18 @@ export const useEditorStateManager = (): EditorStateManager => {
       tabsState.filter((_, tabIndex) => tabIndex !== index)
     );
   };
+  const closeOthersTabs = (index: number) => {
+    setTabsState((tabsState) =>
+      tabsState.filter((_, tabIndex) => tabIndex === index)
+    );
+  };
   return {
     tabs: tabsState,
     // This should become an action. Something like "open project file", when action system is implemented.
     openPath,
     closePath,
     closeTab,
+    closeOthersTabs,
     select,
   };
 };

@@ -1,5 +1,5 @@
 import { mergeProps } from "@react-aria/utils";
-import React, { CSSProperties, Key, useRef } from "react";
+import React, { CSSProperties, HTMLAttributes, Key, useRef } from "react";
 import { createGetDropPosition, DropPosition } from "./createGetDropPosition";
 import { useMovableStripeButtons } from "./MovableToolWindowStripeProvider";
 import { StyledSpacer, StyledToolWindowStripe } from "./StyledToolWindowStripe";
@@ -173,7 +173,11 @@ function ToolWindowStripeButton<T, S>({
   // for some reason, usePress and useMove (used in useElementMove) are not compatible.
   // it seems onMouseDown in useMove is not called, even when handlers are merged by mergeProps.
   // FIXME: fix compatibility of useMove and usePress, and switch to usePress({ onPress })
-  const { pressProps } = { pressProps: { onClick: onPress } }; //usePress({ onPress });
+  const { pressProps } = {
+    pressProps: {
+      onPointerUp: onPress,
+    } as HTMLAttributes<HTMLElement>,
+  }; //usePress({ onPress });
   const props = useElementMove({
     ref,
     disabled: moveDisabled,

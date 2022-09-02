@@ -1,12 +1,13 @@
 import { PressProps, usePress } from "@react-aria/interactions";
 import React, { ForwardedRef, HTMLProps } from "react";
 import { styled } from "../styled";
-import { mergeProps } from "@react-aria/utils";
+import { mergeProps, useObjectRef } from "@react-aria/utils";
+import { useFocusable } from "@react-aria/focus";
 
 export interface ActionButtonProps
   extends PressProps,
     // Maybe we should allow any arbitrary HTMLProps<HTMLButtonElement> props, instead of whitelisting?
-    Pick<HTMLProps<HTMLButtonElement>, "onFocus" | "onBlur"> {
+    Pick<HTMLProps<HTMLElement>, "onFocus" | "onBlur"> {
   children?: React.ReactNode;
   minSize?: number;
   /**
@@ -71,6 +72,9 @@ export const ActionButton = React.forwardRef(function ActionButton(
   }: ActionButtonProps,
   ref: ForwardedRef<HTMLButtonElement>
 ) {
+  // FIXME: use useButton
+
+  const { focusableProps } = useFocusable({ isDisabled }, useObjectRef(ref));
   const { pressProps, isPressed } = usePress({
     isPressed: isPressedInput,
     isDisabled,
@@ -87,7 +91,7 @@ export const ActionButton = React.forwardRef(function ActionButton(
     <StyledActionButton
       className={isPressed ? "active" : ""}
       disabled={isDisabled}
-      {...mergeProps(pressProps, otherProps)}
+      {...mergeProps(pressProps, otherProps, focusableProps)}
       minSize={minSize}
       tabIndex={excludeFromTabOrder && !isDisabled ? -1 : undefined}
       ref={ref}

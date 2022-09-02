@@ -1,4 +1,9 @@
-import { ActionButton, PlatformIcon } from "@intellij-platform/core";
+import {
+  ActionButton,
+  ActionTooltip,
+  PlatformIcon,
+  TooltipTrigger,
+} from "@intellij-platform/core";
 import React from "react";
 import { useRecoilCallback, useRecoilValue, useSetRecoilState } from "recoil";
 import { activeEditorTabState } from "../Editor/editor.state";
@@ -40,15 +45,23 @@ export const ProjectViewActionButtons = (): React.ReactElement => {
   };
   return (
     <>
-      <ActionButton onPress={selectOpenedFile} isDisabled={!activeTab}>
-        <PlatformIcon icon="general/locate" />
-      </ActionButton>
-      <ActionButton onPress={expandAll}>
-        <PlatformIcon icon="actions/expandall" />
-      </ActionButton>
-      <ActionButton onPress={collapseAll}>
-        <PlatformIcon icon="actions/collapseall" />
-      </ActionButton>
+      <TooltipTrigger
+        tooltip={<ActionTooltip actionName="Select Opened File" />}
+      >
+        <ActionButton onPress={selectOpenedFile} isDisabled={!activeTab}>
+          <PlatformIcon icon="general/locate" />
+        </ActionButton>
+      </TooltipTrigger>
+      <TooltipTrigger tooltip={<ActionTooltip actionName="Expand All" />}>
+        <ActionButton onPress={expandAll}>
+          <PlatformIcon icon="actions/expandall" />
+        </ActionButton>
+      </TooltipTrigger>
+      <TooltipTrigger tooltip={<ActionTooltip actionName="Collapse All" />}>
+        <ActionButton onPress={collapseAll}>
+          <PlatformIcon icon="actions/collapseall" />
+        </ActionButton>
+      </TooltipTrigger>
     </>
   );
 };

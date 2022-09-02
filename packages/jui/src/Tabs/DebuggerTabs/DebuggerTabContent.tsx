@@ -5,17 +5,30 @@ import React from "react";
 export const DebuggerTabContent = ({
   icon,
   title,
-  onClose,
+  closeButton,
 }: {
   icon: React.ReactNode;
   title: React.ReactNode;
-  onClose?: () => void;
+  /**
+   * Close button for the tab. Use {@link TabCloseButton} to render the close button
+   * for the tab.
+   *
+   * @example
+   * ```tsx
+   * <DebuggerTabContent
+   *   closeButton={
+   *     <TooltipTrigger
+   *       tooltip={<ActionTooltip actionName="Close Tab" shortcut="^⇧F4" />}
+   *     >
+   *       <TabCloseButton onPress={}></TabCloseButton>
+   *     </TooltipTrigger>
+   *   }
+   * />
+   * ```
+   */
+  closeButton?: React.ReactElement;
 }) => {
   return (
-    <TabContentLayout
-      startIcon={icon}
-      title={title}
-      endIcon={onClose && <TabCloseButton onPress={onClose} />}
-    />
+    <TabContentLayout startIcon={icon} title={title} endIcon={closeButton} />
   );
 };

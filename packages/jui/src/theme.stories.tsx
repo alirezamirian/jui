@@ -26,6 +26,7 @@ import {
   StyledDefaultTab,
   StyledDefaultTabs,
   StyledIconLiveIndicator,
+  TabCloseButton,
   ThreeViewSplitter,
   ToolWindows,
   ToolWindowsState,
@@ -129,7 +130,7 @@ export const Theme: Story = () => {
                             <StyledIconLiveIndicator />
                           </PlatformIcon>
                         }
-                        onClose={() => {}}
+                        closeButton={<TabCloseButton />}
                       />
                     }
                   >
@@ -147,7 +148,7 @@ export const Theme: Story = () => {
                       <ToolWindowTabContent
                         title="test"
                         icon={<PlatformIcon icon="expui/fileTypes/jest" />}
-                        onClose={() => {}}
+                        closeButton={<TabCloseButton />}
                       />
                     }
                   >
