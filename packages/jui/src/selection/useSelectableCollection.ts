@@ -139,6 +139,7 @@ export function useSelectableCollection(
           if (nextKey == null && shouldFocusWrap) {
             nextKey = delegate.getFirstKey?.(manager.focusedKey);
           }
+          // @ts-expect-error ignored strictness error in copied code
           navigateToKey(nextKey);
         }
         break;
@@ -153,6 +154,7 @@ export function useSelectableCollection(
           if (nextKey == null && shouldFocusWrap) {
             nextKey = delegate.getLastKey?.(manager.focusedKey);
           }
+          // @ts-expect-error ignored strictness error in copied code
           navigateToKey(nextKey);
         }
         break;
@@ -161,6 +163,7 @@ export function useSelectableCollection(
         if (delegate.getKeyLeftOf) {
           e.preventDefault();
           let nextKey = delegate.getKeyLeftOf(manager.focusedKey);
+          // @ts-expect-error ignored strictness error in copied code
           navigateToKey(nextKey, direction === "rtl" ? "first" : "last");
         }
         break;
@@ -169,6 +172,7 @@ export function useSelectableCollection(
         if (delegate.getKeyRightOf) {
           e.preventDefault();
           let nextKey = delegate.getKeyRightOf(manager.focusedKey);
+          // @ts-expect-error ignored strictness error in copied code
           navigateToKey(nextKey, direction === "rtl" ? "last" : "first");
         }
         break;
@@ -180,14 +184,17 @@ export function useSelectableCollection(
             manager.focusedKey,
             isCtrlKeyPressed(e)
           );
+          // @ts-expect-error ignored strictness error in copied code
           manager.setFocusedKey(firstKey);
           if (
             isCtrlKeyPressed(e) &&
             e.shiftKey &&
             manager.selectionMode === "multiple"
           ) {
+            // @ts-expect-error ignored strictness error in copied code
             manager.extendSelection(firstKey);
           } else if (selectOnFocus) {
+            // @ts-expect-error ignored strictness error in copied code
             manager.replaceSelection(firstKey);
           }
         }
@@ -199,14 +206,17 @@ export function useSelectableCollection(
             manager.focusedKey,
             isCtrlKeyPressed(e)
           );
+          // @ts-expect-error ignored strictness error in copied code
           manager.setFocusedKey(lastKey);
           if (
             isCtrlKeyPressed(e) &&
             e.shiftKey &&
             manager.selectionMode === "multiple"
           ) {
+            // @ts-expect-error ignored strictness error in copied code
             manager.extendSelection(lastKey);
           } else if (selectOnFocus) {
+            // @ts-expect-error ignored strictness error in copied code
             manager.replaceSelection(lastKey);
           }
         }
@@ -215,6 +225,7 @@ export function useSelectableCollection(
         if (delegate.getKeyPageBelow) {
           e.preventDefault();
           let nextKey = delegate.getKeyPageBelow(manager.focusedKey);
+          // @ts-expect-error ignored strictness error in copied code
           navigateToKey(nextKey);
         }
         break;
@@ -222,6 +233,7 @@ export function useSelectableCollection(
         if (delegate.getKeyPageAbove) {
           e.preventDefault();
           let nextKey = delegate.getKeyPageAbove(manager.focusedKey);
+          // @ts-expect-error ignored strictness error in copied code
           navigateToKey(nextKey);
         }
         break;
@@ -302,8 +314,10 @@ export function useSelectableCollection(
         e.currentTarget.compareDocumentPosition(relatedTarget) &
           Node.DOCUMENT_POSITION_FOLLOWING
       ) {
+        // @ts-expect-error ignored strictness error in copied code
         key = manager.lastSelectedKey ?? delegate.getLastKey?.();
       } else {
+        // @ts-expect-error ignored strictness error in copied code
         key = manager.firstSelectedKey ?? delegate.getFirstKey?.();
       }
       if (key != null) {

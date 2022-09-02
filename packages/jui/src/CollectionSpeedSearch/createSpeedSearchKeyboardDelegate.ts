@@ -24,7 +24,7 @@ export function createSpeedSearchKeyboardDelegate(
           }
           keyBelow = wrappedKeyboardDelegate.getKeyBelow?.(keyBelow);
         }
-        return keyBelow;
+        return keyBelow ?? undefined;
       },
     },
     getKeyAbove: {
@@ -36,7 +36,7 @@ export function createSpeedSearchKeyboardDelegate(
           }
           keyAfter = wrappedKeyboardDelegate.getKeyAbove?.(keyAfter);
         }
-        return keyAfter;
+        return keyAfter ?? undefined;
       },
     },
   });
