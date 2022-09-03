@@ -70,11 +70,12 @@ export const ActionButton = React.forwardRef(function ActionButton(
     shouldCancelOnPointerExit,
     ...otherProps
   }: ActionButtonProps,
-  ref: ForwardedRef<HTMLButtonElement>
+  forwardedRef: ForwardedRef<HTMLButtonElement>
 ) {
   // FIXME: use useButton
 
-  const { focusableProps } = useFocusable({ isDisabled }, useObjectRef(ref));
+  const ref = useObjectRef(forwardedRef);
+  const { focusableProps } = useFocusable({ isDisabled }, ref);
   const { pressProps, isPressed } = usePress({
     isPressed: isPressedInput,
     isDisabled,
