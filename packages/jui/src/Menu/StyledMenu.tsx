@@ -14,11 +14,12 @@ export const StyledMenu = styled.ul`
   list-style: none;
   width: fit-content;
   min-width: 100px;
-  border: ${MENU_BORDER_WIDTH}px solid
-    ${({ theme }) => theme.color("Menu.borderColor")};
+  // Border doesn't seem to be painted in the original impl. IdeaPopupMenuUI.isUnderPopup(c) seemed to return false
+  // in all cases. More info: https://github.com/JetBrains/intellij-community/blob/c5ece483811a3ab546fc3880225efb02cc8b94dd/platform/platform-impl/src/com/intellij/ide/ui/laf/darcula/ui/DarculaPopupMenuBorder.java#L24
+  /*  border: ${MENU_BORDER_WIDTH}px solid
+    ${({ theme }) =>
+    theme.color("Menu.borderColor", !theme.dark ? "#CDCDCD" : "#515151")};*/
   ${WINDOW_SHADOW};
-  border-color: ${({ theme }) =>
-    theme.dark ? "rgba(0, 0, 0, 0.15)" : undefined};
   background: ${({ theme }) =>
     theme.color(
       "PopupMenu.background" as UnknownThemeProp<"PopupMenu.background">
