@@ -22,9 +22,17 @@ More details: `currentModality` is maintained in `@react-aria/interactions`, bas
 It's `null` by default. When real hover happens, some events are triggered, and `currentModality` is set to 'pointer'.
 It doesn't happen for some reason when `realHover` command is used.
 
+**UPDATE**: It seemed the order of handlers are for some reason different when hover event is triggered via `realHover`.
+So that in the first `onPointerEnter` event handler in `useHover`, `currentModality` is not set. But then the global
+handler in `@react-aria/interactions` is immediately invoked, setting `currentModality`. That's why the following
+workaround works.
+
 ### Solution
 
-add `cy.get('body').click()` before the `realHover` command. It will make `isFocusVisible` return false.
+Add `cy.get('body').click()` before the `realHover` command. It will make `isFocusVisible` return false.
+In some other cases, calling `realHover` on some other element (even `body`) can fix the issue. Note that calling
+`realHover` on the target element multiple times doesn't work, because `pointerEnter` will only be triggered the first
+time.
 
 ## Image snapshot comparison on headless vs headed
 

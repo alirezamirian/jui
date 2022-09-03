@@ -1,4 +1,9 @@
-import { PlatformIcon, ToolWindows } from "@intellij-platform/core";
+import {
+  ActionTooltip,
+  PlatformIcon,
+  TooltipTrigger,
+  ToolWindows,
+} from "@intellij-platform/core";
 import React from "react";
 import { FileEditor } from "../Editor/FileEditor";
 import { useInitializeVcs } from "../VersionControl/file-status.state";
@@ -30,11 +35,15 @@ export const Project = () => {
         toolWindowsState={state}
         onToolWindowStateChange={setState}
         renderToolbarButton={(id) => (
-          <>
-            <PlatformIcon icon={windowById[id].icon} />
-            &nbsp;
-            {windowById[id].title}
-          </>
+          <TooltipTrigger
+            tooltip={<ActionTooltip actionName={windowById[id].title} />}
+          >
+            <span>
+              <PlatformIcon icon={windowById[id].icon} />
+              &nbsp;
+              {windowById[id].title}
+            </span>
+          </TooltipTrigger>
         )}
         renderWindow={(id) => windowById[id].element}
       >

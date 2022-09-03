@@ -69,10 +69,25 @@ export class Theme<P extends string = string> {
   inset<T extends ThemePropertyValue>(path: P): string | null {
     const value = this.value(path);
     if (typeof value === "string") {
-      return value
-        .split(",")
-        .map((num) => `${num} px`)
-        .join(" ");
+      const parts = value.split(",").map((num) => `${num}px`);
+      // The order in awt Inset is "top,left,bottom,right", while in css it's "top,right,bottom,left".
+      // It seems unlike css, inset has always the 4 components, and there are no shorthand notations, so seems safe
+      // to work with exact indices.
+      return `${parts[0]} ${parts[3]} ${parts[2]} ${parts[1]}`;
+    }
+    return null;
+  }
+
+  /**
+   * Converts font size delta value to a string (or null), that can be used as css font size value.
+   * @example
+   * theme.inset('some.path') === "calc(1em + 2px)" // assuming "some.path" is resolved to 2
+   * theme.inset('some.path') === undefined // assuming "some.path" is resolved to 0
+   */
+  fontSizeDelta<T extends ThemePropertyValue>(path: P): string | null {
+    const value = this.value(path);
+    if (typeof value === "number") {
+      return `calc(1em + ${value}px)`;
     }
     return null;
   }
@@ -229,6 +244,13 @@ export class Theme<P extends string = string> {
         "Label.infoForeground",
         theme.dark ? "#8c8c8c" : "#787878"
       ),
+      linkForegroundEnabled: theme.color(
+        "Link.activeForeground",
+        theme.color(
+          "link.foreground" as UnknownThemeProp<"link.foreground">,
+          "#589DF6"
+        )
+      ),
     };
   }
 }
@@ -240,15 +262,9 @@ function detectOs(): OS | null {
 function resolveOsDependentValue(
   value: OsDependentValue | ThemePropertyValue,
   os: OS | null
-): ThemePropertyValue {
+): ThemePropertyValue | undefined {
   if (isOsDependentValue(value)) {
-    return (
-      value[`os.${os || "default"}` as const] ??
-      value["os.default"] ??
-      (value[
-        Object.keys(value)[0] as OsDependentValueKey // the order is not spec-wise guaranteed, but not a biggie
-      ] /* because at least one key is required*/ as ThemePropertyValue)
-    );
+    return value[`os.${os || "default"}` as const] ?? value["os.default"];
   }
   return value;
 }

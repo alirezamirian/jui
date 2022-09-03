@@ -1,11 +1,17 @@
 import { Monaco } from "@monaco-editor/react";
 import {
-  MenuItemLayout,
-  PlatformIcon,
+  ActionTooltip,
+  ContextMenuContainer,
   EditorTabContent,
   EditorTabs,
-  TabItem,
+  Item,
+  Menu,
+  MenuItemLayout,
+  PlatformIcon,
   styled,
+  TabCloseButton,
+  TabItem,
+  TooltipTrigger,
   useLatest,
 } from "@intellij-platform/core";
 import { editor, languages } from "monaco-editor";
@@ -26,9 +32,9 @@ import {
 } from "./editor.state";
 import { fileContent } from "../fs/fs.state";
 import { useUpdateFileStatus } from "../VersionControl/file-status.state";
+import * as path from "path";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
 import { useToolWindowsManager } from "../Project/toolWindows.state";
-import * as path from "path";
 
 /**
  * Used as main content in the main ToolWindows. Shows currently opened files tabs and the editor.
@@ -37,7 +43,7 @@ import * as path from "path";
  * TODO: support multiple editors in split view.
  */
 export const FileEditor = () => {
-  const { tabs, closePath, select: selectTab } = useEditorStateManager();
+  const editorStateManager = useEditorStateManager();
   const toolWindowsManager = useToolWindowsManager();
   const activeTab = useRecoilValue(activeEditorTabState);
   const editorRef = useRef<editor.IEditor>();
@@ -49,7 +55,10 @@ export const FileEditor = () => {
   // More info: https://react-spectrum.adobe.com/react-stately/collections.html#why-not-array-map
   // We can alternatively switch to mapping over tabs array, instead of using the Collection's dynamic api (items),
   // which is subject to this caching.
-  const tabActionsRef = useLatest({ closePath });
+  const tabActionsRef = useLatest({
+    closePath: editorStateManager.closePath,
+    closeOthersTabs: editorStateManager.closeOthersTabs,
+  });
   const toolWindowsManagerRef = useLatest(toolWindowsManager);
 
   const setEditorRef = useSetRecoilState(editorRefState);
@@ -88,47 +97,89 @@ export const FileEditor = () => {
         });
       }}
     >
-      {tabs.length > 0 && (
-        <EditorTabs
-          items={tabs}
-          active={active}
-          selectedKey={activeTab?.filePath}
-          onSelectionChange={(key) =>
-            selectTab(tabs.findIndex((tab) => tab.filePath === key))
-          }
-          noBorders
+      {editorStateManager.tabs.length > 0 && (
+        <ContextMenuContainer
+          renderMenu={() => (
+            <Menu
+              onAction={() => {
+                // TODO: detect which tab was triggering context menu and handle the action accordingly
+                //  One idea is to use use the data-key attribute, from the closes parent that has one. Maybe a
+                //  CollectionContextMenuContainer component which implements that, while ContextMenuContainer is
+                //  modified to pass the MouseEvent object, in renderMenu.
+                alert("not implemented!");
+              }}
+            >
+              <Item key="close">Close</Item>
+              <Item key="closeOthers">Close Other tabs</Item>
+              <Item key="closeAll">Close all tabs</Item>
+              <Item key="closeLeft">Close tabs to the left</Item>
+              <Item key="closeRight">Close tabs to the right</Item>
+            </Menu>
+          )}
         >
-          {(tab) => {
-            const filename = path.basename(tab.filePath);
-            const icon = <PlatformIcon icon={getIconForFile(tab.filePath)} />;
-            return (
-              <TabItem
-                key={tab.filePath}
-                textValue={filename}
-                inOverflowMenu={
-                  <MenuItemLayout content={filename} icon={icon} />
-                }
-              >
-                <EditorTabContent
-                  icon={icon}
-                  title={
-                    <FileStatusColor filepath={tab.filePath}>
-                      {filename}
-                    </FileStatusColor>
+          <EditorTabs
+            items={editorStateManager.tabs}
+            active={active}
+            selectedKey={activeTab?.filePath}
+            onSelectionChange={(key) =>
+              editorStateManager.select(
+                editorStateManager.tabs.findIndex((tab) => tab.filePath === key)
+              )
+            }
+            noBorders
+          >
+            {(tab) => {
+              const filename = path.basename(tab.filePath);
+              const icon = <PlatformIcon icon={getIconForFile(tab.filePath)} />;
+              return (
+                <TabItem
+                  key={tab.filePath}
+                  textValue={filename}
+                  inOverflowMenu={
+                    <MenuItemLayout content={filename} icon={icon} />
                   }
-                  onClose={() => {
-                    tabActionsRef.current.closePath(tab.filePath);
-                  }}
-                  containerProps={{
-                    onDoubleClick: () => {
-                      toolWindowsManagerRef.current.toggleHideAll();
-                    },
-                  }}
-                />
-              </TabItem>
-            );
-          }}
-        </EditorTabs>
+                >
+                  <TooltipTrigger
+                    tooltip={<ActionTooltip actionName={tab.filePath} />}
+                  >
+                    <EditorTabContent
+                      icon={icon}
+                      title={
+                        <FileStatusColor filepath={tab.filePath}>
+                          {filename}
+                        </FileStatusColor>
+                      }
+                      closeButton={
+                        <TooltipTrigger
+                          tooltip={
+                            <ActionTooltip actionName="Close. Alt-Click to Close Others" />
+                          }
+                        >
+                          <TabCloseButton
+                            onPress={(e) => {
+                              if (e.altKey) {
+                                tabActionsRef.current.closeOthersTabs(
+                                  editorStateManager.tabs.indexOf(tab)
+                                );
+                              } else {
+                                tabActionsRef.current.closePath(tab.filePath);
+                              }
+                            }}
+                          />
+                        </TooltipTrigger>
+                      }
+                      containerProps={{
+                        onDoubleClick: () => {
+                          toolWindowsManagerRef.current.toggleHideAll();
+                        },
+                      }}
+                    />
+                  </TooltipTrigger>
+                </TabItem>
+              );
+            }}
+          </EditorTabs>
+        </ContextMenuContainer>
       )}
       {activeTab &&
         (typeof content === "string" ? (

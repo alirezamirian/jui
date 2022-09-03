@@ -13,7 +13,7 @@ const props = [
   ...new Set(
     themes
       .flatMap((theme) => Object.keys(flattenObj(theme.ui)))
-      .filter((key) => !/os\.(windows|mac|linux|default)$/.test(key))
+      .map((key) => key.replace(/\.os\.(windows|mac|linux|default)$/, ""))
   ),
 ].sort();
 

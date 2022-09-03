@@ -1,6 +1,5 @@
-import { Pressable, PressProps } from "@react-aria/interactions";
-
 import React from "react";
+import { BareButton, BareButtonProps } from "@intellij-platform/core/Button";
 import { PlatformIcon } from "../Icon";
 import { styled } from "../styled";
 
@@ -21,14 +20,14 @@ const StyledIconWrapper = styled.span`
 /**
  * Close button for Tab
  */
-export const TabCloseButton = (props: PressProps) => {
+export const TabCloseButton = (props: Omit<BareButtonProps, "children">) => {
   // using useHover proved to be unstable.
   return (
-    <Pressable {...props}>
+    <BareButton {...props}>
       <StyledIconWrapper>
         <PlatformIcon icon={"actions/closeHovered"} className="icon hover" />
         <PlatformIcon icon={"actions/close"} className="icon" />
       </StyledIconWrapper>
-    </Pressable>
+    </BareButton>
   );
 };

@@ -1,0 +1,51 @@
+---
+---
+
+# Tooltip
+
+### Features
+
+- `ActionTooltip`, `ActionHelpTooltip` and `HelpTooltip`, built on top of the generic `Tooltip` component.
+- Interactive tooltip. If a link or button is rendered in a tooltip. It will remain open when hovered. ([spec](https://jetbrains.github.io/ui/controls/tooltip/#20))
+- Tooltip positioning based on mouse position, not trigger. ([spec](https://jetbrains.github.io/ui/controls/tooltip/#21))
+
+#### Remaining
+
+- [ ] 🚧 Auto hide if the cursor stays on trigger long enough. ([spec](https://jetbrains.github.io/ui/controls/tooltip/#19))
+
+### Live example
+
+```jsx live themed
+<div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+  <TooltipTrigger
+    tooltip={<ActionTooltip actionName="Action Name" shortcut="F1" />}
+  >
+    <Button>Action</Button>
+  </TooltipTrigger>
+
+  <TooltipTrigger
+    tooltip={
+      <ActionHelpTooltip
+        actionName="Action Name"
+        shortcut="F1"
+        helpText="Explain behavior that is not clear from the action name."
+        link={<Link>Link</Link>}
+      />
+    }
+  >
+    <Button>Action Help</Button>
+  </TooltipTrigger>
+
+  <TooltipTrigger
+    tooltip={
+      <HelpTooltip
+        shortcut="F1"
+        helpText="Explain behavior that is not clear from the action name."
+        link={<Link>Link</Link>}
+      />
+    }
+  >
+    <Button>Help</Button>
+  </TooltipTrigger>
+</div>
+```

@@ -1,11 +1,14 @@
 import styled from "styled-components";
 import {
   ActionButton,
+  ActionHelpTooltip,
+  ActionTooltip,
   Button,
   Checkbox,
   getAnchorOrientation,
   PlatformIcon,
   ThreeViewSplitter,
+  TooltipTrigger,
   useDefaultToolWindowContext,
   useToolWindowState,
 } from "@intellij-platform/core";
@@ -137,15 +140,40 @@ function CommitActionsRow() {
 
   return (
     <StyledActionsRow>
-      <StyledAmendCheckbox isSelected={amend} onChange={setAmend} preventFocus>
-        Amend
-      </StyledAmendCheckbox>
-      <ActionButton onPress={() => alert("Not implemented")}>
-        <PlatformIcon icon="general/gear.svg" />
-      </ActionButton>
-      <ActionButton isDisabled onPress={() => alert("Not implemented")}>
-        <PlatformIcon icon="vcs/historyInline.svg" />
-      </ActionButton>
+      <TooltipTrigger
+        tooltip={
+          <ActionHelpTooltip
+            actionName="Amend Commit"
+            helpText="Modify the latest commit of the current branch"
+          />
+        }
+      >
+        {(props) => (
+          <span {...props}>
+            <StyledAmendCheckbox
+              isSelected={amend}
+              onChange={setAmend}
+              preventFocus
+            >
+              Amend
+            </StyledAmendCheckbox>
+          </span>
+        )}
+      </TooltipTrigger>
+      <TooltipTrigger
+        tooltip={<ActionTooltip actionName="Show Commit Options" />}
+      >
+        <ActionButton onPress={() => alert("Not implemented")}>
+          <PlatformIcon icon="general/gear.svg" />
+        </ActionButton>
+      </TooltipTrigger>
+      <TooltipTrigger
+        tooltip={<ActionTooltip actionName="Commit Message History" />}
+      >
+        <ActionButton isDisabled onPress={() => alert("Not implemented")}>
+          <PlatformIcon icon="vcs/historyInline.svg" />
+        </ActionButton>
+      </TooltipTrigger>
       <StyledChangesSummaryContainer>
         <ChangesViewChangesSummary />
       </StyledChangesSummaryContainer>

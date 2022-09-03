@@ -12,7 +12,9 @@ import {
   ActionButton,
   ActionToolbar,
   ActionToolbarSeparator,
+  ActionTooltip,
   PlatformIcon,
+  TooltipTrigger,
 } from "@intellij-platform/core";
 import { ChangeListsActionButton } from "./ActionButtons/ChangeListsActionButton";
 import { GroupByActionButton } from "./ActionButtons/GroupByActionButton";
@@ -47,28 +49,46 @@ export function ChangesViewToolbar() {
   );
   return (
     <ActionToolbar hasBorder>
-      <ActionButton onPress={refresh}>
-        <PlatformIcon icon="actions/refresh.svg" />
-      </ActionButton>
-      <ActionButton onPress={openRollbackWindow}>
-        <PlatformIcon icon="actions/rollback.svg" />
-      </ActionButton>
-      <ActionButton onPress={() => alert("Not implemented")}>
-        <PlatformIcon icon="actions/diff.svg" />
-      </ActionButton>
-      <ChangeListsActionButton />
-      <ActionButton onPress={() => alert("Not implemented")}>
-        <PlatformIcon icon="vcs/shelveSilent.svg" />
-      </ActionButton>
+      <TooltipTrigger tooltip={<ActionTooltip actionName="Refresh" />}>
+        <ActionButton onPress={refresh}>
+          <PlatformIcon icon="actions/refresh.svg" />
+        </ActionButton>
+      </TooltipTrigger>
+      <TooltipTrigger tooltip={<ActionTooltip actionName="Rollback..." />}>
+        <ActionButton onPress={openRollbackWindow}>
+          <PlatformIcon icon="actions/rollback.svg" />
+        </ActionButton>
+      </TooltipTrigger>
+      <TooltipTrigger tooltip={<ActionTooltip actionName="Show Diff" />}>
+        <ActionButton onPress={() => alert("Not implemented")}>
+          <PlatformIcon icon="actions/diff.svg" />
+        </ActionButton>
+      </TooltipTrigger>
+      <TooltipTrigger tooltip={<ActionTooltip actionName="Changelists" />}>
+        <ChangeListsActionButton />
+      </TooltipTrigger>
+      <TooltipTrigger tooltip={<ActionTooltip actionName="Shelve Silently" />}>
+        <ActionButton onPress={() => alert("Not implemented")}>
+          <PlatformIcon icon="vcs/shelveSilent.svg" />
+        </ActionButton>
+      </TooltipTrigger>
       <ActionToolbarSeparator />
-      <GroupByActionButton />
-      <ViewOptionsActionButton />
-      <ActionButton onPress={expandAll}>
-        <PlatformIcon icon="actions/expandall.svg" />
-      </ActionButton>
-      <ActionButton onPress={collapseAll}>
-        <PlatformIcon icon="actions/collapseall.svg" />
-      </ActionButton>
+      <TooltipTrigger tooltip={<ActionTooltip actionName="Group By" />}>
+        <GroupByActionButton />
+      </TooltipTrigger>
+      <TooltipTrigger tooltip={<ActionTooltip actionName="View Options" />}>
+        <ViewOptionsActionButton />
+      </TooltipTrigger>
+      <TooltipTrigger tooltip={<ActionTooltip actionName="Expand All" />}>
+        <ActionButton onPress={expandAll}>
+          <PlatformIcon icon="actions/expandall.svg" />
+        </ActionButton>
+      </TooltipTrigger>
+      <TooltipTrigger tooltip={<ActionTooltip actionName="Collapse All" />}>
+        <ActionButton onPress={collapseAll}>
+          <PlatformIcon icon="actions/collapseall.svg" />
+        </ActionButton>
+      </TooltipTrigger>
     </ActionToolbar>
   );
 }

@@ -5,13 +5,30 @@ import { TabContentLayout } from "@intellij-platform/core/Tabs/TabContentLayout"
 type Props = {
   icon: React.ReactNode;
   title: React.ReactNode;
-  onClose?: () => void;
+  /**
+   * Close button for the tab. Use {@link TabCloseButton} to render the close button
+   * for the tab.
+   *
+   * @example
+   * ```tsx
+   * <ToolWindowTabContent
+   *   closeButton={
+   *     <TooltipTrigger
+   *       tooltip={<ActionTooltip actionName="Close Tab" shortcut="^⇧F4" />}
+   *     >
+   *       <TabCloseButton onPress={}></TabCloseButton>
+   *     </TooltipTrigger>
+   *   }
+   * />
+   * ```
+   */
+  closeButton?: React.ReactElement;
   containerProps?: Omit<HTMLProps<HTMLDivElement>, "ref" | "as">;
 };
 
 export const ToolWindowTabContent = React.forwardRef(
   (
-    { icon, title, onClose, containerProps }: Props,
+    { icon, title, closeButton, containerProps }: Props,
     ref: ForwardedRef<HTMLDivElement>
   ) => {
     return (
@@ -20,7 +37,7 @@ export const ToolWindowTabContent = React.forwardRef(
         ref={ref}
         startIcon={icon}
         title={title}
-        endIcon={onClose && <TabCloseButton onPress={onClose} />}
+        endIcon={closeButton}
       />
     );
   }

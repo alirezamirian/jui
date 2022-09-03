@@ -1,5 +1,7 @@
 import React, { ForwardedRef, HTMLProps } from "react";
 import { css, styled } from "../styled";
+import { useFocusable } from "@react-aria/focus";
+import { mergeProps, useObjectRef } from "@react-aria/utils";
 
 const StyledTabItemLayout = styled.div`
   display: inline-flex;
@@ -48,11 +50,16 @@ export interface TabItemLayoutProps {
  */
 export const TabContentLayout = React.forwardRef(
   (
-    { startIcon, title, endIcon, containerProps }: TabItemLayoutProps,
+    { startIcon, title, endIcon, containerProps = {} }: TabItemLayoutProps,
     ref: ForwardedRef<HTMLDivElement>
   ) => {
+    // To allow tooltip be used easily. TooltipTrigger passes props via FocusableContext.
+    const { focusableProps } = useFocusable({}, useObjectRef(ref));
     return (
-      <StyledTabItemLayout {...containerProps} ref={ref}>
+      <StyledTabItemLayout
+        {...mergeProps(focusableProps, containerProps)}
+        ref={ref}
+      >
         {startIcon && (
           <StyledStartIconWrapper>{startIcon}</StyledStartIconWrapper>
         )}

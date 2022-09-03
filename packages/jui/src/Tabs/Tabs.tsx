@@ -102,6 +102,7 @@ const StyledTabList = styled.div<{ multiRow?: boolean }>`
  * TODO: add support for overflow:
  *  - have vertical scroll also scroll tabs
  *  - add support for re-reordering tabs.
+ *  - FIX: When a tab that was not selected is removed, selection should not change. It now changes to the tab before the removed one.
  */
 export const Tabs = <T extends object>({
   focusable,

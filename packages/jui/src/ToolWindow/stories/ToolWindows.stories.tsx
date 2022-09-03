@@ -23,7 +23,12 @@ import {
   ToolWindowsState,
   toolWindowState,
 } from "../ToolWindowsState/ToolWindowsState";
-import { HighlightedTextValue } from "@intellij-platform/core";
+import {
+  ActionTooltip,
+  HighlightedTextValue,
+  TabCloseButton,
+  TooltipTrigger,
+} from "@intellij-platform/core";
 
 export default {
   title: "Components/ToolWindow",
@@ -216,7 +221,18 @@ export const MultiView = (
                         {execution.isRunning && <StyledIconLiveIndicator />}
                       </PlatformIcon>
                     }
-                    onClose={() => close(execution.id)}
+                    closeButton={
+                      <TooltipTrigger
+                        tooltip={
+                          <ActionTooltip
+                            actionName="Close Tab"
+                            shortcut="^⇧F4"
+                          />
+                        }
+                      >
+                        <TabCloseButton onPress={() => close(execution.id)} />
+                      </TooltipTrigger>
+                    }
                   />
                 }
               >

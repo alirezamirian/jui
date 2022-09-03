@@ -1,12 +1,38 @@
 import React from "react";
-import { Pressable } from "@react-aria/interactions";
 import { PlatformIcon } from "@intellij-platform/core/Icon";
 import { TabCloseButton } from "@intellij-platform/core/Tabs/TabCloseButton";
 import {
   TabContentLayout,
   TabItemLayoutProps,
 } from "@intellij-platform/core/Tabs/TabContentLayout";
+import { ActionTooltip, TooltipTrigger } from "@intellij-platform/core/Tooltip";
+import { BareButton } from "@intellij-platform/core/Button";
 
+interface EditorTabContentProps {
+  icon: React.ReactNode;
+  title: React.ReactNode;
+  /**
+   * Close button, shown in place of "pin" button if not pinned. Use {@link TabCloseButton} to render the close button
+   * for the tab.
+   *
+   * @example
+   * ```tsx
+   * <EditorTabContent
+   *   closeButton={
+   *     <TooltipTrigger
+   *       tooltip={<ActionTooltip actionName="Close Tab" shortcut="^⇧F4" />}
+   *     >
+   *       <TabCloseButton onPress={}></TabCloseButton>
+   *     </TooltipTrigger>
+   *   }
+   * />
+   * ```
+   */
+  closeButton?: React.ReactElement;
+  onUnpin?: () => void;
+  pinned?: boolean;
+  containerProps?: TabItemLayoutProps["containerProps"];
+}
 /**
  * For rendering the content of Editor tabs. supports for file icon which is shown on the left and close or unpin
  * button shown on the right.
@@ -14,19 +40,11 @@ import {
 export const EditorTabContent = ({
   icon,
   title,
-  onClose,
+  closeButton,
   onUnpin,
   pinned,
   containerProps,
-}: {
-  icon: React.ReactNode;
-  title: React.ReactNode;
-  onClose?: () => void;
-  onUnpin?: () => void;
-  pinned?: boolean;
-  containerProps?: TabItemLayoutProps["containerProps"];
-}) => {
-  // TODO: Tooltip for unpin and close buttons
+}: EditorTabContentProps) => {
   return (
     <TabContentLayout
       startIcon={icon}
@@ -34,11 +52,13 @@ export const EditorTabContent = ({
       containerProps={containerProps}
       endIcon={
         pinned ? (
-          <Pressable onPress={onUnpin}>
-            <PlatformIcon icon="actions/pinTab" />
-          </Pressable>
+          <TooltipTrigger tooltip={<ActionTooltip actionName="Unpin Tab" />}>
+            <BareButton onPress={onUnpin}>
+              <PlatformIcon icon="actions/pinTab" />
+            </BareButton>
+          </TooltipTrigger>
         ) : (
-          onClose && <TabCloseButton onPress={onClose} />
+          closeButton
         )
       }
     />

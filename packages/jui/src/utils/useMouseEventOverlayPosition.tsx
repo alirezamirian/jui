@@ -1,10 +1,10 @@
+import React, { useRef } from "react";
+import { useLayoutEffect } from "@react-aria/utils";
 import {
   AriaPositionProps,
   PositionAria,
   useOverlayPosition,
 } from "@react-aria/overlays";
-import React, { useRef } from "react";
-import { useLayoutEffect } from "@react-aria/utils";
 
 /**
  * `useOverlayPosition` only supports positioning overlay relative to an element, at the moment.
@@ -27,13 +27,24 @@ import { useLayoutEffect } from "@react-aria/utils";
  * }
  * ```
  */
+let globalMoveHandler: null | ((e: MouseEvent) => void) = null;
+let lastMouseClientPos = { x: 0, y: 0 };
+
 export function useMouseEventOverlayPosition(
   options: Omit<AriaPositionProps, "targetRef">
 ): Omit<PositionAria, "updatePosition"> & {
-  updatePosition: (event: React.MouseEvent) => void;
+  updatePosition: (event?: React.MouseEvent) => void;
 } {
   const targetRef = useRef<HTMLElement>(null);
+
   useLayoutEffect(() => {
+    if (!globalMoveHandler) {
+      // After the first use of the hook, the listener will be attached forever. Not a big deal but can be improved.
+      globalMoveHandler = (e) => {
+        lastMouseClientPos = { x: e.clientX, y: e.clientY };
+      };
+      document.addEventListener("mousemove", globalMoveHandler);
+    }
     if (!targetRef.current) {
       const fakeTarget = document.createElement("span");
       Object.assign(fakeTarget.style, {
@@ -53,6 +64,14 @@ export function useMouseEventOverlayPosition(
     }
   }, []);
 
+  useLayoutEffect(() => {
+    if (options.isOpen && targetRef.current) {
+      targetRef.current.style.left = `${lastMouseClientPos.x}px`;
+      targetRef.current.style.top = `${lastMouseClientPos.y}px`;
+      updatePosition();
+    }
+  }, [options.isOpen, targetRef.current]);
+
   const { updatePosition, ...result } = useOverlayPosition({
     ...options,
     targetRef,
@@ -63,8 +82,8 @@ export function useMouseEventOverlayPosition(
     /**
      * Ref to be passed to be passed as targetRef
      */
-    updatePosition: (e: React.MouseEvent) => {
-      if (targetRef.current) {
+    updatePosition: (e?: React.MouseEvent) => {
+      if (targetRef.current && e) {
         targetRef.current.style.left = `${e.clientX}px`;
         targetRef.current.style.top = `${e.clientY}px`;
       }

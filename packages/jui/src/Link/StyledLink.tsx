@@ -2,13 +2,7 @@ import { Theme, UnknownThemeProp } from "@intellij-platform/core/Theme";
 import { styled } from "@intellij-platform/core/styled";
 
 const getDefaultLinkColor = ({ theme }: { theme: Theme }) =>
-  theme.color(
-    "Link.activeForeground",
-    theme.color(
-      "link.foreground" as UnknownThemeProp<"link.foreground">,
-      "#589DF6"
-    )
-  );
+  theme.commonColors.linkForegroundEnabled;
 
 export const StyledLink = styled.a`
   cursor: pointer;
@@ -57,7 +51,7 @@ export const StyledLink = styled.a`
       theme.color(
         "Link.disabledForeground" as UnknownThemeProp<"Link.disabledForeground">,
         theme.color(
-          "Label.disabledForeground" as UnknownThemeProp<"Label.disabledForeground">,
+          "Label.disabledForeground",
           theme.color("Label.disabledText", "#999")
         )
       )};
