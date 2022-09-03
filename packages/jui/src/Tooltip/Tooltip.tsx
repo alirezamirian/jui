@@ -46,6 +46,7 @@ const StyledTooltip = styled.div<{ multiline?: boolean }>`
     multiline
       ? theme.inset("HelpTooltip.defaultTextBorderInsets")
       : theme.inset("HelpTooltip.smallTextBorderInsets")};
+  line-height: 1.2;
   border-style: solid;
   border-width: ${({ theme }) =>
     theme.value<boolean>("ToolTip.paintBorder") ? "1px" : "0px"};
