@@ -56,7 +56,16 @@ export const TooltipTrigger = ({
   const overlayRef = useRef<HTMLDivElement>(null);
 
   const [isInteractive, setInteractive] = useState(false);
-  const { triggerProps, tooltipProps } = useTooltipTrigger(
+  const {
+    /**
+     * onMouseDown is preventDefault-ed which interferes with functionality of the tooltip trigger, in use cases like
+     * tool window stripe button. Note that since pointerDown is handled for calling the tooltip trigger's onPressStart
+     * handler (which hides the tooltip), there is no issue in excluding onMouseDown, because it's only used to preventDefault
+     * the event, because of some edge cases focus handling which is not our concern.
+     */
+    triggerProps: { onMouseDown, ...triggerProps },
+    tooltipProps,
+  } = useTooltipTrigger(
     props,
     // In Intellij Platform. The tooltip hides right away. We follow the same, unless the tooltip is interactive.
     // Maybe something to rethink if it's worth following the reference impl for.
