@@ -1,12 +1,8 @@
 /// <reference types="cypress-real-events" /> just for editor. because Webstorm doesn't use the right tsconfig for this file
-import { mount } from "@cypress/react";
+import { mount } from "cypress/react";
 import React, { useState } from "react";
-import { SpeedSearchTreeSample } from "@intellij-platform/core/story-components";
 import {
-  ActionButton,
   ActionTooltip,
-  DefaultToolWindow,
-  ModalWindow,
   PlatformIcon,
   Theme,
   ThemeProvider,
@@ -14,11 +10,8 @@ import {
   ToolWindows,
   ToolWindowsState,
   toolWindowState,
-  Tree,
 } from "@intellij-platform/core";
 import darculaThemeJson from "../themes/darcula.theme.json";
-import { Item } from "@react-stately/collections";
-import { map } from "ramda";
 
 const SimpleToolWindows = () => {
   const [state, setState] = useState(
@@ -42,7 +35,7 @@ const SimpleToolWindows = () => {
           </span>
         </TooltipTrigger>
       )}
-      renderWindow={(id) => {
+      renderWindow={() => {
         return null;
       }}
     >

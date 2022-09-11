@@ -12,7 +12,7 @@ const libSrcAlias = require("../../../config/lib-src-webpack-alias");
  *
  * @type webpack.Configuration
  */
-module.exports = {
+export default {
   mode: "development",
   devtool: "inline-cheap-source-map",
   resolve: {

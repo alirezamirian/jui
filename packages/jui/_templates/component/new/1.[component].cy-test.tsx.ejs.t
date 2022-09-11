@@ -1,7 +1,7 @@
 ---
 to: src/<%= componentName %>/<%= componentName %>.cy-test.tsx
 ---
-import { mount } from "@cypress/react";
+import { mount } from "cypress/react";
 import React from "react";
 import { composeStories } from "@storybook/testing-react";
 import * as stories from "./<%= componentName %>.stories";
