@@ -1,4 +1,3 @@
-/// <reference types="cypress-plugin-snapshots" />
 import { mount } from "cypress/react";
 import { composeStories } from "@storybook/testing-react";
 import React from "react";

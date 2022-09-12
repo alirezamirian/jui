@@ -1,5 +1,18 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src"],
-  "exclude": ["src/**/*.cy-test.tsx", "src/**/*.stories.tsx"]
+  // keeping references here helps with editor support. We don't compile this project directly.
+  "references": [
+    {
+      "path": "tsconfig.cypress.json"
+    },
+    {
+      "path": "tsconfig.stories.json"
+    },
+    {
+      "path": "tsconfig.jest.json"
+    },
+    {
+      "path": "tsconfig.lib.json"
+    }
+  ]
 }
