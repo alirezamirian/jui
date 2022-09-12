@@ -8,7 +8,7 @@ import { PlatformIcon } from "../Icon";
 import { styledComponentsControlsExclude } from "../story-helpers";
 import { Menu } from "./Menu";
 import { MenuItemLayout } from "./MenuItemLayout";
-import { MenuTrigger } from "./MenuTrigger";
+import { MenuTrigger, MenuTriggerProps } from "./MenuTrigger";
 import { ContextMenuContainer, styled } from "@intellij-platform/core";
 
 export default {
@@ -135,11 +135,12 @@ export const Position = ({ offsetRight = 230 }: { offsetRight: number }) => {
   );
 };
 
-export const MenuWithTrigger: Story<{
-  offsetRight?: number;
-  offsetBottom?: number;
-  restoreFocus?: boolean;
-}> = ({ offsetRight, offsetBottom, restoreFocus }) => {
+export const MenuWithTrigger: Story<
+  {
+    offsetRight?: number;
+    offsetBottom?: number;
+  } & Pick<MenuTriggerProps, "preventFocusOnPress" | "restoreFocus">
+> = ({ offsetRight, offsetBottom, ...otherProps }) => {
   return (
     <div
       style={{
@@ -155,7 +156,7 @@ export const MenuWithTrigger: Story<{
     >
       <ActionToolbar>
         <MenuTrigger
-          restoreFocus={restoreFocus}
+          {...otherProps}
           renderMenu={({ menuProps }) => (
             <Menu
               items={items}

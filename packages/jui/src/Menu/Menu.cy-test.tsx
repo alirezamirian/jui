@@ -4,12 +4,8 @@ import * as React from "react";
 import * as stories from "./Menu.stories";
 import { Menu } from "@intellij-platform/core";
 
-const {
-  Nested,
-  MenuWithTrigger,
-  StaticWithTextItems,
-  ContextMenu,
-} = composeStories(stories);
+const { Nested, MenuWithTrigger, StaticWithTextItems, ContextMenu } =
+  composeStories(stories);
 
 describe("Menu", () => {
   beforeEach(() => {
@@ -46,27 +42,20 @@ describe("Menu", () => {
 });
 
 describe("Menu with trigger", () => {
-  it("supports keyboard", () => {
-    mount(<MenuWithTrigger />);
-    cy.get("button[aria-haspopup]").click(); // open the menu by clicking the trigger.
-    testKeyboardNavigation("menu-with-trigger--keyboard-behaviour");
-  });
-
-  it("when closed, restores focus to where it was", () => {
-    mount(<MenuWithTrigger restoreFocus />);
+  function testFocusRestoration(assertFocused: () => void) {
     cy.get("button[aria-haspopup]").realClick(); // open the menu by clicking the trigger.
     cy.realPress("Escape"); // close the menu by pressing escape
-    cy.focused().should("have.attr", "aria-haspopup"); // trigger button should now be focused again
+    assertFocused();
 
     cy.get("button[aria-haspopup]").realClick(); // open the menu by clicking the trigger.
     cy.get("body").click(); // close the menu by clicking outside
-    cy.focused().should("have.attr", "aria-haspopup"); // trigger button should now be focused again
+    assertFocused();
 
     cy.get("button[aria-haspopup]").realClick(); // open the menu by clicking the trigger.
     cy.realPress("Enter"); // open submenu with enter
     cy.realPress("Escape"); // close the submenu by pressing escape
     cy.realPress("Escape"); // close the menu by pressing escape
-    cy.focused().should("have.attr", "aria-haspopup"); // trigger button should now be focused again
+    assertFocused();
 
     cy.get("button[aria-haspopup]").realClick(); // open the menu by clicking the trigger.
     cy.realPress("Enter"); // open submenu with enter
@@ -74,7 +63,31 @@ describe("Menu with trigger", () => {
     cy.realPress("ArrowDown"); // move focus to the second menu item
     cy.realPress("Enter"); // open second level submenu
     cy.get("body").click(); // close everything by clicking outside
-    cy.focused().should("have.attr", "aria-haspopup"); // trigger button should now be focused again
+    assertFocused();
+  }
+  it("supports keyboard", () => {
+    mount(<MenuWithTrigger />);
+    cy.get("button[aria-haspopup]").click(); // open the menu by clicking the trigger.
+    testKeyboardNavigation("menu-with-trigger--keyboard-behaviour");
+  });
+
+  it("when closed, restores focus to the previously focused element, by default", () => {
+    mount(
+      <div>
+        <button autoFocus>focused element</button>
+        <MenuWithTrigger />
+      </div>
+    );
+    testFocusRestoration(() => {
+      cy.focused().should("contain", "focused element");
+    });
+  });
+
+  it("when closed, restores focus to the trigger if preventFocusOnPress is false", () => {
+    mount(<MenuWithTrigger restoreFocus preventFocusOnPress={false} />);
+    testFocusRestoration(() => {
+      cy.focused().should("have.attr", "aria-haspopup"); // trigger button should now be focused again
+    });
   });
 
   it("makes sure the menu or submenus are positioned in viewport", () => {
