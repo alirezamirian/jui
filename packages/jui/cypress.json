@@ -1,7 +1,0 @@
-{
-  "projectId": "o1ooqz",
-  "component": {
-    "testFiles": "!(node_modules)/**/*.cy-test.{js,ts,jsx,tsx}",
-    "componentFolder": "."
-  }
-}

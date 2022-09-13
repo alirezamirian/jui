@@ -1,5 +1,4 @@
-/// <reference types="cypress-real-events" /> just for editor. because Webstorm doesn't use the right tsconfig for this file
-import { mount } from "@cypress/react";
+import { mount } from "cypress/react";
 import React from "react";
 import { composeStories } from "@storybook/testing-react";
 import * as stories from "./ModalWindow.stories";

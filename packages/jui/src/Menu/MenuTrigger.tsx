@@ -15,6 +15,9 @@ export interface MenuTriggerProps
     props: HTMLProps<HTMLElement>,
     ref: RefObject<any> // Using a generic didn't seem to work for some reason
   ) => React.ReactNode;
+  // NOTE: there is a chance of unchecked breaking change here, since this is not explicitly mentioned as public API
+  // of useButton, but it is passed to the underlying usePress.
+  preventFocusOnPress?: boolean;
   renderMenu: (props: {
     menuProps: React.HTMLAttributes<HTMLElement>;
   }) => React.ReactNode;
@@ -35,7 +38,8 @@ export const MenuTrigger: React.FC<MenuTriggerProps> = ({
   direction = "bottom",
   align = "start",
   shouldFlip = true,
-  restoreFocus = false,
+  restoreFocus = true,
+  preventFocusOnPress = true,
   ...otherProps
 }) => {
   const menuTriggerProps: AriaMenuTriggerProps = {
@@ -44,18 +48,25 @@ export const MenuTrigger: React.FC<MenuTriggerProps> = ({
     align,
     shouldFlip,
   };
-  let state = useMenuTriggerState(menuTriggerProps);
-  let triggerRef = React.useRef(null);
-  let overlayRef = React.useRef(null);
+  const state = useMenuTriggerState(menuTriggerProps);
+  const triggerRef = React.useRef(null);
+  const overlayRef = React.useRef(null);
   // FIXME: Menu props is not used, but it's just about labelBy and id. Only needed for accessibility, but it would
   //  require a `renderMenu` prop, instead of `menu`.
-  let { menuTriggerProps: triggerProps, menuProps } = useMenuTrigger(
+  const { menuTriggerProps: triggerProps, menuProps } = useMenuTrigger(
     { type: "menu" },
     state,
     triggerRef
   );
-  let { buttonProps } = useButton(triggerProps, triggerRef);
-  let { overlayProps } = useOverlay(
+  const { buttonProps } = useButton(
+    {
+      ...triggerProps,
+      // @ts-expect-error: preventFocusOnPress is not defined in public API of useButton
+      preventFocusOnPress,
+    },
+    triggerRef
+  );
+  const { overlayProps } = useOverlay(
     {
       onClose: () => {
         return state.close();
@@ -72,7 +83,7 @@ export const MenuTrigger: React.FC<MenuTriggerProps> = ({
     overlayRef
   );
 
-  let { overlayProps: positionProps } = useOverlayPosition({
+  const { overlayProps: positionProps } = useOverlayPosition({
     targetRef: triggerRef,
     overlayRef,
     placement: getPlacement(direction, align),
