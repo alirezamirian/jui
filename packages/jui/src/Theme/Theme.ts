@@ -3,7 +3,6 @@ import {
   KnownThemePropertyPath,
   OS,
   OsDependentValue,
-  OsDependentValueKey,
   ThemeJson,
   ThemePropertyValue,
 } from "./types";
@@ -30,11 +29,30 @@ export class Theme<P extends string = string> {
   // this workaround is used for now
   commonColors: ReturnType<Theme<P>["getCommonColors"]>;
 
+  /**
+   * Corresponds to `DEFAULT_RENDERER_*` fields in JBUI class, in the reference impl. Used as a fallback for common
+   * colors, if a theme definition lacks those colors in "ui.*".
+   * NOTE: These colors are used directly as a last-resort fallback **directly in each use case**. But based on how
+   * they are used, it seems they could just be considered as a fallback for some "*.SOME_COLOR". So we are technically
+   * deviating from how star-colors are resolved, by including this fallback mechanism, but it should work the same,
+   * based on how these colors are used in the reference impl. We can reconsider this, if exceptions found.
+   * @private
+   */
+  private readonly DEFAULTS;
+
   constructor(
     public readonly themeJson: ThemeJson,
     protected readonly iconResolver: IconResolver = new GithubIconResolver(),
     protected readonly os: OS | null = detectOs()
   ) {
+    this.DEFAULTS = {
+      background: !this.dark ? "#FFF" : "#3C3F41",
+      selectionBackground: !this.dark ? "#3875D6" : "#2F65CA",
+      selectionInactiveBackground: !this.dark ? "#D4D4D4" : "#0D293E",
+      selectionBackgroundInactive: !this.dark ? "#D4D4D4" : "#0D293E",
+      hoverBackground: !this.dark ? "#EDF5FC" : "#464A4D",
+      hoverInactiveBackground: !this.dark ? "#F5F5F5" : "#464A4D",
+    };
     this.commonColors = this.getCommonColors();
     Object.entries(defaultValues).forEach(([key, value]) => {
       if (value) {
@@ -172,24 +190,6 @@ export class Theme<P extends string = string> {
       this.os
     ) as T;
   }
-
-  /**
-   * Corresponds to `DEFAULT_RENDERER_*` fields in JBUI class, in the reference impl. Used as a fallback for common
-   * colors, if a theme definition lacks those colors in "ui.*".
-   * NOTE: These colors are used directly as a last-resort fallback **directly in each use case**. But based on how
-   * they are used, it seems they could just be considered as a fallback for some "*.SOME_COLOR". So we are technically
-   * deviating from how star-colors are resolved, by including this fallback mechanism, but it should work the same,
-   * based on how these colors are used in the reference impl. We can reconsider this, if exceptions found.
-   * @private
-   */
-  private readonly DEFAULTS = {
-    background: !this.dark ? "#FFF" : "#3C3F41",
-    selectionBackground: !this.dark ? "#3875D6" : "#2F65CA",
-    selectionInactiveBackground: !this.dark ? "#D4D4D4" : "#0D293E",
-    selectionBackgroundInactive: !this.dark ? "#D4D4D4" : "#0D293E",
-    hoverBackground: !this.dark ? "#EDF5FC" : "#464A4D",
-    hoverInactiveBackground: !this.dark ? "#F5F5F5" : "#464A4D",
-  };
 
   private getFallbackFromStar(path: P) {
     // FIXME: after refactoring about flattening themeJson.ui properties are done, this should also
