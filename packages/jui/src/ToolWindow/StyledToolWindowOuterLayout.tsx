@@ -15,7 +15,7 @@ const LeftStripe = styled.div`
 const RightStripe = styled.div`
   grid-area: rs;
 `;
-const MainView = styled.div`
+const InnerView = styled.div`
   grid-area: main;
   min-height: 0; // necessary to prevent overflow;
   position: relative; // necessary for undock views which are absolute positioned
@@ -59,5 +59,5 @@ export const StyledToolWindowOuterLayout = {
   BottomStripe,
   LeftStripe,
   RightStripe,
-  MainView,
+  InnerView,
 };

@@ -7,15 +7,15 @@ type ToolWindowStateContextValue = {
   state: Readonly<ToolWindowState>;
   hide: () => void;
   blur: () => void;
+  focusMainContent: () => void;
   moveToSide: (args: { anchor: Anchor; isSplit: boolean }) => void;
   changeViewMode: (viewMode: ViewMode) => void;
   stretchWidth: (value: number) => void;
   stretchHeight: (value: number) => void;
   setFloatingBounds: (bounds: WindowBounds) => void;
 };
-const ToolWindowStateContext = React.createContext<ToolWindowStateContextValue | null>(
-  null
-);
+const ToolWindowStateContext =
+  React.createContext<ToolWindowStateContextValue | null>(null);
 
 /**
  * Used in a tool window's UI tree, to get access to the tool window state and actions for changing it.
@@ -35,13 +35,15 @@ export const useToolWindowState = () => {
  * within the tool window content tree, via {@link useToolWindowState}
  */
 export const ToolWindowStateProvider: React.FC<
-  { id: Key; containerRef: RefObject<HTMLElement> } & Pick<
-    ToolWindowsProps,
-    "toolWindowsState" | "onToolWindowStateChange"
-  >
+  {
+    id: Key;
+    containerRef: RefObject<HTMLElement>;
+    mainContentFocusableRef: RefObject<{ focus: () => void }>;
+  } & Pick<ToolWindowsProps, "toolWindowsState" | "onToolWindowStateChange">
 > = ({
   toolWindowsState,
   containerRef,
+  mainContentFocusableRef,
   onToolWindowStateChange,
   id,
   children,
@@ -55,6 +57,9 @@ export const ToolWindowStateProvider: React.FC<
       },
       blur: () => {
         onToolWindowStateChange(toolWindowsState.blur(id));
+      },
+      focusMainContent: () => {
+        mainContentFocusableRef.current?.focus();
       },
       moveToSide: (side) => {
         onToolWindowStateChange(toolWindowsState.move(id, side));

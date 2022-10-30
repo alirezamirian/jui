@@ -7,11 +7,8 @@ import { ActionTooltip, TooltipTrigger } from "@intellij-platform/core/Tooltip";
 import { styled } from "@intellij-platform/core/styled";
 import { StyledHorizontalSeparator } from "@intellij-platform/core/StyledSeparator";
 import { UnknownThemeProp } from "@intellij-platform/core/Theme/Theme";
-import { useToolWindowState } from "./ToolWindowsState/ToolWindowStateProvider";
-import {
-  anchors,
-  ToolWindowSettingsIconMenu,
-} from "./ToolWindowSettingsIconMenu";
+import { ToolWindowSettingsIconMenu } from "./ToolWindowSettingsIconMenu";
+import { Action } from "@intellij-platform/core/ActionSystem/components";
 
 export interface ToolWindowHeaderProps
   extends Omit<HTMLProps<HTMLDivElement>, "ref" | "as"> {
@@ -59,7 +56,6 @@ export const DefaultToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
   contentHasFocus = false,
   ...otherProps
 }) => {
-  const { hide, state, changeViewMode } = useToolWindowState();
   return (
     <StyledToolWindowHeader active={contentHasFocus} {...otherProps}>
       <StyledToolWindowHeaderContent>{children}</StyledToolWindowHeaderContent>
@@ -71,40 +67,21 @@ export const DefaultToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
               <StyledHorizontalSeparator />
             </>
           )}
-          {state.viewMode === "float" && (
-            <TooltipTrigger tooltip={<ActionTooltip actionName="Dock" />}>
-              <ActionButton onPress={() => changeViewMode("docked_pinned")}>
-                <PlatformIcon
-                  icon={`actions/${
-                    anchors.find(
-                      ({ anchor, isSplit }) =>
-                        anchor === state.anchor && isSplit === state.isSplit
-                    )?.id
-                  }`}
-                />
-              </ActionButton>
-            </TooltipTrigger>
-          )}
+          <Action.Button actionId="DockToolWindow" />
           <MenuTrigger
             renderMenu={({ menuProps }) => {
               return <ToolWindowSettingsIconMenu menuProps={menuProps} />;
             }}
           >
             {(props, ref) => (
-              <TooltipTrigger
-                tooltip={<ActionTooltip actionName="Show Options Menu" />}
-              >
+              <TooltipTrigger tooltip={<ActionTooltip actionName="Options" />}>
                 <ActionButton {...props} ref={ref}>
                   <PlatformIcon icon="general/gearPlain" />
                 </ActionButton>
               </TooltipTrigger>
             )}
           </MenuTrigger>
-          <TooltipTrigger tooltip={<ActionTooltip actionName="Hide" />}>
-            <ActionButton onPress={hide}>
-              <PlatformIcon icon="general/hideToolWindow" />
-            </ActionButton>
-          </TooltipTrigger>
+          <Action.Button actionId="HideActiveWindow" />
         </ActionToolbar>
       </StyledToolWindowHeaderActions>
     </StyledToolWindowHeader>

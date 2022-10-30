@@ -50,9 +50,9 @@ export const StyledOuterLayout = ({
           anchor="left"
         />
       </StyledToolWindowOuterLayout.LeftStripe>
-      <StyledToolWindowOuterLayout.MainView>
+      <StyledToolWindowOuterLayout.InnerView>
         main area
-      </StyledToolWindowOuterLayout.MainView>
+      </StyledToolWindowOuterLayout.InnerView>
     </StyledToolWindowOuterLayout.Shell>
   );
 };

@@ -1,4 +1,3 @@
-import { FocusScope } from "@react-aria/focus";
 import React, {
   CSSProperties,
   Key,
@@ -7,6 +6,7 @@ import React, {
   useState,
 } from "react";
 import { ThreeViewSplitter } from "../ThreeViewSplitter/ThreeViewSplitter";
+import { FocusScope } from "../utils/FocusScope";
 import { FloatToolWindows } from "./FloatToolWindows";
 import { MovableToolWindowStripeProvider } from "./MovableToolWindowStripeProvider";
 import { StyledToolWindowOuterLayout } from "./StyledToolWindowOuterLayout";
@@ -60,7 +60,7 @@ export interface ToolWindowsProps {
  * - in Firefox and Safari, left and right toolbars are not properly shown. Seems like a nasty bug, since adding and
  * then removing some min-width: fit-content style fixes it.
  * - in the dock view of a side, open only a window from the split ones. then open a window from main ones.
- *   focus is not moved to the just opened window. The reason is we rely on auto focusing and because the react tree
+ *   focus is not moved to the just opened window. The reason is we rely on autofocusing and because the React tree
  *   changes for both windows, even the split one which was open will be unmounted and mounted again, and since it's
  *   placed after the main one, and hence mounted later, it will get the focus again. This becomes a bigger issue
  *   if the main one is unpinned, because it immediately gets closed after opening.
@@ -86,6 +86,7 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
   mainContentMinWidth = 50,
 }): React.ReactElement => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const mainContentFocusScopeRef = useRef<{ focus: () => void }>(null);
   const [layoutState, setLayoutState] = useState<ToolWindowsLayoutState>();
   useLayoutEffect(() => {
     setLayoutState(
@@ -121,13 +122,14 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
     <ToolWindowStateProvider
       id={key}
       containerRef={containerRef}
+      mainContentFocusableRef={mainContentFocusScopeRef}
       toolWindowsState={toolWindowsState}
       onToolWindowStateChange={onToolWindowStateChange}
     >
       {renderWindow(key)}
     </ToolWindowStateProvider>
   );
-  // TODO: extract component candidate
+  // TODO: candidate for component extraction
   const renderSideDockedView = ({
     anchor,
     state,
@@ -271,13 +273,17 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
          * The inner layout of the ToolWindow, including four tool windows and
          * a main content in the center.
          */}
-        <StyledToolWindowOuterLayout.MainView>
+        <StyledToolWindowOuterLayout.InnerView>
           <ThreeViewSplitter
             {...outerSplitterProps}
             innerView={
               <ThreeViewSplitter
                 innerViewMinSize={mainContentMinWidth}
-                innerView={<FocusScope>{children}</FocusScope>}
+                innerView={
+                  <FocusScope ref={mainContentFocusScopeRef}>
+                    {children}
+                  </FocusScope>
+                }
                 {...innerSplitterProps}
               />
             }
@@ -294,7 +300,7 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
               }
             />
           }
-        </StyledToolWindowOuterLayout.MainView>
+        </StyledToolWindowOuterLayout.InnerView>
       </>
     );
   };
