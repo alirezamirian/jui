@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { AriaListBoxProps } from "@react-types/listbox";
 import { StyledList } from "../StyledList";
 import { ListProps } from "../List";
 import { useSpeedSearchList } from "./useSpeedSearchList";
@@ -21,22 +22,21 @@ interface SpeedSearchListProps<T extends object> extends ListProps<T> {
  *  - Override keyboard navigation (arrows, ctrl+A, etc.) when speed search is active.
  */
 export function SpeedSearchList<T extends object>({
-  disallowEmptySelection = true,
+  allowEmptySelection = false,
   alwaysShowAsFocused = false,
   fillAvailableSpace = false,
   onAction,
   ...inputProps
 }: SpeedSearchListProps<T>) {
-  const props = { ...inputProps, disallowEmptySelection };
+  const props: AriaListBoxProps<T> = {
+    ...inputProps,
+    disallowEmptySelection: !allowEmptySelection,
+  };
   const ref = useRef<HTMLUListElement>(null);
   const state = useListState(props);
 
-  const {
-    listProps,
-    searchPopupProps,
-    focused,
-    speedSearchContextValue,
-  } = useSpeedSearchList(props, state, ref);
+  const { listProps, searchPopupProps, focused, speedSearchContextValue } =
+    useSpeedSearchList(props, state, ref);
 
   return (
     <CollectionSpeedSearchContainer fillAvailableSpace={fillAvailableSpace}>

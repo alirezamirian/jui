@@ -40,7 +40,6 @@ export const ChangeViewTree = (): JSX.Element => {
         onExpandedChange={setExpandedKeys}
         onSelectionChange={setSelectedKeys}
         nestedSelection={nestedSelection}
-        disallowEmptySelection
         fillAvailableSpace
       >
         {(node) => {

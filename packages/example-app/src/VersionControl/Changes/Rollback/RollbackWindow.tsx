@@ -65,9 +65,8 @@ export function RollbackWindow() {
   );
   const rootNodes = useRecoilValue(rollbackViewState.rootNodes);
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set<Key>());
-  const [expandedKeys, setExpandedKeys] = useState<Set<Key>>(
-    defaultExpandedKeys
-  );
+  const [expandedKeys, setExpandedKeys] =
+    useState<Set<Key>>(defaultExpandedKeys);
   const [includedChangeKeys, setIncludedChangeKeys] = useState(
     new Set<Key>(initiallyIncludedChangeKeys)
   );
@@ -138,8 +137,7 @@ export function RollbackWindow() {
                         balloons.show({
                           title: "Reverting changes failed",
                           icon: "Error",
-                          body:
-                            "Could not revert selected changes. See console for more info",
+                          body: "Could not revert selected changes. See console for more info",
                         });
                         console.error("Git revert error:", e);
                       })
@@ -208,7 +206,6 @@ export function RollbackWindow() {
               expandedKeys={expandedKeys}
               onExpandedChange={setExpandedKeys}
               nestedSelection={nestedSelection}
-              disallowEmptySelection
               fillAvailableSpace
             >
               {(node) => {

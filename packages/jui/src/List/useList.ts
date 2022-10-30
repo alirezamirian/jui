@@ -8,12 +8,14 @@ import { mergeProps } from "@react-aria/utils";
 export interface ListProps
   extends Omit<
     SelectableListOptions,
+    | "disallowEmptySelection"
     | "selectOnFocus"
     | "selectionManager" // Grouped as state, the second argument, like in useListBox
     | "collection" // Grouped as state, the second argument, like in useListBox
     | "disabledKeys" // Grouped as state, the second argument, like in useListBox
     | "ref" // Third argument
   > {
+  allowEmptySelection?: boolean;
   id?: string;
 }
 // import { useSelectableList } from "@react-aria/selection";
@@ -29,9 +31,10 @@ export function useList<T>(
     ...props,
     ref,
     selectionManager: state.selectionManager,
+    disallowEmptySelection: !props.allowEmptySelection,
     collection: state.collection,
     disabledKeys: state.disabledKeys,
-    // if selectOnFocus is gonna be an option (which is not in intellij UI), we should also conditionally show outline on items
+    // if selectOnFocus is going to be an option (which is not in intellij UI), we should also conditionally show outline on items
     selectOnFocus: true,
   });
   const [focused, setFocused] = useState(false);
@@ -40,17 +43,17 @@ export function useList<T>(
     onFocusWithinChange: setFocused,
   });
 
-  // auto select the first item, if selection is empty and disallowEmptySelection is true.
+  // auto select the first item, if selection is empty and allowEmptySelection is false.
   useEffect(() => {
     const firstKey = state.collection.getFirstKey();
     if (
-      props.disallowEmptySelection &&
+      !props.allowEmptySelection &&
       state.selectionManager.isEmpty &&
       firstKey
     ) {
       state.selectionManager.select(firstKey);
     }
-  }, [props.disallowEmptySelection]);
+  }, [!props.allowEmptySelection]);
 
   return {
     listProps: mergeProps(listProps, focusWithinProps),

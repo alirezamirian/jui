@@ -24,6 +24,8 @@ export interface SelectableTreeProps<T> extends DOMProps {
    */
   onAction?: (key: Key) => void;
   onNodeKeyDown?: (event: KeyboardEvent, node: Node<T>) => void;
+
+  allowEmptySelection?: boolean;
 }
 
 /**
@@ -50,6 +52,7 @@ export function useSelectableTree<T>(
   } = useSelectableCollection({
     ref,
     selectionManager: state.selectionManager,
+    disallowEmptySelection: !props.allowEmptySelection,
     selectOnFocus: true,
     keyboardDelegate: useMemo(
       () =>

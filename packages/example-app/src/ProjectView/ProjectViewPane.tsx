@@ -55,7 +55,6 @@ export const ProjectViewPane = (): React.ReactElement => {
           editor.openPath(`${path}`);
         }}
         fillAvailableSpace
-        disallowEmptySelection
         selectionMode="multiple"
         selectedKeys={selectedKeys}
         onSelectionChange={setSelectedKeys}

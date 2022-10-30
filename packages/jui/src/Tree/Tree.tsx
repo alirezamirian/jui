@@ -13,7 +13,7 @@ import { useTreeVirtualizer } from "./useTreeVirtualizer";
 import { CollectionCacheInvalidationProps } from "@intellij-platform/core/Collections/useCollectionCacheInvalidation";
 
 export interface TreeProps<T extends object>
-  extends StatelyTreeProps<T>,
+  extends Omit<StatelyTreeProps<T>, "disallowEmptySelection">,
     CollectionCacheInvalidationProps,
     Omit<SelectableTreeProps<T>, "keyboardDelegate" | "isVirtualized"> {
   fillAvailableSpace?: boolean;
