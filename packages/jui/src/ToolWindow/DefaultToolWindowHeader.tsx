@@ -1,5 +1,5 @@
 import React, { HTMLProps } from "react";
-import { ActionButton } from "@intellij-platform/core/ActionButton/ActionButton";
+import { ActionButton } from "@intellij-platform/core/ActionButton";
 import { ActionToolbar } from "@intellij-platform/core/ActionToolbar/ActionToolbar";
 import { PlatformIcon } from "@intellij-platform/core/Icon";
 import { MenuTrigger } from "@intellij-platform/core/Menu/MenuTrigger";

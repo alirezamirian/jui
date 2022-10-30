@@ -5,7 +5,7 @@ export { ResizableView } from "./ResizableView";
 export * from "./List";
 export * from "./Menu";
 export * from "./ToolWindow";
-export * from "./ActionButton/ActionButton";
+export * from "./ActionButton";
 export * from "./ActionToolbar/ActionToolbar";
 export * from "./ActionButtonWithMenu/ActionButtonWithMenu";
 export * from "./Icon";

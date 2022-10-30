@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ActionToolbar } from "../../../ActionToolbar/ActionToolbar";
-import { ActionButton } from "../../../ActionButton/ActionButton";
+import { ActionButton } from "../../../ActionButton";
 import { PlatformIcon } from "../../../Icon";
 import { StyledHorizontalSeparator } from "../../../StyledSeparator";
 import { styled } from "../../../styled";

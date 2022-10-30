@@ -1,7 +1,7 @@
 import { Item } from "@react-stately/collections";
 import { Meta, Story } from "@storybook/react";
 import React, { ReactNode } from "react";
-import { ActionButton } from "../ActionButton/ActionButton";
+import { ActionButton } from "../ActionButton";
 import { ActionToolbar } from "../ActionToolbar/ActionToolbar";
 import { Divider, DividerItem } from "../Collections/Divider";
 import { PlatformIcon } from "../Icon";

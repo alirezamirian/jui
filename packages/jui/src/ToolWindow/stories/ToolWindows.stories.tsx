@@ -13,7 +13,7 @@ import {
 import { indexBy, map } from "ramda";
 import React, { useState } from "react";
 import packageJson from "../../../package.json";
-import { ActionButton } from "../../ActionButton/ActionButton";
+import { ActionButton } from "../../ActionButton";
 import { PlatformIcon } from "../../Icon";
 import { SpeedSearchTreeSample } from "../../story-components";
 import { styledComponentsControlsExclude } from "../../story-helpers";
