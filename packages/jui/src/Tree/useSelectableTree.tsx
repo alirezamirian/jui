@@ -14,6 +14,7 @@ import { useCollectionAutoScroll } from "../Collections/useCollectionAutoScroll"
 import { TreeState } from "./__tmp__useTreeState";
 import { useLatest } from "@intellij-platform/core/utils/useLatest";
 import { TreeContextType } from "./TreeContext";
+import { hasAnyModifier } from "@intellij-platform/core/utils/keyboard-utils";
 
 export interface SelectableTreeProps<T> extends DOMProps {
   isVirtualized?: boolean;
@@ -87,7 +88,8 @@ export function useSelectableTree<T>(
     const isExpandable = item.hasChildNodes;
     const expanded = state.expandedKeys.has(focusedKey);
     const isDisabled = state.disabledKeys.has(focusedKey);
-    if (isDisabled) {
+    if (isDisabled || hasAnyModifier(event)) {
+      event.continuePropagation();
       return;
     }
 
