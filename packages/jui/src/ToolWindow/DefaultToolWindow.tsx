@@ -3,11 +3,12 @@ import { styled } from "../styled";
 import { DefaultToolWindowHeader } from "./DefaultToolWindowHeader";
 import { useToolWindow } from "./useToolWindow";
 import { FocusScope } from "@intellij-platform/core/utils/FocusScope";
-import { mergeProps } from "@react-aria/utils";
+import { filterDOMProps, mergeProps } from "@react-aria/utils";
 import { useToolWindowActions } from "@intellij-platform/core/ToolWindow/useToolWindowActions";
 import { ActionsProvider } from "@intellij-platform/core/ActionSystem";
+import { DOMProps } from "@react-types/shared";
 
-export interface DefaultToolWindowProps {
+export interface DefaultToolWindowProps extends DOMProps {
   /**
    * title to be shown on the left side of the tool window header.
    */
@@ -58,6 +59,7 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
   children,
   additionalActions,
   onFocusChange,
+  ...otherProps
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -88,7 +90,11 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
     <ActionsProvider actions={actions}>
       {({ shortcutHandlerProps }) => (
         <StyledToolWindowContainer
-          {...mergeProps(toolWindowProps, shortcutHandlerProps)}
+          {...mergeProps(
+            toolWindowProps,
+            shortcutHandlerProps,
+            filterDOMProps(otherProps)
+          )}
           ref={containerRef}
         >
           <DefaultToolWindowContext.Provider value={defaultToolWindowContext}>
