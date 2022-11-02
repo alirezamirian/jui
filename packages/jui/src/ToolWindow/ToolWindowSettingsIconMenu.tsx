@@ -1,14 +1,8 @@
 import React from "react";
-import {
-  Divider,
-  DividerItem,
-  Item,
-} from "@intellij-platform/core/Collections";
-import { Menu, MenuItemLayout } from "@intellij-platform/core/Menu";
+import { DividerItem } from "@intellij-platform/core/Collections";
 import { useToolWindowState } from "./ToolWindowsState/ToolWindowStateProvider";
 import {
   Action,
-  ActionDefinition,
   useAction,
   useActionGroup,
 } from "@intellij-platform/core/ActionSystem";
@@ -17,12 +11,10 @@ import {
   VIEW_MODE_ACTION_GROUP,
   viewModeActionId,
 } from "@intellij-platform/core/ToolWindow/useToolWindowActions";
-
-type ActionGroup = Omit<ActionDefinition, "actionPerformed"> & {
-  id: string;
-  actions?: Action[];
-};
-type ActionItem = ActionGroup | Action;
+import {
+  ActionItem,
+  ActionsMenu,
+} from "@intellij-platform/core/ActionSystem/components/ActionsMenu";
 
 /**
  * Tool window gear icon menu, with a set of default actions and some extra ones.
@@ -46,7 +38,7 @@ export function ToolWindowSettingsIconMenu({
     "MaximizeToolWindow",
   ]);
   const removeFromSideBarAction = useAction("RemoveToolWindowFromSidebar")!;
-  const gearIconActions: Array<ActionItem | DividerItem> = [
+  const gearIconActions: Array<ActionItem> = [
     {
       id: "viewMode",
       title: "View Mode",
@@ -61,47 +53,11 @@ export function ToolWindowSettingsIconMenu({
     new DividerItem(),
     removeFromSideBarAction,
   ];
-  const allActions = [
-    ...moveToActions,
-    ...viewModeActions,
-    ...resizeActions,
-    removeFromSideBarAction,
-  ];
-
-  const disabledKeys = allActions
-    .filter(({ isDisabled }) => isDisabled)
-    .map(({ id }) => id);
   return (
-    <Menu
-      {...menuProps}
-      onAction={(key) => {
-        const action = allActions.find(({ id }) => id === key);
-        action?.actionPerformed();
-        close();
-      }}
-      selectedKeys={[viewModeActionId(state.viewMode)]} // FIXME: keep isSelected on actions (toggle action)?
-      disabledKeys={disabledKeys}
-      items={gearIconActions}
-      autoFocus
-    >
-      {(action) => {
-        if (action instanceof DividerItem) {
-          return <Divider />;
-        }
-        return (
-          <Item
-            key={action.id}
-            textValue={action.title}
-            childItems={"actions" in action ? action.actions : undefined}
-          >
-            <MenuItemLayout
-              content={action.title}
-              icon={action.icon}
-              shortcut={"shortcut" in action ? action.shortcut : undefined}
-            />
-          </Item>
-        );
-      }}
-    </Menu>
+    <ActionsMenu
+      actions={gearIconActions}
+      menuProps={menuProps}
+      selectedKeys={[viewModeActionId(state.viewMode)]}
+    />
   );
 }
