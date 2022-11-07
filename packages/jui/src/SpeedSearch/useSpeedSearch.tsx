@@ -2,7 +2,6 @@ import { useGhostInput } from "./useGhostInput";
 import { useFocusWithin, useKeyboard } from "@react-aria/interactions";
 import { useControlledState } from "@react-stately/utils";
 import { ControlledStateProps } from "../type-utils";
-import { hasAnyModifier } from "@intellij-platform/core/utils/keyboard-utils";
 
 export interface SpeedSearchState {
   active: boolean;
@@ -74,20 +73,15 @@ export function useSpeedSearch(
     keyboardProps: { onKeyDown, onKeyUp },
   } = useKeyboard({
     onKeyDown: (e) => {
-      // intellij UI implementation removes the searchTerm by left/right arrows. Maybe do the same?
-      if (hasAnyModifier(e)) {
-        e.continuePropagation();
-        return;
-      }
       if (e.key === "Escape") {
         if (searchTerm) {
           clear();
-        } else {
-          e.continuePropagation();
+          return;
         }
       } else {
         ghostInputKeydown(e);
       }
+      e.continuePropagation();
     },
   });
 

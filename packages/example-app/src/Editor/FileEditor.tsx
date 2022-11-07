@@ -34,7 +34,7 @@ import { fileContent } from "../fs/fs.state";
 import { useUpdateFileStatus } from "../VersionControl/file-status.state";
 import * as path from "path";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
-import { useToolWindowsManager } from "../Project/toolWindows.state";
+import { useAction } from "@intellij-platform/core/ActionSystem";
 
 /**
  * Used as main content in the main ToolWindows. Shows currently opened files tabs and the editor.
@@ -44,10 +44,10 @@ import { useToolWindowsManager } from "../Project/toolWindows.state";
  */
 export const FileEditor = () => {
   const editorStateManager = useEditorStateManager();
-  const toolWindowsManager = useToolWindowsManager();
   const activeTab = useRecoilValue(activeEditorTabState);
   const editorRef = useRef<editor.IEditor>();
   const [active, setActive] = useState(false);
+  const hideAllAction = useAction("HideAllWindows");
   const setCursorPositionState = useSetRecoilState(editorCursorPositionState);
 
   // For functions that are needed in tab action callbacks. Because items are cached and referencing anything
@@ -59,7 +59,6 @@ export const FileEditor = () => {
     closePath: editorStateManager.closePath,
     closeOthersTabs: editorStateManager.closeOthersTabs,
   });
-  const toolWindowsManagerRef = useLatest(toolWindowsManager);
 
   const setEditorRef = useSetRecoilState(editorRefState);
 
@@ -170,7 +169,7 @@ export const FileEditor = () => {
                       }
                       containerProps={{
                         onDoubleClick: () => {
-                          toolWindowsManagerRef.current.toggleHideAll();
+                          hideAllAction?.actionPerformed();
                         },
                       }}
                     />

@@ -2,9 +2,10 @@ import {
   ActionTooltip,
   PlatformIcon,
   TooltipTrigger,
+  ToolWindowRefValue,
   ToolWindows,
 } from "@intellij-platform/core";
-import React from "react";
+import React, { useRef } from "react";
 import { FileEditor } from "../Editor/FileEditor";
 import { useInitializeVcs } from "../VersionControl/file-status.state";
 import { windowById } from "./toolWindows";
@@ -14,6 +15,7 @@ import { useInitializeChanges } from "../VersionControl/Changes/change-lists.sta
 import styled from "styled-components";
 import { IdeStatusBar } from "../StatusBar/IdeStatusBar";
 import { usePersistenceFsNotification } from "../usePersistenceFsNotification";
+import { DefaultToolWindowActions } from "@intellij-platform/core/ToolWindow";
 
 const StyledWindowFrame = styled.div`
   display: flex;
@@ -24,32 +26,38 @@ const StyledWindowFrame = styled.div`
 
 export const Project = () => {
   const [state, setState] = useRecoilState(toolWindowsState);
+  const ref = useRef<ToolWindowRefValue>(null);
 
   useInitializeVcs();
   useInitializeChanges();
   usePersistenceFsNotification();
 
   return (
-    <StyledWindowFrame>
-      <ToolWindows
-        toolWindowsState={state}
-        onToolWindowStateChange={setState}
-        renderToolbarButton={(id) => (
-          <TooltipTrigger
-            tooltip={<ActionTooltip actionName={windowById[id].title} />}
-          >
-            <span>
-              <PlatformIcon icon={windowById[id].icon} />
-              &nbsp;
-              {windowById[id].title}
-            </span>
-          </TooltipTrigger>
-        )}
-        renderWindow={(id) => windowById[id].element}
-      >
-        <FileEditor />
-      </ToolWindows>
-      <IdeStatusBar />
-    </StyledWindowFrame>
+    <DefaultToolWindowActions toolWindowState={state} toolWindowRef={ref}>
+      <StyledWindowFrame>
+        <ToolWindows
+          ref={ref}
+          toolWindowsState={state}
+          onToolWindowStateChange={(newState) => {
+            setState(newState);
+          }}
+          renderToolbarButton={(id) => (
+            <TooltipTrigger
+              tooltip={<ActionTooltip actionName={windowById[id].title} />}
+            >
+              <span>
+                <PlatformIcon icon={windowById[id].icon} />
+                &nbsp;
+                {windowById[id].title}
+              </span>
+            </TooltipTrigger>
+          )}
+          renderWindow={(id) => windowById[id].element}
+        >
+          <FileEditor />
+        </ToolWindows>
+        <IdeStatusBar />
+      </StyledWindowFrame>
+    </DefaultToolWindowActions>
   );
 };

@@ -6,7 +6,7 @@ import {
 } from "@intellij-platform/core";
 import { ActionDefinition } from "@intellij-platform/core/ActionSystem";
 import React from "react";
-import { Anchor } from "@intellij-platform/core/ToolWindow/utils";
+import { Anchor } from "@intellij-platform/core/ToolWindow";
 import { zipObj } from "ramda";
 
 // Resize steps in Intellij Platform is calculated based on the size of a "W" character and some

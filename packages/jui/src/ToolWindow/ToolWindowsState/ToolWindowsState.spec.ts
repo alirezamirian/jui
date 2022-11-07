@@ -290,6 +290,19 @@ describe("tool window state", () => {
     });
   });
 
+  test("restoreWindows restores state to before hideAll", () => {
+    expectNoChanges(state.hideAll().restoreWindows());
+  });
+
+  test("restoreWindows restores state to before hideAll, even if tool windows are moved while closed", () => {
+    expectNoChanges(
+      state
+        .hideAll()
+        .move("l6", { anchor: "right", isSplit: true })
+        .restoreWindows()
+    );
+  });
+
   // TODO: make sure if opening a tool window in docked view should in any way set the sideWeight of some of the
   //  windows. It seems the current implementation of ToolWindowState and ToolWindowLayoutState works exactly
   //  like Intellij Platform, and there is no need for adding that complication. Make sure about it.

@@ -65,4 +65,21 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
+  HideAllWindows: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        key: "F12",
+        modifiers: ["Shift", "Meta"],
+      },
+    },
+  ],
+  JumpToLastWindow: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        key: "F12",
+      },
+    },
+  ],
 };

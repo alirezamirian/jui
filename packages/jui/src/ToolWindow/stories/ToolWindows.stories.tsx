@@ -1,9 +1,9 @@
-import { Section, Item } from "@react-stately/collections";
+import { Item, Section } from "@react-stately/collections";
 import { Meta } from "@storybook/react";
-import { StyledIconLiveIndicator } from "../../Icon";
+import { PlatformIcon, StyledIconLiveIndicator } from "../../Icon";
 import { SpeedSearchList } from "../../List/SpeedSearchList/SpeedSearchList";
 import { ToolWindowTabContent } from "../../Tabs/ToolWindowTabs";
-import { MultiViewToolWindow } from "../MultiViewToolWindow";
+import { MultiViewToolWindow } from "../impl/MultiViewToolWindow";
 import {
   FakeExecutionToolbar,
   RunConsoleOutput,
@@ -14,10 +14,9 @@ import { indexBy, map } from "ramda";
 import React, { useState } from "react";
 import packageJson from "../../../package.json";
 import { ActionButton } from "../../ActionButton";
-import { PlatformIcon } from "../../Icon";
 import { SpeedSearchTreeSample } from "../../story-components";
 import { styledComponentsControlsExclude } from "../../story-helpers";
-import { DefaultToolWindow } from "../DefaultToolWindow";
+import { DefaultToolWindow } from "../impl/DefaultToolWindow";
 import { ToolWindows, ToolWindowsProps } from "../ToolWindows";
 import {
   ToolWindowsState,
@@ -28,6 +27,7 @@ import {
   HighlightedTextValue,
   TabCloseButton,
   TooltipTrigger,
+  ToolWindowsWithActions,
 } from "@intellij-platform/core";
 
 export default {
@@ -106,7 +106,7 @@ export const Default = (
       new ToolWindowsState(map(({ initialState }) => initialState, windowById))
   );
   return (
-    <ToolWindows
+    <ToolWindowsWithActions
       {...props}
       height={"100vh"}
       toolWindowsState={state}
@@ -142,7 +142,7 @@ export const Default = (
       <div style={{ padding: 8 }}>
         <textarea />
       </div>
-    </ToolWindows>
+    </ToolWindowsWithActions>
   );
 };
 

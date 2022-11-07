@@ -2,6 +2,7 @@ import React, { Key, RefObject, useContext, useMemo } from "react";
 import { ToolWindowsProps } from "../ToolWindows";
 import { ToolWindowState, ViewMode, WindowBounds } from "./ToolWindowsState";
 import { Anchor } from "../utils";
+import { useEventCallback } from "@intellij-platform/core/utils/useEventCallback";
 
 type ToolWindowStateContextValue = {
   state: Readonly<ToolWindowState>;
@@ -48,54 +49,64 @@ export const ToolWindowStateProvider: React.FC<
   id,
   children,
 }) => {
+  const blur = useEventCallback(() => {
+    onToolWindowStateChange(toolWindowsState.blur(id));
+  });
+  const hide = useEventCallback(() => {
+    onToolWindowStateChange(toolWindowsState.hide(id));
+  });
+  const focusMainContent = useEventCallback(() => {
+    mainContentFocusableRef.current?.focus();
+  });
+  const moveToSide = useEventCallback(
+    (side: { anchor: Anchor; isSplit: boolean }) => {
+      onToolWindowStateChange(toolWindowsState.move(id, side));
+    }
+  );
+  const changeViewMode = useEventCallback((viewMode: ViewMode) => {
+    onToolWindowStateChange(toolWindowsState.changeViewMode(id, viewMode));
+  });
+  const stretchWidth = useEventCallback((value: number) => {
+    const container = containerRef.current;
+    if (!container) {
+      throw new Error("Couldn't resize since the container is not present");
+    }
+    onToolWindowStateChange(
+      toolWindowsState.stretchWidth(
+        id,
+        value,
+        container.getBoundingClientRect()
+      )
+    );
+  });
+  const stretchHeight = useEventCallback((value: number) => {
+    const container = containerRef.current;
+    if (!container) {
+      throw new Error("Couldn't resize since the container is not present");
+    }
+    onToolWindowStateChange(
+      toolWindowsState.stretchHeight(
+        id,
+        value,
+        container.getBoundingClientRect()
+      )
+    );
+  });
+  const setFloatingBounds = useEventCallback((bounds: WindowBounds) => {
+    onToolWindowStateChange(toolWindowsState.setFloatingBound(id, bounds));
+  });
   const contextValue = useMemo((): ToolWindowStateContextValue => {
     const state = toolWindowsState.windows[id];
     return {
       state,
-      hide: () => {
-        onToolWindowStateChange(toolWindowsState.hide(id));
-      },
-      blur: () => {
-        onToolWindowStateChange(toolWindowsState.blur(id));
-      },
-      focusMainContent: () => {
-        mainContentFocusableRef.current?.focus();
-      },
-      moveToSide: (side) => {
-        onToolWindowStateChange(toolWindowsState.move(id, side));
-      },
-      changeViewMode: (viewMode: ViewMode) => {
-        onToolWindowStateChange(toolWindowsState.changeViewMode(id, viewMode));
-      },
-      stretchWidth: (value: number) => {
-        const container = containerRef.current;
-        if (!container) {
-          throw new Error("Couldn't resize since the container is not present");
-        }
-        onToolWindowStateChange(
-          toolWindowsState.stretchWidth(
-            id,
-            value,
-            container.getBoundingClientRect()
-          )
-        );
-      },
-      stretchHeight: (value: number) => {
-        const container = containerRef.current;
-        if (!container) {
-          throw new Error("Couldn't resize since the container is not present");
-        }
-        onToolWindowStateChange(
-          toolWindowsState.stretchHeight(
-            id,
-            value,
-            container.getBoundingClientRect()
-          )
-        );
-      },
-      setFloatingBounds: (bounds: WindowBounds) => {
-        onToolWindowStateChange(toolWindowsState.setFloatingBound(id, bounds));
-      },
+      hide,
+      blur,
+      focusMainContent,
+      moveToSide,
+      changeViewMode,
+      stretchWidth,
+      stretchHeight,
+      setFloatingBounds,
     };
   }, [toolWindowsState, id]);
   return (

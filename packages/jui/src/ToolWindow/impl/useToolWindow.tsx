@@ -1,5 +1,3 @@
-import { useFocusWithin } from "@react-aria/interactions";
-import { mergeProps } from "@react-aria/utils";
 import React, {
   FocusEventHandler,
   RefObject,
@@ -7,7 +5,9 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useToolWindowState } from "./ToolWindowsState/ToolWindowStateProvider";
+import { useFocusWithin } from "@react-aria/interactions";
+import { mergeProps } from "@react-aria/utils";
+import { useToolWindowState } from "@intellij-platform/core/ToolWindow";
 import { useWindowMoveHandle } from "@intellij-platform/core/Window";
 
 export function useToolWindow(
@@ -53,10 +53,10 @@ export function useToolWindow(
 
   const { toolWindowProps: autoHideProps } = useAutoHide();
 
-  const { focusDelegatorProps } = useFocusDelegator(
-    focusableContentRef,
-    contentRef
-  );
+  const { focusDelegatorProps } = useFocusDelegator({
+    focusableContentRef: focusableContentRef,
+    ref: containerRef,
+  });
 
   // If there is no focusable content rendered in the tool window, nothing will be autofocused. In that case
   // we will focus the tool window container itself as a fallback.
@@ -94,6 +94,8 @@ export function useToolWindow(
  * an alternative approach would be to move auto hide logic to the state management logic as much as possible,
  * and limit the focus based auto-hiding to only when the focus goes within the main content area. That should have
  * less focus-related edge cases.
+ * TODO: auto hide behaviour should be moved to the core ToolWindows API. ToolWindows now renders a FocusScope and
+ * handles focus events on any tool window, to track last focused tool window.
  */
 function useAutoHide() {
   const { blur } = useToolWindowState();
@@ -130,10 +132,13 @@ function useAutoHide() {
  * if currently focused element is not within that boundary.
  * Ensuring the container element is focusable is not something this hook does.
  */
-function useFocusDelegator(
-  focusableContentRef: RefObject<{ focus: () => void }>,
-  contentRef: RefObject<Element>
-) {
+function useFocusDelegator({
+  ref,
+  focusableContentRef,
+}: {
+  ref: React.RefObject<Element>;
+  focusableContentRef: React.RefObject<{ focus: () => void }>;
+}) {
   const onFocus: FocusEventHandler = (event) => {
     if (event.target !== event.currentTarget) {
       // only when this container is focused. not when anything inside is focused.
@@ -142,7 +147,8 @@ function useFocusDelegator(
     const possiblyBlurredElement = event.relatedTarget;
     if (
       possiblyBlurredElement instanceof Element &&
-      contentRef.current?.contains(possiblyBlurredElement)
+      ref.current?.contains(possiblyBlurredElement) &&
+      event.currentTarget !== ref.current
     ) {
       // if anything inside the content is being blurred while the container is getting focused, don't do anything
       // let the focus stay where it is.

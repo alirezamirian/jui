@@ -1,6 +1,8 @@
 import React, {
   CSSProperties,
+  ForwardedRef,
   Key,
+  useImperativeHandle,
   useLayoutEffect,
   useRef,
   useState,
@@ -21,8 +23,10 @@ import { ToolWindowStateProvider } from "./ToolWindowsState/ToolWindowStateProvi
 import { ToolWindowStripe } from "./ToolWindowStripe";
 import { UndockSide } from "./UndockSide";
 import { Anchor, isHorizontalToolWindow } from "./utils";
+import { useLatest } from "@intellij-platform/core/utils/useLatest";
 
 export interface ToolWindowsProps {
+  children: React.ReactNode;
   toolWindowsState: Readonly<ToolWindowsState>;
   onToolWindowStateChange: (newState: ToolWindowsState) => void;
 
@@ -51,6 +55,15 @@ export interface ToolWindowsProps {
   margin?: CSSProperties["margin"];
 }
 
+export interface ToolWindowRefValue {
+  focus(key: Key): void;
+  focusLastActiveWindow(): void;
+  focusMainContent(): void;
+  changeState(
+    updater: (currentState: Readonly<ToolWindowsState>) => ToolWindowsState
+  ): void;
+}
+
 /**
  * @constructor
  *
@@ -72,22 +85,52 @@ export interface ToolWindowsProps {
  *   section of the same side to docked_unpinned. try to open the unpinned one while the split one is open. it doesn't
  *   work.
  */
-export const ToolWindows: React.FC<ToolWindowsProps> = ({
-  hideToolWindowBars = false,
-  useWidescreenLayout = false,
-  height = "100%",
-  minHeight = "0",
-  margin,
-  toolWindowsState,
-  onToolWindowStateChange,
-  renderToolbarButton,
-  renderWindow,
-  children,
-  mainContentMinWidth = 50,
-}): React.ReactElement => {
+export const ToolWindows = React.forwardRef(function ToolWindows(
+  {
+    hideToolWindowBars = false,
+    useWidescreenLayout = false,
+    height = "100%",
+    minHeight = "0",
+    margin,
+    toolWindowsState,
+    onToolWindowStateChange,
+    renderToolbarButton,
+    renderWindow,
+    children,
+    mainContentMinWidth = 50,
+  }: ToolWindowsProps,
+  ref: ForwardedRef<ToolWindowRefValue>
+): React.ReactElement {
   const containerRef = useRef<HTMLDivElement>(null);
-  const mainContentFocusScopeRef = useRef<{ focus: () => void }>(null);
+  const mainContentFocusScopeRef =
+    useRef<React.ComponentRef<typeof FocusScope>>(null);
   const [layoutState, setLayoutState] = useState<ToolWindowsLayoutState>();
+  const windowFocusableRefs = useRef<{
+    [key: string]: React.RefObject<React.ComponentRef<typeof FocusScope>>;
+  }>({});
+
+  const latestRef = useLatest({ toolWindowsState });
+  useImperativeHandle(
+    ref,
+    () => ({
+      focus: (key: Key) => {
+        windowFocusableRefs.current[key].current?.focus();
+      },
+      focusLastActiveWindow: () => {
+        const { lastFocusedKey } = latestRef.current.toolWindowsState;
+        if (lastFocusedKey) {
+          windowFocusableRefs.current[lastFocusedKey].current?.focus(true);
+        }
+      },
+      focusMainContent: () => {
+        mainContentFocusScopeRef.current?.focus();
+      },
+      changeState: (updater) => {
+        onToolWindowStateChange(updater(latestRef.current.toolWindowsState));
+      },
+    }),
+    []
+  );
   useLayoutEffect(() => {
     setLayoutState(
       getToolWindowsLayoutState(
@@ -118,17 +161,31 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
     />
   );
 
-  const renderToolWindow = (key: Key) => (
-    <ToolWindowStateProvider
-      id={key}
-      containerRef={containerRef}
-      mainContentFocusableRef={mainContentFocusScopeRef}
-      toolWindowsState={toolWindowsState}
-      onToolWindowStateChange={onToolWindowStateChange}
-    >
-      {renderWindow(key)}
-    </ToolWindowStateProvider>
-  );
+  const renderToolWindow = (key: Key) => {
+    if (!windowFocusableRefs.current[key]) {
+      windowFocusableRefs.current[key] = React.createRef();
+    }
+    return (
+      <div
+        style={{ all: "unset" }}
+        onFocus={() => {
+          onToolWindowStateChange(toolWindowsState.focused(key));
+        }}
+      >
+        <FocusScope ref={windowFocusableRefs.current[key]}>
+          <ToolWindowStateProvider
+            id={key}
+            containerRef={containerRef}
+            mainContentFocusableRef={mainContentFocusScopeRef}
+            toolWindowsState={toolWindowsState}
+            onToolWindowStateChange={onToolWindowStateChange}
+          >
+            {renderWindow(key)}
+          </ToolWindowStateProvider>
+        </FocusScope>
+      </div>
+    );
+  };
   // TODO: candidate for component extraction
   const renderSideDockedView = ({
     anchor,
@@ -318,4 +375,4 @@ export const ToolWindows: React.FC<ToolWindowsProps> = ({
       {layoutState && renderInnerLayout(layoutState)}
     </StyledToolWindowOuterLayout.Shell>
   );
-};
+});

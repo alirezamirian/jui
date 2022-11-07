@@ -51,7 +51,6 @@ export function ActionsMenu({
         if (action && isAction(action)) {
           action.actionPerformed();
         }
-        close();
       }}
       selectedKeys={selectedKeys} // FIXME: keep isSelected on actions (toggle action)?
       disabledKeys={disabledKeys}

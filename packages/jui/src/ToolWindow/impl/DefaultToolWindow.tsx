@@ -1,12 +1,12 @@
 import React, { useContext, useMemo, useRef } from "react";
-import { styled } from "../styled";
-import { DefaultToolWindowHeader } from "./DefaultToolWindowHeader";
-import { useToolWindow } from "./useToolWindow";
-import { FocusScope } from "@intellij-platform/core/utils/FocusScope";
 import { filterDOMProps, mergeProps } from "@react-aria/utils";
-import { useToolWindowActions } from "@intellij-platform/core/ToolWindow/useToolWindowActions";
-import { ActionsProvider } from "@intellij-platform/core/ActionSystem";
 import { DOMProps } from "@react-types/shared";
+import { styled } from "@intellij-platform/core/styled";
+import { FocusScope } from "@intellij-platform/core/utils/FocusScope";
+import { ActionsProvider } from "@intellij-platform/core/ActionSystem";
+import { useToolWindow } from "./useToolWindow";
+import { DefaultToolWindowHeader } from "./DefaultToolWindowHeader";
+import { useToolWindowActions } from "./useToolWindowActions";
 
 export interface DefaultToolWindowProps extends DOMProps {
   /**

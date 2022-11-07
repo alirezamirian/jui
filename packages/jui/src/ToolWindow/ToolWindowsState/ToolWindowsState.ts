@@ -1,4 +1,4 @@
-import { curry, fromPairs, insert, map, mapObjIndexed, move } from "ramda";
+import { curry, fromPairs, insert, mapObjIndexed, move } from "ramda";
 import { Key } from "react";
 import { Anchor, isHorizontalToolWindow } from "../utils";
 
@@ -97,7 +97,7 @@ export const areInSameSection = curry(
     window1.anchor === window2.anchor && window1.isSplit === window2.isSplit
 );
 
-const getViewModeType = (viewMode: ViewMode) => {
+export const getViewModeType = (viewMode: ViewMode) => {
   if (viewMode === "docked_pinned" || viewMode === "docked_unpinned") {
     return "docked";
   }
@@ -106,6 +106,10 @@ const getViewModeType = (viewMode: ViewMode) => {
   }
   return viewMode;
 };
+type IdToWindowStateMap = Readonly<{
+  [key: string]: Readonly<ToolWindowState>;
+}>;
+
 /**
  * Represents UI state of a bunch of tool windows. What is rendered inside each window or toolbar button is irrelevant.
  *
@@ -115,25 +119,58 @@ const getViewModeType = (viewMode: ViewMode) => {
  *   which accept a window state and some arguments, and return a new window state.
  */
 export class ToolWindowsState {
+  public readonly lastFocusedKey: Key | null;
+  private readonly layoutToRestore: IdToWindowStateMap;
   constructor(
-    public readonly windows: Readonly<{
-      [key: string]: Readonly<ToolWindowState>;
-    }>
-  ) {}
+    public readonly windows: IdToWindowStateMap,
+    {
+      lastFocusedKey = null,
+      layoutToRestore = {},
+    }: {
+      lastFocusedKey?: Key | null;
+      layoutToRestore?: IdToWindowStateMap;
+    } = {}
+  ) {
+    this.lastFocusedKey = lastFocusedKey;
+    this.layoutToRestore = layoutToRestore;
+  }
 
   hide(targetKey: Key): ToolWindowsState {
-    return new ToolWindowsState(
-      mapObjIndexed(
-        (toolWindow, key) =>
-          key === targetKey
-            ? {
-                ...toolWindow,
-                isVisible: false,
-              }
-            : toolWindow,
-        this.windows
-      )
+    return this.mapWindows((toolWindow, key) =>
+      key === targetKey
+        ? {
+            ...toolWindow,
+            isVisible: false,
+          }
+        : toolWindow
     );
+  }
+  hideAll(): ToolWindowsState {
+    return this.mapWindows(
+      (toolWindow, key) =>
+        getViewModeType(toolWindow.viewMode) === "float"
+          ? toolWindow
+          : {
+              ...toolWindow,
+              isVisible: false,
+            },
+      { layoutToRestore: this.windows }
+    );
+  }
+
+  /**
+   * Restores windows to the state before hideAll.
+   */
+  restoreWindows() {
+    return this.mapWindows(
+      (toolWindow, key) => this.layoutToRestore[key] || toolWindow
+    );
+  }
+
+  focused(key: Key) {
+    return this.mapWindows((toolWindow) => toolWindow, {
+      lastFocusedKey: key,
+    });
   }
 
   show(targetKey: Key): ToolWindowsState {
@@ -147,24 +184,22 @@ export class ToolWindowsState {
     } else if (isDocked(target)) {
       closableViewModes.push("docked_unpinned", "docked_pinned", "undock");
     }
-    return new ToolWindowsState(
-      mapObjIndexed((toolWindow, key) => {
-        if (key === targetKey) {
-          return {
-            ...toolWindow,
-            isVisible: true,
-          };
-        }
-        if (
-          toolWindow.isVisible &&
-          areInSameSection(target, toolWindow) &&
-          closableViewModes.includes(toolWindow.viewMode)
-        ) {
-          return { ...toolWindow, isVisible: false };
-        }
-        return toolWindow;
-      }, this.windows)
-    );
+    return this.mapWindows((toolWindow, key) => {
+      if (key === targetKey) {
+        return {
+          ...toolWindow,
+          isVisible: true,
+        };
+      }
+      if (
+        toolWindow.isVisible &&
+        areInSameSection(target, toolWindow) &&
+        closableViewModes.includes(toolWindow.viewMode)
+      ) {
+        return { ...toolWindow, isVisible: false };
+      }
+      return toolWindow;
+    });
   }
 
   toggle(targetKey: Key): ToolWindowsState {
@@ -178,17 +213,15 @@ export class ToolWindowsState {
     if (!target || !isAutoHide(target)) {
       return this;
     }
-    return new ToolWindowsState(
-      map((toolWindow) => {
-        if (toolWindow === target) {
-          return {
-            ...toolWindow,
-            isVisible: false,
-          };
-        }
-        return toolWindow;
-      }, this.windows)
-    );
+    return this.mapWindows((toolWindow) => {
+      if (toolWindow === target) {
+        return {
+          ...toolWindow,
+          isVisible: false,
+        };
+      }
+      return toolWindow;
+    });
   }
 
   // TODO: initiate floatingBound when changing viewMode to float or window and there is no previous floatingBound
@@ -197,29 +230,27 @@ export class ToolWindowsState {
     if (!target) {
       return this;
     }
-    return new ToolWindowsState(
-      map((toolWindow) => {
-        if (toolWindow === target) {
-          return {
-            ...toolWindow,
-            viewMode,
-          };
-        }
-        const viewModeType = getViewModeType(toolWindow.viewMode);
-        if (
-          toolWindow.isVisible &&
-          viewModeType !== "float" &&
-          areInSameSection(toolWindow, target) &&
-          viewModeType === getViewModeType(viewMode)
-        ) {
-          return {
-            ...toolWindow,
-            isVisible: false,
-          };
-        }
-        return toolWindow;
-      }, this.windows)
-    );
+    return this.mapWindows((toolWindow) => {
+      if (toolWindow === target) {
+        return {
+          ...toolWindow,
+          viewMode,
+        };
+      }
+      const viewModeType = getViewModeType(toolWindow.viewMode);
+      if (
+        toolWindow.isVisible &&
+        viewModeType !== "float" &&
+        areInSameSection(toolWindow, target) &&
+        viewModeType === getViewModeType(viewMode)
+      ) {
+        return {
+          ...toolWindow,
+          isVisible: false,
+        };
+      }
+      return toolWindow;
+    });
   }
 
   move(targetKey: Key, index: number): ToolWindowsState;
@@ -272,12 +303,7 @@ export class ToolWindowsState {
         return [`${key}`, newValue];
       })
     );
-    return new ToolWindowsState(
-      mapObjIndexed(
-        (value, key) => newTargetSideWindows[key] || value,
-        this.windows
-      )
-    );
+    return this.mapWindows((value, key) => newTargetSideWindows[key] || value);
   }
 
   stretchWidth(
@@ -301,9 +327,14 @@ export class ToolWindowsState {
   }
 
   mapWindows(
-    mapFn: (toolWindow: ToolWindowState, key: string) => ToolWindowState
+    mapFn: (toolWindow: ToolWindowState, key: string) => ToolWindowState,
+    options: ConstructorParameters<typeof ToolWindowsState>[1] = {}
   ) {
-    return new ToolWindowsState(mapObjIndexed(mapFn, this.windows));
+    return new ToolWindowsState(mapObjIndexed(mapFn, this.windows), {
+      lastFocusedKey: this.lastFocusedKey,
+      layoutToRestore: this.layoutToRestore,
+      ...options,
+    });
   }
 
   private update<K extends keyof ToolWindowState>(
@@ -315,17 +346,15 @@ export class ToolWindowsState {
     if (!target) {
       return this;
     }
-    return new ToolWindowsState(
-      map((window) => {
-        if (window === target) {
-          return {
-            ...window,
-            [key]: value,
-          };
-        }
-        return window;
-      }, this.windows)
-    );
+    return this.mapWindows((window) => {
+      if (window === target) {
+        return {
+          ...window,
+          [key]: value,
+        };
+      }
+      return window;
+    });
   }
 
   private stretch(
@@ -340,21 +369,19 @@ export class ToolWindowsState {
     }
     const viewModeType = getViewModeType(target.viewMode);
     if (viewModeType === "float") {
-      return new ToolWindowsState(
-        map((window) => {
-          if (window === target) {
-            const currentFloatingBound = window.floatingBounds!;
-            return {
-              ...window,
-              floatingBounds: {
-                ...currentFloatingBound,
-                [property]: currentFloatingBound[property] + value,
-              },
-            };
-          }
-          return window;
-        }, this.windows)
-      );
+      return this.mapWindows((window) => {
+        if (window === target) {
+          const currentFloatingBound = window.floatingBounds!;
+          return {
+            ...window,
+            floatingBounds: {
+              ...currentFloatingBound,
+              [property]: currentFloatingBound[property] + value,
+            },
+          };
+        }
+        return window;
+      });
     }
     const expectedProperty = isHorizontalToolWindow(target.anchor)
       ? "height"
@@ -388,17 +415,15 @@ export class ToolWindowsState {
   }
 
   resizeDockSplitView(anchor: Anchor, weight: number): ToolWindowsState {
-    return new ToolWindowsState(
-      map((window) => {
-        if (window.anchor === anchor && window.isVisible && isDocked(window)) {
-          return {
-            ...window,
-            sideWeight: window.isSplit ? weight : 1 - weight,
-          };
-        }
-        return window;
-      }, this.windows)
-    );
+    return this.mapWindows((window) => {
+      if (window.anchor === anchor && window.isVisible && isDocked(window)) {
+        return {
+          ...window,
+          sideWeight: window.isSplit ? weight : 1 - weight,
+        };
+      }
+      return window;
+    });
   }
 
   private resizeSide(
@@ -407,23 +432,21 @@ export class ToolWindowsState {
     size: number,
     containerBounds: { width: number; height: number }
   ): ToolWindowsState {
-    return new ToolWindowsState(
-      map((window) => {
-        const isInResizingView = dock
-          ? isDocked(window)
-          : window.viewMode === "undock";
-        if (window.anchor === anchor && isInResizingView && window.isVisible) {
-          const containerSize = !isHorizontalToolWindow(anchor)
-            ? containerBounds.width
-            : containerBounds.height;
-          return {
-            ...window,
-            weight: size / containerSize,
-          };
-        }
-        return window;
-      }, this.windows)
-    );
+    return this.mapWindows((window) => {
+      const isInResizingView = dock
+        ? isDocked(window)
+        : window.viewMode === "undock";
+      if (window.anchor === anchor && isInResizingView && window.isVisible) {
+        const containerSize = !isHorizontalToolWindow(anchor)
+          ? containerBounds.width
+          : containerBounds.height;
+        return {
+          ...window,
+          weight: size / containerSize,
+        };
+      }
+      return window;
+    });
   }
 }
 

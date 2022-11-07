@@ -110,10 +110,7 @@ export function useSelectableTree<T>(
       // continued propagation if the event was not handled. Then we could change Speed Search impl to only handle
       // inputs when the propagation is not prevented.
       selectionKeyDown?.(event);
-      if (event.key === "Escape") {
-        // Maybe continuePropagation should be called unconditionally at this point
-        event.continuePropagation();
-      }
+      event.continuePropagation();
     }
   };
   const { keyboardProps } = useKeyboard({

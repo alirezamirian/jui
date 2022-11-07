@@ -6,9 +6,9 @@ import {
   Theme,
   ThemeProvider,
   TooltipTrigger,
-  ToolWindows,
   ToolWindowsState,
   toolWindowState,
+  ToolWindowsWithActions,
 } from "@intellij-platform/core";
 import darculaThemeJson from "../themes/darcula.theme.json";
 import { SpeedSearchTreeSample } from "@intellij-platform/core/story-components";
@@ -30,7 +30,7 @@ const SimpleToolWindows = ({
       })
   );
   return (
-    <ToolWindows
+    <ToolWindowsWithActions
       height={"100vh"}
       toolWindowsState={state}
       onToolWindowStateChange={setState}
@@ -54,7 +54,7 @@ const SimpleToolWindows = ({
       <div style={{ padding: 8 }}>
         <textarea />
       </div>
-    </ToolWindows>
+    </ToolWindowsWithActions>
   );
 };
 
@@ -85,6 +85,21 @@ describe("integration of Tool Windows and Action System", () => {
     cy.realPress(["Shift", "Escape"]); // "HideActiveWindow" should trigger, since SpeedSearch doesn't handle key strokes with modifiers
     cy.get("#tool-window").should("not.exist"); // Verify tool window is closed
   });
+
+  it.skip("doesn't change the focus when JumpToLastWindow action triggers while the first focusable element is already focused", () => {
+    // There is a minor issue now in SpeedSearchTree: when the tree is focused manually, speed search is cleared.
+    cy.mount(
+      <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
+        <SimpleToolWindows />
+      </ThemeProvider>
+    );
+    cy.contains("List").click();
+    cy.realType("The");
+    // Trigger JumpToLastWindow. The first focusable element of the tool window is already focused. Nothing should happen.
+    cy.realPress(["F12"]);
+    cy.findAllByText("The").should("have.length", 3); // Speed search state should not change.
+  });
+
   it("supports tool window actions when a native input is focused in the tool window", () => {
     cy.mount(
       <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
