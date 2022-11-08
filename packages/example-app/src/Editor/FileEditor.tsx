@@ -4,6 +4,7 @@ import {
   ContextMenuContainer,
   EditorTabContent,
   EditorTabs,
+  HIDE_ALL_WINDOWS_ACTION_ID,
   Item,
   Menu,
   MenuItemLayout,
@@ -47,7 +48,7 @@ export const FileEditor = () => {
   const activeTab = useRecoilValue(activeEditorTabState);
   const editorRef = useRef<editor.IEditor>();
   const [active, setActive] = useState(false);
-  const hideAllAction = useAction("HideAllWindows");
+  const hideAllAction = useAction(HIDE_ALL_WINDOWS_ACTION_ID);
   const setCursorPositionState = useSetRecoilState(editorCursorPositionState);
 
   // For functions that are needed in tab action callbacks. Because items are cached and referencing anything

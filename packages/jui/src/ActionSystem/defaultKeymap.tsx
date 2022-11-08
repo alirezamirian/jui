@@ -1,9 +1,22 @@
 import { Keymap } from "@intellij-platform/core/ActionSystem/KeymapProvider";
+import {
+  FOCUS_EDITOR_ACTION_ID,
+  HIDE_ACTIVE_WINDOW_ACTION_ID,
+  HIDE_ALL_WINDOWS_ACTION_ID,
+  JUMP_TO_LAST_WINDOW_ACTION_ID,
+  MAXIMIZE_TOOL_WINDOW_ACTION_ID,
+  RESIZE_TOOL_WINDOW_BOTTOM_ACTION_ID,
+  RESIZE_TOOL_WINDOW_LEFT_ACTION_ID,
+  RESIZE_TOOL_WINDOW_RIGHT_ACTION_ID,
+  RESIZE_TOOL_WINDOW_TOP_ACTION_ID,
+  // For some reason importing from shorter paths doesn't work as expected in cypress ¯\_(ツ)_/¯
+  // Weirdly, `import *` works in that case.
+} from "@intellij-platform/core/ToolWindow/impl/ToolWindowActionIds";
 
 // TODO: OS specific defaults
 // TODO: extract and export action ids
 export const defaultKeymap: Keymap = {
-  ResizeToolWindowRight: [
+  [RESIZE_TOOL_WINDOW_RIGHT_ACTION_ID]: [
     {
       type: "keyboard",
       firstKeyStroke: {
@@ -12,7 +25,7 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
-  ResizeToolWindowLeft: [
+  [RESIZE_TOOL_WINDOW_LEFT_ACTION_ID]: [
     {
       type: "keyboard",
       firstKeyStroke: {
@@ -21,7 +34,7 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
-  ResizeToolWindowTop: [
+  [RESIZE_TOOL_WINDOW_TOP_ACTION_ID]: [
     {
       type: "keyboard",
       firstKeyStroke: {
@@ -30,7 +43,7 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
-  ResizeToolWindowBottom: [
+  [RESIZE_TOOL_WINDOW_BOTTOM_ACTION_ID]: [
     {
       type: "keyboard",
       firstKeyStroke: {
@@ -39,7 +52,7 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
-  MaximizeToolWindow: [
+  [MAXIMIZE_TOOL_WINDOW_ACTION_ID]: [
     {
       type: "keyboard",
       firstKeyStroke: {
@@ -48,7 +61,7 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
-  "TW.focusMainContent": [
+  [FOCUS_EDITOR_ACTION_ID]: [
     {
       type: "keyboard",
       firstKeyStroke: {
@@ -56,7 +69,7 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
-  HideActiveWindow: [
+  [HIDE_ACTIVE_WINDOW_ACTION_ID]: [
     {
       type: "keyboard",
       firstKeyStroke: {
@@ -65,7 +78,7 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
-  HideAllWindows: [
+  [HIDE_ALL_WINDOWS_ACTION_ID]: [
     {
       type: "keyboard",
       firstKeyStroke: {
@@ -74,7 +87,7 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
-  JumpToLastWindow: [
+  [JUMP_TO_LAST_WINDOW_ACTION_ID]: [
     {
       type: "keyboard",
       firstKeyStroke: {

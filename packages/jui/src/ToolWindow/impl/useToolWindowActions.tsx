@@ -1,8 +1,22 @@
 import {
+  DOCK_PINNED_MODE_ACTION_ID,
+  DOCK_TOOL_WINDOW_ACTION_ID,
+  DOCK_UNPINNED_MODE_ACTION_ID,
+  FLOAT_MODE_ACTION_ID,
+  FOCUS_EDITOR_ACTION_ID,
+  HIDE_ACTIVE_WINDOW_ACTION_ID,
   isHorizontalToolWindow,
+  MAXIMIZE_TOOL_WINDOW_ACTION_ID,
   PlatformIcon,
+  REMOVE_TOOL_WINDOW_FROM_SIDEBAR_ACTION_ID,
+  RESIZE_TOOL_WINDOW_BOTTOM_ACTION_ID,
+  RESIZE_TOOL_WINDOW_LEFT_ACTION_ID,
+  RESIZE_TOOL_WINDOW_RIGHT_ACTION_ID,
+  RESIZE_TOOL_WINDOW_TOP_ACTION_ID,
+  UNDOCK_MODE_ACTION_ID,
   useToolWindowState,
   ViewMode,
+  WINDOW_MODE_ACTION_ID,
 } from "@intellij-platform/core";
 import { ActionDefinition } from "@intellij-platform/core/ActionSystem";
 import React from "react";
@@ -13,13 +27,6 @@ import { zipObj } from "ramda";
 // configuration (ide.windowSystem.hScrollChars). Although it's technically feasible, it seems not necessary
 const HEIGHT_RESIZE_STEP = 16 * 5;
 const WIDTH_RESIZE_STEP = 13 * 5;
-
-const viewModes: ViewMode[] = [
-  "docked_pinned",
-  "docked_unpinned",
-  "undock",
-  "float",
-];
 
 export const anchors: Array<{
   anchor: Anchor;
@@ -52,19 +59,20 @@ const getAnchorName = ({
       ? "Bottom"
       : "Top"
   }`;
-const viewModeToString: Record<ViewMode, string> = {
-  undock: "Undock",
-  docked_pinned: "Dock Pinned",
-  docked_unpinned: "Dock Unpinned",
-  float: "Float",
-  window: "Window",
+
+export const ViewModeToActionId: Record<ViewMode, string> = {
+  docked_pinned: DOCK_PINNED_MODE_ACTION_ID,
+  docked_unpinned: DOCK_UNPINNED_MODE_ACTION_ID,
+  undock: UNDOCK_MODE_ACTION_ID,
+  float: FLOAT_MODE_ACTION_ID,
+  window: WINDOW_MODE_ACTION_ID,
 };
 
-export const viewModeActionId = (viewMode: ViewMode) =>
-  `TW.ViewMode.${viewMode}`;
-export const VIEW_MODE_ACTION_GROUP = viewModes.map(viewModeActionId);
+export const VIEW_MODE_ACTION_IDS = Object.values(ViewModeToActionId);
 
-export const MOVE_TO_ACTION_GROUP = anchors.map((anchor) => `TW.${anchor.id}`);
+export const MOVE_TO_ACTION_GROUP = anchors.map(
+  (anchor) => `TW.MoveTo.${anchor.id}`
+);
 
 export function useToolWindowActions(): { [key: string]: ActionDefinition } {
   const {
@@ -77,15 +85,36 @@ export function useToolWindowActions(): { [key: string]: ActionDefinition } {
     state,
   } = useToolWindowState();
   const actions: { [key: string]: ActionDefinition } = {
-    ...zipObj(
-      VIEW_MODE_ACTION_GROUP,
-      viewModes.map((viewMode) => ({
-        title: viewModeToString[viewMode],
-        actionPerformed: () => {
-          changeViewMode(viewMode);
-        },
-      }))
-    ),
+    [DOCK_PINNED_MODE_ACTION_ID]: {
+      title: "Dock Pinned",
+      actionPerformed: () => {
+        changeViewMode("docked_pinned");
+      },
+    },
+    [DOCK_UNPINNED_MODE_ACTION_ID]: {
+      title: "Dock Unpinned",
+      actionPerformed: () => {
+        changeViewMode("docked_unpinned");
+      },
+    },
+    [UNDOCK_MODE_ACTION_ID]: {
+      title: "Undock",
+      actionPerformed: () => {
+        changeViewMode("undock");
+      },
+    },
+    [FLOAT_MODE_ACTION_ID]: {
+      title: "Float",
+      actionPerformed: () => {
+        changeViewMode("float");
+      },
+    },
+    [WINDOW_MODE_ACTION_ID]: {
+      title: "Window",
+      actionPerformed: () => {
+        changeViewMode("window");
+      },
+    },
     ...zipObj(
       MOVE_TO_ACTION_GROUP,
       anchors.map(
@@ -100,27 +129,27 @@ export function useToolWindowActions(): { [key: string]: ActionDefinition } {
         })
       )
     ),
-    "TW.focusMainContent": {
+    [FOCUS_EDITOR_ACTION_ID]: {
       title: "Escape", // in intellij it says "Focus Editor" but it's not generic enough.
       actionPerformed: () => {
         focusMainContent();
       },
     },
-    HideActiveWindow: {
+    [HIDE_ACTIVE_WINDOW_ACTION_ID]: {
       title: "Hide",
       icon: <PlatformIcon icon="general/hideToolWindow" />,
       actionPerformed: () => {
         hide();
       },
     },
-    MaximizeToolWindow: {
+    [MAXIMIZE_TOOL_WINDOW_ACTION_ID]: {
       title: "Maximize Tool Window", // Should be "Restore Tool Window Size if the window is currently maximized
       actionPerformed: () => {
         // TODO(release): either remove the action or implement it
         alert("Not implemented");
       },
     },
-    RemoveToolWindowFromSidebar: {
+    [REMOVE_TOOL_WINDOW_FROM_SIDEBAR_ACTION_ID]: {
       title: "Remove from Sidebar",
       actionPerformed: () => {
         // TODO(release): either remove the action or implement it
@@ -129,7 +158,7 @@ export function useToolWindowActions(): { [key: string]: ActionDefinition } {
     },
   };
   if (state.viewMode === "float") {
-    actions.DockToolWindow = {
+    actions[DOCK_TOOL_WINDOW_ACTION_ID] = {
       title: "Dock",
       icon: (
         <PlatformIcon
@@ -148,7 +177,7 @@ export function useToolWindowActions(): { [key: string]: ActionDefinition } {
   }
   if (state.viewMode !== "float" && state.viewMode !== "window") {
     if (isHorizontalToolWindow(state.anchor)) {
-      actions.ResizeToolWindowBottom = {
+      actions[RESIZE_TOOL_WINDOW_BOTTOM_ACTION_ID] = {
         title: "Stretch to bottom",
         actionPerformed: () => {
           stretchHeight(
@@ -156,7 +185,7 @@ export function useToolWindowActions(): { [key: string]: ActionDefinition } {
           );
         },
       };
-      actions.ResizeToolWindowTop = {
+      actions[RESIZE_TOOL_WINDOW_TOP_ACTION_ID] = {
         title: "Stretch to top",
         actionPerformed: () => {
           stretchHeight(
@@ -165,7 +194,7 @@ export function useToolWindowActions(): { [key: string]: ActionDefinition } {
         },
       };
     } else {
-      actions.ResizeToolWindowLeft = {
+      actions[RESIZE_TOOL_WINDOW_LEFT_ACTION_ID] = {
         title: "Stretch to left",
         actionPerformed: () => {
           stretchWidth(
@@ -173,7 +202,7 @@ export function useToolWindowActions(): { [key: string]: ActionDefinition } {
           );
         },
       };
-      actions.ResizeToolWindowRight = {
+      actions[RESIZE_TOOL_WINDOW_RIGHT_ACTION_ID] = {
         title: "Stretch to right",
         actionPerformed: () => {
           stretchWidth(

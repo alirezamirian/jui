@@ -8,6 +8,10 @@ import {
   ToolWindowRefValue,
   ToolWindowsState,
 } from "@intellij-platform/core";
+import {
+  HIDE_ALL_WINDOWS_ACTION_ID,
+  JUMP_TO_LAST_WINDOW_ACTION_ID,
+} from "./ToolWindowActionIds";
 
 interface DefaultToolWindowActionsProps {
   toolWindowState: Readonly<ToolWindowsState>;
@@ -42,7 +46,7 @@ export function DefaultToolWindowActions({
         isVisible && getViewModeType(viewMode) !== "float"
     );
   const actions: Record<string, ActionDefinition> = {
-    HideAllWindows: {
+    [HIDE_ALL_WINDOWS_ACTION_ID]: {
       title: isAnySideWindowWindowOpen(toolWindowState)
         ? "Hide All Windows"
         : "Restore windows",
@@ -62,7 +66,7 @@ export function DefaultToolWindowActions({
         });
       },
     },
-    JumpToLastWindow: {
+    [JUMP_TO_LAST_WINDOW_ACTION_ID]: {
       title: "Jump to Last Tool Window",
       isDisabled: toolWindowState.lastFocusedKey == null,
       actionPerformed: () => {
