@@ -9,10 +9,14 @@ export interface Keymap {
 export const KeymapContext = React.createContext<Keymap | null>(defaultKeymap);
 
 export const KeymapProvider: React.FC<{ keymap: Keymap }> = ({
-  keymap,
+  keymap: keymapProp,
   children,
-}) => (
-  <KeymapContext.Provider value={keymap}>{children}</KeymapContext.Provider>
-);
+}) => {
+  const parentKeyMap = useContext(KeymapContext);
+  const keymap = Object.assign(Object.create(parentKeyMap), keymapProp);
+  return (
+    <KeymapContext.Provider value={keymap}>{children}</KeymapContext.Provider>
+  );
+};
 
 export const useKeymap = () => useContext(KeymapContext);

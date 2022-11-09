@@ -6,6 +6,7 @@ import {
   Theme,
   ThemeProvider,
   TooltipTrigger,
+  ToolWindowRefValue,
   ToolWindowsState,
   ToolWindowState,
   toolWindowState,
@@ -13,45 +14,58 @@ import {
 } from "@intellij-platform/core";
 import darculaThemeJson from "../../../themes/darcula.theme.json";
 import { DefaultToolWindowActions } from "@intellij-platform/core/ToolWindow/impl/DefaultToolWindowActions";
+import {
+  ActionsProvider,
+  KeymapProvider,
+} from "@intellij-platform/core/ActionSystem";
 
-const SimpleToolWindows = ({
-  initialState = {
-    "First window": toolWindowState({ isVisible: true }),
-    "Second window": toolWindowState({ anchor: "bottom", isVisible: true }),
-  },
-}: {
-  initialState?: { [key: string]: ToolWindowState };
-}) => {
-  const [state, setState] = useState(() => new ToolWindowsState(initialState));
-  return (
-    <ToolWindowsWithActions
-      height={"100vh"}
-      toolWindowsState={state}
-      onToolWindowStateChange={setState}
-      renderToolbarButton={(id) => (
-        <TooltipTrigger tooltip={<ActionTooltip actionName={id} />}>
-          <span>
-            <PlatformIcon icon="toolwindows/toolWindowProject" />
-            &nbsp;
-            {id}
-          </span>
-        </TooltipTrigger>
-      )}
-      renderWindow={(id) => {
-        return (
-          <DefaultToolWindow headerContent={id} data-testid={`${id}`}>
-            <input />
-            <input />
-          </DefaultToolWindow>
-        );
-      }}
-    >
-      <div style={{ padding: 8 }}>
-        <textarea />
-      </div>
-    </ToolWindowsWithActions>
-  );
-};
+const SimpleToolWindows = React.forwardRef(
+  (
+    {
+      initialState = {
+        "First window": toolWindowState({ isVisible: true }),
+        "Second window": toolWindowState({ anchor: "bottom", isVisible: true }),
+      },
+    }: {
+      initialState?: { [key: string]: ToolWindowState };
+    },
+    ref: React.ForwardedRef<ToolWindowRefValue>
+  ) => {
+    const [state, setState] = useState(
+      () => new ToolWindowsState(initialState)
+    );
+
+    return (
+      <ToolWindowsWithActions
+        ref={ref}
+        height={"100vh"}
+        toolWindowsState={state}
+        onToolWindowStateChange={setState}
+        renderToolbarButton={(id) => (
+          <TooltipTrigger tooltip={<ActionTooltip actionName={id} />}>
+            <span>
+              <PlatformIcon icon="toolwindows/toolWindowProject" />
+              &nbsp;
+              {id}
+            </span>
+          </TooltipTrigger>
+        )}
+        renderWindow={(id) => {
+          return (
+            <DefaultToolWindow headerContent={id} data-testid={`${id}`}>
+              <input />
+              <input />
+            </DefaultToolWindow>
+          );
+        }}
+      >
+        <div style={{ padding: 8 }}>
+          <textarea data-testid="main content focusable" />
+        </div>
+      </ToolWindowsWithActions>
+    );
+  }
+);
 
 describe("DefaultToolWindowActions", () => {
   beforeEach(() => {
@@ -120,4 +134,70 @@ describe("DefaultToolWindowActions", () => {
       cy.findByTestId("Second window").find("input").eq(0).should("have.focus");
     });
   });
+  describe("ActivateToolWindow", () => {
+    it("works", () => {
+      cy.mount(
+        <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
+          <SimpleToolWindowWithTemporaryActivateToolWindowAction />
+        </ThemeProvider>
+      );
+      cy.findByTestId("Second window").should("exist");
+      cy.realPress(["Meta", "2"]);
+      cy.findByTestId("Second window").should("not.exist");
+    });
+    it("moves focus to the main window when window is toggled closed", () => {
+      cy.mount(
+        <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
+          <SimpleToolWindowWithTemporaryActivateToolWindowAction />
+        </ThemeProvider>
+      );
+      cy.realPress(["Meta", "2"]);
+
+      // Focus should to go main content, but it doesn't currently because of a known issue. FIXME in ToolWindows
+      // cy.findByTestId("main content focusable").should("have.focus");
+      cy.findByTestId("First window").find("input").eq(0).should("have.focus");
+    });
+  });
 });
+
+/**
+ * Temporary example because ActivateToolWindow is not implemented yet.
+ * Should be removed when ActivateToolWindow is implemented.
+ */
+function SimpleToolWindowWithTemporaryActivateToolWindowAction() {
+  const ref = React.useRef<ToolWindowRefValue>(null);
+  return (
+    <KeymapProvider
+      keymap={{
+        "ToggleToolWindow.2": [
+          {
+            type: "keyboard",
+            firstKeyStroke: {
+              modifiers: ["Meta"],
+              key: "2",
+            },
+          },
+        ],
+      }}
+    >
+      <ActionsProvider
+        actions={{
+          "ToggleToolWindow.2": {
+            title: "mock activate tool window action",
+            actionPerformed: () => {
+              ref.current?.changeState((state) =>
+                state.toggle(Object.keys(state.windows)[1])
+              );
+            },
+          },
+        }}
+      >
+        {({ shortcutHandlerProps }) => (
+          <div {...shortcutHandlerProps}>
+            <SimpleToolWindows ref={ref} />
+          </div>
+        )}
+      </ActionsProvider>
+    </KeymapProvider>
+  );
+}

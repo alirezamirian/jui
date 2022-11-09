@@ -7,6 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { FocusScope as AriaFocusScope } from "@react-aria/focus";
 import { ThreeViewSplitter } from "../ThreeViewSplitter/ThreeViewSplitter";
 import { FocusScope } from "../utils/FocusScope";
 import { FloatToolWindows } from "./FloatToolWindows";
@@ -363,16 +364,33 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
   };
   return (
     /**
-     * Potential refactoring: hideStripes can also be handled by conditionally
-     * rendering tool window bars, instead of considering it as a feature of
-     * StyledToolWindowOuterLayout
-     **/
-    <StyledToolWindowOuterLayout.Shell
-      ref={containerRef}
-      hideStripes={hideToolWindowBars}
-      style={{ height, minHeight, margin }}
-    >
-      {layoutState && renderInnerLayout(layoutState)}
-    </StyledToolWindowOuterLayout.Shell>
+     * About FocusScope:
+     * When focus is within the ToolWindows, clicking on non-focusable parts of the UI should not make the focus get
+     * lost. That's especially important with the top level actions being handled on a wrapper around ToolWindows.
+     * Because if the focus goes to body, keyboard events are no longer handled, with the way action system is currently
+     * implemented.
+     * AriaFocusScope provides a somewhat accurate behaviour, but it might also be too much, and we can consider
+     * a more light-weight approach. Issues with the current usage of AriaFocus:
+     * - FocusScope traverses the dom tree to find focusable elements, and it might come with considerable performance
+     *   penalty at this place. Something to be investigated more.
+     * - When the focus is lost, e.g. the active tool window closes, FocusScope moves focus to the **first** focusable
+     *  element, whereas in the reference implementation of Tool Windows, the focus goes to the main content (usually
+     *  the editor).
+     *  TODO: investigate alternative approaches for focus handling here.
+     */
+    <AriaFocusScope contain>
+      <StyledToolWindowOuterLayout.Shell
+        ref={containerRef}
+        /**
+         * Potential refactoring: hideStripes can also be handled by conditionally
+         * rendering tool window bars, instead of considering it as a feature of
+         * StyledToolWindowOuterLayout
+         **/
+        hideStripes={hideToolWindowBars}
+        style={{ height, minHeight, margin }}
+      >
+        {layoutState && renderInnerLayout(layoutState)}
+      </StyledToolWindowOuterLayout.Shell>
+    </AriaFocusScope>
   );
 });
