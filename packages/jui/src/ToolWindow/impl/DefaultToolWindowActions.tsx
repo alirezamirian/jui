@@ -12,12 +12,23 @@ import {
   HIDE_ALL_WINDOWS_ACTION_ID,
   JUMP_TO_LAST_WINDOW_ACTION_ID,
 } from "./ToolWindowActionIds";
+import { zipObj } from "ramda";
 
 interface DefaultToolWindowActionsProps {
   toolWindowState: Readonly<ToolWindowsState>;
   toolWindowRef: React.RefObject<ToolWindowRefValue>;
+  /**
+   * Used when creating ActivateToolWindow action for each tool window.
+   */
+  getPresentation?: (key: React.Key) => {
+    title: string;
+    icon: React.ReactNode;
+  };
   children: React.ReactNode;
 }
+
+export const getActivateToolWindowActionId = (id: string) =>
+  `Activate${id.replace(" ", "")}Window`;
 
 /**
  * Provides default tool windows actions:
@@ -39,13 +50,36 @@ export function DefaultToolWindowActions({
   toolWindowState,
   children,
   toolWindowRef,
+  getPresentation,
 }: DefaultToolWindowActionsProps) {
   const isAnySideWindowWindowOpen = (state: Readonly<ToolWindowsState>) =>
     Object.values(state.windows).some(
       ({ isVisible, viewMode }) =>
         isVisible && getViewModeType(viewMode) !== "float"
     );
+  const windowIds = Object.keys(toolWindowState.windows).map((key) => `${key}`);
   const actions: Record<string, ActionDefinition> = {
+    ...zipObj(
+      windowIds.map(getActivateToolWindowActionId),
+      windowIds.map((id: string, index): ActionDefinition => {
+        const { title, icon } = getPresentation?.(id) || {};
+        return {
+          title: title || `${getOrdinal(index)} window`,
+          icon,
+          description: `Activate ${title || getOrdinal(index)} window`,
+          actionPerformed: () => {
+            if (
+              toolWindowState.windows[id]?.isVisible &&
+              !toolWindowRef.current?.hasFocus(id)
+            ) {
+              toolWindowRef.current?.focus(id);
+            } else {
+              toolWindowRef.current?.changeState((state) => state.toggle(id));
+            }
+          },
+        };
+      })
+    ),
     [HIDE_ALL_WINDOWS_ACTION_ID]: {
       title: isAnySideWindowWindowOpen(toolWindowState)
         ? "Hide All Windows"
@@ -83,4 +117,14 @@ export function DefaultToolWindowActions({
       )}
     </ActionsProvider>
   );
+}
+
+function getOrdinal(n: number) {
+  let ord = ["st", "nd", "rd"];
+  let exceptions = [11, 12, 13];
+  let nth =
+    ord[(n % 10) - 1] == undefined || exceptions.includes(n % 100)
+      ? "th"
+      : ord[(n % 10) - 1];
+  return n + nth;
 }

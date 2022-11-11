@@ -1,11 +1,8 @@
 import React, { useState } from "react";
 import {
-  ActionTooltip,
   DefaultToolWindow,
-  PlatformIcon,
   Theme,
   ThemeProvider,
-  TooltipTrigger,
   ToolWindowRefValue,
   ToolWindowsState,
   ToolWindowState,
@@ -14,10 +11,7 @@ import {
 } from "@intellij-platform/core";
 import darculaThemeJson from "../../../themes/darcula.theme.json";
 import { DefaultToolWindowActions } from "@intellij-platform/core/ToolWindow/impl/DefaultToolWindowActions";
-import {
-  ActionsProvider,
-  KeymapProvider,
-} from "@intellij-platform/core/ActionSystem";
+import { KeymapProvider } from "@intellij-platform/core/ActionSystem";
 
 const SimpleToolWindows = React.forwardRef(
   (
@@ -42,13 +36,7 @@ const SimpleToolWindows = React.forwardRef(
         toolWindowsState={state}
         onToolWindowStateChange={setState}
         renderToolbarButton={(id) => (
-          <TooltipTrigger tooltip={<ActionTooltip actionName={id} />}>
-            <span>
-              <PlatformIcon icon="toolwindows/toolWindowProject" />
-              &nbsp;
-              {id}
-            </span>
-          </TooltipTrigger>
+          <span data-testid={`${id} stripe button`}>{id}</span>
         )}
         renderWindow={(id) => {
           return (
@@ -135,20 +123,41 @@ describe("DefaultToolWindowActions", () => {
     });
   });
   describe("ActivateToolWindow", () => {
-    it("works", () => {
+    it("opens and focuses tool window if currently closed", () => {
       cy.mount(
         <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
-          <SimpleToolWindowWithTemporaryActivateToolWindowAction />
+          <WithActivateToolWindowKeymap />
+        </ThemeProvider>
+      );
+      cy.findByTestId("Second window stripe button").click(); // closing second tool window
+      cy.realPress(["Meta", "2"]);
+      cy.findByTestId("Second window").should("exist");
+      cy.findByTestId("Second window").find("input").eq(0).should("have.focus");
+    });
+    it("closes tool window if currently focused", () => {
+      cy.mount(
+        <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
+          <WithActivateToolWindowKeymap />
         </ThemeProvider>
       );
       cy.findByTestId("Second window").should("exist");
       cy.realPress(["Meta", "2"]);
       cy.findByTestId("Second window").should("not.exist");
     });
+    it("focuses tool window if open but not focused", () => {
+      cy.mount(
+        <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
+          <WithActivateToolWindowKeymap />
+        </ThemeProvider>
+      );
+      cy.findByTestId("Second window").should("exist");
+      cy.realPress(["Meta", "1"]);
+      cy.findByTestId("First window").find("input").eq(0).should("have.focus");
+    });
     it("moves focus to the main window when window is toggled closed", () => {
       cy.mount(
         <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
-          <SimpleToolWindowWithTemporaryActivateToolWindowAction />
+          <WithActivateToolWindowKeymap />
         </ThemeProvider>
       );
       cy.realPress(["Meta", "2"]);
@@ -160,16 +169,20 @@ describe("DefaultToolWindowActions", () => {
   });
 });
 
-/**
- * Temporary example because ActivateToolWindow is not implemented yet.
- * Should be removed when ActivateToolWindow is implemented.
- */
-function SimpleToolWindowWithTemporaryActivateToolWindowAction() {
-  const ref = React.useRef<ToolWindowRefValue>(null);
+function WithActivateToolWindowKeymap() {
   return (
     <KeymapProvider
       keymap={{
-        "ToggleToolWindow.2": [
+        ActivateFirstwindowWindow: [
+          {
+            type: "keyboard",
+            firstKeyStroke: {
+              modifiers: ["Meta"],
+              key: "1",
+            },
+          },
+        ],
+        ActivateSecondwindowWindow: [
           {
             type: "keyboard",
             firstKeyStroke: {
@@ -180,24 +193,7 @@ function SimpleToolWindowWithTemporaryActivateToolWindowAction() {
         ],
       }}
     >
-      <ActionsProvider
-        actions={{
-          "ToggleToolWindow.2": {
-            title: "mock activate tool window action",
-            actionPerformed: () => {
-              ref.current?.changeState((state) =>
-                state.toggle(Object.keys(state.windows)[1])
-              );
-            },
-          },
-        }}
-      >
-        {({ shortcutHandlerProps }) => (
-          <div {...shortcutHandlerProps}>
-            <SimpleToolWindows ref={ref} />
-          </div>
-        )}
-      </ActionsProvider>
+      <SimpleToolWindows />
     </KeymapProvider>
   );
 }

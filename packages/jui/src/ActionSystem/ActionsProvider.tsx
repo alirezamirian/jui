@@ -3,15 +3,24 @@ import { mapObjIndexed, pick } from "ramda";
 import React, { HTMLAttributes, useContext, useMemo } from "react";
 import { shortcutToString } from "@intellij-platform/core/ActionSystem/shortcutToString";
 import { useShortcuts } from "@intellij-platform/core/ActionSystem/useShortcut";
+import { Shortcut } from "@intellij-platform/core/ActionSystem/Shortcut";
 
 export interface ActionDefinition {
   title: string;
   actionPerformed: () => void;
-  icon?: React.ReactElement;
+  icon?: React.ReactNode;
+  description?: string;
   isDisabled?: boolean;
 }
 export interface Action extends ActionDefinition {
   id: string;
+  /**
+   * shortcuts assigned to this action based on the keymap context
+   */
+  shortcuts: readonly Shortcut[] | undefined;
+  /**
+   * string representation of the shortcuts
+   */
   shortcut: string | undefined;
 }
 
@@ -38,12 +47,14 @@ export function ActionsProvider(props: ActionsProviderProps): JSX.Element {
     props.actions[actionId]?.actionPerformed();
   });
 
-  const actions = mapObjIndexed((value, actionId) => {
-    const shortcut = keymap?.[actionId]?.[0];
+  const actions = mapObjIndexed((value, actionId): Action => {
+    const shortcuts = keymap?.[actionId];
+    const firstShortcut = shortcuts?.[0];
     return {
       id: actionId,
       ...value,
-      shortcut: shortcut ? shortcutToString(shortcut) : undefined,
+      shortcuts,
+      shortcut: firstShortcut ? shortcutToString(firstShortcut) : undefined, // Maybe it should be all shortcuts?
     };
   }, props.actions);
   return (

@@ -1,7 +1,5 @@
 import {
-  ActionTooltip,
   PlatformIcon,
-  TooltipTrigger,
   ToolWindowRefValue,
   ToolWindows,
 } from "@intellij-platform/core";
@@ -15,7 +13,10 @@ import { useInitializeChanges } from "../VersionControl/Changes/change-lists.sta
 import styled from "styled-components";
 import { IdeStatusBar } from "../StatusBar/IdeStatusBar";
 import { usePersistenceFsNotification } from "../usePersistenceFsNotification";
-import { DefaultToolWindowActions } from "@intellij-platform/core/ToolWindow";
+import {
+  DefaultToolWindowActions,
+  DefaultToolWindowToolbarButton,
+} from "@intellij-platform/core/ToolWindow";
 
 const StyledWindowFrame = styled.div`
   display: flex;
@@ -42,15 +43,11 @@ export const Project = () => {
             setState(newState);
           }}
           renderToolbarButton={(id) => (
-            <TooltipTrigger
-              tooltip={<ActionTooltip actionName={windowById[id].title} />}
-            >
-              <span>
-                <PlatformIcon icon={windowById[id].icon} />
-                &nbsp;
-                {windowById[id].title}
-              </span>
-            </TooltipTrigger>
+            <DefaultToolWindowToolbarButton
+              id={id}
+              title={windowById[id].title}
+              icon={<PlatformIcon icon={windowById[id].icon} />}
+            />
           )}
           renderWindow={(id) => windowById[id].element}
         >

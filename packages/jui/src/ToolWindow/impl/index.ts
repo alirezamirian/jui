@@ -6,5 +6,6 @@ export * from "./ToolWindowsWithActions";
 export * from "./DefaultToolWindowActions";
 export * from "./MultiViewToolWindow";
 export * from "./DefaultToolWindow";
+export * from "./DefaultToolWindowToolbarButton";
 export * from "./ToolWindowActionIds";
 export * from "./useToolWindowActions";

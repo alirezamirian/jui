@@ -58,6 +58,7 @@ export interface ToolWindowsProps {
 
 export interface ToolWindowRefValue {
   focus(key: Key): void;
+  hasFocus(key: Key): void;
   focusLastActiveWindow(): void;
   focusMainContent(): void;
   changeState(
@@ -117,6 +118,9 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
       focus: (key: Key) => {
         windowFocusableRefs.current[key].current?.focus();
       },
+      hasFocus: (key: Key) =>
+        document.activeElement?.closest(`[data-tool-window-id="${key}"]`) !==
+        null,
       focusLastActiveWindow: () => {
         const { lastFocusedKey } = latestRef.current.toolWindowsState;
         if (lastFocusedKey) {
@@ -169,6 +173,7 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
     return (
       <div
         style={{ all: "unset" }}
+        data-tool-window-id={key}
         onFocus={() => {
           onToolWindowStateChange(toolWindowsState.lastFocused(key));
         }}

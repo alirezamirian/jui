@@ -21,7 +21,7 @@ type ToolWindowDescriptor = {
 };
 const windows: ToolWindowDescriptor[] = [
   {
-    id: "project",
+    id: "Project",
     title: "Project",
     icon: "toolwindows/toolWindowProject",
     element: (
@@ -35,7 +35,7 @@ const windows: ToolWindowDescriptor[] = [
     initialState: toolWindowState({ isVisible: true, weight: 0.22 }),
   },
   {
-    id: "terminal",
+    id: "Terminal",
     title: "Terminal",
     icon: "toolwindows/toolWindowProject",
     element: (
@@ -46,7 +46,7 @@ const windows: ToolWindowDescriptor[] = [
     initialState: toolWindowState({ anchor: "bottom" }),
   },
   {
-    id: "commit",
+    id: "Commit",
     title: "Commit",
     icon: "toolwindows/toolWindowCommit",
     element: (
