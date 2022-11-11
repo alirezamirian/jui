@@ -170,7 +170,7 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
       <div
         style={{ all: "unset" }}
         onFocus={() => {
-          onToolWindowStateChange(toolWindowsState.focused(key));
+          onToolWindowStateChange(toolWindowsState.lastFocused(key));
         }}
       >
         <FocusScope ref={windowFocusableRefs.current[key]}>

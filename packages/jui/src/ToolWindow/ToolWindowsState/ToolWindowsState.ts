@@ -167,7 +167,7 @@ export class ToolWindowsState {
     );
   }
 
-  focused(key: Key) {
+  lastFocused(key: Key) {
     return this.mapWindows((toolWindow) => toolWindow, {
       lastFocusedKey: key,
     });
