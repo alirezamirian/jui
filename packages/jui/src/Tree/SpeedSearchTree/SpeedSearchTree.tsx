@@ -1,8 +1,10 @@
 import React, { ForwardedRef, useRef } from "react";
 import { Node } from "@react-types/shared";
 import { Virtualizer } from "@react-aria/virtualizer";
-import { TreeRef } from "@intellij-platform/core/Tree";
 import { replaceSelectionManager } from "@intellij-platform/core/selection";
+import { CollectionSpeedSearchContext } from "@intellij-platform/core/CollectionSpeedSearch";
+import { SpeedSearchProps } from "@intellij-platform/core/SpeedSearch";
+import { TreeRef } from "../useTreeRef";
 import { StyledTree } from "../StyledTree";
 import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
 import { useTreeState } from "../__tmp__useTreeState";
@@ -10,9 +12,7 @@ import { TreeProps } from "../Tree";
 import { useTreeVirtualizer } from "../useTreeVirtualizer";
 import { TreeContext } from "../TreeContext";
 import { useSpeedSearchTree } from "./useSpeedSearchTree";
-import { CollectionSpeedSearchContext } from "@intellij-platform/core/CollectionSpeedSearch";
-import { SpeedSearchTreeNode } from "@intellij-platform/core/Tree/SpeedSearchTree/SpeedSearchTreeNode";
-import { SpeedSearchProps } from "@intellij-platform/core/SpeedSearch";
+import { SpeedSearchTreeNode } from "./SpeedSearchTreeNode";
 
 export type SpeedSearchTreeProps<T extends object> = TreeProps<T> &
   SpeedSearchProps;

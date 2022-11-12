@@ -58,6 +58,21 @@ module.exports = {
       },
     },
     {
+      files: ["packages/jui/src/**"],
+      excludedFiles: [
+        "packages/**/*.stories.tsx",
+        "packages/jui/src/**/story-helpers.tsx",
+      ],
+      rules: {
+        "no-restricted-imports": [
+          ERROR,
+          // No direct import from entry point, as it creates circular dependency. inter-module imports should be from
+          // "@intellij-platform/core/*" instead, within each module (top level dir), imports should be relative.
+          { paths: ["@intellij-platform/core"] },
+        ],
+      },
+    },
+    {
       files: ["packages/**/*.spec.+(ts|tsx)", "packages/**/*.test.+(ts|tsx)"],
       plugins: ["jest"],
       env: {

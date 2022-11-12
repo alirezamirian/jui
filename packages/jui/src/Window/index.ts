@@ -4,7 +4,7 @@
  */
 export {
   type Bounds,
-  WindowInteractionHandlerProps,
+  type WindowInteractionHandlerProps,
   useWindowInteractionHandler,
   WindowInteractionHandler,
 } from "./WindowInteractionHandler";
