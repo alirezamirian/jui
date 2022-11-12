@@ -37,7 +37,7 @@ import {
 import {
   FakeExecutionToolbar,
   VerticalFlexContainer,
-} from "./ToolWindow/stories/components/FakeExecution";
+} from "./ToolWindows/stories/components/FakeExecution";
 import { StyledEditorTab } from "./Tabs/EditorTabs/StyledEditorTab";
 import { StyledToolWindowTab } from "./Tabs/ToolWindowTabs/StyledToolWindowTab";
 import { StyledDebuggerTab } from "./Tabs/DebuggerTabs/StyledDebuggerTab";

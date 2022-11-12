@@ -11,10 +11,11 @@ import {
   RESIZE_TOOL_WINDOW_TOP_ACTION_ID,
   // For some reason importing from shorter paths doesn't work as expected in cypress ¯\_(ツ)_/¯
   // Weirdly, `import *` works in that case.
-} from "@intellij-platform/core/ToolWindow/impl/ToolWindowActionIds";
+} from "@intellij-platform/core/ToolWindowsImpl/ToolWindowActionIds";
 
 // TODO: OS specific defaults
 // TODO: extract and export action ids
+// NOTE: defaultKeymap doesn't belong to ActionSystem semantically. Would be something to be moved to a separate module
 export const defaultKeymap: Keymap = {
   [RESIZE_TOOL_WINDOW_RIGHT_ACTION_ID]: [
     {

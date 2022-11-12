@@ -3,7 +3,7 @@ import { Meta } from "@storybook/react";
 import { PlatformIcon, StyledIconLiveIndicator } from "../../Icon";
 import { SpeedSearchList } from "../../List/SpeedSearchList/SpeedSearchList";
 import { ToolWindowTabContent } from "../../Tabs/ToolWindowTabs";
-import { MultiViewToolWindow } from "../impl/MultiViewToolWindow";
+import { MultiViewToolWindow } from "../../ToolWindowsImpl/MultiViewToolWindow";
 import {
   FakeExecutionToolbar,
   RunConsoleOutput,
@@ -16,7 +16,7 @@ import packageJson from "../../../package.json";
 import { ActionButton } from "../../ActionButton";
 import { SpeedSearchTreeSample } from "../../story-components";
 import { styledComponentsControlsExclude } from "../../story-helpers";
-import { DefaultToolWindow } from "../impl/DefaultToolWindow";
+import { DefaultToolWindow } from "../../ToolWindowsImpl/DefaultToolWindow";
 import { ToolWindows, ToolWindowsProps } from "../ToolWindows";
 import {
   ToolWindowsState,

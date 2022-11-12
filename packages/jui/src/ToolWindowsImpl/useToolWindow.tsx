@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { useFocusWithin } from "@react-aria/interactions";
 import { mergeProps } from "@react-aria/utils";
-import { useToolWindowState } from "@intellij-platform/core/ToolWindow";
+import { useToolWindowState } from "@intellij-platform/core/ToolWindows";
 import { useWindowMoveHandle } from "@intellij-platform/core/Window";
 
 export function useToolWindow(

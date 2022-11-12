@@ -1,9 +1,9 @@
 import React, { Key, useEffect, useState } from "react";
 import { useControlledState } from "@react-stately/utils";
 import { DefaultToolWindow, DefaultToolWindowProps } from "./DefaultToolWindow";
-import { TabItem } from "../../Tabs/TabItem";
-import { usePrevious } from "../../utils/usePrevious";
-import { ToolWindowTabs } from "../../Tabs/ToolWindowTabs/ToolWindowTabs";
+import { TabItem } from "../Tabs/TabItem";
+import { usePrevious } from "../utils/usePrevious";
+import { ToolWindowTabs } from "../Tabs/ToolWindowTabs/ToolWindowTabs";
 
 export interface MultiContentToolWindowProps
   extends Pick<DefaultToolWindowProps, "additionalActions"> {

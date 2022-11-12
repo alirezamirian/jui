@@ -5,7 +5,7 @@ import {
   ToolWindowRefValue,
   ToolWindows,
   ToolWindowsProps,
-} from "@intellij-platform/core/ToolWindow";
+} from "@intellij-platform/core/ToolWindows";
 import { ToolWindowsActionProvider } from "./ToolWindowsActionProvider";
 import { DefaultToolWindowToolbarButton } from "./DefaultToolWindowToolbarButton";
 

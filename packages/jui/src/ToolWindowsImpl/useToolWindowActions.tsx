@@ -5,7 +5,7 @@ import {
   isHorizontalToolWindow,
   useToolWindowState,
   ViewMode,
-} from "@intellij-platform/core/ToolWindow";
+} from "@intellij-platform/core/ToolWindows";
 import { ActionDefinition } from "@intellij-platform/core/ActionSystem";
 import { PlatformIcon } from "@intellij-platform/core/Icon";
 import {

@@ -9,7 +9,7 @@ import {
   toolWindowState,
   DefaultToolWindows,
 } from "@intellij-platform/core";
-import darculaThemeJson from "../../../themes/darcula.theme.json";
+import darculaThemeJson from "../../themes/darcula.theme.json";
 import { KeymapProvider } from "@intellij-platform/core/ActionSystem";
 
 const window = (id: string) => ({

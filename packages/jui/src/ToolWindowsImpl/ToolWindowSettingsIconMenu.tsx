@@ -1,6 +1,6 @@
 import React from "react";
 import { DividerItem } from "@intellij-platform/core/Collections";
-import { useToolWindowState } from "@intellij-platform/core/ToolWindow";
+import { useToolWindowState } from "@intellij-platform/core/ToolWindows";
 import {
   Action,
   useAction,

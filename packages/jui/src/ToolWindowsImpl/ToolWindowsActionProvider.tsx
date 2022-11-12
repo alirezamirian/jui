@@ -7,7 +7,7 @@ import {
   getViewModeType,
   ToolWindowRefValue,
   ToolWindowsState,
-} from "@intellij-platform/core/ToolWindow";
+} from "@intellij-platform/core/ToolWindows";
 import {
   HIDE_ALL_WINDOWS_ACTION_ID,
   JUMP_TO_LAST_WINDOW_ACTION_ID,
