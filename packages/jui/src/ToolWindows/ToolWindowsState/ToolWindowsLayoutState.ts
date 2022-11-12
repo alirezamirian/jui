@@ -193,10 +193,16 @@ const getFloatWindowsState = (
 export function getToolWindowsLayoutState(
   state: Readonly<ToolWindowsState>,
   containerSize: ContainerSize,
-  windowIds?: string[]
+  /**
+   * list of valid window ids. If state contains window ids that are not included here, they will be excluded in
+   * the returned state object.
+   */
+  windowIds: string[] = Object.keys(state.windows)
 ): ToolWindowsLayoutState {
   const toolWindows = Object.keys(state.windows)
-    .filter((key) => !windowIds || windowIds.includes(key))
+    .filter(
+      (key) => windowIds.includes(key) && !state.removedFromSideBarIds.has(key)
+    )
     .map((key) => ({
       ...state.windows[key],
       key,

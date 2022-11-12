@@ -81,6 +81,11 @@ describe("tool window state", () => {
       l5: { isVisible: true },
     });
   });
+  test("showing a removed from sidebar window will add it back", () => {
+    expect(
+      state.removeFromSidebar("l9").show("l9").removedFromSideBarIds
+    ).not.toContain("l9");
+  });
 
   test("toggle is equivalent of calling show, if tool window is not currently opened", () => {
     expect(state.toggle("l5")).toEqual(state.show("l5"));
@@ -301,6 +306,13 @@ describe("tool window state", () => {
         .move("l6", { anchor: "right", isSplit: true })
         .restoreWindows()
     );
+  });
+  test("removeFromSidebar adds the id to the list of removedFromSidebarIds and set visibility to hidden", () => {
+    const newState = state.removeFromSidebar("l6");
+    expectChanges(newState, {
+      l6: { isVisible: false },
+    });
+    expect(newState.removedFromSideBarIds).toContain("l6");
   });
 
   // TODO: make sure if opening a tool window in docked view should in any way set the sideWeight of some of the

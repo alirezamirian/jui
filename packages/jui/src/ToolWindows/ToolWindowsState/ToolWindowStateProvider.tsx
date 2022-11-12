@@ -7,6 +7,7 @@ import { useEventCallback } from "@intellij-platform/core/utils/useEventCallback
 type ToolWindowStateContextValue = {
   state: Readonly<ToolWindowState>;
   hide: () => void;
+  remove: () => void;
   blur: () => void;
   focusMainContent: () => void;
   moveToSide: (args: { anchor: Anchor; isSplit: boolean }) => void;
@@ -55,6 +56,9 @@ export const ToolWindowStateProvider: React.FC<
   const hide = useEventCallback(() => {
     onToolWindowStateChange(toolWindowsState.hide(id));
   });
+  const remove = useEventCallback(() => {
+    onToolWindowStateChange(toolWindowsState.removeFromSidebar(id));
+  });
   const focusMainContent = useEventCallback(() => {
     mainContentFocusableRef.current?.focus();
   });
@@ -101,6 +105,7 @@ export const ToolWindowStateProvider: React.FC<
       state,
       hide,
       blur,
+      remove,
       focusMainContent,
       moveToSide,
       changeViewMode,

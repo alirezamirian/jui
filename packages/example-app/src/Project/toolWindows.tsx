@@ -1,5 +1,4 @@
 import React from "react";
-import { indexBy } from "ramda";
 import { ProjectViewPane } from "../ProjectView/ProjectViewPane";
 import { ProjectViewActionButtons } from "../ProjectView/ProjectViewActionButtons";
 import {
@@ -13,7 +12,7 @@ import { Terminal } from "../Terminal";
 import { ChangesViewPane } from "../VersionControl/Changes/ChangesView/ChangesViewPane";
 import { CurrentBranchName } from "../VersionControl/CurrentBranchName";
 
-type ToolWindowDescriptor = {
+export type ToolWindowDescriptor = {
   id: string;
   title: string;
   icon: React.ReactNode;
@@ -67,4 +66,3 @@ export const toolWindows: ToolWindowDescriptor[] = [
     initialState: toolWindowState({ anchor: "left", isVisible: false }),
   },
 ];
-export const windowById = indexBy(({ id }) => id, toolWindows);

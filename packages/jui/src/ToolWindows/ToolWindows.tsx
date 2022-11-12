@@ -123,7 +123,7 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
     [key: string]: React.RefObject<React.ComponentRef<typeof FocusScope>>;
   }>({});
 
-  const latestRef = useLatest({ toolWindowsState });
+  const latestRef = useLatest({ toolWindowsState, onToolWindowStateChange });
 
   useLayoutEffect(() => {
     setLayoutState(
@@ -146,7 +146,15 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
         null,
       focusLastActiveWindow: () => {
         const { lastFocusedKey } = latestRef.current.toolWindowsState;
-        if (lastFocusedKey) {
+        if (lastFocusedKey != null) {
+          if (
+            !latestRef.current.toolWindowsState.windows[lastFocusedKey]
+              .isVisible
+          ) {
+            latestRef.current.onToolWindowStateChange(
+              toolWindowsState.show(lastFocusedKey)
+            );
+          }
           windowFocusableRefs.current[lastFocusedKey].current?.focus(true);
         }
       },

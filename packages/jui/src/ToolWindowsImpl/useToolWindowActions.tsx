@@ -84,8 +84,15 @@ export function useToolWindowActions(): { [key: string]: ActionDefinition } {
     moveToSide,
     focusMainContent,
     hide,
+    remove,
     state,
   } = useToolWindowState();
+
+  if (!state) {
+    // FIXME: when window is removed, a last render happens with the new ToolWindowsState, which doesn't have state
+    //  for the removed tool window. Need to understand why that happens.
+    return {};
+  }
   const actions: { [key: string]: ActionDefinition } = {
     [DOCK_PINNED_MODE_ACTION_ID]: {
       title: "Dock Pinned",
@@ -154,8 +161,7 @@ export function useToolWindowActions(): { [key: string]: ActionDefinition } {
     [REMOVE_TOOL_WINDOW_FROM_SIDEBAR_ACTION_ID]: {
       title: "Remove from Sidebar",
       actionPerformed: () => {
-        // TODO(release): either remove the action or implement it
-        alert("Not implemented");
+        remove();
       },
     },
   };

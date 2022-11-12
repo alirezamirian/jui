@@ -120,19 +120,32 @@ type IdToWindowStateMap = Readonly<{
  */
 export class ToolWindowsState {
   public readonly lastFocusedKey: Key | null;
+  public readonly removedFromSideBarIds: ReadonlySet<Key>;
   private readonly layoutToRestore: IdToWindowStateMap;
   constructor(
     public readonly windows: IdToWindowStateMap,
     {
       lastFocusedKey = null,
       layoutToRestore = {},
+      removedFromSideBarIds = [],
     }: {
       lastFocusedKey?: Key | null;
       layoutToRestore?: IdToWindowStateMap;
+      removedFromSideBarIds?: Iterable<Key>;
     } = {}
   ) {
     this.lastFocusedKey = lastFocusedKey;
     this.layoutToRestore = layoutToRestore;
+    this.removedFromSideBarIds = new Set(removedFromSideBarIds);
+    const invalidWindows = Object.keys(this.windows).filter(
+      (key) =>
+        this.removedFromSideBarIds.has(key) && this.windows[key].isVisible
+    );
+    if (invalidWindows.length > 0) {
+      throw new Error(
+        `Invalid ToolWindowsState. The following windows are set as visible but are removed from the sidebar: ${invalidWindows}`
+      );
+    }
   }
 
   hide(targetKey: Key): ToolWindowsState {
@@ -161,13 +174,13 @@ export class ToolWindowsState {
   /**
    * Restores windows to the state before hideAll.
    */
-  restoreWindows() {
+  restoreWindows(): ToolWindowsState {
     return this.mapWindows(
       (toolWindow, key) => this.layoutToRestore[key] || toolWindow
     );
   }
 
-  lastFocused(key: Key) {
+  lastFocused(key: Key): ToolWindowsState {
     return this.mapWindows((toolWindow) => toolWindow, {
       lastFocusedKey: key,
     });
@@ -184,22 +197,29 @@ export class ToolWindowsState {
     } else if (isDocked(target)) {
       closableViewModes.push("docked_unpinned", "docked_pinned", "undock");
     }
-    return this.mapWindows((toolWindow, key) => {
-      if (key === targetKey) {
-        return {
-          ...toolWindow,
-          isVisible: true,
-        };
+    return this.mapWindows(
+      (toolWindow, key) => {
+        if (key === targetKey) {
+          return {
+            ...toolWindow,
+            isVisible: true,
+          };
+        }
+        if (
+          toolWindow.isVisible &&
+          areInSameSection(target, toolWindow) &&
+          closableViewModes.includes(toolWindow.viewMode)
+        ) {
+          return { ...toolWindow, isVisible: false };
+        }
+        return toolWindow;
+      },
+      {
+        removedFromSideBarIds: [...this.removedFromSideBarIds].filter(
+          (key) => key !== targetKey
+        ),
       }
-      if (
-        toolWindow.isVisible &&
-        areInSameSection(target, toolWindow) &&
-        closableViewModes.includes(toolWindow.viewMode)
-      ) {
-        return { ...toolWindow, isVisible: false };
-      }
-      return toolWindow;
-    });
+    );
   }
 
   toggle(targetKey: Key): ToolWindowsState {
@@ -322,8 +342,26 @@ export class ToolWindowsState {
     return this.stretch(targetKey, value, containerBounds, "height");
   }
 
-  setFloatingBound(targetKey: Key, floatingBounds: WindowBounds) {
+  setFloatingBound(
+    targetKey: Key,
+    floatingBounds: WindowBounds
+  ): ToolWindowsState {
     return this.update(targetKey, "floatingBounds", floatingBounds);
+  }
+
+  removeFromSidebar(targetKey: Key): ToolWindowsState {
+    return this.mapWindows(
+      (state, key) =>
+        key === targetKey
+          ? {
+              ...state,
+              isVisible: false,
+            }
+          : state,
+      {
+        removedFromSideBarIds: [...this.removedFromSideBarIds, targetKey],
+      }
+    );
   }
 
   mapWindows(
@@ -333,6 +371,7 @@ export class ToolWindowsState {
     return new ToolWindowsState(mapObjIndexed(mapFn, this.windows), {
       lastFocusedKey: this.lastFocusedKey,
       layoutToRestore: this.layoutToRestore,
+      removedFromSideBarIds: this.removedFromSideBarIds,
       ...options,
     });
   }

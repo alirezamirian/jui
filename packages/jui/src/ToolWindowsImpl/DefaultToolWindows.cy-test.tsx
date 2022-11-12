@@ -122,6 +122,29 @@ describe("DefaultToolWindowActions", () => {
       cy.realPress(["F12"]);
       cy.findByTestId("Second window").find("input").eq(0).should("have.focus");
     });
+
+    it.only("opens the last activated tool window, if closed", () => {
+      cy.mount(
+        <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
+          <SimpleToolWindows />
+        </ThemeProvider>
+      );
+      cy.findByTestId("First window").click(); // Activate the first tool window
+      cy.contains("First window").click(); // Close the first tool window
+      cy.realPress(["F12"]);
+      cy.findByTestId("First window").should("exist");
+    });
+    it("adds removed from sidebar tool window back", () => {
+      cy.mount(
+        <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
+          <SimpleToolWindows />
+        </ThemeProvider>
+      );
+      cy.findByTestId("First window").click(); // Activate the first tool window
+      cy.contains("First window").click(); // Close the first tool window
+      cy.realPress(["F12"]);
+      cy.findByTestId("First window").should("exist");
+    });
   });
   describe("ActivateToolWindow", () => {
     it("opens and focuses tool window if currently closed", () => {

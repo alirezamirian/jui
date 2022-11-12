@@ -49,28 +49,29 @@ export function useToolWindowsActions({
   const windowIds = Object.keys(toolWindowsState.windows).map(
     (key) => `${key}`
   );
+  const activateToolWindowActions = zipObj(
+    windowIds.map(getActivateToolWindowActionId),
+    windowIds.map((id: string, index): ActionDefinition => {
+      const { title, icon } = getPresentation?.(id) || {};
+      return {
+        title: title || `${getOrdinal(index)} window`,
+        icon,
+        description: `Activate ${title || getOrdinal(index)} window`,
+        actionPerformed: () => {
+          if (
+            toolWindowsState.windows[id]?.isVisible &&
+            !toolWindowsRef.current?.hasFocus(id)
+          ) {
+            toolWindowsRef.current?.focus(id);
+          } else {
+            toolWindowsRef.current?.changeState((state) => state.toggle(id));
+          }
+        },
+      };
+    })
+  );
   const actions: Record<string, ActionDefinition> = {
-    ...zipObj(
-      windowIds.map(getActivateToolWindowActionId),
-      windowIds.map((id: string, index): ActionDefinition => {
-        const { title, icon } = getPresentation?.(id) || {};
-        return {
-          title: title || `${getOrdinal(index)} window`,
-          icon,
-          description: `Activate ${title || getOrdinal(index)} window`,
-          actionPerformed: () => {
-            if (
-              toolWindowsState.windows[id]?.isVisible &&
-              !toolWindowsRef.current?.hasFocus(id)
-            ) {
-              toolWindowsRef.current?.focus(id);
-            } else {
-              toolWindowsRef.current?.changeState((state) => state.toggle(id));
-            }
-          },
-        };
-      })
-    ),
+    ...activateToolWindowActions,
     [HIDE_ALL_WINDOWS_ACTION_ID]: {
       title: isAnySideWindowWindowOpen(toolWindowsState)
         ? "Hide All Windows"
