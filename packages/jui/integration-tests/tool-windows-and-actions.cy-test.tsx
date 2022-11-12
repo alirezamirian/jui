@@ -1,17 +1,25 @@
 import React, { useState } from "react";
 import {
-  ActionTooltip,
   DefaultToolWindow,
-  PlatformIcon,
   Theme,
   ThemeProvider,
-  TooltipTrigger,
   ToolWindowsState,
   toolWindowState,
-  ToolWindowsWithActions,
+  DefaultToolWindows,
 } from "@intellij-platform/core";
 import darculaThemeJson from "../themes/darcula.theme.json";
 import { SpeedSearchTreeSample } from "@intellij-platform/core/story-components";
+
+const window = (id: string) => ({
+  id,
+  title: id,
+  icon: "toolwindows/toolWindowProject",
+  content: (
+    <DefaultToolWindow headerContent={id} id="tool-window">
+      {id === "First window" ? <SpeedSearchTreeSample /> : <input />}
+    </DefaultToolWindow>
+  ),
+});
 
 const SimpleToolWindows = ({
   selectedToolWindow = "First window",
@@ -30,31 +38,16 @@ const SimpleToolWindows = ({
       })
   );
   return (
-    <ToolWindowsWithActions
+    <DefaultToolWindows
       height={"100vh"}
       toolWindowsState={state}
       onToolWindowStateChange={setState}
-      renderToolbarButton={(id) => (
-        <TooltipTrigger tooltip={<ActionTooltip actionName={id} />}>
-          <span>
-            <PlatformIcon icon="toolwindows/toolWindowProject" />
-            &nbsp;
-            {id}
-          </span>
-        </TooltipTrigger>
-      )}
-      renderWindow={(id) => {
-        return (
-          <DefaultToolWindow headerContent={id} id="tool-window">
-            {id === "First window" ? <SpeedSearchTreeSample /> : <input />}
-          </DefaultToolWindow>
-        );
-      }}
+      windows={[window("First window"), window("Second window")]}
     >
       <div style={{ padding: 8 }}>
         <textarea />
       </div>
-    </ToolWindowsWithActions>
+    </DefaultToolWindows>
   );
 };
 

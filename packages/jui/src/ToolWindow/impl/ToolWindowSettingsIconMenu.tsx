@@ -1,9 +1,6 @@
 import React from "react";
 import { DividerItem } from "@intellij-platform/core/Collections";
-import {
-  REMOVE_TOOL_WINDOW_FROM_SIDEBAR_ACTION_ID,
-  useToolWindowState,
-} from "@intellij-platform/core/ToolWindow";
+import { useToolWindowState } from "@intellij-platform/core/ToolWindow";
 import {
   Action,
   useAction,
@@ -18,6 +15,7 @@ import {
   VIEW_MODE_ACTION_IDS,
   ViewModeToActionId,
 } from "./useToolWindowActions";
+import { REMOVE_TOOL_WINDOW_FROM_SIDEBAR_ACTION_ID } from "./ToolWindowActionIds";
 
 /**
  * Tool window gear icon menu, with a set of default actions and some extra ones.

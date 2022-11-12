@@ -27,11 +27,18 @@ import {
   HighlightedTextValue,
   TabCloseButton,
   TooltipTrigger,
-  ToolWindowsWithActions,
+  DefaultToolWindows,
 } from "@intellij-platform/core";
 
 export default {
   title: "Components/ToolWindow",
+  parameters: {
+    docs: {
+      // This is needed due to this complicated issue causing browser to hang otherwise:
+      // https://github.com/storybookjs/storybook/issues/17025#issuecomment-1055654634
+      source: { type: "code" }, // Default here is 'dynamic'
+    },
+  },
 } as Meta;
 
 const SampleToolWindowContent = () => <textarea />;
@@ -39,43 +46,76 @@ const windows = [
   {
     id: "project",
     title: "Project",
-    icon: "toolwindows/toolWindowProject",
-    component: SpeedSearchTreeSample,
+    icon: <PlatformIcon icon="toolwindows/toolWindowProject" />,
+    content: (
+      <DefaultToolWindow
+        headerContent="Project"
+        additionalActions={
+          <>
+            <ActionButton>
+              <PlatformIcon icon="actions/expandall" />
+            </ActionButton>
+          </>
+        }
+      >
+        {<SpeedSearchTreeSample />}
+      </DefaultToolWindow>
+    ),
     initialState: toolWindowState({ isVisible: true }),
   },
   {
     id: "structure",
     title: "Structure",
-    icon: "toolwindows/toolWindowStructure",
-    component: SampleToolWindowContent,
+    icon: <PlatformIcon icon="toolwindows/toolWindowStructure" />,
+    content: (
+      <DefaultToolWindow headerContent="Structure">
+        {<SampleToolWindowContent />}
+      </DefaultToolWindow>
+    ),
     initialState: toolWindowState(),
   },
   {
     id: "favorites",
     title: "Favorites",
-    icon: "toolwindows/toolWindowFavorites",
-    component: SampleToolWindowContent,
+    icon: <PlatformIcon icon="toolwindows/toolWindowFavorites" />,
+    content: (
+      <DefaultToolWindow headerContent="Favorites">
+        {<SampleToolWindowContent />}
+      </DefaultToolWindow>
+    ),
     initialState: toolWindowState({ isSplit: true }),
   },
   {
     id: "run",
     title: "Run",
-    icon: "toolwindows/toolWindowRun",
-    component: SampleToolWindowContent,
+    icon: <PlatformIcon icon="toolwindows/toolWindowRun" />,
+    content: (
+      <DefaultToolWindow headerContent="Run">
+        {<SampleToolWindowContent />}
+      </DefaultToolWindow>
+    ),
     initialState: toolWindowState({ anchor: "bottom", weight: 0.35 }),
   },
   {
     id: "debugger",
-    title: "Debug",
-    icon: "toolwindows/toolWindowDebugger",
-    component: SampleToolWindowContent,
+    title: "Debugger",
+    icon: <PlatformIcon icon="toolwindows/toolWindowDebugger" />,
+    content: (
+      <DefaultToolWindow headerContent="Debug">
+        {<SampleToolWindowContent />}
+      </DefaultToolWindow>
+    ),
     initialState: toolWindowState({ anchor: "bottom", viewMode: "float" }),
   },
   {
     id: "messages",
     title: "Messages",
-    icon: "toolwindows/toolWindowMessages",
-    component: SampleToolWindowContent,
+    icon: <PlatformIcon icon="toolwindows/toolWindowMessages" />,
+    content: (
+      <DefaultToolWindow headerContent="Messages">
+        {<SampleToolWindowContent />}
+      </DefaultToolWindow>
+    ),
     initialState: toolWindowState({
       anchor: "bottom",
       viewMode: "undock",
@@ -84,20 +124,29 @@ const windows = [
   },
   {
     id: "events",
-    title: "Events Log",
-    icon: "toolwindows/errorEvents",
-    component: SampleToolWindowContent,
+    title: "Events",
+    icon: <PlatformIcon icon="toolwindows/errorEvents" />,
+    content: (
+      <DefaultToolWindow headerContent="Events Log">
+        {<SampleToolWindowContent />}
+      </DefaultToolWindow>
+    ),
     initialState: toolWindowState({ anchor: "bottom", isSplit: true }),
   },
   {
     id: "commit",
     title: "Commit",
-    icon: "toolwindows/toolWindowCommit",
-    component: SpeedSearchTreeSample,
+    icon: <PlatformIcon icon="toolwindows/toolWindowCommit" />,
+    content: (
+      <DefaultToolWindow headerContent="Commit">
+        {<SpeedSearchTreeSample />}
+      </DefaultToolWindow>
+    ),
     initialState: toolWindowState({ anchor: "right" }),
   },
 ];
 const windowById = indexBy(({ id }) => id, windows);
+
 export const Default = (
   props: Pick<ToolWindowsProps, "hideToolWindowBars" | "useWidescreenLayout">
 ) => {
@@ -106,43 +155,17 @@ export const Default = (
       new ToolWindowsState(map(({ initialState }) => initialState, windowById))
   );
   return (
-    <ToolWindowsWithActions
+    <DefaultToolWindows
       {...props}
       height={"100vh"}
       toolWindowsState={state}
       onToolWindowStateChange={setState}
-      renderToolbarButton={(id) => (
-        <>
-          <PlatformIcon icon={windowById[id].icon} />
-          &nbsp;
-          {windowById[id].title}
-        </>
-      )}
-      renderWindow={(id) => {
-        const Component = windowById[id].component;
-        return (
-          <DefaultToolWindow
-            key={id} /*FIXME: this shouldn't be necessary */
-            headerContent={windowById[id].title}
-            additionalActions={
-              id === "project" && (
-                <>
-                  <ActionButton>
-                    <PlatformIcon icon="actions/expandall" />
-                  </ActionButton>
-                </>
-              )
-            }
-          >
-            {<Component />}
-          </DefaultToolWindow>
-        );
-      }}
+      windows={windows}
     >
       <div style={{ padding: 8 }}>
         <textarea />
       </div>
-    </ToolWindowsWithActions>
+    </DefaultToolWindows>
   );
 };
 
@@ -175,81 +198,78 @@ export const MultiView = (
       height={"100vh"}
       toolWindowsState={state}
       onToolWindowStateChange={setState}
-      renderToolbarButton={(id) => (
-        <>
-          <PlatformIcon icon={windowById[id].icon}>
-            {executions.some((execution) => execution.isRunning) && (
-              <StyledIconLiveIndicator />
-            )}
-          </PlatformIcon>
-          &nbsp;
-          {windowById[id].title}
-        </>
-      )}
-      renderWindow={(id) => {
-        return (
-          <MultiViewToolWindow
-            key={id}
-            headerContent={({ renderedViewSwitcher }) => {
-              return (
-                <>
-                  {
-                    <span style={{ marginRight: 4 }}>
-                      {windowById[id].title}:
-                    </span>
+      windows={[
+        {
+          id: "run",
+          toolbarButton: (
+            <>
+              <PlatformIcon icon="toolwindows/toolWindowRun">
+                {executions.some((execution) => execution.isRunning) && (
+                  <StyledIconLiveIndicator />
+                )}
+              </PlatformIcon>
+              &nbsp; Run
+            </>
+          ),
+          content: (
+            <MultiViewToolWindow
+              headerContent={({ renderedViewSwitcher }) => {
+                return (
+                  <>
+                    {<span style={{ marginRight: 4 }}>Run</span>}
+                    {executions.length > 1 ? (
+                      renderedViewSwitcher
+                    ) : (
+                      <FakeExecutionToolbar
+                        execution={executions[0]}
+                        toggle={toggle}
+                      />
+                    )}
+                  </>
+                );
+              }}
+            >
+              {executions.map((execution) => (
+                <MultiViewToolWindow.View
+                  key={execution.id}
+                  tabContent={
+                    <ToolWindowTabContent
+                      title={execution.title}
+                      icon={
+                        <PlatformIcon icon="runConfigurations/application">
+                          {execution.isRunning && <StyledIconLiveIndicator />}
+                        </PlatformIcon>
+                      }
+                      closeButton={
+                        <TooltipTrigger
+                          tooltip={
+                            <ActionTooltip
+                              actionName="Close Tab"
+                              shortcut="^⇧F4"
+                            />
+                          }
+                        >
+                          <TabCloseButton onPress={() => close(execution.id)} />
+                        </TooltipTrigger>
+                      }
+                    />
                   }
-                  {executions.length > 1 ? (
-                    renderedViewSwitcher
-                  ) : (
-                    <FakeExecutionToolbar
-                      execution={executions[0]}
-                      toggle={toggle}
-                    />
-                  )}
-                </>
-              );
-            }}
-          >
-            {executions.map((execution) => (
-              <MultiViewToolWindow.View
-                key={execution.id}
-                tabContent={
-                  <ToolWindowTabContent
-                    title={execution.title}
-                    icon={
-                      <PlatformIcon icon="runConfigurations/application">
-                        {execution.isRunning && <StyledIconLiveIndicator />}
-                      </PlatformIcon>
-                    }
-                    closeButton={
-                      <TooltipTrigger
-                        tooltip={
-                          <ActionTooltip
-                            actionName="Close Tab"
-                            shortcut="^⇧F4"
-                          />
-                        }
-                      >
-                        <TabCloseButton onPress={() => close(execution.id)} />
-                      </TooltipTrigger>
-                    }
-                  />
-                }
-              >
-                <VerticalFlexContainer>
-                  {executions.length > 1 && (
-                    <FakeExecutionToolbar
-                      execution={execution}
-                      toggle={toggle}
-                    />
-                  )}
-                  <RunConsoleOutput />
-                </VerticalFlexContainer>
-              </MultiViewToolWindow.View>
-            ))}
-          </MultiViewToolWindow>
-        );
-      }}
+                >
+                  <VerticalFlexContainer>
+                    {executions.length > 1 && (
+                      <FakeExecutionToolbar
+                        execution={execution}
+                        toggle={toggle}
+                      />
+                    )}
+                    <RunConsoleOutput />
+                  </VerticalFlexContainer>
+                </MultiViewToolWindow.View>
+              ))}
+            </MultiViewToolWindow>
+          ),
+        },
+      ]}
     >
       <div style={{ marginTop: 25, width: 300 }}>
         <SpeedSearchList

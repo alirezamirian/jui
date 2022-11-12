@@ -7,11 +7,22 @@ import {
   ToolWindowsState,
   ToolWindowState,
   toolWindowState,
-  ToolWindowsWithActions,
+  DefaultToolWindows,
 } from "@intellij-platform/core";
 import darculaThemeJson from "../../../themes/darcula.theme.json";
-import { DefaultToolWindowActions } from "@intellij-platform/core/ToolWindow/impl/DefaultToolWindowActions";
 import { KeymapProvider } from "@intellij-platform/core/ActionSystem";
+
+const window = (id: string) => ({
+  id,
+  title: id,
+  icon: null,
+  content: (
+    <DefaultToolWindow data-testid={`${id}`}>
+      <input />
+      <input />
+    </DefaultToolWindow>
+  ),
+});
 
 const SimpleToolWindows = React.forwardRef(
   (
@@ -30,27 +41,17 @@ const SimpleToolWindows = React.forwardRef(
     );
 
     return (
-      <ToolWindowsWithActions
+      <DefaultToolWindows
         ref={ref}
         height={"100vh"}
         toolWindowsState={state}
         onToolWindowStateChange={setState}
-        renderToolbarButton={(id) => (
-          <span data-testid={`${id} stripe button`}>{id}</span>
-        )}
-        renderWindow={(id) => {
-          return (
-            <DefaultToolWindow headerContent={id} data-testid={`${id}`}>
-              <input />
-              <input />
-            </DefaultToolWindow>
-          );
-        }}
+        windows={[window("First window"), window("Second window")]}
       >
         <div style={{ padding: 8 }}>
           <textarea data-testid="main content focusable" />
         </div>
-      </ToolWindowsWithActions>
+      </DefaultToolWindows>
     );
   }
 );
@@ -129,7 +130,7 @@ describe("DefaultToolWindowActions", () => {
           <WithActivateToolWindowKeymap />
         </ThemeProvider>
       );
-      cy.findByTestId("Second window stripe button").click(); // closing second tool window
+      cy.contains("Second window").click(); // closing second tool window
       cy.realPress(["Meta", "2"]);
       cy.findByTestId("Second window").should("exist");
       cy.findByTestId("Second window").find("input").eq(0).should("have.focus");

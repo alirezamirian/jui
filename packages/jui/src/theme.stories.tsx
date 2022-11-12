@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
+import { indexBy, map } from "ramda";
 import { Meta, Story } from "@storybook/react";
 import {
   ActionButton,
@@ -37,7 +38,6 @@ import {
   FakeExecutionToolbar,
   VerticalFlexContainer,
 } from "./ToolWindow/stories/components/FakeExecution";
-import { map } from "ramda";
 import { StyledEditorTab } from "./Tabs/EditorTabs/StyledEditorTab";
 import { StyledToolWindowTab } from "./Tabs/ToolWindowTabs/StyledToolWindowTab";
 import { StyledDebuggerTab } from "./Tabs/DebuggerTabs/StyledDebuggerTab";
@@ -63,25 +63,308 @@ const RunConsoleOutput = styled.div`
  * Useful for manual testing, and also used in an automated visual test on theme changes.
  */
 export const Theme: Story = () => {
-  const toolWindowById = {
-    SpeedSearchTree: {
+  const speedSearchTree = (
+    <>
+      <DefaultToolWindow
+        headerContent="SpeedSearchTree"
+        additionalActions={
+          <>
+            <ActionButton>
+              <PlatformIcon icon="actions/expandall" />
+            </ActionButton>
+          </>
+        }
+      >
+        <SpeedSearchTree
+          selectionMode="multiple"
+          defaultExpandedKeys={["project", "src", "src/app"]}
+          defaultSelectedKeys={["App.jsx"]}
+        >
+          <Item
+            key="project"
+            textValue="jui"
+            title={
+              <ItemLayout>
+                <PlatformIcon icon="nodes/folder" />
+                <HighlightedTextValue />
+                <ItemLayout.Hint>~/workspace/jui</ItemLayout.Hint>
+              </ItemLayout>
+            }
+          >
+            <Item
+              key="src"
+              textValue="src"
+              title={
+                <ItemLayout>
+                  <PlatformIcon icon="nodes/folder" />
+                  <HighlightedTextValue />
+                </ItemLayout>
+              }
+            >
+              <Item
+                key="src/app"
+                textValue="app"
+                title={
+                  <ItemLayout>
+                    <PlatformIcon icon="nodes/folder" />
+                    <HighlightedTextValue />
+                  </ItemLayout>
+                }
+              >
+                <Item textValue="App.jsx" key="App.jsx">
+                  <ItemLayout>
+                    <PlatformIcon icon="fileTypes/javaScript" />
+                    <HighlightedTextValue />
+                  </ItemLayout>
+                </Item>
+              </Item>
+              <Item textValue="index.jsx" key="index.jsx">
+                <ItemLayout>
+                  <PlatformIcon icon="fileTypes/javaScript" />
+                  <HighlightedTextValue />
+                </ItemLayout>
+              </Item>
+            </Item>
+          </Item>
+        </SpeedSearchTree>
+        <br />
+        <SpeedSearchTree
+          defaultSelectedKeys={["index.jsx"]}
+          selectionMode="multiple"
+          alwaysShowAsFocused
+        >
+          <Item textValue="index.jsx" key="index.jsx">
+            <ItemLayout>
+              <PlatformIcon icon="fileTypes/javaScript" />
+              <HighlightedTextValue />
+            </ItemLayout>
+          </Item>
+        </SpeedSearchTree>
+      </DefaultToolWindow>
+    </>
+  );
+  const speedSearchList = (
+    <>
+      <DefaultToolWindow headerContent="SpeedSearchList">
+        <SpeedSearchList selectionMode="single">
+          <Item textValue=".gitignore" key=".gitignore">
+            <ItemLayout>
+              <PlatformIcon icon="vcs/ignore_file" />
+              <HighlightedTextValue />
+            </ItemLayout>
+          </Item>
+          <Item textValue="Archive" key="Archive">
+            <ItemLayout>
+              <PlatformIcon icon="fileTypes/archive" />
+              <HighlightedTextValue />
+            </ItemLayout>
+          </Item>
+          <Item textValue="JavaScript" key="JavaScript">
+            <ItemLayout>
+              <PlatformIcon icon="fileTypes/javaScript" />
+              <HighlightedTextValue />
+            </ItemLayout>
+          </Item>
+          <Item textValue="JSON" key="JSON">
+            <ItemLayout>
+              <PlatformIcon icon="fileTypes/json" />
+              <HighlightedTextValue />
+            </ItemLayout>
+          </Item>
+          <Item textValue="HTML" key="HTML">
+            <ItemLayout>
+              <PlatformIcon icon="fileTypes/html" />
+              <HighlightedTextValue />
+            </ItemLayout>
+          </Item>
+          <Item textValue="YAML" key="YAML">
+            <ItemLayout>
+              <PlatformIcon icon="fileTypes/yaml" />
+              <HighlightedTextValue />
+            </ItemLayout>
+          </Item>
+        </SpeedSearchList>
+        <br />
+        <SpeedSearchList selectionMode="single" alwaysShowAsFocused>
+          <Item textValue=".gitignore" key=".gitignore">
+            <ItemLayout>
+              <PlatformIcon icon="vcs/ignore_file" />
+              <HighlightedTextValue />
+            </ItemLayout>
+          </Item>
+          <Item textValue="Archive" key="Archive">
+            <ItemLayout>
+              <PlatformIcon icon="fileTypes/archive" />
+              <HighlightedTextValue />
+            </ItemLayout>
+          </Item>
+        </SpeedSearchList>
+      </DefaultToolWindow>
+    </>
+  );
+  const multiViewToolWindow = (
+    <>
+      <MultiViewToolWindow
+        defaultActiveKey="e2"
+        headerContent={({ renderedViewSwitcher }) => {
+          return <>{renderedViewSwitcher}</>;
+        }}
+      >
+        <MultiViewToolWindow.View
+          key={"e1"}
+          tabContent={
+            <ToolWindowTabContent
+              title="start"
+              icon={
+                <PlatformIcon icon="runConfigurations/application">
+                  <StyledIconLiveIndicator />
+                </PlatformIcon>
+              }
+              closeButton={<TabCloseButton />}
+            />
+          }
+        >
+          <VerticalFlexContainer>
+            <FakeExecutionToolbar
+              execution={{ id: "foo", title: "Foo", isRunning: true }}
+              toggle={() => {}}
+            />
+            <RunConsoleOutput />
+          </VerticalFlexContainer>
+        </MultiViewToolWindow.View>
+        <MultiViewToolWindow.View
+          key={"e2"}
+          tabContent={
+            <ToolWindowTabContent
+              title="test"
+              icon={<PlatformIcon icon="expui/fileTypes/jest" />}
+              closeButton={<TabCloseButton />}
+            />
+          }
+        >
+          <ThreeViewSplitter
+            firstView={
+              <VerticalFlexContainer>
+                <FakeExecutionToolbar
+                  execution={{
+                    id: "foo",
+                    title: "Foo",
+                    isRunning: false,
+                  }}
+                  toggle={() => {}}
+                />
+                <SpeedSearchTree
+                  selectionMode="single"
+                  defaultExpandedKeys={["root", "specFile", "spec"]}
+                >
+                  <Item
+                    key="root"
+                    textValue="Text Results"
+                    title={
+                      <ItemLayout>
+                        <PlatformIcon icon="runConfigurations/testPassed.svg" />
+                        <HighlightedTextValue />
+                      </ItemLayout>
+                    }
+                  >
+                    <Item
+                      key="specFile"
+                      textValue="Theme.spec.ts"
+                      title={
+                        <ItemLayout>
+                          <PlatformIcon icon="runConfigurations/testPassed.svg" />
+                          <HighlightedTextValue />
+                        </ItemLayout>
+                      }
+                    >
+                      <Item
+                        key="spec"
+                        textValue="Theme"
+                        title={
+                          <ItemLayout>
+                            <PlatformIcon icon="runConfigurations/testPassed.svg" />
+                            <HighlightedTextValue />
+                          </ItemLayout>
+                        }
+                      >
+                        <Item
+                          key="c1"
+                          textValue="resolves os-dependent values based on os"
+                        >
+                          <ItemLayout>
+                            <PlatformIcon icon="runConfigurations/testPassed.svg" />
+                            <HighlightedTextValue />
+                          </ItemLayout>
+                        </Item>
+                        <Item
+                          key="c2"
+                          textValue="resolves os-dependent values to default when os doesn't match"
+                        >
+                          <ItemLayout>
+                            <PlatformIcon icon="runConfigurations/testPassed.svg" />
+                            <HighlightedTextValue />
+                            {/* TODO: add test times (sticky on the right) when the component is implemented */}
+                          </ItemLayout>
+                        </Item>
+                      </Item>
+                    </Item>
+                  </Item>
+                </SpeedSearchTree>
+              </VerticalFlexContainer>
+            }
+            innerView={
+              <VerticalFlexContainer>
+                <RunConsoleOutput />
+              </VerticalFlexContainer>
+            }
+          />
+        </MultiViewToolWindow.View>
+      </MultiViewToolWindow>
+    </>
+  );
+  const toolWindows = [
+    {
+      id: "SpeedSearchTree",
       initialState: toolWindowState({ anchor: "left", isVisible: true }),
-      icon: "toolwindows/toolWindowProject",
+      toolbarButton: (
+        <>
+          <PlatformIcon icon="toolwindows/toolWindowProject" />
+          &nbsp; SpeedSearchTree
+        </>
+      ),
+      content: speedSearchTree,
     },
-    SpeedSearchList: {
+    {
+      id: "SpeedSearchList",
       initialState: toolWindowState({
         anchor: "left",
         isSplit: true,
         isVisible: true,
       }),
-      icon: "toolwindows/toolWindowCommit",
+      toolbarButton: (
+        <>
+          <PlatformIcon icon="toolwindows/toolWindowCommit" />
+          &nbsp; SpeedSearchTree
+        </>
+      ),
+      content: speedSearchList,
     },
-    MultiViewToolWindow: {
+    {
+      id: "MultiViewToolWindow",
       initialState: toolWindowState({ anchor: "bottom", isVisible: true }),
       icon: "toolwindows/toolWindowRun",
+      toolbarButton: (
+        <>
+          <PlatformIcon icon="toolWindowRun">
+            <StyledIconLiveIndicator />
+          </PlatformIcon>
+          &nbsp; MultiViewToolWindow
+        </>
+      ),
+      content: multiViewToolWindow,
     },
-  };
-  type ToolWindowId = keyof typeof toolWindowById;
+  ];
+  const toolWindowById = indexBy(({ id }) => id, toolWindows);
 
   const [toolWindowsState, setToolWindowsState] = useState(
     () =>
@@ -101,283 +384,7 @@ export const Theme: Story = () => {
       <ToolWindows
         toolWindowsState={toolWindowsState}
         onToolWindowStateChange={setToolWindowsState}
-        renderToolbarButton={(id) => (
-          <>
-            <PlatformIcon icon={toolWindowById[id as ToolWindowId].icon}>
-              {id === "MultiViewToolWindow" && <StyledIconLiveIndicator />}
-            </PlatformIcon>
-            &nbsp; {id}
-          </>
-        )}
-        renderWindow={(id) => {
-          switch (id) {
-            case "MultiViewToolWindow":
-              return (
-                <MultiViewToolWindow
-                  key={id}
-                  defaultActiveKey="e2"
-                  headerContent={({ renderedViewSwitcher }) => {
-                    return <>{renderedViewSwitcher}</>;
-                  }}
-                >
-                  <MultiViewToolWindow.View
-                    key={"e1"}
-                    tabContent={
-                      <ToolWindowTabContent
-                        title="start"
-                        icon={
-                          <PlatformIcon icon="runConfigurations/application">
-                            <StyledIconLiveIndicator />
-                          </PlatformIcon>
-                        }
-                        closeButton={<TabCloseButton />}
-                      />
-                    }
-                  >
-                    <VerticalFlexContainer>
-                      <FakeExecutionToolbar
-                        execution={{ id: "foo", title: "Foo", isRunning: true }}
-                        toggle={() => {}}
-                      />
-                      <RunConsoleOutput />
-                    </VerticalFlexContainer>
-                  </MultiViewToolWindow.View>
-                  <MultiViewToolWindow.View
-                    key={"e2"}
-                    tabContent={
-                      <ToolWindowTabContent
-                        title="test"
-                        icon={<PlatformIcon icon="expui/fileTypes/jest" />}
-                        closeButton={<TabCloseButton />}
-                      />
-                    }
-                  >
-                    <ThreeViewSplitter
-                      firstView={
-                        <VerticalFlexContainer>
-                          <FakeExecutionToolbar
-                            execution={{
-                              id: "foo",
-                              title: "Foo",
-                              isRunning: false,
-                            }}
-                            toggle={() => {}}
-                          />
-                          <SpeedSearchTree
-                            selectionMode="single"
-                            defaultExpandedKeys={["root", "specFile", "spec"]}
-                          >
-                            <Item
-                              key="root"
-                              textValue="Text Results"
-                              title={
-                                <ItemLayout>
-                                  <PlatformIcon icon="runConfigurations/testPassed.svg" />
-                                  <HighlightedTextValue />
-                                </ItemLayout>
-                              }
-                            >
-                              <Item
-                                key="specFile"
-                                textValue="Theme.spec.ts"
-                                title={
-                                  <ItemLayout>
-                                    <PlatformIcon icon="runConfigurations/testPassed.svg" />
-                                    <HighlightedTextValue />
-                                  </ItemLayout>
-                                }
-                              >
-                                <Item
-                                  key="spec"
-                                  textValue="Theme"
-                                  title={
-                                    <ItemLayout>
-                                      <PlatformIcon icon="runConfigurations/testPassed.svg" />
-                                      <HighlightedTextValue />
-                                    </ItemLayout>
-                                  }
-                                >
-                                  <Item
-                                    key="c1"
-                                    textValue="resolves os-dependent values based on os"
-                                  >
-                                    <ItemLayout>
-                                      <PlatformIcon icon="runConfigurations/testPassed.svg" />
-                                      <HighlightedTextValue />
-                                    </ItemLayout>
-                                  </Item>
-                                  <Item
-                                    key="c2"
-                                    textValue="resolves os-dependent values to default when os doesn't match"
-                                  >
-                                    <ItemLayout>
-                                      <PlatformIcon icon="runConfigurations/testPassed.svg" />
-                                      <HighlightedTextValue />
-                                      {/* TODO: add test times (sticky on the right) when the component is implemented */}
-                                    </ItemLayout>
-                                  </Item>
-                                </Item>
-                              </Item>
-                            </Item>
-                          </SpeedSearchTree>
-                        </VerticalFlexContainer>
-                      }
-                      innerView={
-                        <VerticalFlexContainer>
-                          <RunConsoleOutput />
-                        </VerticalFlexContainer>
-                      }
-                    />
-                  </MultiViewToolWindow.View>
-                </MultiViewToolWindow>
-              );
-            case "SpeedSearchTree":
-              return (
-                <DefaultToolWindow
-                  key={id}
-                  headerContent={id}
-                  additionalActions={
-                    <>
-                      <ActionButton>
-                        <PlatformIcon icon="actions/expandall" />
-                      </ActionButton>
-                    </>
-                  }
-                >
-                  <SpeedSearchTree
-                    selectionMode="multiple"
-                    defaultExpandedKeys={["project", "src", "src/app"]}
-                    defaultSelectedKeys={["App.jsx"]}
-                  >
-                    <Item
-                      key="project"
-                      textValue="jui"
-                      title={
-                        <ItemLayout>
-                          <PlatformIcon icon="nodes/folder" />
-                          <HighlightedTextValue />
-                          <ItemLayout.Hint>~/workspace/jui</ItemLayout.Hint>
-                        </ItemLayout>
-                      }
-                    >
-                      <Item
-                        key="src"
-                        textValue="src"
-                        title={
-                          <ItemLayout>
-                            <PlatformIcon icon="nodes/folder" />
-                            <HighlightedTextValue />
-                          </ItemLayout>
-                        }
-                      >
-                        <Item
-                          key="src/app"
-                          textValue="app"
-                          title={
-                            <ItemLayout>
-                              <PlatformIcon icon="nodes/folder" />
-                              <HighlightedTextValue />
-                            </ItemLayout>
-                          }
-                        >
-                          <Item textValue="App.jsx" key="App.jsx">
-                            <ItemLayout>
-                              <PlatformIcon icon="fileTypes/javaScript" />
-                              <HighlightedTextValue />
-                            </ItemLayout>
-                          </Item>
-                        </Item>
-                        <Item textValue="index.jsx" key="index.jsx">
-                          <ItemLayout>
-                            <PlatformIcon icon="fileTypes/javaScript" />
-                            <HighlightedTextValue />
-                          </ItemLayout>
-                        </Item>
-                      </Item>
-                    </Item>
-                  </SpeedSearchTree>
-                  <br />
-                  <SpeedSearchTree
-                    defaultSelectedKeys={["index.jsx"]}
-                    selectionMode="multiple"
-                    alwaysShowAsFocused
-                  >
-                    <Item textValue="index.jsx" key="index.jsx">
-                      <ItemLayout>
-                        <PlatformIcon icon="fileTypes/javaScript" />
-                        <HighlightedTextValue />
-                      </ItemLayout>
-                    </Item>
-                  </SpeedSearchTree>
-                </DefaultToolWindow>
-              );
-            case "SpeedSearchList":
-              return (
-                <DefaultToolWindow key={id} headerContent={id}>
-                  <SpeedSearchList selectionMode="single">
-                    <Item textValue=".gitignore" key=".gitignore">
-                      <ItemLayout>
-                        <PlatformIcon icon="vcs/ignore_file" />
-                        <HighlightedTextValue />
-                      </ItemLayout>
-                    </Item>
-                    <Item textValue="Archive" key="Archive">
-                      <ItemLayout>
-                        <PlatformIcon icon="fileTypes/archive" />
-                        <HighlightedTextValue />
-                      </ItemLayout>
-                    </Item>
-                    <Item textValue="JavaScript" key="JavaScript">
-                      <ItemLayout>
-                        <PlatformIcon icon="fileTypes/javaScript" />
-                        <HighlightedTextValue />
-                      </ItemLayout>
-                    </Item>
-                    <Item textValue="JSON" key="JSON">
-                      <ItemLayout>
-                        <PlatformIcon icon="fileTypes/json" />
-                        <HighlightedTextValue />
-                      </ItemLayout>
-                    </Item>
-                    <Item textValue="HTML" key="HTML">
-                      <ItemLayout>
-                        <PlatformIcon icon="fileTypes/html" />
-                        <HighlightedTextValue />
-                      </ItemLayout>
-                    </Item>
-                    <Item textValue="YAML" key="YAML">
-                      <ItemLayout>
-                        <PlatformIcon icon="fileTypes/yaml" />
-                        <HighlightedTextValue />
-                      </ItemLayout>
-                    </Item>
-                  </SpeedSearchList>
-                  <br />
-                  <SpeedSearchList selectionMode="single" alwaysShowAsFocused>
-                    <Item textValue=".gitignore" key=".gitignore">
-                      <ItemLayout>
-                        <PlatformIcon icon="vcs/ignore_file" />
-                        <HighlightedTextValue />
-                      </ItemLayout>
-                    </Item>
-                    <Item textValue="Archive" key="Archive">
-                      <ItemLayout>
-                        <PlatformIcon icon="fileTypes/archive" />
-                        <HighlightedTextValue />
-                      </ItemLayout>
-                    </Item>
-                  </SpeedSearchList>
-                </DefaultToolWindow>
-              );
-            default:
-              return (
-                <DefaultToolWindow
-                  key={id}
-                  headerContent={id}
-                ></DefaultToolWindow>
-              );
-          }
-        }}
+        windows={toolWindows}
       >
         <div style={{ padding: 8 }}>
           <StyledDefaultTabs>

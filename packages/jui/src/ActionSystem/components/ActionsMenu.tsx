@@ -1,13 +1,12 @@
+import React from "react";
+import { flatten } from "ramda";
+import { Menu, MenuItemLayout } from "@intellij-platform/core/Menu";
 import {
   Divider,
   DividerItem,
   Item,
-  Menu,
-  MenuItemLayout,
-} from "@intellij-platform/core";
-import React from "react";
-import { Action, ActionDefinition } from "@intellij-platform/core/ActionSystem";
-import { flatten } from "ramda";
+} from "@intellij-platform/core/Collections";
+import { Action, ActionDefinition } from "../ActionsProvider";
 
 interface ActionGroup
   extends Pick<ActionDefinition, "icon" | "title" | "isDisabled"> {

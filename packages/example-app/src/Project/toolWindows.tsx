@@ -5,6 +5,7 @@ import { ProjectViewActionButtons } from "../ProjectView/ProjectViewActionButton
 import {
   DefaultToolWindow,
   MultiViewToolWindow,
+  PlatformIcon,
   ToolWindowState,
   toolWindowState,
 } from "@intellij-platform/core";
@@ -15,16 +16,16 @@ import { CurrentBranchName } from "../VersionControl/CurrentBranchName";
 type ToolWindowDescriptor = {
   id: string;
   title: string;
-  icon: string;
-  element: React.ReactElement;
+  icon: React.ReactNode;
+  content: React.ReactElement;
   initialState: ToolWindowState;
 };
-const windows: ToolWindowDescriptor[] = [
+export const toolWindows: ToolWindowDescriptor[] = [
   {
     id: "Project",
     title: "Project",
-    icon: "toolwindows/toolWindowProject",
-    element: (
+    icon: <PlatformIcon icon="toolwindows/toolWindowProject" />,
+    content: (
       <DefaultToolWindow
         headerContent="Project"
         additionalActions={<ProjectViewActionButtons />}
@@ -37,8 +38,8 @@ const windows: ToolWindowDescriptor[] = [
   {
     id: "Terminal",
     title: "Terminal",
-    icon: "toolwindows/toolWindowProject",
-    element: (
+    icon: <PlatformIcon icon="toolwindows/toolWindowProject" />,
+    content: (
       <DefaultToolWindow headerContent="Terminal">
         <Terminal />
       </DefaultToolWindow>
@@ -48,8 +49,8 @@ const windows: ToolWindowDescriptor[] = [
   {
     id: "Commit",
     title: "Commit",
-    icon: "toolwindows/toolWindowCommit",
-    element: (
+    icon: <PlatformIcon icon="toolwindows/toolWindowCommit" />,
+    content: (
       <MultiViewToolWindow>
         <MultiViewToolWindow.View
           tabContent={
@@ -66,4 +67,4 @@ const windows: ToolWindowDescriptor[] = [
     initialState: toolWindowState({ anchor: "left", isVisible: false }),
   },
 ];
-export const windowById = indexBy(({ id }) => id, windows);
+export const windowById = indexBy(({ id }) => id, toolWindows);

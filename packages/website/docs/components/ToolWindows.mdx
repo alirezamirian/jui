@@ -39,15 +39,23 @@ const App = () => {
       Run: toolWindowState({ anchor: "bottom", isVisible: true }),
     })
   );
+  const exampleToolWindow = (id) => ({
+    id,
+    toolbarButton: id,
+    content: <StyledContent>{id}</StyledContent>,
+  });
   return (
     <ToolWindows
       toolWindowsState={toolWindowsState}
       // called when the state is changed because of some UI interaction, e.g. opening/closing a tool window.
       onToolWindowStateChange={setToolWindowsState}
-      renderWindow={(id) => <StyledContent>{id}</StyledContent>} // a function from id to the content of the tool window
-      renderToolbarButton={(id) => id} // what to render in the tool window tab/button, in the tool window bars
+      windows={[
+        exampleToolWindow("Project"),
+        exampleToolWindow("Commit"),
+        exampleToolWindow("Run"),
+      ]}
       height={500} // Use `100vh` if it's the only top level component in your app.
-      margin="-1rem" // just to counteract the default padding in Live Preview
+      containerProps={{ style: { margin: "-1rem" } }} // just to counteract the default padding in Live Preview
     >
       <StyledContent style={{ background: "#2b2b2b" }}>
         Main content
@@ -98,18 +106,26 @@ const App = () => {
       Run: toolWindowState({ anchor: "bottom", isVisible: true }),
     })
   );
+  const exampleToolWindow = (id) => ({
+    id,
+    toolbarButton: id,
+    content: (
+      <DefaultToolWindow>
+        <StyledContent>{id}</StyledContent>
+      </DefaultToolWindow>
+    ),
+  });
   return (
     <ToolWindows
       toolWindowsState={toolWindowsState}
       onToolWindowStateChange={setToolWindowsState}
-      renderWindow={(id) => (
-        <DefaultToolWindow>
-          <StyledContent>{id}</StyledContent>
-        </DefaultToolWindow>
-      )}
-      renderToolbarButton={(id) => id}
+      windows={[
+        exampleToolWindow("Project"),
+        exampleToolWindow("Commit"),
+        exampleToolWindow("Run"),
+      ]}
       height={500}
-      margin="-1rem" // just to counteract the default padding in Live Preview
+      containerProps={{ style: { margin: "-1rem" } }} // just to counteract the default padding in Live Preview
     >
       <StyledContent style={{ background: "#2b2b2b" }}>
         Main content
@@ -207,41 +223,39 @@ const toggleFoo = () => setToolWindowsState((state) => state.toggle("foo"));
 ```
 
 ```tsx live noInline themed
-const windows = {
-  foo: {
-    title: "Foo",
+const toolWindows = [
+  {
+    id: "Foo",
     initialState: toolWindowState(),
-    element: <DefaultToolWindow headerContent="Foo"></DefaultToolWindow>,
+    toolbarButton: "Foo",
+    content: <DefaultToolWindow headerContent="Foo"></DefaultToolWindow>,
   },
-  bar: {
-    title: "Bar",
+  {
+    id: "Bar",
     initialState: toolWindowState({ anchor: "bottom", isVisible: true }),
-    element: <DefaultToolWindow headerContent="Bar"></DefaultToolWindow>,
+    toolbarButton: "Bar",
+    content: <DefaultToolWindow headerContent="Bar"></DefaultToolWindow>,
   },
-};
+];
 const App = () => {
   const [toolWindowsState, setToolWindowsState] = useState(
     () =>
       new ToolWindowsState(
         Object.fromEntries(
-          Object.entries(windows).map(([id, { initialState }]) => [
-            id,
-            initialState,
-          ])
+          toolWindows.map(({ id, initialState }) => [id, initialState])
         )
       )
   );
 
-  const isFooVisible = toolWindowsState.windows.foo.isVisible;
-  const openFoo = () => setToolWindowsState((state) => state.toggle("foo"));
+  const isFooVisible = toolWindowsState.windows.Foo.isVisible;
+  const openFoo = () => setToolWindowsState((state) => state.toggle("Foo"));
   return (
     <ToolWindows
       toolWindowsState={toolWindowsState}
       onToolWindowStateChange={setToolWindowsState}
-      renderWindow={(id) => windows[id].element}
-      renderToolbarButton={(id) => windows[id].title}
+      windows={toolWindows}
       height={500}
-      margin="-1rem" // just to counteract the default padding in Live Preview
+      containerProps={{ style: { margin: "-1rem" } }} // just to counteract the default padding in Live Preview
     >
       <div style={{ padding: "1rem" }}>
         {

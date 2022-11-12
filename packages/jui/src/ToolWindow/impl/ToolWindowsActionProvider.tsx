@@ -7,7 +7,7 @@ import {
   getViewModeType,
   ToolWindowRefValue,
   ToolWindowsState,
-} from "@intellij-platform/core";
+} from "@intellij-platform/core/ToolWindow";
 import {
   HIDE_ALL_WINDOWS_ACTION_ID,
   JUMP_TO_LAST_WINDOW_ACTION_ID,
@@ -20,11 +20,13 @@ interface DefaultToolWindowActionsProps {
   /**
    * Used when creating ActivateToolWindow action for each tool window.
    */
-  getPresentation?: (key: React.Key) => {
-    title: string;
-    icon: React.ReactNode;
-  };
-  children: React.ReactNode;
+  getPresentation?: (key: React.Key) =>
+    | {
+        title: string;
+        icon: React.ReactNode;
+      }
+    | undefined;
+  children: React.ComponentProps<typeof ActionsProvider>["children"];
 }
 
 export const getActivateToolWindowActionId = (id: string) =>
@@ -33,20 +35,12 @@ export const getActivateToolWindowActionId = (id: string) =>
 /**
  * Provides default tool windows actions:
  * - Hide all tool windows
+ * - Activate{id}Window action for each window
+ * - Jump to last tool window
  *
- * @usage
- * Wrap around ToolWindows, passing toolWindowState and onToolWindowStateChange:
- *
- * ```tsx
- * <DefaultToolWindowActions
- *   toolWindowsState={state}
- *   onToolWindowStateChange={setState}
- * >
- *   <ToolWindows toolWindowsState={state} onToolWindowStateChange={setState} />
- * </DefaultToolWindowActions>;
- * ```
+ * @see also {@link DefaultToolWindows}
  */
-export function DefaultToolWindowActions({
+export function ToolWindowsActionProvider({
   toolWindowState,
   children,
   toolWindowRef,
@@ -108,15 +102,7 @@ export function DefaultToolWindowActions({
       },
     },
   };
-  return (
-    <ActionsProvider actions={actions}>
-      {({ shortcutHandlerProps }) => (
-        <div {...shortcutHandlerProps} style={{ all: "unset" }}>
-          {children}
-        </div>
-      )}
-    </ActionsProvider>
-  );
+  return <ActionsProvider actions={actions}>{children}</ActionsProvider>;
 }
 
 function getOrdinal(n: number) {

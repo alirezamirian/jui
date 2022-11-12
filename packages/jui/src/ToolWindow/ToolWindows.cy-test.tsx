@@ -10,6 +10,20 @@ import {
 } from "@intellij-platform/core";
 import darculaThemeJson from "../../themes/darcula.theme.json";
 
+const window = (id: string) => ({
+  id,
+  toolbarButton: <span data-testid={`${id} stripe button`}>{id}</span>,
+  content: (
+    <DefaultToolWindow
+      headerContent={<span data-testid={`${id} header`}>{id}</span>}
+      data-testid={`${id}`}
+    >
+      <input data-testid={`${id} focusable 1`} />
+      <input data-testid={`${id} focusable 2`} />
+    </DefaultToolWindow>
+  ),
+});
+
 const SimpleToolWindows = ({
   initialState = {
     "First window": toolWindowState({ isVisible: false }),
@@ -24,20 +38,7 @@ const SimpleToolWindows = ({
       height={"100vh"}
       toolWindowsState={state}
       onToolWindowStateChange={setState}
-      renderToolbarButton={(id) => (
-        <span data-testid={`${id} stripe button`}>{id}</span>
-      )}
-      renderWindow={(id) => {
-        return (
-          <DefaultToolWindow
-            headerContent={<span data-testid={`${id} header`}>{id}</span>}
-            data-testid={`${id}`}
-          >
-            <input data-testid={`${id} focusable 1`} />
-            <input data-testid={`${id} focusable 2`} />
-          </DefaultToolWindow>
-        );
-      }}
+      windows={[window("First window"), window("Second window")]}
     >
       <div style={{ padding: 8 }}>
         <textarea data-testid="main content focusable" />

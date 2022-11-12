@@ -3,7 +3,7 @@
  * window/pane.
  */
 export {
-  Bounds,
+  type Bounds,
   WindowInteractionHandlerProps,
   useWindowInteractionHandler,
   WindowInteractionHandler,

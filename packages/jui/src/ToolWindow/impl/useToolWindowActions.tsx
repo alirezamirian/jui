@@ -1,3 +1,13 @@
+import React from "react";
+import { zipObj } from "ramda";
+import {
+  Anchor,
+  isHorizontalToolWindow,
+  useToolWindowState,
+  ViewMode,
+} from "@intellij-platform/core/ToolWindow";
+import { ActionDefinition } from "@intellij-platform/core/ActionSystem";
+import { PlatformIcon } from "@intellij-platform/core/Icon";
 import {
   DOCK_PINNED_MODE_ACTION_ID,
   DOCK_TOOL_WINDOW_ACTION_ID,
@@ -5,23 +15,15 @@ import {
   FLOAT_MODE_ACTION_ID,
   FOCUS_EDITOR_ACTION_ID,
   HIDE_ACTIVE_WINDOW_ACTION_ID,
-  isHorizontalToolWindow,
   MAXIMIZE_TOOL_WINDOW_ACTION_ID,
-  PlatformIcon,
   REMOVE_TOOL_WINDOW_FROM_SIDEBAR_ACTION_ID,
   RESIZE_TOOL_WINDOW_BOTTOM_ACTION_ID,
   RESIZE_TOOL_WINDOW_LEFT_ACTION_ID,
   RESIZE_TOOL_WINDOW_RIGHT_ACTION_ID,
   RESIZE_TOOL_WINDOW_TOP_ACTION_ID,
   UNDOCK_MODE_ACTION_ID,
-  useToolWindowState,
-  ViewMode,
   WINDOW_MODE_ACTION_ID,
-} from "@intellij-platform/core";
-import { ActionDefinition } from "@intellij-platform/core/ActionSystem";
-import React from "react";
-import { Anchor } from "@intellij-platform/core/ToolWindow";
-import { zipObj } from "ramda";
+} from "./ToolWindowActionIds";
 
 // Resize steps in Intellij Platform is calculated based on the size of a "W" character and some
 // configuration (ide.windowSystem.hScrollChars). Although it's technically feasible, it seems not necessary

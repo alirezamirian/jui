@@ -1,6 +1,7 @@
 import React, {
   CSSProperties,
   ForwardedRef,
+  HTMLProps,
   Key,
   useImperativeHandle,
   useLayoutEffect,
@@ -25,14 +26,20 @@ import { ToolWindowStripe } from "./ToolWindowStripe";
 import { UndockSide } from "./UndockSide";
 import { Anchor, isHorizontalToolWindow } from "./utils";
 import { useLatest } from "@intellij-platform/core/utils/useLatest";
+import { indexBy } from "ramda";
+
+interface ToolWindow {
+  id: string;
+  toolbarButton: React.ReactNode;
+  content: React.ReactNode;
+}
 
 export interface ToolWindowsProps {
   children: React.ReactNode;
+  windows: ToolWindow[];
   toolWindowsState: Readonly<ToolWindowsState>;
   onToolWindowStateChange: (newState: ToolWindowsState) => void;
 
-  renderToolbarButton: (id: Key) => React.ReactNode;
-  renderWindow: (id: Key) => React.ReactNode;
   /**
    * Whether stripe buttons should be hidden or not.
    * `hideToolStripes` UISettings in Intellij Platform
@@ -54,6 +61,11 @@ export interface ToolWindowsProps {
   height?: CSSProperties["height"];
   minHeight?: CSSProperties["minHeight"];
   margin?: CSSProperties["margin"];
+
+  /**
+   * props to be passed to the container element.
+   */
+  containerProps?: Omit<HTMLProps<HTMLDivElement>, "as">;
 }
 
 export interface ToolWindowRefValue {
@@ -93,16 +105,16 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
     useWidescreenLayout = false,
     height = "100%",
     minHeight = "0",
-    margin,
     toolWindowsState,
     onToolWindowStateChange,
-    renderToolbarButton,
-    renderWindow,
+    windows,
     children,
     mainContentMinWidth = 50,
+    containerProps,
   }: ToolWindowsProps,
   ref: ForwardedRef<ToolWindowRefValue>
 ): React.ReactElement {
+  const windowsById = indexBy(({ id }) => id, windows);
   const containerRef = useRef<HTMLDivElement>(null);
   const mainContentFocusScopeRef =
     useRef<React.ComponentRef<typeof FocusScope>>(null);
@@ -112,6 +124,17 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
   }>({});
 
   const latestRef = useLatest({ toolWindowsState });
+
+  useLayoutEffect(() => {
+    setLayoutState(
+      getToolWindowsLayoutState(
+        toolWindowsState,
+        containerRef.current!.getBoundingClientRect(),
+        windows.map(({ id }) => id)
+      )
+    );
+  }, [toolWindowsState]);
+
   useImperativeHandle(
     ref,
     () => ({
@@ -136,14 +159,6 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
     }),
     []
   );
-  useLayoutEffect(() => {
-    setLayoutState(
-      getToolWindowsLayoutState(
-        toolWindowsState,
-        containerRef.current!.getBoundingClientRect()
-      )
-    );
-  }, [toolWindowsState]);
 
   // TODO: extract component candidate
   const renderStripe = ({
@@ -158,7 +173,7 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
       items={state.main}
       splitItems={state.split}
       getKey={(item) => item}
-      renderItem={(item) => renderToolbarButton(item)}
+      renderItem={(item) => windowsById[item]?.toolbarButton}
       onItemPress={(key) =>
         onToolWindowStateChange(toolWindowsState.toggle(key))
       }
@@ -186,7 +201,7 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
             toolWindowsState={toolWindowsState}
             onToolWindowStateChange={onToolWindowStateChange}
           >
-            {renderWindow(key)}
+            {windowsById[key]?.content}
           </ToolWindowStateProvider>
         </FocusScope>
       </div>
@@ -385,6 +400,7 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
      */
     <AriaFocusScope contain>
       <StyledToolWindowOuterLayout.Shell
+        {...containerProps}
         ref={containerRef}
         /**
          * Potential refactoring: hideStripes can also be handled by conditionally
@@ -392,7 +408,7 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
          * StyledToolWindowOuterLayout
          **/
         hideStripes={hideToolWindowBars}
-        style={{ height, minHeight, margin }}
+        style={{ height, minHeight, ...containerProps?.style }}
       >
         {layoutState && renderInnerLayout(layoutState)}
       </StyledToolWindowOuterLayout.Shell>

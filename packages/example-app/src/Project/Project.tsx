@@ -1,22 +1,14 @@
-import {
-  PlatformIcon,
-  ToolWindowRefValue,
-  ToolWindows,
-} from "@intellij-platform/core";
-import React, { useRef } from "react";
+import { DefaultToolWindows } from "@intellij-platform/core";
+import React from "react";
 import { FileEditor } from "../Editor/FileEditor";
 import { useInitializeVcs } from "../VersionControl/file-status.state";
-import { windowById } from "./toolWindows";
+import { toolWindows } from "./toolWindows";
 import { useRecoilState } from "recoil";
 import { toolWindowsState } from "./toolWindows.state";
 import { useInitializeChanges } from "../VersionControl/Changes/change-lists.state";
 import styled from "styled-components";
 import { IdeStatusBar } from "../StatusBar/IdeStatusBar";
 import { usePersistenceFsNotification } from "../usePersistenceFsNotification";
-import {
-  DefaultToolWindowActions,
-  DefaultToolWindowToolbarButton,
-} from "@intellij-platform/core/ToolWindow";
 
 const StyledWindowFrame = styled.div`
   display: flex;
@@ -27,34 +19,23 @@ const StyledWindowFrame = styled.div`
 
 export const Project = () => {
   const [state, setState] = useRecoilState(toolWindowsState);
-  const ref = useRef<ToolWindowRefValue>(null);
 
   useInitializeVcs();
   useInitializeChanges();
   usePersistenceFsNotification();
 
   return (
-    <DefaultToolWindowActions toolWindowState={state} toolWindowRef={ref}>
-      <StyledWindowFrame>
-        <ToolWindows
-          ref={ref}
-          toolWindowsState={state}
-          onToolWindowStateChange={(newState) => {
-            setState(newState);
-          }}
-          renderToolbarButton={(id) => (
-            <DefaultToolWindowToolbarButton
-              id={id}
-              title={windowById[id].title}
-              icon={<PlatformIcon icon={windowById[id].icon} />}
-            />
-          )}
-          renderWindow={(id) => windowById[id].element}
-        >
-          <FileEditor />
-        </ToolWindows>
-        <IdeStatusBar />
-      </StyledWindowFrame>
-    </DefaultToolWindowActions>
+    <StyledWindowFrame>
+      <DefaultToolWindows
+        toolWindowsState={state}
+        onToolWindowStateChange={(newState) => {
+          setState(newState);
+        }}
+        windows={toolWindows}
+      >
+        <FileEditor />
+      </DefaultToolWindows>
+      <IdeStatusBar />
+    </StyledWindowFrame>
   );
 };

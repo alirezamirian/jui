@@ -166,15 +166,17 @@ const getSideState = (
 
 const DEFAULT_HEIGHT = 300;
 const DEFAULT_WIDTH = 400;
-const getFloatWindowState = (containerSize: ContainerSize) => ({
-  floatingBounds: bounds = {
-    top: containerSize.height / 2 - DEFAULT_HEIGHT / 2,
-    left: containerSize.width / 2 - DEFAULT_WIDTH / 2,
-    height: DEFAULT_HEIGHT,
-    width: DEFAULT_WIDTH,
-  },
-  key,
-}: ToolWindowStateWithKey): FloatWindowState => ({ bounds, key });
+const getFloatWindowState =
+  (containerSize: ContainerSize) =>
+  ({
+    floatingBounds: bounds = {
+      top: containerSize.height / 2 - DEFAULT_HEIGHT / 2,
+      left: containerSize.width / 2 - DEFAULT_WIDTH / 2,
+      height: DEFAULT_HEIGHT,
+      width: DEFAULT_WIDTH,
+    },
+    key,
+  }: ToolWindowStateWithKey): FloatWindowState => ({ bounds, key });
 
 const getFloatWindowsState = (
   viewMode: "float" | "window",
@@ -190,16 +192,21 @@ const getFloatWindowsState = (
 
 export function getToolWindowsLayoutState(
   state: Readonly<ToolWindowsState>,
-  containerSize: ContainerSize
+  containerSize: ContainerSize,
+  windowIds?: string[]
 ): ToolWindowsLayoutState {
-  const toolWindows = Object.keys(state.windows).map((key) => ({
-    ...state.windows[key],
-    key,
-  }));
-  const { top = [], bottom = [], left = [], right = [] } = groupBy(
-    ({ anchor }) => anchor,
-    toolWindows
-  );
+  const toolWindows = Object.keys(state.windows)
+    .filter((key) => !windowIds || windowIds.includes(key))
+    .map((key) => ({
+      ...state.windows[key],
+      key,
+    }));
+  const {
+    top = [],
+    bottom = [],
+    left = [],
+    right = [],
+  } = groupBy(({ anchor }) => anchor, toolWindows);
   return {
     left: getSideState("left", containerSize, left),
     top: getSideState("top", containerSize, top),
