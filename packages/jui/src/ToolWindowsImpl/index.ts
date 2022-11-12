@@ -3,7 +3,7 @@
  * on other modules and components, e.g. Menu, ActionButton, Tabs, Action System, etc.
  */
 export * from "./DefaultToolWindows";
-export * from "./ToolWindowsActionProvider";
+export * from "./useToolWindowsActions";
 export * from "./MultiViewToolWindow";
 export * from "./DefaultToolWindow";
 export * from "./DefaultToolWindowToolbarButton";

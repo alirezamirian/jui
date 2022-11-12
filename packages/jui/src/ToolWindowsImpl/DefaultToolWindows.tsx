@@ -6,8 +6,9 @@ import {
   ToolWindows,
   ToolWindowsProps,
 } from "@intellij-platform/core/ToolWindows";
-import { ToolWindowsActionProvider } from "./ToolWindowsActionProvider";
+import { useToolWindowsActions } from "./useToolWindowsActions";
 import { DefaultToolWindowToolbarButton } from "./DefaultToolWindowToolbarButton";
+import { ActionsProvider } from "@intellij-platform/core/ActionSystem";
 
 interface DefaultToolWindow {
   id: string;
@@ -24,6 +25,7 @@ interface DefaultToolWindow {
 export const DefaultToolWindows = React.forwardRef(function DefaultToolWindows(
   {
     windows: toolWindows,
+    toolWindowsState,
     showNumbers,
     ...props
   }: Omit<ToolWindowsProps, "windows"> & {
@@ -32,18 +34,20 @@ export const DefaultToolWindows = React.forwardRef(function DefaultToolWindows(
   },
   forwardedRef: ForwardedRef<ToolWindowRefValue>
 ): React.ReactElement {
-  const ref = useObjectRef(forwardedRef);
-  const windowsById = indexBy(({ id }) => id, toolWindows);
+  const toolWindowsRef = useObjectRef(forwardedRef);
+  const windowById = indexBy(({ id }) => id, toolWindows);
+  const actions = useToolWindowsActions({
+    toolWindowsRef,
+    toolWindowsState,
+    getPresentation: (id) => windowById[id],
+  });
   return (
-    <ToolWindowsActionProvider
-      toolWindowRef={ref}
-      toolWindowState={props.toolWindowsState}
-      getPresentation={(id) => windowsById[id]}
-    >
+    <ActionsProvider actions={actions}>
       {({ shortcutHandlerProps }) => (
         <ToolWindows
           {...props}
-          ref={ref}
+          ref={toolWindowsRef}
+          toolWindowsState={toolWindowsState}
           windows={toolWindows.map(({ id, icon, content, title }) => ({
             id,
             toolbarButton: (
@@ -62,6 +66,6 @@ export const DefaultToolWindows = React.forwardRef(function DefaultToolWindows(
           )}
         />
       )}
-    </ToolWindowsActionProvider>
+    </ActionsProvider>
   );
 });

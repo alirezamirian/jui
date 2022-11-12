@@ -1,7 +1,7 @@
 import React from "react";
 import { useAction, Shortcut } from "@intellij-platform/core/ActionSystem";
 import { ActionTooltip, TooltipTrigger } from "@intellij-platform/core/Tooltip";
-import { getActivateToolWindowActionId } from "./ToolWindowsActionProvider";
+import { getActivateToolWindowActionId } from "./useToolWindowsActions";
 
 const getToolWindowNumberFromShortcut = (shortcut: Shortcut): number | null => {
   const isNumericShortcut =

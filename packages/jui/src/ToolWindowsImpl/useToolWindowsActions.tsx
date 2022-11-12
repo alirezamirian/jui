@@ -1,8 +1,5 @@
 import React from "react";
-import {
-  ActionDefinition,
-  ActionsProvider,
-} from "@intellij-platform/core/ActionSystem";
+import { ActionDefinition } from "@intellij-platform/core/ActionSystem";
 import {
   getViewModeType,
   ToolWindowRefValue,
@@ -15,8 +12,8 @@ import {
 import { zipObj } from "ramda";
 
 interface DefaultToolWindowActionsProps {
-  toolWindowState: Readonly<ToolWindowsState>;
-  toolWindowRef: React.RefObject<ToolWindowRefValue>;
+  toolWindowsState: Readonly<ToolWindowsState>;
+  toolWindowsRef: React.RefObject<ToolWindowRefValue>;
   /**
    * Used when creating ActivateToolWindow action for each tool window.
    */
@@ -26,7 +23,6 @@ interface DefaultToolWindowActionsProps {
         icon: React.ReactNode;
       }
     | undefined;
-  children: React.ComponentProps<typeof ActionsProvider>["children"];
 }
 
 export const getActivateToolWindowActionId = (id: string) =>
@@ -40,10 +36,9 @@ export const getActivateToolWindowActionId = (id: string) =>
  *
  * @see also {@link DefaultToolWindows}
  */
-export function ToolWindowsActionProvider({
-  toolWindowState,
-  children,
-  toolWindowRef,
+export function useToolWindowsActions({
+  toolWindowsState,
+  toolWindowsRef,
   getPresentation,
 }: DefaultToolWindowActionsProps) {
   const isAnySideWindowWindowOpen = (state: Readonly<ToolWindowsState>) =>
@@ -51,7 +46,9 @@ export function ToolWindowsActionProvider({
       ({ isVisible, viewMode }) =>
         isVisible && getViewModeType(viewMode) !== "float"
     );
-  const windowIds = Object.keys(toolWindowState.windows).map((key) => `${key}`);
+  const windowIds = Object.keys(toolWindowsState.windows).map(
+    (key) => `${key}`
+  );
   const actions: Record<string, ActionDefinition> = {
     ...zipObj(
       windowIds.map(getActivateToolWindowActionId),
@@ -63,23 +60,23 @@ export function ToolWindowsActionProvider({
           description: `Activate ${title || getOrdinal(index)} window`,
           actionPerformed: () => {
             if (
-              toolWindowState.windows[id]?.isVisible &&
-              !toolWindowRef.current?.hasFocus(id)
+              toolWindowsState.windows[id]?.isVisible &&
+              !toolWindowsRef.current?.hasFocus(id)
             ) {
-              toolWindowRef.current?.focus(id);
+              toolWindowsRef.current?.focus(id);
             } else {
-              toolWindowRef.current?.changeState((state) => state.toggle(id));
+              toolWindowsRef.current?.changeState((state) => state.toggle(id));
             }
           },
         };
       })
     ),
     [HIDE_ALL_WINDOWS_ACTION_ID]: {
-      title: isAnySideWindowWindowOpen(toolWindowState)
+      title: isAnySideWindowWindowOpen(toolWindowsState)
         ? "Hide All Windows"
         : "Restore windows",
       actionPerformed: () => {
-        toolWindowRef.current?.changeState((state) => {
+        toolWindowsRef.current?.changeState((state) => {
           if (isAnySideWindowWindowOpen(state)) {
             return state.hideAll();
           } else {
@@ -90,19 +87,19 @@ export function ToolWindowsActionProvider({
         // TODO: replace effect-based auto focus behaviour with something better, maybe controlled by ToolWindows
         //  component, and when a tool window is opened.
         setTimeout(() => {
-          toolWindowRef.current?.focusMainContent();
+          toolWindowsRef.current?.focusMainContent();
         });
       },
     },
     [JUMP_TO_LAST_WINDOW_ACTION_ID]: {
       title: "Jump to Last Tool Window",
-      isDisabled: toolWindowState.lastFocusedKey == null,
+      isDisabled: toolWindowsState.lastFocusedKey == null,
       actionPerformed: () => {
-        toolWindowRef.current?.focusLastActiveWindow();
+        toolWindowsRef.current?.focusLastActiveWindow();
       },
     },
   };
-  return <ActionsProvider actions={actions}>{children}</ActionsProvider>;
+  return actions;
 }
 
 function getOrdinal(n: number) {
