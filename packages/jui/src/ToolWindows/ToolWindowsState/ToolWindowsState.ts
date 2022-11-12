@@ -1,4 +1,4 @@
-import { curry, fromPairs, insert, mapObjIndexed, move } from "ramda";
+import { clamp, curry, fromPairs, insert, mapObjIndexed, move } from "ramda";
 import { Key } from "react";
 import { Anchor, isHorizontalToolWindow } from "../utils";
 
@@ -430,11 +430,15 @@ export class ToolWindowsState {
     }
     const containerSize = containerBounds[property];
     const newValue = containerSize * target.weight + value;
-    if (viewModeType === "docked") {
-      return this.resizeDock(target.anchor, newValue, containerBounds);
-    } else {
-      return this.resizeUndock(target.anchor, newValue, containerBounds);
+    const isNewValueValid = clamp(0, containerSize, newValue) === newValue;
+    if (isNewValueValid) {
+      if (viewModeType === "docked") {
+        return this.resizeDock(target.anchor, newValue, containerBounds);
+      } else {
+        return this.resizeUndock(target.anchor, newValue, containerBounds);
+      }
     }
+    return this;
   }
 
   resizeDock(

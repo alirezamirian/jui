@@ -274,6 +274,14 @@ describe("tool window state", () => {
       l6: { floatingBounds: { width: windows.l6.floatingBounds!.width - 10 } },
     });
   });
+  test("stretch width, in docked mode, does nothing if the new size is too small or too large", () => {
+    expectNoChanges(state.stretchWidth("l1", 100, { width: 99, height: 99 }));
+    expectNoChanges(state.stretchWidth("l1", -100, { width: 99, height: 99 }));
+  });
+  test("stretch height, in docked mode, does nothing if the new size is too small or too large", () => {
+    expectNoChanges(state.stretchHeight("b2", 100, { width: 99, height: 99 }));
+    expectNoChanges(state.stretchHeight("b2", -100, { width: 99, height: 99 }));
+  });
 
   test("stretch height sets the weight if in docked mode, and height property of floatingBounds if in window or float mode", () => {
     expectChanges(state.stretchHeight("b2", 10, { width: 200, height: 400 }), {
