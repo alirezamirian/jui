@@ -1,7 +1,6 @@
 import React, { ForwardedRef, useRef } from "react";
 import { Node } from "@react-types/shared";
 import { Virtualizer } from "@react-aria/virtualizer";
-import { replaceSelectionManager } from "@intellij-platform/core/selection";
 import { CollectionSpeedSearchContext } from "@intellij-platform/core/CollectionSpeedSearch";
 import { SpeedSearchProps } from "@intellij-platform/core/SpeedSearch";
 import { TreeRef } from "../useTreeRef";
@@ -26,7 +25,10 @@ export const SpeedSearchTree = React.forwardRef(
     }: SpeedSearchTreeProps<T>,
     forwardedRef: ForwardedRef<TreeRef>
   ) => {
-    const state = replaceSelectionManager(useTreeState(props, forwardedRef));
+    const state = useTreeState(
+      { ...props, disallowEmptySelection: !props.allowEmptySelection },
+      forwardedRef
+    );
     const ref = useRef<HTMLDivElement>(null);
     const {
       treeProps,

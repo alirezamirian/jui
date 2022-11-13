@@ -2,7 +2,6 @@ import React, { ForwardedRef, useRef } from "react";
 import { Node } from "@react-types/shared";
 import { Virtualizer } from "@react-aria/virtualizer";
 import { TreeProps as StatelyTreeProps } from "@react-stately/tree";
-import { replaceSelectionManager } from "@intellij-platform/core/selection";
 import { StyledTree } from "./StyledTree";
 import { TreeRef } from "./useTreeRef";
 import { TreeNode } from "./TreeNode";
@@ -40,7 +39,7 @@ export const Tree = React.forwardRef(
     }: TreeProps<T>,
     forwardedRef: ForwardedRef<TreeRef>
   ) => {
-    const state = replaceSelectionManager(useTreeState(props, forwardedRef));
+    const state = useTreeState(props, forwardedRef);
     const ref = useRef<HTMLDivElement>(null);
 
     const { treeProps, treeContext } = useSelectableTree(
