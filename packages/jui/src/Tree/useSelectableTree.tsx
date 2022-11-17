@@ -5,13 +5,13 @@ import {
   KeyboardEvent,
   Node,
 } from "@react-types/shared";
+import { TreeState } from "@react-stately/tree";
 import { useFocusWithin, useKeyboard } from "@react-aria/interactions";
 import { filterDOMProps, mergeProps } from "@react-aria/utils";
 import { useCollator } from "@react-aria/i18n";
 import { useSelectableCollection } from "@intellij-platform/core/selection";
 import { TreeKeyboardDelegate } from "./TreeKeyboardDelegate";
 import { useCollectionAutoScroll } from "../Collections/useCollectionAutoScroll";
-import { TreeState } from "./__tmp__useTreeState";
 import { useLatest } from "@intellij-platform/core/utils/useLatest";
 import { TreeContextType } from "./TreeContext";
 

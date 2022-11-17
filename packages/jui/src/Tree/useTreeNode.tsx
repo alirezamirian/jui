@@ -40,8 +40,11 @@ export function useTreeNode<T>({
       onAction?.(item.key);
     }
   };
+  const ariaProps = {
+    role: "treeitem",
+  };
 
   return {
-    treeNodeProps: mergeProps(pressProps, { onDoubleClick }),
+    treeNodeProps: mergeProps(pressProps, { onDoubleClick }, ariaProps),
   };
 }

@@ -3,10 +3,10 @@ import { Node } from "@react-types/shared";
 import { Virtualizer } from "@react-aria/virtualizer";
 import { CollectionSpeedSearchContext } from "@intellij-platform/core/CollectionSpeedSearch";
 import { SpeedSearchProps } from "@intellij-platform/core/SpeedSearch";
-import { TreeRef } from "../useTreeRef";
+import { TreeRefValue } from "../useTreeRef";
 import { StyledTree } from "../StyledTree";
 import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
-import { useTreeState } from "../__tmp__useTreeState";
+import { useTreeState } from "../useTreeState";
 import { TreeProps } from "../Tree";
 import { useTreeVirtualizer } from "../useTreeVirtualizer";
 import { TreeContext } from "../TreeContext";
@@ -23,7 +23,7 @@ export const SpeedSearchTree = React.forwardRef(
       alwaysShowAsFocused = false,
       ...props
     }: SpeedSearchTreeProps<T>,
-    forwardedRef: ForwardedRef<TreeRef>
+    forwardedRef: ForwardedRef<TreeRefValue>
   ) => {
     const state = useTreeState(
       { ...props, disallowEmptySelection: !props.allowEmptySelection },

@@ -1,5 +1,5 @@
 import { Selection } from "@react-types/shared";
-import { TreeRef } from "@intellij-platform/core";
+import { TreeRefValue } from "@intellij-platform/core";
 import { Key, RefObject } from "react";
 import { atom, CallbackInterface, GetRecoilValue, selector } from "recoil";
 import { currentProjectState, Project } from "../Project/project.state";
@@ -48,7 +48,7 @@ export const selectedKeysState = atom<Selection>({
   default: new Set<Key>([]),
 });
 
-export const projectViewTreeRefState = atom<null | RefObject<TreeRef>>({
+export const projectViewTreeRefState = atom<null | RefObject<TreeRefValue>>({
   key: "projectView.focusHandle",
   default: null,
   dangerouslyAllowMutability: true,
@@ -70,25 +70,25 @@ async function createProjectTree(
   get: GetRecoilValue
 ): Promise<ProjectTreeRoot> {
   const rootItems = await get(dirContentState(project.path));
-  const mapItem = (parent: FileTreeDirNode | null) => async (
-    item: FsItem
-  ): Promise<FileTreeNode> => {
-    const name = path.basename(item.path);
-    const node = {
-      ...item,
-      name,
-      parent,
+  const mapItem =
+    (parent: FileTreeDirNode | null) =>
+    async (item: FsItem): Promise<FileTreeNode> => {
+      const name = path.basename(item.path);
+      const node = {
+        ...item,
+        name,
+        parent,
+      };
+      const dirNode: FileTreeDirNode = { ...node, children: [] };
+      if (item.type === "dir") {
+        dirNode.children = await Promise.all(
+          ((await get(dirContentState(item.path))) ?? ([] as FsItem[])).map(
+            mapItem(dirNode)
+          )
+        );
+      }
+      return item.type === "dir" ? dirNode : node;
     };
-    const dirNode: FileTreeDirNode = { ...node, children: [] };
-    if (item.type === "dir") {
-      dirNode.children = await Promise.all(
-        ((await get(dirContentState(item.path))) ?? ([] as FsItem[])).map(
-          mapItem(dirNode)
-        )
-      );
-    }
-    return item.type === "dir" ? dirNode : node;
-  };
 
   return {
     type: "project",
@@ -106,15 +106,15 @@ async function createProjectTree(
  * @param snapshot
  * @param set
  */
-export const expandToPathCallback = ({ snapshot, set }: CallbackInterface) => (
-  path: string
-) => {
-  const expandedKeys = snapshot.getLoadable(expandedKeysState).valueOrThrow();
-  const keysToExpand = [
-    snapshot.getLoadable(currentProjectState).valueOrThrow().path,
-  ].concat(getParentPaths(path));
-  set(expandedKeysState, new Set([...expandedKeys, ...keysToExpand]));
-};
+export const expandToPathCallback =
+  ({ snapshot, set }: CallbackInterface) =>
+  (path: string) => {
+    const expandedKeys = snapshot.getLoadable(expandedKeysState).valueOrThrow();
+    const keysToExpand = [
+      snapshot.getLoadable(currentProjectState).valueOrThrow().path,
+    ].concat(getParentPaths(path));
+    set(expandedKeysState, new Set([...expandedKeys, ...keysToExpand]));
+  };
 
 /**
  * a function to be passed to useRecoilCallback to get back a callback for selecting a file in project view and focusing
@@ -122,11 +122,12 @@ export const expandToPathCallback = ({ snapshot, set }: CallbackInterface) => (
  * // TODO: open project view tool window if needed, when tool window state is also moved to recoil instead of local
  * //  state.
  */
-export const selectKeyAndFocusCallback = ({ snapshot }: CallbackInterface) => (
-  key: Key
-) => {
-  const treeRef = snapshot.getLoadable(projectViewTreeRefState).valueOrThrow()
-    ?.current;
-  treeRef?.replaceSelection(key);
-  treeRef?.focus(key);
-};
+export const selectKeyAndFocusCallback =
+  ({ snapshot }: CallbackInterface) =>
+  (key: Key) => {
+    const treeRef = snapshot
+      .getLoadable(projectViewTreeRefState)
+      .valueOrThrow()?.current;
+    treeRef?.replaceSelection(key);
+    treeRef?.focus(key);
+  };

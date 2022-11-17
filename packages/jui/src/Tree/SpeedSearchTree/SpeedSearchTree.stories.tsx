@@ -8,11 +8,16 @@ import {
 import { treeItems } from "../story-helpers";
 import { SpeedSearchTree } from "./SpeedSearchTree";
 import { Item } from "@react-stately/collections";
-import { HighlightedTextValue } from "@intellij-platform/core";
+import { HighlightedTextValue, TreeRefValue } from "@intellij-platform/core";
 
 export default {
   title: "Components/Tree (Speed search)",
   Component: SpeedSearchTree,
+  parameters: {
+    options: {
+      enableShortcuts: false,
+    },
+  },
 } as Meta;
 
 export const Static: Story = () => {
@@ -84,5 +89,22 @@ export const HighlightsWithSpace: Story = () => {
         </Item>
       </SpeedSearchTree>
     </Pane>
+  );
+};
+
+export const ExpandShrinkSelection: Story = () => {
+  const ref = React.useRef<TreeRefValue>(null);
+  return (
+    <>
+      <button onClick={() => ref.current?.expandSelection()}>
+        Expand selection
+      </button>
+      <button onClick={() => ref.current?.shrinkSelection()}>
+        Shrink selection
+      </button>
+      <Pane>
+        <SpeedSearchTreeSample treeRef={ref} defaultSelectedKeys={[]} />
+      </Pane>
+    </>
   );
 };

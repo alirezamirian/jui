@@ -1,10 +1,19 @@
 import { ForwardedRef, Key, useImperativeHandle } from "react";
-import { SelectionManager } from "@react-stately/selection";
 import { useLatest } from "@intellij-platform/core/utils/useLatest";
+import { TreeSelectionManager } from "@intellij-platform/core/Tree/TreeSelectionManager";
 
-export interface TreeRef {
+export interface TreeRefValue {
   focus(key: Key): void;
   replaceSelection(key: Key): void;
+
+  /**
+   * Extends selection to all siblings of the currently focused node.
+   */
+  expandSelection(): void;
+  /**
+   * Shrinks selection towards currently focused node.
+   */
+  shrinkSelection(): void;
 }
 
 /**
@@ -12,8 +21,8 @@ export interface TreeRef {
  * specific key, etc.
  */
 export function useTreeRef(
-  props: { selectionManager: SelectionManager },
-  forwardedRef?: ForwardedRef<TreeRef>
+  props: { selectionManager: TreeSelectionManager },
+  forwardedRef?: ForwardedRef<TreeRefValue>
 ) {
   const latestState = useLatest(props);
 
@@ -38,6 +47,12 @@ export function useTreeRef(
           setTimeout(() => {
             selectionManager.setFocusedKey(key);
           });
+        },
+        expandSelection() {
+          latestState.current.selectionManager.expandSelection();
+        },
+        shrinkSelection() {
+          latestState.current.selectionManager.shrinkSelection();
         },
       };
     },

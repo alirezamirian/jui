@@ -3,10 +3,10 @@ import { Node } from "@react-types/shared";
 import { Virtualizer } from "@react-aria/virtualizer";
 import { TreeProps as StatelyTreeProps } from "@react-stately/tree";
 import { StyledTree } from "./StyledTree";
-import { TreeRef } from "./useTreeRef";
+import { TreeRefValue } from "./useTreeRef";
 import { TreeNode } from "./TreeNode";
 import { TreeContext } from "./TreeContext";
-import { useTreeState } from "./__tmp__useTreeState";
+import { useTreeState } from "./useTreeState";
 import { SelectableTreeProps, useSelectableTree } from "./useSelectableTree";
 import { useTreeVirtualizer } from "./useTreeVirtualizer";
 import { CollectionCacheInvalidationProps } from "@intellij-platform/core/Collections/useCollectionCacheInvalidation";
@@ -37,7 +37,7 @@ export const Tree = React.forwardRef(
       alwaysShowAsFocused = false,
       ...props
     }: TreeProps<T>,
-    forwardedRef: ForwardedRef<TreeRef>
+    forwardedRef: ForwardedRef<TreeRefValue>
   ) => {
     const state = useTreeState(props, forwardedRef);
     const ref = useRef<HTMLDivElement>(null);

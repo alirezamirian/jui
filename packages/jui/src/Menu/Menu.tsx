@@ -1,12 +1,12 @@
+import React, { Key, useContext, useEffect } from "react";
 import { useMenu } from "@react-aria/menu";
 import { AriaMenuProps } from "@react-types/menu";
 import { Node } from "@react-types/shared";
-import React, { Key, useContext, useEffect } from "react";
-import { ListDivider } from "../List/ListDivider";
-import { useTreeState } from "../Tree/__tmp__useTreeState";
+import { ListDivider } from "../List/ListDivider"; // shared dependency between list and menu, that could be lifted up
+import { useTreeState } from "../Tree/useTreeState"; // shared dependency between tree and menu, that could be lifted up
 import { MenuItem } from "./MenuItem";
 import { StyledMenu } from "./StyledMenu";
-import { MenuSection } from "@intellij-platform/core/Menu/MenuSection";
+import { MenuSection } from "./MenuSection";
 
 export interface MenuProps<T>
   extends Omit<

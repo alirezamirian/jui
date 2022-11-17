@@ -96,4 +96,36 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
+  ExpandSelection: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        key: "W",
+      },
+    },
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Alt"],
+        key: "ArrowUp",
+      },
+    },
+  ],
+  ShrinkSelection: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta", "Shift"],
+        key: "W",
+      },
+    },
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Alt"],
+        key: "ArrowDown",
+      },
+    },
+  ],
 };
