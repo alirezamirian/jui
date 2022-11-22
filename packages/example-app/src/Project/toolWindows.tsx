@@ -1,6 +1,4 @@
 import React from "react";
-import { ProjectViewPane } from "../ProjectView/ProjectViewPane";
-import { ProjectViewActionButtons } from "../ProjectView/ProjectViewActionButtons";
 import {
   DefaultToolWindow,
   MultiViewToolWindow,
@@ -11,6 +9,7 @@ import {
 import { Terminal } from "../Terminal";
 import { ChangesViewPane } from "../VersionControl/Changes/ChangesView/ChangesViewPane";
 import { CurrentBranchName } from "../VersionControl/CurrentBranchName";
+import { ProjectToolWindow } from "../ProjectView/ProjectToolWindow";
 
 export type ToolWindowDescriptor = {
   id: string;
@@ -24,15 +23,8 @@ export const toolWindows: ToolWindowDescriptor[] = [
     id: "Project",
     title: "Project",
     icon: <PlatformIcon icon="toolwindows/toolWindowProject" />,
-    content: (
-      <DefaultToolWindow
-        headerContent="Project"
-        additionalActions={<ProjectViewActionButtons />}
-      >
-        <ProjectViewPane />
-      </DefaultToolWindow>
-    ),
-    initialState: toolWindowState({ isVisible: true, weight: 0.22 }),
+    content: <ProjectToolWindow />,
+    initialState: toolWindowState({ isVisible: true, weight: 0.23 }),
   },
   {
     id: "Terminal",

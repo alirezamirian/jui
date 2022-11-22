@@ -26,10 +26,6 @@ import {
   selectedKeysState,
 } from "./ProjectView.state";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
-import {
-  ActionDefinition,
-  ActionsProvider,
-} from "@intellij-platform/core/ActionSystem";
 
 export const ProjectViewPane = (): React.ReactElement => {
   const project = useRecoilValue(currentProjectState);
@@ -50,72 +46,51 @@ export const ProjectViewPane = (): React.ReactElement => {
     ? sortBy<ProjectTreeNode>((a) => (a.type === "dir" ? 1 : 2))
     : identity;
 
-  const treeActions: Record<string, ActionDefinition> = {
-    ExpandSelection: {
-      title: "Expand Selection",
-      actionPerformed: () => {
-        treeRef.current?.expandSelection();
-      },
-    },
-    ShrinkSelection: {
-      title: "Shrink Selection",
-      actionPerformed: () => {
-        treeRef.current?.shrinkSelection();
-      },
-    },
-  };
-
   return (
     <DefaultSuspense>
-      <ActionsProvider actions={treeActions}>
-        {({ shortcutHandlerProps }) => (
-          <div {...shortcutHandlerProps} style={{ height: "100%" }}>
-            <SpeedSearchTree
-              ref={treeRef}
-              items={[projectTree] as ProjectTreeNode[]}
-              onAction={(path) => {
-                editor.openPath(`${path}`);
-              }}
-              fillAvailableSpace
-              selectionMode="multiple"
-              selectedKeys={selectedKeys}
-              onSelectionChange={setSelectedKeys}
-              expandedKeys={expandedKeys}
-              onExpandedChange={setExpandedKeys}
-            >
-              {(item) => (
-                <Item
-                  key={item.path}
-                  textValue={item.name}
-                  childItems={
-                    "children" in item ? sortItems(item.children) : undefined
-                  }
-                >
-                  <ItemLayout>
-                    {<ProjectViewNodeIcon node={item} />}
-                    {item.type === "project" ? (
-                      <>
-                        <b>
-                          <HighlightedTextValue />
-                        </b>
-                        <ItemLayout.Hint>{project.path}</ItemLayout.Hint>
-                      </>
-                    ) : (
-                      <FileTreeNodeText node={item} />
-                    )}
-                    {/* {"loadingState" in item &&
+      <SpeedSearchTree
+        ref={treeRef}
+        items={[projectTree] as ProjectTreeNode[]}
+        onAction={(path) => {
+          editor.openPath(`${path}`);
+        }}
+        fillAvailableSpace
+        selectionMode="multiple"
+        selectedKeys={selectedKeys}
+        onSelectionChange={setSelectedKeys}
+        expandedKeys={expandedKeys}
+        onExpandedChange={setExpandedKeys}
+      >
+        {(item) => (
+          <Item
+            key={item.path}
+            textValue={item.name}
+            childItems={
+              "children" in item ? sortItems(item.children) : undefined
+            }
+          >
+            <ItemLayout>
+              {<ProjectViewNodeIcon node={item} />}
+              {item.type === "project" ? (
+                <>
+                  <b>
+                    <HighlightedTextValue />
+                  </b>
+                  <ItemLayout.Hint>{project.path}</ItemLayout.Hint>
+                </>
+              ) : (
+                <FileTreeNodeText node={item} />
+              )}
+              {/* {"loadingState" in item &&
                       item.loadingState === "loading" && (
                         <TreeNodeHint>
                           <Img height={16} src={loading} darkSrc={loadingDark} />
                         </TreeNodeHint>
                       )}*/}
-                  </ItemLayout>
-                </Item>
-              )}
-            </SpeedSearchTree>
-          </div>
+            </ItemLayout>
+          </Item>
         )}
-      </ActionsProvider>
+      </SpeedSearchTree>
     </DefaultSuspense>
   );
 };

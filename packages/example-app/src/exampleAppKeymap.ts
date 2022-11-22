@@ -1,4 +1,4 @@
-import { Keymap } from "@intellij-platform/core/ActionSystem";
+import { Keymap } from "@intellij-platform/core";
 
 export const exampleAppKeymap: Keymap = {
   ActivateProjectWindow: [

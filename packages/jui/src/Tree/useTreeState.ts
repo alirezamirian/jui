@@ -12,10 +12,41 @@ import {
   CollectionCacheInvalidationProps,
   useCollectionCacheInvalidation,
 } from "@intellij-platform/core/Collections/useCollectionCacheInvalidation";
-import { TreeCollection } from "./__copied__TreeCollection";
+import { TreeCollection as _TreeCollection } from "./__copied__TreeCollection";
 import { getSingleChildrenKeys } from "./getSingleChildrenKeys";
 import { TreeSelectionManager } from "@intellij-platform/core/Tree/TreeSelectionManager";
+import { notNull } from "@intellij-platform/core/utils/array-utils";
 
+export class TreeCollection<T> extends _TreeCollection<T> {
+  public readonly rootKeys: Key[];
+  constructor(
+    nodes: Iterable<Node<T>>,
+    { expandedKeys }: { expandedKeys: Set<Key> }
+  ) {
+    super(nodes, { expandedKeys });
+    this.rootKeys = Array.from(nodes).map(({ key }) => key);
+  }
+
+  getAllExpandableKeys(): Set<Key> {
+    const rootNodes = this.rootKeys
+      .map((key) => this.getItem(key))
+      .filter(notNull);
+    return this.recursivelyAddExpandableKeys(rootNodes, new Set<Key>());
+  }
+
+  private recursivelyAddExpandableKeys(
+    nodes: Iterable<Node<T>>,
+    result: Set<Key>
+  ) {
+    for (const node of nodes) {
+      if (node?.hasChildNodes) {
+        result.add(node.key);
+        this.recursivelyAddExpandableKeys(node.childNodes, result);
+      }
+    }
+    return result;
+  }
+}
 export interface TreeProps<T>
   extends _TreeProps<T>,
     CollectionCacheInvalidationProps {}
@@ -36,6 +67,8 @@ export interface TreeProps<T>
  *   Perhaps not the most important addition, but not possible to be done via a wrapper.
  * - Uses TreeSelectionManager instead of the default SelectionManager, which implements expand/shrink selection.
  *   Could be done in a wrapper, with a little hack. Would need to replace selection manager.
+ * - returned `collection` is of type `TreeCollection` (which is an improved version of react-stately `TreeCollection`),
+ *   instead of the more generic `Collection`.
  */
 export function useTreeState<T extends object>(
   props: TreeProps<T>,
@@ -58,17 +91,20 @@ export function useTreeState<T extends object>(
 
   const context = useCollectionCacheInvalidation(props);
 
-  let tree = useCollection(
+  // @ts-expect-error imprecise typing in @react-stately/selection
+  let tree = useCollection<T, TreeCollection<T>>(
     props,
-    // @ts-expect-error imprecise typing in @react-stately/selection
     (nodes) => new TreeCollection(nodes, { expandedKeys }),
     context,
     [expandedKeys]
   );
 
-  const selectionManager = new TreeSelectionManager(tree, selectionState);
+  const selectionManager = new TreeSelectionManager(
+    tree as Collection<Node<T>>,
+    selectionState
+  );
 
-  useTreeRef({ selectionManager }, treeRef);
+  useTreeRef({ selectionManager, setExpandedKeys, tree }, treeRef);
 
   // Reset focused key if that item is deleted from the collection.
   useEffect(() => {
@@ -82,11 +118,13 @@ export function useTreeState<T extends object>(
   }, [tree, selectionState.focusedKey]);
 
   const onToggle = (key: Key) => {
-    setExpandedKeys(toggleTreeNode(tree, expandedKeys, key));
+    setExpandedKeys(
+      toggleTreeNode(tree as Collection<Node<T>>, expandedKeys, key)
+    );
   };
 
   return {
-    collection: tree,
+    collection: tree as Collection<Node<T>>,
     expandedKeys,
     disabledKeys,
     toggleKey: onToggle,

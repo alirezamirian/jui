@@ -12,6 +12,7 @@ import {
   // For some reason importing from shorter paths doesn't work as expected in cypress ¯\_(ツ)_/¯
   // Weirdly, `import *` works in that case.
 } from "@intellij-platform/core/ToolWindowsImpl/ToolWindowActionIds";
+import { CommonActionId } from "@intellij-platform/core/ActionSystem/CommonActionIds";
 
 // TODO: OS specific defaults
 // TODO: extract and export action ids
@@ -96,7 +97,7 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
-  ExpandSelection: [
+  [CommonActionId.EXPAND_SELECTION]: [
     {
       type: "keyboard",
       firstKeyStroke: {
@@ -112,7 +113,7 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
-  ShrinkSelection: [
+  [CommonActionId.SHRINK_SELECTION]: [
     {
       type: "keyboard",
       firstKeyStroke: {
@@ -125,6 +126,31 @@ export const defaultKeymap: Keymap = {
       firstKeyStroke: {
         modifiers: ["Alt"],
         key: "ArrowDown",
+      },
+    },
+  ],
+  [CommonActionId.EXPAND_ALL]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        key: "+",
+      },
+    },
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        key: "=",
+      },
+    },
+  ],
+  [CommonActionId.COLLAPSE_ALL]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        key: "-", // keyCode for Minus and Subtract is 189 and 109. But key seems to be the same for both
       },
     },
   ],

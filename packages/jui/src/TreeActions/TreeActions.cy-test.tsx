@@ -1,18 +1,59 @@
 import * as React from "react";
 import { composeStories } from "@storybook/testing-react";
-import * as speedSearchTreeStories from "./SpeedSearchTree/SpeedSearchTree.stories";
-import * as treeStories from "./Tree.stories";
+import * as stories from "./TreeActions.stories";
 
-const { ExpandShrinkSelection: SpeedSearchExpandShrinkSelection } =
-  composeStories(speedSearchTreeStories);
-const { ExpandShrinkSelection: ExpandShrinkSelection } =
-  composeStories(treeStories);
+const { OnTree, OnSpeedSearchTree } = composeStories(stories);
 
 [
-  { Component: SpeedSearchExpandShrinkSelection, name: "SpeedSearchTree" },
-  { Component: ExpandShrinkSelection, name: "Tree" },
+  { Component: OnSpeedSearchTree, name: "SpeedSearchTree" },
+  { Component: OnTree, name: "Tree" },
 ].forEach(({ Component, name }) => {
-  describe(`${name} expand/shrink selection`, () => {
+  describe(`Actions on ${name}`, () => {
+    describe("Expand All", () => {
+      it("expands all nodes, via shortcut", () => {
+        cy.mount(<Component />);
+        cy.contains("BasicList.tsx").click();
+        cy.findAllByRole("treeitem").should("have.length.lessThan", 15);
+        cy.realPress(["Meta", "="]);
+        cy.findAllByRole("treeitem").should("have.length", 15);
+
+        // FIXME: there seems to be a bug in cy.realPress, when triggering Meta+NumpadAdd. (["Meta", "+"]).
+        //  location for the triggered key down event is 1, causing the shortcut handler function to ignore it.
+        //  location should be 3, and is actually set so here: https://github.com/dmtrKovalenko/cypress-real-events/blob/0614ae20c817f269ae66b490a874192dcb89b956/src/keyCodeDefinitions.ts#L204
+        //  But for some reason it will be 1 on the dispatched events.
+        // cy.mount(<Component />);
+        // cy.contains("BasicList.tsx").click();
+        // cy.findAllByRole("treeitem").should("have.length.lessThan", 15);
+        // cy.realPress(["Meta", "+"]);
+        // cy.findAllByRole("treeitem").should("have.length", 15);
+      });
+    });
+    describe("Collapse All", () => {
+      it("collapses all nodes, via shortcut", () => {
+        cy.mount(<Component />);
+        cy.contains("BasicList.tsx").click();
+        cy.findAllByRole("treeitem").should("have.length.greaterThan", 3);
+        cy.realPress(["Meta", "Minus"]);
+        cy.findAllByRole("treeitem").should("have.length", 3);
+      });
+      it("selects the root node which is the grandparent of the focused/selected node", () => {
+        cy.mount(<Component />);
+        cy.contains("BasicList.tsx").click();
+        cy.findAllByRole("treeitem").should("have.length.greaterThan", 3);
+        cy.realPress(["Meta", "Minus"]);
+        cy.findByRole("treeitem", { selected: true, name: "List" });
+        cy.findAllByRole("treeitem", { selected: true }).should(
+          "have.length",
+          1
+        );
+
+        // focus should be kept:
+        cy.realPress(["Meta", "="]);
+        cy.findAllByRole("treeitem").should("have.length", 15);
+      });
+    });
+  });
+  describe(`Expand/Shrink selection`, () => {
     it("works", () => {
       cy.mount(<Component />);
       cy.contains("BasicList.tsx").click();
@@ -157,10 +198,10 @@ const { ExpandShrinkSelection: ExpandShrinkSelection } =
 });
 
 function expandSelection() {
-  cy.contains("Expand selection").click();
+  cy.realPress(["Alt", "ArrowUp"]);
 }
 function shrinkSelection() {
-  cy.contains("Shrink selection").click();
+  cy.realPress(["Alt", "ArrowDown"]);
 }
 
 function expectSelection(selectedItems: string[]) {

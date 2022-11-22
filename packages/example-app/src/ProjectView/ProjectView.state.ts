@@ -1,6 +1,6 @@
 import { Selection } from "@react-types/shared";
 import { TreeRefValue } from "@intellij-platform/core";
-import { Key, RefObject } from "react";
+import React, { Key, RefObject } from "react";
 import { atom, CallbackInterface, GetRecoilValue, selector } from "recoil";
 import { currentProjectState, Project } from "../Project/project.state";
 import { dirContentState, FsItem } from "../fs/fs.state";
@@ -48,9 +48,9 @@ export const selectedKeysState = atom<Selection>({
   default: new Set<Key>([]),
 });
 
-export const projectViewTreeRefState = atom<null | RefObject<TreeRefValue>>({
+export const projectViewTreeRefState = atom<RefObject<TreeRefValue>>({
   key: "projectView.focusHandle",
-  default: null,
+  default: React.createRef(),
   dangerouslyAllowMutability: true,
 });
 

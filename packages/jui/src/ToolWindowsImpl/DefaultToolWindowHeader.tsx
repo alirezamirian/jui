@@ -7,8 +7,12 @@ import { ActionTooltip, TooltipTrigger } from "@intellij-platform/core/Tooltip";
 import { styled } from "@intellij-platform/core/styled";
 import { StyledHorizontalSeparator } from "@intellij-platform/core/StyledSeparator";
 import { UnknownThemeProp } from "@intellij-platform/core/Theme/Theme";
-import { ToolWindowSettingsIconMenu } from "./ToolWindowSettingsIconMenu";
 import { Action } from "@intellij-platform/core/ActionSystem/components";
+import { ToolWindowSettingsIconMenu } from "./ToolWindowSettingsIconMenu";
+import {
+  DOCK_TOOL_WINDOW_ACTION_ID,
+  HIDE_ACTIVE_WINDOW_ACTION_ID,
+} from "./ToolWindowActionIds";
 
 export interface ToolWindowHeaderProps
   extends Omit<HTMLProps<HTMLDivElement>, "ref" | "as"> {
@@ -67,7 +71,7 @@ export const DefaultToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
               <StyledHorizontalSeparator />
             </>
           )}
-          <Action.Button actionId="DockToolWindow" />
+          <Action.Button actionId={DOCK_TOOL_WINDOW_ACTION_ID} />
           <MenuTrigger
             renderMenu={({ menuProps }) => {
               return <ToolWindowSettingsIconMenu menuProps={menuProps} />;
@@ -81,7 +85,7 @@ export const DefaultToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
               </TooltipTrigger>
             )}
           </MenuTrigger>
-          <Action.Button actionId="HideActiveWindow" />
+          <Action.Button actionId={HIDE_ACTIVE_WINDOW_ACTION_ID} />
         </ActionToolbar>
       </StyledToolWindowHeaderActions>
     </StyledToolWindowHeader>

@@ -1,11 +1,10 @@
 import React from "react";
 import { RecoilRoot } from "recoil";
+import { BalloonsProvider, KeymapProvider } from "@intellij-platform/core";
 import { DefaultSuspense } from "./DefaultSuspense";
 import { Project } from "./Project/Project";
 import { SampleRepoInitializer } from "./SampleRepoInitializer";
-import { BalloonsProvider } from "@intellij-platform/core";
 import { WaitForFs } from "./fs/fs";
-import { KeymapProvider } from "@intellij-platform/core/ActionSystem";
 import { exampleAppKeymap } from "./exampleAppKeymap";
 
 /**

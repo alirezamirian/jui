@@ -3,13 +3,12 @@ import { Meta, Story } from "@storybook/react";
 import React, { Key, useState } from "react";
 import { Tree, TreeProps } from "./Tree";
 import { treeItems } from "./story-helpers";
-import { Pane, SelectionLog, TreeSample } from "../story-components";
+import { Pane, SelectionLog } from "../story-components";
 import {
   ContextMenuContainer,
   Menu,
   MenuItemLayout,
   PlatformIcon,
-  TreeRefValue,
 } from "@intellij-platform/core";
 
 export default {
@@ -195,22 +194,5 @@ export const WithContextMenu: Story = () => {
         </Tree>{" "}
       </ContextMenuContainer>
     </Pane>
-  );
-};
-
-export const ExpandShrinkSelection: Story = () => {
-  const ref = React.useRef<TreeRefValue>(null);
-  return (
-    <>
-      <button onClick={() => ref.current?.expandSelection()}>
-        Expand selection
-      </button>
-      <button onClick={() => ref.current?.shrinkSelection()}>
-        Shrink selection
-      </button>
-      <Pane>
-        <TreeSample treeRef={ref} defaultSelectedKeys={[]} />
-      </Pane>
-    </>
   );
 };

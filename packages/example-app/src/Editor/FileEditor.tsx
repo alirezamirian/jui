@@ -35,7 +35,7 @@ import { fileContent } from "../fs/fs.state";
 import { useUpdateFileStatus } from "../VersionControl/file-status.state";
 import * as path from "path";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
-import { useAction } from "@intellij-platform/core/ActionSystem";
+import { useAction } from "@intellij-platform/core";
 
 /**
  * Used as main content in the main ToolWindows. Shows currently opened files tabs and the editor.

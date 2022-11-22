@@ -3,7 +3,10 @@ import { filterDOMProps, mergeProps } from "@react-aria/utils";
 import { DOMProps } from "@react-types/shared";
 import { styled } from "@intellij-platform/core/styled";
 import { FocusScope } from "@intellij-platform/core/utils/FocusScope";
-import { ActionsProvider } from "@intellij-platform/core/ActionSystem";
+import {
+  ActionDefinition,
+  ActionsProvider,
+} from "@intellij-platform/core/ActionSystem";
 import { useToolWindow } from "./useToolWindow";
 import { DefaultToolWindowHeader } from "./DefaultToolWindowHeader";
 import { useToolWindowActions } from "./useToolWindowActions";
@@ -17,6 +20,10 @@ export interface DefaultToolWindowProps extends DOMProps {
    * additional action buttons to be rendered before the default gear and hide buttons.
    */
   additionalActions?: React.ReactNode;
+  /**
+   * Actions to be provided in the tool window, in addition to the default tool window actions.
+   */
+  actions?: Record<string, ActionDefinition>;
   onFocusChange?: (focused: boolean) => void;
 }
 
@@ -59,6 +66,7 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
   children,
   additionalActions,
   onFocusChange,
+  actions,
   ...otherProps
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -84,10 +92,14 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
     }),
     [contentHasFocus]
   );
-  const actions = useToolWindowActions();
+  const toolWindowActions = useToolWindowActions();
+  const allActions = {
+    ...toolWindowActions,
+    ...actions,
+  };
 
   return (
-    <ActionsProvider actions={actions}>
+    <ActionsProvider actions={allActions}>
       {({ shortcutHandlerProps }) => (
         <StyledToolWindowContainer
           {...mergeProps(
