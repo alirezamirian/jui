@@ -194,6 +194,23 @@ const { OnTree, OnSpeedSearchTree } = composeStories(stories);
         "createTheme.ts",
       ]);
     });
+    it("shrinks selection from a root if all other children are selected", () => {
+      cy.mount(<Component />);
+      cy.contains("List").click();
+      expandSelection(); // "List" and all of its descendants are selected now
+      expandSelection(); // All nodes are selected now
+      shrinkSelection(); // Shrinking selection should move selection back to "List" and all of its descendants
+      expectSelection([
+        "List",
+        "BasicList",
+        "BasicList.stories.tsx",
+        "BasicList.tsx",
+        "BasicListItem.tsx",
+        "useBasicList.ts",
+        "SpeedSearchList",
+        "ListDivider.tsx",
+      ]);
+    });
   });
 });
 
