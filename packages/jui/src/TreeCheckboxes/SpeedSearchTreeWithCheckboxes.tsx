@@ -1,7 +1,8 @@
-import React from "react";
+import React, { ForwardedRef } from "react";
 import {
   SpeedSearchTree,
   SpeedSearchTreeProps,
+  TreeRefValue,
 } from "@intellij-platform/core/Tree";
 import { NestedSelectionState } from "./NestedSelection";
 
@@ -13,29 +14,37 @@ import { NestedSelectionState } from "./NestedSelection";
  *
  * @alpha
  */
-export const SpeedSearchTreeWithCheckboxes = <T extends object>({
-  nestedSelection,
-  cacheInvalidation,
-  onNodeKeyDown,
-  ...props
-}: SpeedSearchTreeProps<T> & {
-  nestedSelection: NestedSelectionState<T>;
-}): React.ReactElement => {
-  const otherInvalidators =
-    typeof cacheInvalidation === "object" ? cacheInvalidation.invalidators : [];
-  return (
-    <SpeedSearchTree
-      {...props}
-      // instead of passing cacheInvalidation, a better approach could be to provide nestedSelection as context.
-      cacheInvalidation={{
-        invalidators: [nestedSelection, ...otherInvalidators],
-      }}
-      onNodeKeyDown={(event, item) => {
-        if (event.key === " ") {
-          nestedSelection.toggle(item.value);
-        }
-        onNodeKeyDown?.(event, item);
-      }}
-    />
-  );
-};
+export const SpeedSearchTreeWithCheckboxes = React.forwardRef(
+  <T extends object>(
+    {
+      nestedSelection,
+      cacheInvalidation,
+      onNodeKeyDown,
+      ...props
+    }: SpeedSearchTreeProps<T> & {
+      nestedSelection: NestedSelectionState<T>;
+    },
+    ref: ForwardedRef<TreeRefValue>
+  ): React.ReactElement => {
+    const otherInvalidators =
+      typeof cacheInvalidation === "object"
+        ? cacheInvalidation.invalidators
+        : [];
+    return (
+      <SpeedSearchTree
+        ref={ref}
+        {...props}
+        // instead of passing cacheInvalidation, a better approach could be to provide nestedSelection as context.
+        cacheInvalidation={{
+          invalidators: [nestedSelection, ...otherInvalidators],
+        }}
+        onNodeKeyDown={(event, item) => {
+          if (event.key === " ") {
+            nestedSelection.toggle(item.value);
+          }
+          onNodeKeyDown?.(event, item);
+        }}
+      />
+    );
+  }
+);

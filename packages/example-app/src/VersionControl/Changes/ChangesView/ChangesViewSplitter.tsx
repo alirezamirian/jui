@@ -2,6 +2,7 @@ import styled from "styled-components";
 import {
   ActionButton,
   ActionHelpTooltip,
+  ActionsProvider,
   ActionTooltip,
   Button,
   Checkbox,
@@ -9,8 +10,10 @@ import {
   PlatformIcon,
   ThreeViewSplitter,
   TooltipTrigger,
+  TreeRefValue,
   useDefaultToolWindowContext,
   useToolWindowState,
+  useTreeActions,
 } from "@intellij-platform/core";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
@@ -93,11 +96,13 @@ export const ChangesViewSplitter = () => {
   const {
     state: { anchor },
   } = useToolWindowState();
+  const treeRef = useRef<TreeRefValue>(null);
   const editorRef = useRef<{ focus: () => void }>(null);
   const orientation = getAnchorOrientation(anchor);
   const [commitMessageSize, setCommitMessageSize] = useRecoilState(
     commitMessageSizeState(orientation)
   );
+  const treeActions = useTreeActions({ treeRef });
   // TODO(lib-candidate): ToolWindowAwareSplitter. A wrapper around ThreeViewSplitter which sets orientation based
   //  on anchor orientation from useToolWindowState.
   return (
@@ -113,13 +118,17 @@ export const ChangesViewSplitter = () => {
       <ThreeViewSplitter
         orientation={orientation}
         innerView={
-          <StyledContainer>
-            <ChangesViewToolbar />
-            <StyledTreeViewWrapper>
-              <ChangeViewTree />
-            </StyledTreeViewWrapper>
-            <CommitActionsRow />
-          </StyledContainer>
+          <ActionsProvider actions={treeActions}>
+            {({ shortcutHandlerProps }) => (
+              <StyledContainer {...shortcutHandlerProps}>
+                <ChangesViewToolbar />
+                <StyledTreeViewWrapper>
+                  <ChangeViewTree treeRef={treeRef} />
+                </StyledTreeViewWrapper>
+                <CommitActionsRow />
+              </StyledContainer>
+            )}
+          </ActionsProvider>
         }
         innerViewMinSize={50}
         lastView={<CommitMessageEditorAndButtons editorRef={editorRef} />}

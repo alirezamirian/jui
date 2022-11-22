@@ -70,12 +70,12 @@ export function useTreeRef<T extends {}>(
         collapseAll() {
           const { tree, setExpandedKeys, selectionManager } =
             latestState.current;
+          const focusedKey = selectionManager.focusedKey;
           setExpandedKeys(new Set());
 
           // Find the root node that is a grandparent of focused node, and focus/select it.
           // NOTE: this behaviour of updating selection when nodes are collapsed is something to be fixed in general,
           // and then this custom logic here would be not necessary.
-          const focusedKey = selectionManager.focusedKey;
           if (focusedKey && !tree.rootKeys.includes(focusedKey)) {
             let item = tree.getItem(focusedKey);
             while (item?.parentKey != null) {

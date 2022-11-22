@@ -1,10 +1,11 @@
-import React from "react";
+import React, { RefObject } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   ContextMenuContainer,
   Item,
   SpeedSearchTreeWithCheckboxes,
   TreeNodeCheckbox,
+  TreeRefValue,
 } from "@intellij-platform/core";
 import {
   changesTreeNodesState,
@@ -16,12 +17,14 @@ import { ChangesViewTreeContextMenu } from "./ChangesViewTreeContextMenu";
 import { getChangeListTreeItemProps } from "./changesTreeNodeRenderers";
 
 /**
- * TODO: fix horizontal scroll issue (https://github.com/alirezamirian/jui/issues/6)
- * TODO: use the real changes instead of the dummy ones
  * TODO: unversioned files
  * TODO: show diff/source on double click (on action to be more precise)
  */
-export const ChangeViewTree = (): JSX.Element => {
+export const ChangeViewTree = ({
+  treeRef,
+}: {
+  treeRef: RefObject<TreeRefValue>;
+}): JSX.Element => {
   const { rootNodes, fileCountsMap } = useRecoilValue(changesTreeNodesState);
   const [selectedKeys, setSelectedKeys] = useRecoilState(selectedKeysState);
   const [expandedKeys, setExpandedKeys] = useRecoilState(expandedKeysState);
@@ -33,6 +36,7 @@ export const ChangeViewTree = (): JSX.Element => {
       style={{ height: "100%" }}
     >
       <SpeedSearchTreeWithCheckboxes
+        ref={treeRef}
         items={rootNodes}
         selectionMode="multiple"
         selectedKeys={selectedKeys}
