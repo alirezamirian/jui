@@ -118,7 +118,12 @@ export function useTreeState<T extends object>(
   }, [tree, selectionState.focusedKey]);
 
   const onToggle = (key: Key) => {
-    setExpandedKeys(
+    // @ts-expect-error: callback syntax is not officially supported by @react-stately/utils.
+    // more info: https://github.com/adobe/react-spectrum/issues/2320
+    // But we rely on it in Menu, because of how it's implemented currently. Alternative solutions to Menu's problem:
+    // - Expose setExpandedKeys to let Menu not just toggle keys, but to collapse some item and expand another in one go.
+    // - Add an option for collapsing same level items when an item is being toggled open. (menu/accordion behavior)
+    setExpandedKeys((expandedKeys) =>
       toggleTreeNode(tree as Collection<Node<T>>, expandedKeys, key)
     );
   };
