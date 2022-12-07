@@ -1,6 +1,6 @@
 import { useKeymap } from "@intellij-platform/core/ActionSystem/KeymapProvider";
 import { mapObjIndexed, pick } from "ramda";
-import React, { HTMLAttributes, useContext, useMemo } from "react";
+import React, { HTMLAttributes, useContext } from "react";
 import { shortcutToString } from "@intellij-platform/core/ActionSystem/shortcutToString";
 import { useShortcuts } from "@intellij-platform/core/ActionSystem/useShortcut";
 import { Shortcut } from "@intellij-platform/core/ActionSystem/Shortcut";
@@ -41,7 +41,7 @@ export function ActionsProvider(props: ActionsProviderProps): JSX.Element {
   const parentContext = useContext(ActionsContext);
   const keymap = useKeymap();
   const actionIds = Object.keys(props.actions);
-  const shortcuts = useMemo(() => pick(actionIds, keymap || {}), actionIds); // is this useMemo justified?
+  const shortcuts = pick(actionIds, keymap || {});
 
   const { shortcutHandlerProps } = useShortcuts(shortcuts, (actionId) => {
     props.actions[actionId]?.actionPerformed();
