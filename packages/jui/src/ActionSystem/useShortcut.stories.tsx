@@ -86,7 +86,7 @@ Default.args = {
     action1: [
       {
         type: "keyboard",
-        firstKeyStroke: { modifiers: ["Control"], key: "c" },
+        firstKeyStroke: { modifiers: ["Control"], code: "KeyC" },
       },
     ],
   },
@@ -97,8 +97,8 @@ MultiKeyStroke.args = {
     action1: [
       {
         type: "keyboard",
-        firstKeyStroke: { modifiers: ["Control"], key: "c" },
-        secondKeyStroke: { key: "d" },
+        firstKeyStroke: { modifiers: ["Control"], code: "KeyC" },
+        secondKeyStroke: { code: "KeyD" },
       },
     ],
   },
@@ -107,12 +107,12 @@ MultiKeyStroke.args = {
 export const SecondKeyStrokePriority = Template.bind(null);
 SecondKeyStrokePriority.args = {
   shortcuts: {
-    action1: [{ type: "keyboard", firstKeyStroke: { key: "d" } }],
+    action1: [{ type: "keyboard", firstKeyStroke: { code: "KeyD" } }],
     action2: [
       {
         type: "keyboard",
-        firstKeyStroke: { modifiers: ["Control"], key: "c" },
-        secondKeyStroke: { key: "d" },
+        firstKeyStroke: { modifiers: ["Control"], code: "KeyC" },
+        secondKeyStroke: { code: "KeyD" },
       },
     ],
   },
@@ -121,7 +121,7 @@ SecondKeyStrokePriority.args = {
 export const ConflictingShortcuts = Template.bind(null);
 ConflictingShortcuts.args = {
   shortcuts: {
-    action1: [{ type: "keyboard", firstKeyStroke: { key: "d" } }],
-    action2: [{ type: "keyboard", firstKeyStroke: { key: "d" } }],
+    action1: [{ type: "keyboard", firstKeyStroke: { code: "KeyD" } }],
+    action2: [{ type: "keyboard", firstKeyStroke: { code: "KeyD" } }],
   },
 };

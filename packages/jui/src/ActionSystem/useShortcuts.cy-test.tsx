@@ -86,15 +86,15 @@ describe("useShortcuts:keyboard", () => {
               {
                 type: "keyboard",
                 // we intentionally don't use modifiers here to distinguish this case, with the next one
-                firstKeyStroke: { key: "b" },
-                secondKeyStroke: { key: "c" },
+                firstKeyStroke: { code: "KeyB" },
+                secondKeyStroke: { code: "KeyC" },
               },
             ],
           }}
           onAction={onAction}
         />
       );
-      cy.focused().trigger("keydown", { key: "b" });
+      cy.focused().trigger("keydown", { code: "KeyB" });
       cy.realPress(["c"]);
       cy.get("@onAction").should("have.been.calledOnceWith", "action1");
     });
@@ -107,8 +107,8 @@ describe("useShortcuts:keyboard", () => {
             action1: [
               {
                 type: "keyboard",
-                firstKeyStroke: { modifiers: ["Control"], key: "c" },
-                secondKeyStroke: { key: "d" },
+                firstKeyStroke: { modifiers: ["Control"], code: "KeyC" },
+                secondKeyStroke: { code: "KeyD" },
               },
             ],
           }}

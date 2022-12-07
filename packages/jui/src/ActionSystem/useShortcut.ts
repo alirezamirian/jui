@@ -99,7 +99,7 @@ const isKeyMatch = (
   e: React.KeyboardEvent,
   loose?: boolean
 ) =>
-  e.key.toLowerCase() === keyStroke?.key.toLowerCase() &&
+  e.code === keyStroke?.code &&
   (loose ? keyStroke.modifiers || [] : supportedModifiers).every(
     (modifier) =>
       e.getModifierState(modifier) ===

@@ -202,7 +202,7 @@ function WithActivateToolWindowKeymap() {
             type: "keyboard",
             firstKeyStroke: {
               modifiers: ["Meta"],
-              key: "1",
+              code: "Digit1",
             },
           },
         ],
@@ -211,7 +211,7 @@ function WithActivateToolWindowKeymap() {
             type: "keyboard",
             firstKeyStroke: {
               modifiers: ["Meta"],
-              key: "2",
+              code: "Digit2",
             },
           },
         ],

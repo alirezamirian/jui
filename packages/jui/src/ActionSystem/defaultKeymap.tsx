@@ -22,7 +22,7 @@ export const defaultKeymap: Keymap = {
     {
       type: "keyboard",
       firstKeyStroke: {
-        key: "ArrowRight",
+        code: "ArrowRight",
         modifiers: ["Control", "Alt"],
       },
     },
@@ -31,7 +31,7 @@ export const defaultKeymap: Keymap = {
     {
       type: "keyboard",
       firstKeyStroke: {
-        key: "ArrowLeft",
+        code: "ArrowLeft",
         modifiers: ["Control", "Alt"],
       },
     },
@@ -40,7 +40,7 @@ export const defaultKeymap: Keymap = {
     {
       type: "keyboard",
       firstKeyStroke: {
-        key: "ArrowUp",
+        code: "ArrowUp",
         modifiers: ["Control", "Alt"],
       },
     },
@@ -49,7 +49,7 @@ export const defaultKeymap: Keymap = {
     {
       type: "keyboard",
       firstKeyStroke: {
-        key: "ArrowDown",
+        code: "ArrowDown",
         modifiers: ["Control", "Alt"],
       },
     },
@@ -58,7 +58,7 @@ export const defaultKeymap: Keymap = {
     {
       type: "keyboard",
       firstKeyStroke: {
-        key: "'",
+        code: "Quote",
         modifiers: ["Shift", "Meta"],
       },
     },
@@ -67,7 +67,7 @@ export const defaultKeymap: Keymap = {
     {
       type: "keyboard",
       firstKeyStroke: {
-        key: "Escape",
+        code: "Escape",
       },
     },
   ],
@@ -75,7 +75,7 @@ export const defaultKeymap: Keymap = {
     {
       type: "keyboard",
       firstKeyStroke: {
-        key: "Escape",
+        code: "Escape",
         modifiers: ["Shift"],
       },
     },
@@ -84,7 +84,7 @@ export const defaultKeymap: Keymap = {
     {
       type: "keyboard",
       firstKeyStroke: {
-        key: "F12",
+        code: "F12",
         modifiers: ["Shift", "Meta"],
       },
     },
@@ -93,7 +93,7 @@ export const defaultKeymap: Keymap = {
     {
       type: "keyboard",
       firstKeyStroke: {
-        key: "F12",
+        code: "F12",
       },
     },
   ],
@@ -102,14 +102,14 @@ export const defaultKeymap: Keymap = {
       type: "keyboard",
       firstKeyStroke: {
         modifiers: ["Meta"],
-        key: "W",
+        code: "KeyW",
       },
     },
     {
       type: "keyboard",
       firstKeyStroke: {
         modifiers: ["Alt"],
-        key: "ArrowUp",
+        code: "ArrowUp",
       },
     },
   ],
@@ -118,14 +118,14 @@ export const defaultKeymap: Keymap = {
       type: "keyboard",
       firstKeyStroke: {
         modifiers: ["Meta", "Shift"],
-        key: "W",
+        code: "KeyW",
       },
     },
     {
       type: "keyboard",
       firstKeyStroke: {
         modifiers: ["Alt"],
-        key: "ArrowDown",
+        code: "ArrowDown",
       },
     },
   ],
@@ -134,14 +134,14 @@ export const defaultKeymap: Keymap = {
       type: "keyboard",
       firstKeyStroke: {
         modifiers: ["Meta"],
-        key: "+",
+        code: "Equal",
       },
     },
     {
       type: "keyboard",
       firstKeyStroke: {
         modifiers: ["Meta"],
-        key: "=",
+        code: "NumpadAdd",
       },
     },
   ],
@@ -150,7 +150,14 @@ export const defaultKeymap: Keymap = {
       type: "keyboard",
       firstKeyStroke: {
         modifiers: ["Meta"],
-        key: "-", // keyCode for Minus and Subtract is 189 and 109. But key seems to be the same for both
+        code: "Minus",
+      },
+    },
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        code: "NumpadSubtract",
       },
     },
   ],

@@ -26,6 +26,9 @@ const defaultKeyToStr: {
   ArrowLeft: "←",
   ArrowRight: "→",
   Enter: "⏎",
+  Quote: "'",
+  Minus: "-",
+  Equal: "+",
   // lowercase to uppercase map
   ...fromPairs(
     Array.from(Array(26))
@@ -36,11 +39,11 @@ const defaultKeyToStr: {
 };
 const KeystrokeToString: {
   separator: string;
-  keyToStr: Record<KeyStrokeModifier | KeyboardEventKey, string>;
+  codeToStr: Record<KeyStrokeModifier | KeyboardEventKey, string>;
 } = isMac()
   ? {
       separator: "",
-      keyToStr: {
+      codeToStr: {
         ...defaultKeyToStr,
         Alt: "⌥",
         Shift: "⇧",
@@ -51,11 +54,12 @@ const KeystrokeToString: {
     }
   : {
       separator: "+",
-      keyToStr: defaultKeyToStr,
+      codeToStr: defaultKeyToStr,
     };
 export const keystrokeToString = (keystroke: KeyStroke) => {
-  return [...(keystroke.modifiers || []), keystroke.key]
-    .map((key) => KeystrokeToString.keyToStr[key] || key)
+  return [...(keystroke.modifiers || []), keystroke.code]
+    .map((code) => KeystrokeToString.codeToStr[code] || code)
+    .map((code) => code.replace(/^(Key|Digit|Numpad)(.)$/, "$2"))
     .join(KeystrokeToString.separator);
 };
 export const shortcutToString = (shortcut: Shortcut) => {

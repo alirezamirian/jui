@@ -1,16 +1,16 @@
 import React from "react";
-import { useAction, Shortcut } from "@intellij-platform/core/ActionSystem";
+import { Shortcut, useAction } from "@intellij-platform/core/ActionSystem";
 import { ActionTooltip, TooltipTrigger } from "@intellij-platform/core/Tooltip";
 import { getActivateToolWindowActionId } from "./useToolWindowsActions";
 
 const getToolWindowNumberFromShortcut = (shortcut: Shortcut): number | null => {
-  const isNumericShortcut =
+  const num =
     shortcut.type === "keyboard" &&
-    /^[0-9]$/.test(shortcut.firstKeyStroke.key) &&
     shortcut.firstKeyStroke.modifiers?.length === 1 &&
-    ["Alt", "Meta", "Control"].includes(shortcut.firstKeyStroke.modifiers[0]);
-  if (isNumericShortcut) {
-    return parseInt(shortcut.firstKeyStroke.key);
+    ["Alt", "Meta", "Control"].includes(shortcut.firstKeyStroke.modifiers[0]) &&
+    shortcut.firstKeyStroke.code.match(/^(Digit|Numpad)([0-9])$/)?.[2];
+  if (num) {
+    return parseInt(num);
   }
   return null;
 };
