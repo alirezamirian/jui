@@ -23,4 +23,22 @@ export const exampleAppKeymap: Keymap = {
       firstKeyStroke: { code: "KeyZ", modifiers: ["Meta", "Alt"] },
     },
   ],
+  [ChangesViewActionIds.SHOW_DIFF]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: { code: "KeyD", modifiers: ["Meta"] },
+    },
+  ],
+  [ChangesViewActionIds.SHELVE_SILENTLY]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: { code: "KeyH", modifiers: ["Meta", "Shift"] },
+    },
+  ],
+  [ChangesViewActionIds.UNSHELVE_SILENTLY]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: { code: "KeyU", modifiers: ["Meta", "Alt"] },
+    },
+  ],
 };
