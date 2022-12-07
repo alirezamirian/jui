@@ -352,10 +352,9 @@ export const Theme: Story = () => {
     {
       id: "MultiViewToolWindow",
       initialState: toolWindowState({ anchor: "bottom", isVisible: true }),
-      icon: "toolwindows/toolWindowRun",
       toolbarButton: (
         <>
-          <PlatformIcon icon="toolWindowRun">
+          <PlatformIcon icon="toolwindows/toolWindowRun">
             <StyledIconLiveIndicator />
           </PlatformIcon>
           &nbsp; MultiViewToolWindow
