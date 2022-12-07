@@ -14,6 +14,7 @@ import { TreeKeyboardDelegate } from "./TreeKeyboardDelegate";
 import { useCollectionAutoScroll } from "../Collections/useCollectionAutoScroll";
 import { useLatest } from "@intellij-platform/core/utils/useLatest";
 import { TreeContextType } from "./TreeContext";
+import { hasAnyModifier } from "@intellij-platform/core/utils/keyboard-utils";
 
 export interface SelectableTreeProps<T> extends DOMProps {
   isVirtualized?: boolean;
@@ -95,9 +96,10 @@ export function useSelectableTree<T>(
     props?.onNodeKeyDown?.(event, item);
 
     const shouldToggle =
-      event.key === "Enter" ||
-      (event.key === "ArrowLeft" && expanded) ||
-      (event.key === "ArrowRight" && !expanded);
+      !hasAnyModifier(event) &&
+      (event.key === "Enter" ||
+        (event.key === "ArrowLeft" && expanded) ||
+        (event.key === "ArrowRight" && !expanded));
 
     if (isExpandable && shouldToggle) {
       event.preventDefault();
