@@ -182,8 +182,8 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
             <td>✅</td>
         </tr>
         <tr>
-            <td colspan="2">Keymap</td>
-            <td>🚧</td>
+            <td colspan="2">OS-based keymap</td>
+            <td>❌</td>
         </tr>
         <tr>
             <td rowspan="7"><a href="https://jetbrains.github.io/ui/controls/tabs/">Tabs</a></td>
@@ -252,11 +252,11 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
         </tr>
         <tr>
             <td colspan="2">Remove from sidebar action</td>
-            <td>️❌</td>
+            <td>️✅</td>
         </tr>
         <tr>
             <td colspan="2">Maximize action</td>
-            <td>❌</td>
+            <td>✅</td>
         </tr>
         <tr>
             <td colspan="2">Resize</td>
