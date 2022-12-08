@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[5079],{5275:(e,s,t)=>{t.r(s),t.d(s,{default:()=>u});var n=t(2784);function u(){return(0,n.useEffect)((()=>{false}),[]),n.createElement("div",null,"You are not supposed to land on this page. Try refreshing this page.")}}}]);
+//# sourceMappingURL=55bfaa1d.25b939eb.js.map
