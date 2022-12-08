@@ -11,14 +11,18 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@v2.3.1
 
+      - id: setTargetFolder
+        run: |
+          tag_without_prefix=$(echo ${{env.GITHUB_REF_NAME}} |  cut -b 6-);
+          echo "tag_without_prefix: $tag_without_prefix"
+          echo "targetFolder=-/$tag_without_prefix" >> $GITHUB_OUTPUT
+
       - name: Install and Build 🔧
         run: |
           yarn
+          WEBSITE_BASE_URL="/jui/${{steps.setTargetFolder.outputs.targetFolder}}"
+          echo "WEBSITE_BASE_URL: $WEBSITE_BASE_URL"
           yarn workspace website run build
-
-      - id: setTargetFolder
-        run: |
-          echo "targetFolder='-/$(echo '${{env.GITHUB_REF_NAME}}' |  cut -b 6-)'" >> $GITHUB_OUTPUT
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.5
