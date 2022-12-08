@@ -17,7 +17,8 @@ jobs:
           yarn workspace website run build
 
       - id: setTargetFolder
-        run: echo "targetFolder='-/test'" >> $GITHUB_OUTPUT
+        run: |
+          echo "targetFolder='-/$(echo '${{env.GITHUB_REF_NAME}}' |  cut -b 6-)'" >> $GITHUB_OUTPUT
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.5
