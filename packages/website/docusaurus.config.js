@@ -13,7 +13,7 @@ const config = {
   title: "JUI",
   tagline: "A react-web implementation of Intellij Platform",
   url: "https://alirezamirian.github.io",
-  baseUrl: "/jui/",
+  baseUrl: process.env.WEBSITE_BASE_URL || "/jui/",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "throw",
   favicon: "jui/img/favicon.ico", // FIXME
