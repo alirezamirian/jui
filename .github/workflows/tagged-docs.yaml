@@ -1,0 +1,27 @@
+name: Retain docs by tag
+on:
+  push:
+    tags:
+      - "docs-*"
+jobs:
+  deploy-website:
+    name: Deploy website to Github Pages to sub-folder
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.1
+
+      - name: Install and Build 🔧
+        run: |
+          yarn
+          yarn workspace website run build
+
+      - id: setTargetFolder
+        run: echo "targetFolder='-/test'" >> $GITHUB_OUTPUT
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          branch: gh-pages
+          folder: packages/website/build
+          target-folder: ${{steps.setTargetFolder.outputs.targetFolder}}
