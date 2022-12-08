@@ -344,7 +344,7 @@ export const Theme: Story = () => {
       toolbarButton: (
         <>
           <PlatformIcon icon="toolwindows/toolWindowCommit" />
-          &nbsp; SpeedSearchTree
+          &nbsp; SpeedSearchList
         </>
       ),
       content: speedSearchList,
