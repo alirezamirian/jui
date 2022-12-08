@@ -13,7 +13,7 @@ jobs:
 
       - id: setTargetFolder
         run: |
-          tag_without_prefix=$(echo ${{env.GITHUB_REF_NAME}} |  cut -b 6-);
+          tag_without_prefix=$(echo ${{ github.ref_name }} |  cut -b 6-);
           echo "tag_without_prefix: $tag_without_prefix"
           echo "targetFolder=-/$tag_without_prefix" >> $GITHUB_OUTPUT
 
