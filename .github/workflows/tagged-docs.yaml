@@ -2,7 +2,7 @@ name: Retain docs by tag
 on:
   push:
     tags:
-      - "docs-*"
+      - "docs/*"
 jobs:
   deploy-website:
     name: Deploy website to Github Pages to sub-folder
