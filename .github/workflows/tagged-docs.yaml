@@ -20,7 +20,7 @@ jobs:
       - name: Install and Build 🔧
         run: |
           yarn
-          WEBSITE_BASE_URL="/jui/${{steps.setTargetFolder.outputs.targetFolder}}/"
+          export WEBSITE_BASE_URL="/jui/${{steps.setTargetFolder.outputs.targetFolder}}/"
           echo "WEBSITE_BASE_URL: $WEBSITE_BASE_URL"
           yarn workspace website run build
 
