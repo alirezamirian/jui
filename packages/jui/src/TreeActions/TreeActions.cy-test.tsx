@@ -1,17 +1,32 @@
 import * as React from "react";
-import { composeStories } from "@storybook/testing-react";
-import * as stories from "./TreeActions.stories";
-
-const { OnTree, OnSpeedSearchTree } = composeStories(stories);
+import { SpeedSearchTree, Tree } from "@intellij-platform/core";
+import {
+  staticSpeedSearchTreeItems,
+  staticTreeItems,
+} from "@intellij-platform/core/Tree/story-helpers";
+import { TreeActionsWrapper } from "@intellij-platform/core/TreeActions/story-and-test-helpers";
 
 [
-  { Component: OnSpeedSearchTree, name: "SpeedSearchTree" },
-  { Component: OnTree, name: "Tree" },
-].forEach(({ Component, name }) => {
-  describe(`Actions on ${name}`, () => {
+  { Component: SpeedSearchTree, staticTreeItems: staticSpeedSearchTreeItems },
+  { Component: Tree, staticTreeItems: staticTreeItems },
+].forEach(({ Component, staticTreeItems }) => {
+  const example = (
+    <TreeActionsWrapper>
+      {(treeRef) => (
+        <Component
+          ref={treeRef}
+          selectionMode="multiple"
+          defaultExpandedKeys={["List", "Theme", "BasicList", "Foo"]}
+        >
+          {staticTreeItems}
+        </Component>
+      )}
+    </TreeActionsWrapper>
+  );
+  describe(`Actions on ${Component.name}`, () => {
     describe("Expand All", () => {
       it("expands all nodes, via shortcut", () => {
-        cy.mount(<Component />);
+        cy.mount(example);
         cy.contains("BasicList.tsx").click();
         cy.findAllByRole("treeitem").should("have.length.lessThan", 15);
         cy.realPress(["Meta", "="]);
@@ -30,14 +45,14 @@ const { OnTree, OnSpeedSearchTree } = composeStories(stories);
     });
     describe("Collapse All", () => {
       it("collapses all nodes, via shortcut", () => {
-        cy.mount(<Component />);
+        cy.mount(example);
         cy.contains("BasicList.tsx").click();
         cy.findAllByRole("treeitem").should("have.length.greaterThan", 3);
         cy.realPress(["Meta", "Minus"]);
         cy.findAllByRole("treeitem").should("have.length", 3);
       });
       it("selects the root node which is the grandparent of the focused/selected node", () => {
-        cy.mount(<Component />);
+        cy.mount(example);
         cy.contains("BasicList.tsx").click();
         cy.findAllByRole("treeitem").should("have.length.greaterThan", 3);
         cy.realPress(["Meta", "Minus"]);
@@ -55,7 +70,7 @@ const { OnTree, OnSpeedSearchTree } = composeStories(stories);
   });
   describe(`Expand/Shrink selection`, () => {
     it("works", () => {
-      cy.mount(<Component />);
+      cy.mount(example);
       cy.contains("BasicList.tsx").click();
       const selection0 = ["BasicList.tsx"];
       expectSelection(selection0);
@@ -133,7 +148,7 @@ const { OnTree, OnSpeedSearchTree } = composeStories(stories);
     });
 
     it("deselects all descendants when selection is shrunk from a non-leaf node", () => {
-      cy.mount(<Component />);
+      cy.mount(example);
       cy.contains("useBasicList.ts").click();
       cy.contains("BasicListItem.tsx").click({ cmdKey: true });
       cy.contains("BasicList.tsx").click({ cmdKey: true });
@@ -143,7 +158,7 @@ const { OnTree, OnSpeedSearchTree } = composeStories(stories);
       expectSelection(["BasicList"]);
     });
     it("selects all descendants when selection is expanded from a non-leaf node", () => {
-      cy.mount(<Component />);
+      cy.mount(example);
       cy.contains("List").click();
       expandSelection();
       expectSelection([
@@ -158,7 +173,7 @@ const { OnTree, OnSpeedSearchTree } = composeStories(stories);
       ]);
     });
     it("doesn't shrink selection from a root if it has at least one unselected child", () => {
-      cy.mount(<Component />);
+      cy.mount(example);
       cy.contains("List").click();
       expandSelection();
       expandSelection();
@@ -195,7 +210,7 @@ const { OnTree, OnSpeedSearchTree } = composeStories(stories);
       ]);
     });
     it("shrinks selection from a root if all other children are selected", () => {
-      cy.mount(<Component />);
+      cy.mount(example);
       cy.contains("List").click();
       expandSelection(); // "List" and all of its descendants are selected now
       expandSelection(); // All nodes are selected now
@@ -210,6 +225,26 @@ const { OnTree, OnSpeedSearchTree } = composeStories(stories);
         "SpeedSearchList",
         "ListDivider.tsx",
       ]);
+    });
+
+    it("shrinks selection when the tree has a single root", () => {
+      cy.mount(
+        <TreeActionsWrapper>
+          {(treeRef) => (
+            <Component
+              ref={treeRef}
+              selectionMode="multiple"
+              defaultExpandedKeys={["List", "Theme", "BasicList", "Foo"]}
+            >
+              {staticTreeItems[1]}
+            </Component>
+          )}
+        </TreeActionsWrapper>
+      );
+      cy.contains("List").click();
+      expandSelection(); // "List" and all of its descendants are selected now
+      shrinkSelection(); // Shrinking selection should move selection back to "List" and all of its descendants
+      expectSelection(["List"]);
     });
   });
 });
