@@ -1,5 +1,4 @@
 import React from "react";
-import { mount } from "cypress/react";
 import { composeStories } from "@storybook/testing-react";
 import * as stories from "./ProgressBar.stories";
 
@@ -7,11 +6,11 @@ const { Default, LongDetails } = composeStories(stories);
 
 describe("ProgressBar", () => {
   it("works!", () => {
-    mount(<Default />);
+    cy.mount(<Default />);
     matchImageSnapshot("ProgressBar-default");
   });
   it("limits the length of the detail by progress bar", () => {
-    mount(<LongDetails />);
+    cy.mount(<LongDetails />);
     // The current implementation is not quite accurate, and the screenshot should be updated when that's improved.
     matchImageSnapshot("ProgressBar-long-details");
   });

@@ -1,4 +1,3 @@
-import { mount } from "cypress/react";
 import React from "react";
 import { composeStories } from "@storybook/testing-react";
 import * as stories from "./Link.stories";
@@ -8,10 +7,10 @@ const { Default } = composeStories(stories);
 describe("Link", () => {
   it("works!", () => {
     const onPress = cy.stub();
-    mount(<Default onPress={onPress} />);
+    cy.mount(<Default onPress={onPress} />);
     matchImageSnapshot("Link-default");
     cy.contains("Open something something").click();
-    mount(<Default isDisabled />);
+    cy.mount(<Default isDisabled />);
     matchImageSnapshot("Link-disabled");
     cy.contains("Open something something").click();
     cy.wrap(onPress).should("have.been.calledOnce");

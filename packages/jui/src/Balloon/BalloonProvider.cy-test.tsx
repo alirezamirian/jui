@@ -1,5 +1,4 @@
 import React from "react";
-import { mount } from "cypress/react";
 import { composeStories } from "@storybook/testing-react";
 import * as stories from "./BalloonProvider.stories";
 
@@ -9,7 +8,7 @@ const styles = "body{padding: 10px}";
 
 describe("Balloon", () => {
   it("works", () => {
-    mount(<BalloonsProviderStory />, { styles });
+    cy.mount(<BalloonsProviderStory />, { styles });
     cy.contains("show sticky balloon notification").click();
     matchImageSnapshot("BalloonProvider-one-balloon");
     cy.contains("show sticky balloon notification").click();

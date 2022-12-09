@@ -1,4 +1,3 @@
-import { mount } from "cypress/react";
 import React, { useState } from "react";
 import {
   ActionTooltip,
@@ -50,7 +49,7 @@ const SimpleToolWindows = () => {
 
 describe("integration of tool window with tooltip", () => {
   it("supports tooltip on stipe buttons", () => {
-    mount(
+    cy.mount(
       <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
         <SimpleToolWindows />
       </ThemeProvider>

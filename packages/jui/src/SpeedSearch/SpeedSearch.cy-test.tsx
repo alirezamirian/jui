@@ -1,4 +1,3 @@
-import { mount } from "cypress/react";
 import { composeStories } from "@storybook/testing-react";
 import * as React from "react";
 import * as stories from "./SpeedSearch.stories";
@@ -19,7 +18,7 @@ describe("SpeedSearch", () => {
       cy.get("@onSearchTermChange").then((fn: any) => fn.reset());
       cy.get("@onActiveChange").then((fn: any) => fn.reset());
     };
-    mount(
+    cy.mount(
       <Default
         onSearchTermChange={onSearchTermChange}
         onActiveChange={onActiveChange}

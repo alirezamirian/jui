@@ -1,4 +1,3 @@
-import { mount } from "cypress/react";
 import React from "react";
 import { composeStories } from "@storybook/testing-react";
 import * as stories from "./Checkbox.stories";
@@ -9,7 +8,7 @@ const CHECKBOX_LABEL_TEXT = "Enable";
 
 describe("Checkbox", () => {
   it("works!", () => {
-    mount(
+    cy.mount(
       <div id="component-container">
         <Default />
       </div>
@@ -24,7 +23,7 @@ describe("Checkbox", () => {
   });
 
   it("renders the checkbox in selected state if defaultSelected is set", () => {
-    mount(
+    cy.mount(
       <div id="component-container">
         <Default defaultSelected />
       </div>
@@ -33,7 +32,7 @@ describe("Checkbox", () => {
   });
 
   it("supports excludeFromTabOrder", () => {
-    mount(
+    cy.mount(
       <div id="component-container">
         <input id="dummyInput" />
         <Default />
@@ -43,7 +42,7 @@ describe("Checkbox", () => {
     cy.realPress("Tab"); // next tab should move focus to the checkbox
     cy.focused().should("have.attr", "type", "checkbox");
 
-    mount(
+    cy.mount(
       <div id="component-container">
         <input id="dummyInput" />
         <Default excludeFromTabOrder />
@@ -55,7 +54,7 @@ describe("Checkbox", () => {
   });
 
   it("supports preventFocus", () => {
-    mount(
+    cy.mount(
       <div id="component-container">
         <input autoFocus id="another-input" />
         <Default preventFocus />
@@ -72,7 +71,7 @@ describe("Checkbox", () => {
 
   it("supports isIndeterminate", () => {
     const onChange = cy.stub();
-    mount(
+    cy.mount(
       <div id="component-container">
         <Default isIndeterminate onChange={onChange} />
       </div>

@@ -1,4 +1,3 @@
-import { mount } from "cypress/react";
 import * as React from "react";
 import { Theme as ThemeKitchenSinkExample } from "./theme.stories";
 import darculaJson from "../themes/darcula.theme.json";
@@ -24,7 +23,7 @@ describe("theme", () => {
 
 function testTheme(theme: Theme) {
   cy.viewport("macbook-13");
-  mount(
+  cy.mount(
     <ThemeProvider theme={theme}>
       <ThemeKitchenSinkExample />
     </ThemeProvider>

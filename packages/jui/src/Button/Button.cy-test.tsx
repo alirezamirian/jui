@@ -1,4 +1,3 @@
-import { mount } from "cypress/react";
 import React from "react";
 import { composeStories } from "@storybook/testing-react";
 import * as stories from "./Button.stories";
@@ -10,7 +9,9 @@ const BUTTON_TEXT = "Button";
 describe("Button", () => {
   it("works!", () => {
     const onPress = cy.stub();
-    mount(<SimpleUsage onPress={onPress} />, { styles: "body{padding: 10px}" });
+    cy.mount(<SimpleUsage onPress={onPress} />, {
+      styles: "body{padding: 10px}",
+    });
     matchImageSnapshot("Button-simple");
     cy.contains(BUTTON_TEXT).click();
     cy.wrap(onPress).should("be.calledOnce");
@@ -18,7 +19,7 @@ describe("Button", () => {
     matchImageSnapshot("Button-simple-focused");
 
     // disabled
-    mount(<SimpleUsage isDisabled onPress={onPress} />, {
+    cy.mount(<SimpleUsage isDisabled onPress={onPress} />, {
       styles: "body{padding: 10px}",
     });
     matchImageSnapshot("Button-simple-disabled");
@@ -27,19 +28,21 @@ describe("Button", () => {
   });
 
   it('supports "default" variant', () => {
-    mount(<SimpleUsage variant="default" />, { styles: "body{padding: 10px}" });
+    cy.mount(<SimpleUsage variant="default" />, {
+      styles: "body{padding: 10px}",
+    });
     matchImageSnapshot("Button-default");
     cy.get("button").click();
     cy.get("button").focused();
     matchImageSnapshot("Button-default-focused");
 
     // disabled
-    mount(<SimpleUsage isDisabled />, { styles: "body{padding: 10px}" });
+    cy.mount(<SimpleUsage isDisabled />, { styles: "body{padding: 10px}" });
     matchImageSnapshot("Button-default-disabled");
   });
 
   it("supports autoFocus and excludeFromTabOrder", () => {
-    mount(
+    cy.mount(
       <>
         <SimpleUsage autoFocus id="firstButton" />
         <SimpleUsage excludeFromTabOrder />
@@ -57,7 +60,7 @@ describe("Button", () => {
 
   it("supports preventFocus", () => {
     const onPress = cy.stub();
-    mount(
+    cy.mount(
       // The first element is intentionally something other than Button, to not tangle preventFocus testing with autoFocus
       <>
         <input autoFocus id="focused-element" />

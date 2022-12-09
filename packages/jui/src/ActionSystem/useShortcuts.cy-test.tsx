@@ -1,5 +1,4 @@
 import React from "react";
-import { mount } from "cypress/react";
 import { composeStories } from "@storybook/testing-react";
 import * as stories from "./useShortcut.stories";
 
@@ -13,7 +12,7 @@ const {
 describe("useShortcuts:keyboard", () => {
   it("works for simple keyboard shortcuts", () => {
     const onAction = cy.stub().as("onAction");
-    mount(<Default onAction={onAction} />);
+    cy.mount(<Default onAction={onAction} />);
     // hits
     cy.realPress(["Control", "c"]);
     cy.realPress(["Control", "C"]);
@@ -30,7 +29,7 @@ describe("useShortcuts:keyboard", () => {
 
   it("triggers the first action if multiple actions have the same shortcut", () => {
     const onAction = cy.stub().as("onAction");
-    mount(<ConflictingShortcuts onAction={onAction} />);
+    cy.mount(<ConflictingShortcuts onAction={onAction} />);
     cy.realPress(["d"]);
     // maybe only check if onAction is called once, not assuming about "the first" action being triggered.
     cy.get("@onAction").should("have.been.calledOnceWith", "action1");
@@ -39,7 +38,7 @@ describe("useShortcuts:keyboard", () => {
   describe("multi-keystroke shortcuts", () => {
     it("works in simple cases", () => {
       const onAction = cy.stub().as("onAction");
-      mount(<MultiKeyStroke onAction={onAction} />);
+      cy.mount(<MultiKeyStroke onAction={onAction} />);
 
       // FIXME: figure out why clock() doesn't work, and use tick() instead of wait(), for efficiency. Maybe it's a bug
       //  fixed in the latest version.
@@ -62,7 +61,7 @@ describe("useShortcuts:keyboard", () => {
 
     it("cancels shortcut if any other key is pressed after the first stroke", () => {
       const onAction = cy.stub().as("onAction");
-      mount(<MultiKeyStroke onAction={onAction} />);
+      cy.mount(<MultiKeyStroke onAction={onAction} />);
       cy.realPress(["Control", "c"]);
       cy.realPress(["Shift"]);
       cy.realPress(["d"]);
@@ -71,7 +70,7 @@ describe("useShortcuts:keyboard", () => {
 
     it("prioritizes two-stroke shortcuts over one", () => {
       const onAction = cy.stub().as("onAction");
-      mount(<SecondKeyStrokePriority onAction={onAction} />);
+      cy.mount(<SecondKeyStrokePriority onAction={onAction} />);
       cy.realPress(["Control", "c"]);
       cy.realPress(["d"]);
       cy.get("@onAction").should("have.been.calledOnceWith", "action2");
@@ -79,7 +78,7 @@ describe("useShortcuts:keyboard", () => {
 
     it("triggers the shortcut, even if the keys of the first key stroke are still down, when the second keystroke happens", () => {
       const onAction = cy.stub().as("onAction");
-      mount(
+      cy.mount(
         <Default
           shortcuts={{
             action1: [
@@ -101,7 +100,7 @@ describe("useShortcuts:keyboard", () => {
 
     it("ignores extra modifiers in the second keystroke, if they are coming from the first keystroke", () => {
       const onAction = cy.stub().as("onAction");
-      mount(
+      cy.mount(
         <Default
           shortcuts={{
             action1: [

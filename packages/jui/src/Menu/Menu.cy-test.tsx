@@ -1,4 +1,3 @@
-import { mount } from "cypress/react";
 import { composeStories } from "@storybook/testing-react";
 import * as React from "react";
 import * as stories from "./Menu.stories";
@@ -16,19 +15,19 @@ describe("Menu", () => {
   });
 
   it("shows arrow in the right position when plain text is used in menu items", () => {
-    mount(<StaticWithTextItems />);
+    cy.mount(<StaticWithTextItems />);
     matchImageSnapshot("menu--plain-text-arrow-position");
   });
 
   it("supports keyboard", () => {
-    mount(<Nested />);
+    cy.mount(<Nested />);
     cy.get('[role="menu"]').focused(); // make sure the menu is auto-focused
     cy.realPress("ArrowDown"); // initially menu has focus. This moves focus to the first item.
     testKeyboardNavigation("menu--keyboard-behaviour");
   });
 
   it("supports mouse", () => {
-    mount(<Nested />);
+    cy.mount(<Nested />);
     cy.get("body").click(); // This is necessary because of some implementation details of react-aria. More info in cypress/NOTES.md
     cy.get('[role="menuitem"]').contains("View Mode").realHover(); // open first submenu via hover
     cy.focused().should("have.attr", "role", "menu"); // focus should be on submenu, when opened by hover
@@ -42,7 +41,7 @@ describe("Menu", () => {
   });
 
   it.only("closes previously opened submenu, when a new submenu opens", () => {
-    cy.mount(
+    cy.cy.mount(
       <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
         <Menu>
           <Item title="Item 1">
@@ -90,13 +89,13 @@ describe("Menu with trigger", () => {
     assertFocused();
   }
   it("supports keyboard", () => {
-    mount(<MenuWithTrigger />);
+    cy.mount(<MenuWithTrigger />);
     cy.get("button[aria-haspopup]").click(); // open the menu by clicking the trigger.
     testKeyboardNavigation("menu-with-trigger--keyboard-behaviour");
   });
 
   it("when closed, restores focus to the previously focused element, by default", () => {
-    mount(
+    cy.mount(
       <div>
         <button autoFocus>focused element</button>
         <MenuWithTrigger />
@@ -108,7 +107,7 @@ describe("Menu with trigger", () => {
   });
 
   it("when closed, restores focus to the trigger if preventFocusOnPress is false", () => {
-    mount(<MenuWithTrigger restoreFocus preventFocusOnPress={false} />);
+    cy.mount(<MenuWithTrigger restoreFocus preventFocusOnPress={false} />);
     testFocusRestoration(() => {
       cy.focused().should("have.attr", "aria-haspopup"); // trigger button should now be focused again
     });
@@ -116,11 +115,11 @@ describe("Menu with trigger", () => {
 
   it("makes sure the menu or submenus are positioned in viewport", () => {
     cy.viewport(375, 375);
-    mount(<MenuWithTrigger offsetRight={40} />);
+    cy.mount(<MenuWithTrigger offsetRight={40} />);
     openSubMenusAndSnapshotTestPosition(1);
-    mount(<MenuWithTrigger offsetRight={40} offsetBottom={50} />);
+    cy.mount(<MenuWithTrigger offsetRight={40} offsetBottom={50} />);
     openSubMenusAndSnapshotTestPosition(2);
-    mount(<MenuWithTrigger offsetRight={40} offsetBottom={80} />);
+    cy.mount(<MenuWithTrigger offsetRight={40} offsetBottom={80} />);
     openSubMenusAndSnapshotTestPosition(3);
 
     function openSubMenusAndSnapshotTestPosition(num: number) {
@@ -138,7 +137,7 @@ describe("ContextMenu", () => {
   it("opens in the right position", () => {
     // NOTE: currently menu positioning doesn't exactly match the reference implementation. It flips instead of move
     // to viewport.
-    mount(<ContextMenu />);
+    cy.mount(<ContextMenu />);
     cy.scrollTo("bottom", { duration: 0 });
     cy.get("#context-menu-container").rightclick("bottomRight", {
       scrollBehavior: false,
@@ -150,7 +149,7 @@ describe("ContextMenu", () => {
   });
 
   it("is closed by escape key", () => {
-    mount(<ContextMenu />);
+    cy.mount(<ContextMenu />);
     cy.scrollTo("bottom", { duration: 0 });
     cy.get("#context-menu-container").rightclick("center", {
       scrollBehavior: false,
@@ -161,7 +160,7 @@ describe("ContextMenu", () => {
   });
 
   it("is closed by clicking outside", () => {
-    mount(<ContextMenu />);
+    cy.mount(<ContextMenu />);
     cy.scrollTo("bottom", { duration: 0 });
     cy.get("#context-menu-container").rightclick("center", {
       scrollBehavior: false,
@@ -172,7 +171,7 @@ describe("ContextMenu", () => {
   });
 
   it("is closed after an action is triggered", () => {
-    mount(<ContextMenu />);
+    cy.mount(<ContextMenu />);
     cy.scrollTo("bottom", { duration: 0 });
     cy.get("#context-menu-container").rightclick("center", {
       scrollBehavior: false,
@@ -182,7 +181,7 @@ describe("ContextMenu", () => {
   });
 
   it("restores focus when closed", () => {
-    mount(
+    cy.mount(
       <ContextMenu>
         <button autoFocus>button</button>
       </ContextMenu>
