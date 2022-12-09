@@ -28,8 +28,10 @@ describe("Tree", () => {
    * items are usually rendered inside absolutely positioned elements, where the width should explicitly be set,
    * instead of implicitly determined based on the content.
    */
-  it("takes the necessary width based on the visible item's content", () => {
-    mount(<ScrollAndContainerWidth />).then(({ rerender }) => {
+  it.skip("takes the necessary width based on the visible item's content", () => {
+    // FIXME: the snapshot testing in this case turns out to be too flaky.
+    //  Needs more investigation as to why it's flaky, because in real user interactions it doesn't seem to be buggy.
+    cy.mount(<ScrollAndContainerWidth />).then(({ rerender }) => {
       cy.get("[data-testid=tree]").should(notBeHorizontallyScrollable);
       cy.get("[data-testid=tree]").scrollTo(0, 230);
       cy.get("[data-testid=tree]").should(beHorizontallyScrollable);
