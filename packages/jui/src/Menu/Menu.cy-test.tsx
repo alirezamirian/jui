@@ -40,8 +40,8 @@ describe("Menu", () => {
     matchImageSnapshot("menu--mouse-behaviour-3");
   });
 
-  it.only("closes previously opened submenu, when a new submenu opens", () => {
-    cy.cy.mount(
+  it("closes previously opened submenu, when a new submenu opens", () => {
+    cy.mount(
       <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
         <Menu>
           <Item title="Item 1">
