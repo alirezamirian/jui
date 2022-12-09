@@ -1,6 +1,6 @@
 import { Theme } from "@intellij-platform/core/Theme";
 import React, { useContext } from "react";
-import { StyledActionButton } from "../ActionButton/ActionButton";
+import { StyledActionButton } from "../ActionButton";
 import { styled } from "../styled";
 import {
   StyledHorizontalSeparator,

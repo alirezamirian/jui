@@ -1,11 +1,12 @@
+import { RefObject } from "react";
 import { useKeyboard } from "@react-aria/interactions";
 import { mergeProps } from "@react-aria/utils";
-import { RefObject } from "react";
+import { TreeState } from "@react-stately/tree";
 import { useCollectionSpeedSearch } from "../../CollectionSpeedSearch/useCollectionSpeedSearch";
 import { SpeedSearchProps } from "../../SpeedSearch/useSpeedSearch";
 import { TreeKeyboardDelegate } from "../TreeKeyboardDelegate";
 import { SelectableTreeProps, useSelectableTree } from "../useSelectableTree";
-import { TreeState } from "@intellij-platform/core/Tree/__tmp__useTreeState";
+import { hasAnyModifier } from "@intellij-platform/core/utils/keyboard-utils";
 
 interface UseSpeedSearchTreeProps<T>
   extends SpeedSearchProps,
@@ -39,7 +40,10 @@ export function useSpeedSearchTree<T>(
   // NOTE: It may make sense for this behaviour to be pulled up to useCollectionSpeedSearch.
   const { keyboardProps: speedSearchKeyboardProps } = useKeyboard({
     onKeyDown: (e) => {
-      if (["Enter", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+      if (
+        ["Enter", "ArrowLeft", "ArrowRight"].includes(e.key) &&
+        !hasAnyModifier(e)
+      ) {
         speedSearch.setSearchTerm("");
         speedSearch.setActive(false);
       } else {

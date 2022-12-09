@@ -15,8 +15,11 @@
 
 import "@percy/cypress";
 import { setGlobalConfig } from "@storybook/testing-react";
+import { mount } from "cypress/react";
 import "cypress-real-events/support";
 import * as sbPreview from "../../.storybook/preview";
 import "./commands";
 
 setGlobalConfig(sbPreview);
+
+Cypress.Commands.add("mount", mount);

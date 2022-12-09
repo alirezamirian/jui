@@ -1,5 +1,5 @@
-import { TreeState } from "@intellij-platform/core/Tree/__tmp__useTreeState";
 import React, { Key, MutableRefObject } from "react";
+import { TreeState } from "@react-stately/tree";
 
 export type TreeContextType<T> = {
   state: TreeState<T>;

@@ -5,7 +5,7 @@ import {
   Bounds,
   WindowInteractionHandlerProps,
 } from "./WindowInteractionHandler";
-import { ModalWindowProps } from "@intellij-platform/core";
+import { ModalWindowProps } from "@intellij-platform/core/ModalWindow";
 import { clamp } from "ramda";
 
 export interface UseResizableMovableWindowOptions
@@ -44,10 +44,8 @@ export function useResizableMovableWindow({
   // We don't want to update the state in the higher levels repeatedly in such transactions, and we just want to
   // trigger on update when the UI interaction is done.
   // It's maintained during a UI interaction and then reset to null.
-  const [
-    currentInteractionBounds,
-    setCurrentInteractionBounds,
-  ] = useState<null | Bounds>(null);
+  const [currentInteractionBounds, setCurrentInteractionBounds] =
+    useState<null | Bounds>(null);
   const onInteractionEnd = () => {
     if (currentInteractionBounds) {
       setBounds(currentInteractionBounds);
@@ -97,51 +95,51 @@ export function getDefaultBounds(
  *
  * useResizableMovableWindow({ interceptInteraction: ensureInViewPort});
  */
-export const containedWithin = (
-  containerBounds: Bounds
-): ModalWindowProps["interceptInteraction"] => (bounds, interactionType) => {
-  if (interactionType === "move") {
-    const left = clamp(
-      containerBounds.left,
-      containerBounds.left + containerBounds.width - bounds.width,
-      bounds.left
-    );
-    const top = clamp(
-      containerBounds.top,
-      containerBounds.top + containerBounds.height - bounds.height,
-      bounds.top
-    );
-    return {
-      ...bounds,
-      left,
-      top,
-    };
-  } else if (interactionType === "resize") {
-    const left = Math.max(containerBounds.left, bounds.left);
-    const top = Math.max(containerBounds.top, bounds.top);
-    // the logic here seems unnecessarily complicated
-    return {
-      left,
-      top,
-      width:
-        bounds.width -
-        Math.max(
-          0,
-          bounds.left +
-            bounds.width -
-            (containerBounds.left + containerBounds.width)
-        ) -
-        (left - bounds.left),
-      height:
-        bounds.height -
-        Math.max(
-          0,
-          bounds.top +
-            bounds.height -
-            (containerBounds.top + containerBounds.height)
-        ) -
-        (top - bounds.top),
-    };
-  }
-  return bounds;
-};
+export const containedWithin =
+  (containerBounds: Bounds): ModalWindowProps["interceptInteraction"] =>
+  (bounds, interactionType) => {
+    if (interactionType === "move") {
+      const left = clamp(
+        containerBounds.left,
+        containerBounds.left + containerBounds.width - bounds.width,
+        bounds.left
+      );
+      const top = clamp(
+        containerBounds.top,
+        containerBounds.top + containerBounds.height - bounds.height,
+        bounds.top
+      );
+      return {
+        ...bounds,
+        left,
+        top,
+      };
+    } else if (interactionType === "resize") {
+      const left = Math.max(containerBounds.left, bounds.left);
+      const top = Math.max(containerBounds.top, bounds.top);
+      // the logic here seems unnecessarily complicated
+      return {
+        left,
+        top,
+        width:
+          bounds.width -
+          Math.max(
+            0,
+            bounds.left +
+              bounds.width -
+              (containerBounds.left + containerBounds.width)
+          ) -
+          (left - bounds.left),
+        height:
+          bounds.height -
+          Math.max(
+            0,
+            bounds.top +
+              bounds.height -
+              (containerBounds.top + containerBounds.height)
+          ) -
+          (top - bounds.top),
+      };
+    }
+    return bounds;
+  };

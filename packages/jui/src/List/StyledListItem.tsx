@@ -1,5 +1,5 @@
+import { UnknownThemeProp } from "@intellij-platform/core/Theme";
 import { styled } from "../styled";
-import { UnknownThemeProp } from "@intellij-platform/core";
 
 export type StyledListItemProps = {
   containerFocused: boolean;

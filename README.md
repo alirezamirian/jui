@@ -167,11 +167,11 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
             <td>✅</td>
         </tr>
         <tr>
-            <td rowspan="4">Action System</td>
+            <td rowspan="5">Action System</td>
         </tr>
         <tr>
             <td colspan="2">Shortcut abstractions (KeyStroke, KeyboardShortcut, etc.)</td>
-            <td>❌</td>
+            <td>✅</td>
         </tr>
         <tr>
             <td colspan="2"><a href="https://github.com/JetBrains/intellij-community/blob/e3c7d96daba1d5d84d5650bde6c220aed225bfda/platform/platform-api/src/com/intellij/openapi/actionSystem/CommonShortcuts.java#L56-L56">Common shortcuts</a></td>
@@ -179,6 +179,10 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
         </tr>
         <tr>
             <td colspan="2">Keymap</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td colspan="2">OS-based keymap</td>
             <td>❌</td>
         </tr>
         <tr>
@@ -248,11 +252,11 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
         </tr>
         <tr>
             <td colspan="2">Remove from sidebar action</td>
-            <td>️❌</td>
+            <td>️✅</td>
         </tr>
         <tr>
             <td colspan="2">Maximize action</td>
-            <td>❌</td>
+            <td>✅</td>
         </tr>
         <tr>
             <td colspan="2">Resize</td>

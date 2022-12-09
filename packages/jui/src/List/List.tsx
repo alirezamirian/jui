@@ -8,7 +8,7 @@ import { listItemRenderer } from "./listItemRenderer";
 import { useListState } from "./useListState";
 
 export type ListProps<T extends object> = Omit<
-  AriaListBoxProps<T>,
+  Omit<AriaListBoxProps<T>, "disallowEmptySelection">,
   keyof AsyncLoadable
 > & {
   /**
@@ -25,6 +25,7 @@ export type ListProps<T extends object> = Omit<
    * Jetbrains UI behaviour.
    */
   alwaysShowAsFocused?: boolean;
+  allowEmptySelection?: boolean;
   /**
    * Called when the action for the item should be triggered, which can be by double click or pressing Enter.
    * Enter not implemented yet :D
@@ -40,13 +41,16 @@ export type ListProps<T extends object> = Omit<
  *  -
  */
 export function List<T extends object>({
-  disallowEmptySelection = true,
+  allowEmptySelection = false,
   alwaysShowAsFocused = false,
   fillAvailableSpace = false,
   onAction,
   ...inputProps
 }: ListProps<T>) {
-  const props = { ...inputProps, disallowEmptySelection };
+  const props: AriaListBoxProps<T> = {
+    ...inputProps,
+    disallowEmptySelection: !allowEmptySelection,
+  };
   const ref = useRef<HTMLUListElement>(null);
   const state = useListState(props);
   const { listProps, focused } = useList(props, state, ref);

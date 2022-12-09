@@ -1,44 +1,36 @@
 import React from "react";
-import { indexBy } from "ramda";
-import { ProjectViewPane } from "../ProjectView/ProjectViewPane";
-import { ProjectViewActionButtons } from "../ProjectView/ProjectViewActionButtons";
 import {
   DefaultToolWindow,
   MultiViewToolWindow,
+  PlatformIcon,
   ToolWindowState,
   toolWindowState,
 } from "@intellij-platform/core";
 import { Terminal } from "../Terminal";
 import { ChangesViewPane } from "../VersionControl/Changes/ChangesView/ChangesViewPane";
 import { CurrentBranchName } from "../VersionControl/CurrentBranchName";
+import { ProjectToolWindow } from "../ProjectView/ProjectToolWindow";
 
-type ToolWindowDescriptor = {
+export type ToolWindowDescriptor = {
   id: string;
   title: string;
-  icon: string;
-  element: React.ReactElement;
+  icon: React.ReactNode;
+  content: React.ReactElement;
   initialState: ToolWindowState;
 };
-const windows: ToolWindowDescriptor[] = [
+export const toolWindows: ToolWindowDescriptor[] = [
   {
-    id: "project",
+    id: "Project",
     title: "Project",
-    icon: "toolwindows/toolWindowProject",
-    element: (
-      <DefaultToolWindow
-        headerContent="Project"
-        additionalActions={<ProjectViewActionButtons />}
-      >
-        <ProjectViewPane />
-      </DefaultToolWindow>
-    ),
-    initialState: toolWindowState({ isVisible: true, weight: 0.22 }),
+    icon: <PlatformIcon icon="toolwindows/toolWindowProject" />,
+    content: <ProjectToolWindow />,
+    initialState: toolWindowState({ isVisible: true, weight: 0.23 }),
   },
   {
-    id: "terminal",
+    id: "Terminal",
     title: "Terminal",
-    icon: "toolwindows/toolWindowProject",
-    element: (
+    icon: <PlatformIcon icon="toolwindows/toolWindowProject" />,
+    content: (
       <DefaultToolWindow headerContent="Terminal">
         <Terminal />
       </DefaultToolWindow>
@@ -46,10 +38,10 @@ const windows: ToolWindowDescriptor[] = [
     initialState: toolWindowState({ anchor: "bottom" }),
   },
   {
-    id: "commit",
+    id: "Commit",
     title: "Commit",
-    icon: "toolwindows/toolWindowCommit",
-    element: (
+    icon: <PlatformIcon icon="toolwindows/toolWindowCommit" />,
+    content: (
       <MultiViewToolWindow>
         <MultiViewToolWindow.View
           tabContent={
@@ -66,4 +58,3 @@ const windows: ToolWindowDescriptor[] = [
     initialState: toolWindowState({ anchor: "left", isVisible: false }),
   },
 ];
-export const windowById = indexBy(({ id }) => id, windows);

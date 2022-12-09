@@ -5,7 +5,7 @@ import {
   ItemStateContext,
   PlatformIcon,
   SpeedSearchTree,
-  TreeRef,
+  TreeRefValue,
 } from "@intellij-platform/core";
 import { identity, sortBy } from "ramda";
 import React, { useContext, useLayoutEffect, useRef } from "react";
@@ -30,7 +30,7 @@ import { FileStatusColor } from "../VersionControl/FileStatusColor";
 export const ProjectViewPane = (): React.ReactElement => {
   const project = useRecoilValue(currentProjectState);
   const editor = useEditorStateManager();
-  const treeRef = useRef<TreeRef>(null);
+  const treeRef = useRef<TreeRefValue>(null);
   const setProjectViewTreeRef = useSetRecoilState(projectViewTreeRefState);
   useLayoutEffect(() => {
     setProjectViewTreeRef(treeRef);
@@ -55,7 +55,6 @@ export const ProjectViewPane = (): React.ReactElement => {
           editor.openPath(`${path}`);
         }}
         fillAvailableSpace
-        disallowEmptySelection
         selectionMode="multiple"
         selectedKeys={selectedKeys}
         onSelectionChange={setSelectedKeys}
@@ -83,11 +82,11 @@ export const ProjectViewPane = (): React.ReactElement => {
                 <FileTreeNodeText node={item} />
               )}
               {/* {"loadingState" in item &&
-                item.loadingState === "loading" && (
-                  <TreeNodeHint>
-                    <Img height={16} src={loading} darkSrc={loadingDark} />
-                  </TreeNodeHint>
-                )}*/}
+                      item.loadingState === "loading" && (
+                        <TreeNodeHint>
+                          <Img height={16} src={loading} darkSrc={loadingDark} />
+                        </TreeNodeHint>
+                      )}*/}
             </ItemLayout>
           </Item>
         )}

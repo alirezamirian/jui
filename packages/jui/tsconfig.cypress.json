@@ -1,11 +1,18 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["node", "cypress", "cypress-real-events", "@percy/cypress"]
+    "types": [
+      "node",
+      "cypress",
+      "cypress-real-events",
+      "@percy/cypress",
+      "@testing-library/cypress"
+    ]
   },
   "include": [
     "**/*.cy-test.tsx",
     "src/ForwardRefPatch.d.ts",
-    "cypress/cypress-plugin-snapshots-types.d.ts"
+    "cypress/cypress-plugin-snapshots-types.d.ts",
+    "cypress/cypress.d.ts"
   ]
 }

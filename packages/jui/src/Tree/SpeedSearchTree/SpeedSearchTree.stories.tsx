@@ -13,6 +13,11 @@ import { HighlightedTextValue } from "@intellij-platform/core";
 export default {
   title: "Components/Tree (Speed search)",
   Component: SpeedSearchTree,
+  parameters: {
+    options: {
+      enableShortcuts: false,
+    },
+  },
 } as Meta;
 
 export const Static: Story = () => {

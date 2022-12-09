@@ -12,6 +12,20 @@ import {
 } from "@intellij-platform/core";
 import darculaThemeJson from "../themes/darcula.theme.json";
 
+const window = (id: string) => ({
+  id,
+  toolbarButton: (
+    <TooltipTrigger tooltip={<ActionTooltip actionName={id} />}>
+      <span>
+        <PlatformIcon icon="toolwindows/toolWindowProject" />
+        &nbsp;
+        {id}
+      </span>
+    </TooltipTrigger>
+  ),
+  content: null,
+});
+
 const SimpleToolWindows = () => {
   const [state, setState] = useState(
     () =>
@@ -24,19 +38,8 @@ const SimpleToolWindows = () => {
     <ToolWindows
       height={"100vh"}
       toolWindowsState={state}
+      windows={[window("First window"), window("Second window")]}
       onToolWindowStateChange={setState}
-      renderToolbarButton={(id) => (
-        <TooltipTrigger tooltip={<ActionTooltip actionName={id} />}>
-          <span>
-            <PlatformIcon icon="toolwindows/toolWindowProject" />
-            &nbsp;
-            {id}
-          </span>
-        </TooltipTrigger>
-      )}
-      renderWindow={() => {
-        return null;
-      }}
     >
       <div style={{ padding: 8 }}>
         <textarea />

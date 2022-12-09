@@ -1,77 +1,27 @@
-import { useChangeListManager } from "../change-lists.state";
-import { useRecoilCallback, useSetRecoilState } from "recoil";
 import {
-  AnyNode,
-  changesTreeNodesState,
-  expandedKeysState,
-  GroupNode,
-  openRollbackWindowForSelectionCallback,
-} from "./ChangesView.state";
-import { getExpandAllKeys } from "../../../TreeUtils/tree-utils";
-import {
-  ActionButton,
   ActionToolbar,
   ActionToolbarSeparator,
   ActionTooltip,
-  PlatformIcon,
+  CommonActionId,
   TooltipTrigger,
 } from "@intellij-platform/core";
 import { ChangeListsActionButton } from "./ActionButtons/ChangeListsActionButton";
 import { GroupByActionButton } from "./ActionButtons/GroupByActionButton";
 import { ViewOptionsActionButton } from "./ActionButtons/ViewOptionsActionButton";
 import React from "react";
+import { Action } from "@intellij-platform/core/ActionSystem/components";
+import { ChangesViewActionIds } from "../useChangesViewActions";
 
 export function ChangesViewToolbar() {
-  const { refresh } = useChangeListManager();
-  const openRollbackWindow = useRecoilCallback(
-    openRollbackWindowForSelectionCallback,
-    []
-  );
-  const setExpandedKeys = useSetRecoilState(expandedKeysState);
-  const collapseAll = () => setExpandedKeys(new Set()); // in Intellij, it also changes selection sometimes.
-  const expandAll = useRecoilCallback(
-    ({ set, snapshot }) => () => {
-      set(
-        expandedKeysState,
-        new Set(
-          getExpandAllKeys<AnyNode>(
-            (node) =>
-              node === null
-                ? snapshot.getLoadable(changesTreeNodesState).valueMaybe()
-                    ?.rootNodes || []
-                : (node as GroupNode<any>)?.children,
-            (item) => item.key
-          )
-        )
-      );
-    },
-    []
-  );
   return (
     <ActionToolbar hasBorder>
-      <TooltipTrigger tooltip={<ActionTooltip actionName="Refresh" />}>
-        <ActionButton onPress={refresh}>
-          <PlatformIcon icon="actions/refresh.svg" />
-        </ActionButton>
-      </TooltipTrigger>
-      <TooltipTrigger tooltip={<ActionTooltip actionName="Rollback..." />}>
-        <ActionButton onPress={openRollbackWindow}>
-          <PlatformIcon icon="actions/rollback.svg" />
-        </ActionButton>
-      </TooltipTrigger>
-      <TooltipTrigger tooltip={<ActionTooltip actionName="Show Diff" />}>
-        <ActionButton onPress={() => alert("Not implemented")}>
-          <PlatformIcon icon="actions/diff.svg" />
-        </ActionButton>
-      </TooltipTrigger>
+      <Action.Button actionId={ChangesViewActionIds.REFRESH} />
+      <Action.Button actionId={ChangesViewActionIds.ROLLBACK} />
+      <Action.Button actionId={ChangesViewActionIds.SHOW_DIFF} />
       <TooltipTrigger tooltip={<ActionTooltip actionName="Changelists" />}>
         <ChangeListsActionButton />
       </TooltipTrigger>
-      <TooltipTrigger tooltip={<ActionTooltip actionName="Shelve Silently" />}>
-        <ActionButton onPress={() => alert("Not implemented")}>
-          <PlatformIcon icon="vcs/shelveSilent.svg" />
-        </ActionButton>
-      </TooltipTrigger>
+      <Action.Button actionId={ChangesViewActionIds.SHELVE_SILENTLY} />
       <ActionToolbarSeparator />
       <TooltipTrigger tooltip={<ActionTooltip actionName="Group By" />}>
         <GroupByActionButton />
@@ -79,16 +29,8 @@ export function ChangesViewToolbar() {
       <TooltipTrigger tooltip={<ActionTooltip actionName="View Options" />}>
         <ViewOptionsActionButton />
       </TooltipTrigger>
-      <TooltipTrigger tooltip={<ActionTooltip actionName="Expand All" />}>
-        <ActionButton onPress={expandAll}>
-          <PlatformIcon icon="actions/expandall.svg" />
-        </ActionButton>
-      </TooltipTrigger>
-      <TooltipTrigger tooltip={<ActionTooltip actionName="Collapse All" />}>
-        <ActionButton onPress={collapseAll}>
-          <PlatformIcon icon="actions/collapseall.svg" />
-        </ActionButton>
-      </TooltipTrigger>
+      <Action.Button actionId={CommonActionId.EXPAND_ALL} />
+      <Action.Button actionId={CommonActionId.COLLAPSE_ALL} />
     </ActionToolbar>
   );
 }

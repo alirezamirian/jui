@@ -44,4 +44,7 @@ Divider.getCollectionNode = function* getCollectionNode<T>(
 export class DividerItem {
   private static seq = 0;
   key = "divider_" + DividerItem.seq++;
+  get id() {
+    return this.key;
+  }
 }

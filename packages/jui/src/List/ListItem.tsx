@@ -1,10 +1,10 @@
+import React from "react";
 import { Node } from "@react-types/shared";
 import { ListState } from "@react-stately/list";
-import React from "react";
-import { useSelectableItem } from "@intellij-platform/core/selection";
 import { usePress } from "@react-aria/interactions";
+import { useSelectableItem } from "@intellij-platform/core/selection";
+import { ItemStateContext } from "@intellij-platform/core/Collections";
 import { StyledListItem } from "./StyledListItem";
-import { ItemStateContext } from "@intellij-platform/core";
 
 export interface ListItemProps<T> {
   listFocused: boolean;

@@ -5,6 +5,7 @@ export const StyledButton = styled.button<{ disabled?: boolean }>`
   box-sizing: border-box;
   min-width: 4.5rem; // https://jetbrains.github.io/ui/controls/button/#28
   padding: 0.25rem 0.875rem; // https://jetbrains.github.io/ui/controls/button/#28
+  font-family: inherit;
   background-color: ${({ theme, disabled }) =>
     disabled ? "transparent" : theme.color("Button.startBackground")};
   color: ${({ theme, disabled }) =>

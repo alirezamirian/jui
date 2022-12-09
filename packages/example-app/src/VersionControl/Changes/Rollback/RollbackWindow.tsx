@@ -1,12 +1,14 @@
-import React, { Key, useState } from "react";
-import { Selection } from "@react-types/shared";
+import React, { Key, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { Selection } from "@react-types/shared";
 import {
   ActionButton,
   ActionButtonWithMenu,
+  ActionsProvider,
   ActionToolbar,
   Button,
   Checkbox,
+  CommonActionId,
   ContextMenuContainer,
   Item,
   Menu,
@@ -16,10 +18,14 @@ import {
   SpeedSearchTreeWithCheckboxes,
   styled,
   TreeNodeCheckbox,
+  TreeRefValue,
   useBalloons,
   useNestedSelectionState,
+  useTreeActions,
   WindowLayout,
 } from "@intellij-platform/core";
+import { Action } from "@intellij-platform/core/ActionSystem/components";
+
 import {
   AnyNode,
   changesTreeNodesState,
@@ -29,7 +35,6 @@ import {
 import { getChangeListTreeItemProps } from "../ChangesView/changesTreeNodeRenderers";
 import { rollbackViewState } from "./rollbackView.state";
 import { allChangesState, useChangeListManager } from "../change-lists.state";
-import { getExpandAllKeys } from "../../../TreeUtils/tree-utils";
 import { ChangesSummary } from "../ChangesSummary";
 import { groupings } from "../ChangesView/changesGroupings";
 import { RollbackTreeContextMenu } from "./RollbackTreeContextMenu";
@@ -65,9 +70,8 @@ export function RollbackWindow() {
   );
   const rootNodes = useRecoilValue(rollbackViewState.rootNodes);
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set<Key>());
-  const [expandedKeys, setExpandedKeys] = useState<Set<Key>>(
-    defaultExpandedKeys
-  );
+  const [expandedKeys, setExpandedKeys] =
+    useState<Set<Key>>(defaultExpandedKeys);
   const [includedChangeKeys, setIncludedChangeKeys] = useState(
     new Set<Key>(initiallyIncludedChangeKeys)
   );
@@ -90,17 +94,9 @@ export function RollbackWindow() {
   const balloons = useBalloons();
   const setOpen = useSetRecoilState(rollbackViewState.isOpen);
   const close = () => setOpen(false);
-  const expandAll = () =>
-    setExpandedKeys(
-      new Set(
-        getExpandAllKeys<AnyNode>(
-          (node) =>
-            node == null ? rootNodes : isGroupNode(node) ? node.children : null,
-          (node) => node.key
-        )
-      )
-    );
-  const collapseAll = () => setExpandedKeys(new Set());
+
+  const treeRef = useRef<TreeRefValue>(null);
+  const treeActions = useTreeActions({ treeRef });
 
   return (
     <ModalWindow
@@ -138,8 +134,7 @@ export function RollbackWindow() {
                         balloons.show({
                           title: "Reverting changes failed",
                           icon: "Error",
-                          body:
-                            "Could not revert selected changes. See console for more info",
+                          body: "Could not revert selected changes. See console for more info",
                         });
                         console.error("Git revert error:", e);
                       })
@@ -154,84 +149,86 @@ export function RollbackWindow() {
         </>
       }
     >
-      <StyledContainer>
-        <div style={{ display: "flex" }}>
-          <ActionToolbar>
-            <ActionButton isDisabled>
-              <PlatformIcon icon="actions/diff" />
-            </ActionButton>
-            <ActionButtonWithMenu
-              renderMenu={({ menuProps }) => (
-                <Menu
-                  {...menuProps}
-                  selectedKeys={[] /* FIXME */}
-                  onAction={(key) => {
-                    // FIXME
-                    alert("not implemented");
-                  }}
+      <ActionsProvider actions={treeActions}>
+        {({ shortcutHandlerProps }) => (
+          <StyledContainer {...shortcutHandlerProps}>
+            <div style={{ display: "flex" }}>
+              <ActionToolbar>
+                <ActionButton isDisabled>
+                  <PlatformIcon icon="actions/diff" />
+                </ActionButton>
+                <ActionButtonWithMenu
+                  renderMenu={({ menuProps }) => (
+                    <Menu
+                      {...menuProps}
+                      selectedKeys={[] /* FIXME */}
+                      onAction={(key) => {
+                        // FIXME
+                        alert("not implemented");
+                      }}
+                    >
+                      <Section title="Group By">
+                        {
+                          // FIXME
+                          groupings.map((grouping) => (
+                            <Item key={grouping.id}>{grouping.title}</Item>
+                          ))
+                        }
+                      </Section>
+                    </Menu>
+                  )}
                 >
-                  <Section title="Group By">
-                    {
-                      // FIXME
-                      groupings.map((grouping) => (
-                        <Item key={grouping.id}>{grouping.title}</Item>
-                      ))
-                    }
-                  </Section>
-                </Menu>
-              )}
-            >
-              <PlatformIcon icon="actions/groupBy.svg" />
-            </ActionButtonWithMenu>
-          </ActionToolbar>
-          <span style={{ flex: 1 }} />
-          <ActionToolbar>
-            <ActionButton onPress={expandAll}>
-              <PlatformIcon icon="actions/expandall" />
-            </ActionButton>
-            <ActionButton onPress={collapseAll}>
-              <PlatformIcon icon="actions/collapseall" />
-            </ActionButton>
-          </ActionToolbar>
-        </div>
+                  <PlatformIcon icon="actions/groupBy.svg" />
+                </ActionButtonWithMenu>
+              </ActionToolbar>
+              <span style={{ flex: 1 }} />
+              <ActionToolbar>
+                <Action.Button actionId={CommonActionId.EXPAND_ALL} />
+                <Action.Button actionId={CommonActionId.COLLAPSE_ALL} />
+              </ActionToolbar>
+            </div>
 
-        <StyledFrame>
-          <ContextMenuContainer
-            renderMenu={() => <RollbackTreeContextMenu />}
-            style={{ height: "100%" }}
-          >
-            <SpeedSearchTreeWithCheckboxes
-              items={rootNodes}
-              selectionMode="multiple"
-              selectedKeys={selectedKeys}
-              onSelectionChange={setSelectedKeys}
-              expandedKeys={expandedKeys}
-              onExpandedChange={setExpandedKeys}
-              nestedSelection={nestedSelection}
-              disallowEmptySelection
-              fillAvailableSpace
-            >
-              {(node) => {
-                const props = getChangeListTreeItemProps({
-                  node,
-                  fileCountsMap,
-                });
-                return (
-                  <Item {...props}>
-                    {node.children?.length !== 0 && (
-                      <TreeNodeCheckbox
-                        selectionState={nestedSelection.getSelectionState(node)}
-                        onToggle={() => nestedSelection.toggle(node)}
-                      />
-                    )}
-                    {props.children}
-                  </Item>
-                );
-              }}
-            </SpeedSearchTreeWithCheckboxes>
-          </ContextMenuContainer>
-        </StyledFrame>
-      </StyledContainer>
+            <StyledFrame>
+              <ContextMenuContainer
+                renderMenu={() => <RollbackTreeContextMenu />}
+                style={{ height: "100%" }}
+              >
+                <SpeedSearchTreeWithCheckboxes
+                  ref={treeRef}
+                  items={rootNodes}
+                  selectionMode="multiple"
+                  selectedKeys={selectedKeys}
+                  onSelectionChange={setSelectedKeys}
+                  expandedKeys={expandedKeys}
+                  onExpandedChange={setExpandedKeys}
+                  nestedSelection={nestedSelection}
+                  fillAvailableSpace
+                >
+                  {(node) => {
+                    const props = getChangeListTreeItemProps({
+                      node,
+                      fileCountsMap,
+                    });
+                    return (
+                      <Item {...props}>
+                        {node.children?.length !== 0 && (
+                          <TreeNodeCheckbox
+                            selectionState={nestedSelection.getSelectionState(
+                              node
+                            )}
+                            onToggle={() => nestedSelection.toggle(node)}
+                          />
+                        )}
+                        {props.children}
+                      </Item>
+                    );
+                  }}
+                </SpeedSearchTreeWithCheckboxes>
+              </ContextMenuContainer>
+            </StyledFrame>
+          </StyledContainer>
+        )}
+      </ActionsProvider>
     </ModalWindow>
   );
 }

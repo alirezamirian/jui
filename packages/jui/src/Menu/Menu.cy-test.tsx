@@ -2,7 +2,8 @@ import { mount } from "cypress/react";
 import { composeStories } from "@storybook/testing-react";
 import * as React from "react";
 import * as stories from "./Menu.stories";
-import { Menu } from "@intellij-platform/core";
+import { Item, Menu, Theme, ThemeProvider } from "@intellij-platform/core";
+import darculaThemeJson from "../../themes/darcula.theme.json";
 
 const { Nested, MenuWithTrigger, StaticWithTextItems, ContextMenu } =
   composeStories(stories);
@@ -38,6 +39,29 @@ describe("Menu", () => {
     matchImageSnapshot("menu--mouse-behaviour-2");
     cy.get('[role="menuitem"]').contains("Group tabs").realHover(); // Close first submenu by hovering another item
     matchImageSnapshot("menu--mouse-behaviour-3");
+  });
+
+  it.only("closes previously opened submenu, when a new submenu opens", () => {
+    cy.mount(
+      <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
+        <Menu>
+          <Item title="Item 1">
+            <Item>Item 1-1</Item>
+            <Item>Item 1-2</Item>
+            <Item>Item 1-3</Item>
+          </Item>
+          <Item title="Item 2">
+            <Item>Item 2-1</Item>
+            <Item>Item 2-2</Item>
+            <Item>Item 2-3</Item>
+          </Item>
+        </Menu>
+      </ThemeProvider>
+    );
+    cy.findByRole("menuitem", { name: "Item 1" }).realHover();
+    cy.findByRole("menuitem", { name: "Item 2" }).realHover();
+    cy.findByRole("menu", { name: "Item 2" }).should("be.visible");
+    cy.findByRole("menu", { name: "Item 1" }).should("not.exist");
   });
 });
 

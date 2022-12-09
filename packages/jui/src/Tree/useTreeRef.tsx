@@ -1,19 +1,36 @@
 import { ForwardedRef, Key, useImperativeHandle } from "react";
-import { SelectionManager } from "@react-stately/selection";
 import { useLatest } from "@intellij-platform/core/utils/useLatest";
+import { TreeSelectionManager } from "./TreeSelectionManager";
+import { TreeCollection } from "./useTreeState";
 
-export interface TreeRef {
+export interface TreeRefValue {
   focus(key: Key): void;
   replaceSelection(key: Key): void;
+
+  /**
+   * Extends selection to all siblings of the currently focused node.
+   */
+  expandSelection(): void;
+  /**
+   * Shrinks selection towards currently focused node.
+   */
+  shrinkSelection(): void;
+
+  expandAll(): void;
+  collapseAll(): void;
 }
 
 /**
  * Sets up a tree ref for imperatively working with tree from outside. For imperatively focusing, expanding to
  * specific key, etc.
  */
-export function useTreeRef(
-  props: { selectionManager: SelectionManager },
-  forwardedRef?: ForwardedRef<TreeRef>
+export function useTreeRef<T extends {}>(
+  props: {
+    tree: TreeCollection<T>;
+    selectionManager: TreeSelectionManager;
+    setExpandedKeys: (keys: Set<Key>) => void;
+  },
+  forwardedRef?: ForwardedRef<TreeRefValue>
 ) {
   const latestState = useLatest(props);
 
@@ -38,6 +55,39 @@ export function useTreeRef(
           setTimeout(() => {
             selectionManager.setFocusedKey(key);
           });
+        },
+        expandSelection() {
+          latestState.current.selectionManager.expandSelection();
+        },
+        shrinkSelection() {
+          latestState.current.selectionManager.shrinkSelection();
+        },
+        expandAll() {
+          latestState.current.setExpandedKeys(
+            latestState.current.tree.getAllExpandableKeys()
+          );
+        },
+        collapseAll() {
+          const { tree, setExpandedKeys, selectionManager } =
+            latestState.current;
+          const focusedKey = selectionManager.focusedKey;
+          setExpandedKeys(new Set());
+
+          // Find the root node that is a grandparent of focused node, and focus/select it.
+          // NOTE: this behaviour of updating selection when nodes are collapsed is something to be fixed in general,
+          // and then this custom logic here would be not necessary.
+          if (focusedKey && !tree.rootKeys.includes(focusedKey)) {
+            let item = tree.getItem(focusedKey);
+            while (item?.parentKey != null) {
+              item = tree.getItem(item.parentKey);
+            }
+            if (item) {
+              selectionManager.setFocusedKey(item.key);
+              if (selectionManager.isSelected(focusedKey)) {
+                selectionManager.select(item.key);
+              }
+            }
+          }
         },
       };
     },

@@ -25,3 +25,9 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 import "cypress-plugin-snapshots/commands";
+import "@testing-library/cypress/add-commands";
+import { isMac } from "@react-aria/utils";
+
+Cypress.Commands.add("ctrlClick", { prevSubject: true }, (subject, options) => {
+  cy.wrap(subject).click({ ...options, metaKey: isMac(), ctrlKey: !isMac() });
+});

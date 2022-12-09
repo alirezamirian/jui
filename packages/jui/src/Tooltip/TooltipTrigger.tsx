@@ -45,11 +45,17 @@ interface TooltipTriggerProps
 export const TooltipTrigger = ({
   tooltip,
   children,
+  /**
+   * ide.tooltip.initialReshowDelay registry key. [Docs](https://jetbrains.github.io/ui/controls/tooltip/#19) says
+   * it's 300 by default, but it's 500 in the code currently.
+   */
+  delay = 500,
   ...props
 }: TooltipTriggerProps): JSX.Element => {
   const theme = useTheme();
   const state = useTooltipTriggerState({
     ...props,
+    delay,
   });
 
   const triggerRef = useRef<HTMLElement>(null);

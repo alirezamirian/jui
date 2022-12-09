@@ -3,7 +3,7 @@ import styled from "styled-components";
 import {
   ActionButton,
   ActionButtonProps,
-} from "@intellij-platform/core/ActionButton/ActionButton";
+} from "@intellij-platform/core/ActionButton";
 import { MenuTrigger, MenuTriggerProps } from "@intellij-platform/core/Menu";
 import { PlatformIcon } from "@intellij-platform/core/Icon";
 import { mergeProps } from "@react-aria/utils";

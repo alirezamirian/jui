@@ -1,6 +1,7 @@
-import { styled, UnknownThemeProp } from "@intellij-platform/core";
+import { styled } from "@intellij-platform/core/styled";
+import { UnknownThemeProp } from "@intellij-platform/core/Theme";
 import { StyledListItem } from "@intellij-platform/core/List/StyledListItem";
-import { TREE_ICON_SIZE } from "@intellij-platform/core/Tree/TreeNodeIcon";
+import { TREE_ICON_SIZE } from "./TreeNodeIcon";
 
 export const StyledTreeNode = styled(StyledListItem).attrs({ as: "div" })<{
   level: number;

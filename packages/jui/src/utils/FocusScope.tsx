@@ -25,7 +25,7 @@ type BetterFocusScopeProps = FocusScopeProps & {
  */
 export const FocusScope = React.forwardRef(function BetterFocusScope(
   { children, forceRestoreFocus, ...otherProps }: BetterFocusScopeProps,
-  ref: ForwardedRef<{ focus: () => void }>
+  ref: ForwardedRef<{ focus: (forceFocusFirst?: boolean) => void }>
 ) {
   const directChildRef = useRef<HTMLSpanElement>(null);
   const focusManagerRef = useRef<FocusManager>(null);
@@ -33,7 +33,7 @@ export const FocusScope = React.forwardRef(function BetterFocusScope(
   useImperativeHandle(
     ref,
     () => ({
-      focus: () => {
+      focus: (forceFocusFirst?: boolean) => {
         const focusManager = focusManagerRef.current;
         const containerElement = directChildRef.current?.parentElement;
         if (!focusManager) {
@@ -41,6 +41,9 @@ export const FocusScope = React.forwardRef(function BetterFocusScope(
         }
         if (!containerElement) {
           throw new Error("container element not found");
+        }
+        if (forceFocusFirst) {
+          return focusManager.focusFirst();
         }
         const alreadyHasFocused =
           document.activeElement &&

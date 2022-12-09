@@ -5,15 +5,16 @@ import {
   KeyboardEvent,
   Node,
 } from "@react-types/shared";
+import { TreeState } from "@react-stately/tree";
 import { useFocusWithin, useKeyboard } from "@react-aria/interactions";
 import { filterDOMProps, mergeProps } from "@react-aria/utils";
 import { useCollator } from "@react-aria/i18n";
 import { useSelectableCollection } from "@intellij-platform/core/selection";
 import { TreeKeyboardDelegate } from "./TreeKeyboardDelegate";
 import { useCollectionAutoScroll } from "../Collections/useCollectionAutoScroll";
-import { TreeState } from "./__tmp__useTreeState";
 import { useLatest } from "@intellij-platform/core/utils/useLatest";
 import { TreeContextType } from "./TreeContext";
+import { hasAnyModifier } from "@intellij-platform/core/utils/keyboard-utils";
 
 export interface SelectableTreeProps<T> extends DOMProps {
   isVirtualized?: boolean;
@@ -24,6 +25,8 @@ export interface SelectableTreeProps<T> extends DOMProps {
    */
   onAction?: (key: Key) => void;
   onNodeKeyDown?: (event: KeyboardEvent, node: Node<T>) => void;
+
+  allowEmptySelection?: boolean;
 }
 
 /**
@@ -50,6 +53,7 @@ export function useSelectableTree<T>(
   } = useSelectableCollection({
     ref,
     selectionManager: state.selectionManager,
+    disallowEmptySelection: !props.allowEmptySelection,
     selectOnFocus: true,
     keyboardDelegate: useMemo(
       () =>
@@ -85,15 +89,17 @@ export function useSelectableTree<T>(
     const expanded = state.expandedKeys.has(focusedKey);
     const isDisabled = state.disabledKeys.has(focusedKey);
     if (isDisabled) {
+      event.continuePropagation();
       return;
     }
 
     props?.onNodeKeyDown?.(event, item);
 
     const shouldToggle =
-      event.key === "Enter" ||
-      (event.key === "ArrowLeft" && expanded) ||
-      (event.key === "ArrowRight" && !expanded);
+      !hasAnyModifier(event) &&
+      (event.key === "Enter" ||
+        (event.key === "ArrowLeft" && expanded) ||
+        (event.key === "ArrowRight" && !expanded));
 
     if (isExpandable && shouldToggle) {
       event.preventDefault();
@@ -105,10 +111,7 @@ export function useSelectableTree<T>(
       // continued propagation if the event was not handled. Then we could change Speed Search impl to only handle
       // inputs when the propagation is not prevented.
       selectionKeyDown?.(event);
-      if (event.key === "Escape") {
-        // Maybe continuePropagation should be called unconditionally at this point
-        event.continuePropagation();
-      }
+      event.continuePropagation();
     }
   };
   const { keyboardProps } = useKeyboard({

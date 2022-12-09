@@ -1,7 +1,7 @@
-import { TreeState } from "@intellij-platform/core/Tree/__tmp__useTreeState";
 import React, { HTMLAttributes, useMemo } from "react";
 import { LayoutNode } from "@react-stately/layout";
 import { Node } from "@react-types/shared";
+import { TreeState } from "@react-stately/tree";
 import { VirtualizerProps } from "@react-aria/virtualizer";
 import { LayoutInfo, Rect } from "@react-stately/virtualizer";
 import { VariableWidthListLayout } from "@intellij-platform/core/VariableWidthListLayout";
