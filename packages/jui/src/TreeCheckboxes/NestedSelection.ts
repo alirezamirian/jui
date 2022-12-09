@@ -48,7 +48,8 @@ const collectSelectableItemsRecursive = <T>(
 
 // TODO: maybe change the interface to work with keys instead of items?
 export class NestedSelection<T extends object, K = Key>
-  implements NestedSelectionState<T> {
+  implements NestedSelectionState<T>
+{
   cache = new WeakMap<T, SelectionState>();
   constructor(private state: SetState<K>, private tree: TreeModel<T, K>) {
     this.tree = tree;

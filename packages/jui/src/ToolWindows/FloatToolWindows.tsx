@@ -49,9 +49,9 @@ function useStackedLayersState<T, K = React.Key>(
  * Given the state of a stacked list of layers, returns DOM props to be applied to each layer for interaction-based
  * "bring to front" behaviour.
  */
-function useStackedLayers<T>(
-  state: StackedLayersState<T>
-): { layersProps: Array<HTMLProps<HTMLElement>> } {
+function useStackedLayers<T>(state: StackedLayersState<T>): {
+  layersProps: Array<HTMLProps<HTMLElement>>;
+} {
   return {
     layersProps: state.sorted.map((_, index) => ({
       onFocus: () => {

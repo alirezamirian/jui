@@ -10,11 +10,13 @@ export type ExampleContextThemeName = "light" | "darcula" | "highContrast";
 export const ExampleContext: React.FC<{
   themeName?: ExampleContextThemeName;
 }> = ({ children, themeName = "darcula" }) => {
-  const themeJson = ({
-    light: lightTheme,
-    highContrast: highContrastTheme,
-    darcula: darculaTheme,
-  } as const)[themeName];
+  const themeJson = (
+    {
+      light: lightTheme,
+      highContrast: highContrastTheme,
+      darcula: darculaTheme,
+    } as const
+  )[themeName];
 
   // IMPORTANT: passing a function that returns Theme is crucial in get it working. Otherwise, ThemeProvider will try
   // to "merge" themes, and the end result is an POJO, with prototype link lost.

@@ -37,13 +37,11 @@ function findIconPath(
   const basePath = `${ICONS_DIR_PREFIX}${
     theme.isUnderDarcula() ? "darcula/" : "intellij/"
   }`;
-  const suffix = ([
-    "Editable",
-    "Selected",
-    "Pressed",
-    "Focused",
-    "Disabled",
-  ] as Array<keyof typeof modifiers>).reduce(
+  const suffix = (
+    ["Editable", "Selected", "Pressed", "Focused", "Disabled"] as Array<
+      keyof typeof modifiers
+    >
+  ).reduce(
     (soFar, modifier) => soFar + (modifiers[modifier] ? modifier : ""),
     ""
   );

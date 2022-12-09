@@ -57,11 +57,8 @@ function useWindowResizer({
   if (!interactionHandler) {
     return null;
   }
-  const {
-    finishInteraction,
-    startInteraction,
-    updateBounds,
-  } = interactionHandler;
+  const { finishInteraction, startInteraction, updateBounds } =
+    interactionHandler;
 
   const onResize = {
     right: (size: number) =>

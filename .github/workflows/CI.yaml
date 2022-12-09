@@ -2,9 +2,9 @@ name: CI (on PRs and master branch)
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 env:
   IS_PR_WITH_PERCY: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.title, 'no-percy') && !contains(github.event.pull_request.body, 'no-percy') }}
@@ -12,50 +12,52 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest # note: macos doesn't have docker installed!
     container: cypress/browsers:node14.17.0-chrome91-ff89
 
     steps:
-    - name: Log Interesting Info ℹ️
-      run: |
-       echo "The job is triggered by a ${{ github.event_name }} event."
-       echo "This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - name: Log Interesting Info ℹ️
+        run: |
+          echo "The job is triggered by a ${{ github.event_name }} event."
+          echo "This job is now running on a ${{ runner.os }} server hosted by GitHub!"
 
-    - name: Checkout 🛎️
-      uses: actions/checkout@v2.3.1
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.1
 
-    - name: Install Dependencies 🔧
-      run: yarn
+      - name: Install Dependencies 🔧
+        run: yarn
 
-    - name: Type Check ʦ
-      run: yarn run type-check
+      - name: Type Check ʦ
+        run: yarn run type-check
 
-    - name: Linting 🕵
-      run: yarn run lint
+      - name: Linting 🕵
+        run: yarn run lint
 
-    - name: Build 🔨
-      run: yarn run build:public
+      - name: Formatting 📏
+        run: yarn run format:check
 
-    - name: Run Tests ✅
-      if: ${{ env.IS_PR_JUST_MERGED == 'true' || env.IS_PR_WITH_PERCY == 'true' }}
-      env:
-        PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-        CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-      run: yarn run test
+      - name: Build 🔨
+        run: yarn run build:public
 
-    - name: Run Tests (without percy) ✅
-      if: ${{ !(env.IS_PR_JUST_MERGED == 'true' || env.IS_PR_WITH_PERCY == 'true') }}
-      env:
-        CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-      run: yarn run test
+      - name: Run Tests ✅
+        if: ${{ env.IS_PR_JUST_MERGED == 'true' || env.IS_PR_WITH_PERCY == 'true' }}
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+        run: yarn run test
 
-    - uses: actions/upload-artifact@v2
-      name: Upload Cypress screenshots if tests failed 🤕
-      if: failure()
-      with:
-        name: cypress-screenshots
-        path: |
-          packages/jui/**/__image_snapshots__
-          packages/jui/cypress/videos
-          packages/jui/cypress/screenshots
+      - name: Run Tests (without percy) ✅
+        if: ${{ !(env.IS_PR_JUST_MERGED == 'true' || env.IS_PR_WITH_PERCY == 'true') }}
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+        run: yarn run test
+
+      - uses: actions/upload-artifact@v2
+        name: Upload Cypress screenshots if tests failed 🤕
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: |
+            packages/jui/**/__image_snapshots__
+            packages/jui/cypress/videos
+            packages/jui/cypress/screenshots

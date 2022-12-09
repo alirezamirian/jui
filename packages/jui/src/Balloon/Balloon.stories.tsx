@@ -8,8 +8,7 @@ export default {
   component: Balloon,
   args: {
     title: "Maven Projects need to be imported",
-    body:
-      "Projects to be imported: MavenSync, MavenDependencies. Maven project structure has been changed. Import changes to IntelliJ IDEA project to make it work correctly. Otherwise, code analysis, completion and other features might work incorrectly.",
+    body: "Projects to be imported: MavenSync, MavenDependencies. Maven project structure has been changed. Import changes to IntelliJ IDEA project to make it work correctly. Otherwise, code analysis, completion and other features might work incorrectly.",
     actions: (
       <>
         <BalloonActionLink>Import changes</BalloonActionLink>
@@ -45,8 +44,7 @@ Error.args = { icon: "Error" };
 export const CustomIcon: Story<BalloonProps> = Template.bind({});
 CustomIcon.args = {
   title: "Docker file detection",
-  body:
-    "you may setup docker deployment run configuration for the following file",
+  body: "you may setup docker deployment run configuration for the following file",
   icon: <PlatformIcon icon="expui/fileTypes/docker.svg" />,
 };
 

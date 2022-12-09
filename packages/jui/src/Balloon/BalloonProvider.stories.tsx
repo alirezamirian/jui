@@ -19,8 +19,7 @@ const ShowBalloonButton = () => {
     show(
       {
         title: "Maven Projects need to be imported",
-        body:
-          "Projects to be imported: MavenSync, MavenDependencies. Maven project structure has been changed. Import changes to IntelliJ IDEA project to make it work correctly. Otherwise, code analysis, completion and other features might work incorrectly.",
+        body: "Projects to be imported: MavenSync, MavenDependencies. Maven project structure has been changed. Import changes to IntelliJ IDEA project to make it work correctly. Otherwise, code analysis, completion and other features might work incorrectly.",
         actions: (
           <>
             <BalloonActionLink>Import changes</BalloonActionLink>

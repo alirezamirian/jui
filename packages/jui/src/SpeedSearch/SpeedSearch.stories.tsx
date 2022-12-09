@@ -75,10 +75,10 @@ function SearchableText({
   children: string;
   searchTerm: string;
 }) {
-  const highlights = useMemo(() => minusculeMatch(children, searchTerm), [
-    children,
-    searchTerm,
-  ]);
+  const highlights = useMemo(
+    () => minusculeMatch(children, searchTerm),
+    [children, searchTerm]
+  );
   return (
     <TextWithHighlights highlights={highlights}>{children}</TextWithHighlights>
   );

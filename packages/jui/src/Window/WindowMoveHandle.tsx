@@ -14,11 +14,8 @@ export function useWindowMoveHandle() {
   if (!interactionHandler) {
     return { moveHandleProps: {} };
   }
-  const {
-    finishInteraction,
-    startInteraction,
-    updateBounds,
-  } = interactionHandler;
+  const { finishInteraction, startInteraction, updateBounds } =
+    interactionHandler;
 
   const moveProps = useMove({
     onMoveStart: () => {

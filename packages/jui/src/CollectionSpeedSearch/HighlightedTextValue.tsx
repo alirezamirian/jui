@@ -8,9 +8,8 @@ type CollectionSpeedSearchItemContextValue = {
   highlightedRanges: null | TextRange[];
 };
 
-const CollectionSpeedSearchItemContext = React.createContext<null | CollectionSpeedSearchItemContextValue>(
-  null
-);
+const CollectionSpeedSearchItemContext =
+  React.createContext<null | CollectionSpeedSearchItemContextValue>(null);
 
 export const SpeedSearchItemHighlightsProvider: React.FC<{ itemKey: Key }> = ({
   children,

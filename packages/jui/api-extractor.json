@@ -120,7 +120,7 @@
      * SUPPORTED TOKENS: <packageName>, <unscopedPackageName>
      * DEFAULT VALUE: "<unscopedPackageName>.api.md"
      */
-     "reportFileName": "<unscopedPackageName>.api.md"
+    "reportFileName": "<unscopedPackageName>.api.md"
 
     /**
      * Specifies the folder where the API report file is written.  The file name portion is determined by
@@ -171,7 +171,7 @@
      * SUPPORTED TOKENS: <projectFolder>, <packageName>, <unscopedPackageName>
      * DEFAULT VALUE: "<projectFolder>/temp/<unscopedPackageName>.api.json"
      */
-     "apiJsonFilePath": "<projectFolder>/dist/doc-model.api.json"
+    "apiJsonFilePath": "<projectFolder>/dist/doc-model.api.json"
   },
 
   /**
@@ -254,7 +254,7 @@
      *
      * DEFAULT VALUE: true
      */
-     "enabled": false,
+    "enabled": false
     /**
      * Specifies where the TSDoc metadata file should be written.
      *

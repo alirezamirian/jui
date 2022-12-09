@@ -31,34 +31,30 @@ export function ToolWindowStripe<T>({
 }: ToolWindowStripeProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const {
-    getProps,
-    draggingRect,
-    draggingKey,
-    dropPosition,
-  } = useMovableStripeButtons({
-    stripeElRef: containerRef,
-    getKey,
-    anchor,
-    mainItems,
-    splitItems,
-    createGetDropPosition: (key: Key) => {
-      const isNotCurrentItem = (anItem: T) => getKey(anItem) !== key;
-      const stripeElement = containerRef.current!;
-      const getItemRect = (key: Key) =>
-        stripeElement
-          .querySelector(`[data-key="${key}"]`)! // FIXME
-          .getBoundingClientRect();
-      return createGetDropPosition({
-        stripeElement: stripeElement,
-        mainItems: mainItems.filter(isNotCurrentItem),
-        splitItems: splitItems.filter(isNotCurrentItem),
-        getKey,
-        anchor,
-        getItemRect,
-      });
-    },
-  });
+  const { getProps, draggingRect, draggingKey, dropPosition } =
+    useMovableStripeButtons({
+      stripeElRef: containerRef,
+      getKey,
+      anchor,
+      mainItems,
+      splitItems,
+      createGetDropPosition: (key: Key) => {
+        const isNotCurrentItem = (anItem: T) => getKey(anItem) !== key;
+        const stripeElement = containerRef.current!;
+        const getItemRect = (key: Key) =>
+          stripeElement
+            .querySelector(`[data-key="${key}"]`)! // FIXME
+            .getBoundingClientRect();
+        return createGetDropPosition({
+          stripeElement: stripeElement,
+          mainItems: mainItems.filter(isNotCurrentItem),
+          splitItems: splitItems.filter(isNotCurrentItem),
+          getKey,
+          anchor,
+          getItemRect,
+        });
+      },
+    });
 
   const highlighted =
     dropPosition != null &&

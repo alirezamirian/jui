@@ -36,18 +36,16 @@ export const useContextMenu = (
 
   const overlayRef = useRef(null);
 
-  const {
-    overlayProps: positionProps,
-    updatePosition,
-  } = useMouseEventOverlayPosition({
-    overlayRef,
-    placement: "bottom start",
-    // shouldFlip should be false, but it doesn't work as expected. Overlay container is rendered within the view port
-    // but the menu overflows from the overlay container
-    shouldFlip: true,
-    offset: -8,
-    isOpen: state.isOpen,
-  });
+  const { overlayProps: positionProps, updatePosition } =
+    useMouseEventOverlayPosition({
+      overlayRef,
+      placement: "bottom start",
+      // shouldFlip should be false, but it doesn't work as expected. Overlay container is rendered within the view port
+      // but the menu overflows from the overlay container
+      shouldFlip: true,
+      offset: -8,
+      isOpen: state.isOpen,
+    });
   const { overlayProps } = useOverlay(
     {
       onClose: () => {

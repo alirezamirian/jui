@@ -10,10 +10,8 @@ export function useCollectionOverflowObserver(
   scrollableItemsContainerRef: RefObject<HTMLElement>,
   { threshold = 0.9 }: { threshold?: number } = {}
 ) {
-  const [
-    intersectionObserver,
-    setIntersectionObserver,
-  ] = useState<IntersectionObserver | null>(null);
+  const [intersectionObserver, setIntersectionObserver] =
+    useState<IntersectionObserver | null>(null);
   const [overflowedKeys, setOverflowedKeys] = useState<Set<Key>>(new Set());
 
   useEffect(() => {

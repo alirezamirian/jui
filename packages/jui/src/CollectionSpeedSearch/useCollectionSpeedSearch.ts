@@ -38,14 +38,12 @@ export function useCollectionSpeedSearch<T>({
   const speedSearch = useSpeedSearchState(speedSearchStateProps); // maybe allow control over state
   // via props?
 
-  const {
-    matches,
-    selectionManager: speedSearchSelectionManager,
-  } = useCollectionSpeedSearchResult({
-    collection,
-    selectionManager,
-    speedSearch,
-  });
+  const { matches, selectionManager: speedSearchSelectionManager } =
+    useCollectionSpeedSearchResult({
+      collection,
+      selectionManager,
+      speedSearch,
+    });
   const { containerProps } = useSpeedSearch({ stickySearch }, speedSearch);
   const speedSearchKeyboardDelegate = useMemo(
     () =>

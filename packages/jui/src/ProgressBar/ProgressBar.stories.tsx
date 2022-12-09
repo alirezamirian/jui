@@ -102,9 +102,8 @@ export const WithPauseButton: Story<ProgressBarStoryProps> = (props) => {
   );
 };
 
-export const WithSecondaryDetails: Story<ProgressBarStoryProps> = WithPauseButton.bind(
-  {}
-);
+export const WithSecondaryDetails: Story<ProgressBarStoryProps> =
+  WithPauseButton.bind({});
 WithSecondaryDetails.args = {
   name: "Updating indexes",
   details: "Indexing module 'foo'",

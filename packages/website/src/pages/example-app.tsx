@@ -42,9 +42,8 @@ const StyledSpacer = styled.span`
 `;
 
 export default function ExampleAppPage(): JSX.Element {
-  const [themeName, setThemeName] = useState<
-    ComponentProps<typeof ExampleContext>["themeName"]
-  >("darcula");
+  const [themeName, setThemeName] =
+    useState<ComponentProps<typeof ExampleContext>["themeName"]>("darcula");
 
   return (
     <>
