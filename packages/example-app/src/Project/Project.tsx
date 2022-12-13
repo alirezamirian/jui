@@ -1,5 +1,5 @@
 import { ActionsProvider, DefaultToolWindows } from "@intellij-platform/core";
-import React from "react";
+import React, { CSSProperties } from "react";
 import { FileEditor } from "../Editor/FileEditor";
 import { useInitializeVcs } from "../VersionControl/file-status.state";
 import { toolWindows } from "./toolWindows";
@@ -20,7 +20,7 @@ const StyledWindowFrame = styled.div`
   min-height: 0;
 `;
 
-export const Project = () => {
+export const Project = ({ height }: { height: CSSProperties["height"] }) => {
   const [state, setState] = useRecoilState(toolWindowsState);
   const isRollbackWindowOpen = useRecoilValue(rollbackViewState.isOpen);
 
@@ -33,7 +33,7 @@ export const Project = () => {
   };
 
   return (
-    <StyledWindowFrame>
+    <StyledWindowFrame style={{ height }}>
       <ActionsProvider actions={allActions}>
         {({ shortcutHandlerProps }) => (
           <DefaultToolWindows
@@ -43,6 +43,9 @@ export const Project = () => {
             }}
             windows={toolWindows}
             containerProps={shortcutHandlerProps}
+            // To make it not annoying when the whole app is a part of a bigger page. It's fine to disable focus trap,
+            // because the focusable element, the editor, fills the whole main content.
+            disableFocusTrap
           >
             <FileEditor />
           </DefaultToolWindows>

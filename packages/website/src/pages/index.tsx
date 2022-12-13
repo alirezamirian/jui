@@ -1,11 +1,22 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import clsx from "clsx";
 import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
-import styles from "./index.module.css";
-import HomepageFeatures from "../components/HomepageFeatures";
+import styles from "./_index/index.module.css";
+import HomepageFeatures from "./_index/HomepageFeatures";
+import { WindowFrame } from "./_index/WindowFrame/WindowFrame";
+import { LazyExampleApp } from "../components/LazyExampleApp";
+import styled from "styled-components";
+import {
+  PageSection2,
+  PageSection2 as SectionType,
+} from "./_index/PageSection2";
 
+const demoAppClickHandler = (e) => {
+  e.preventDefault();
+  document.getElementById("demo-app").scrollIntoView({ behavior: "smooth" });
+};
 function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
   return (
@@ -33,6 +44,13 @@ function HomepageHeader() {
           >
             Get started
           </Link>
+          <Link
+            to="/example-app"
+            onClick={demoAppClickHandler}
+            className="button button--secondary button--lg"
+          >
+            Jump to demo
+          </Link>
         </div>
       </div>
     </header>
@@ -59,11 +77,48 @@ function linkify(
 
 export default function Home(): JSX.Element {
   return (
-    <Layout>
-      <HomepageHeader />
-      <main>
-        <HomepageFeatures />
-      </main>
-    </Layout>
+    <div
+      onClickCapture={(e) => {
+        if (
+          !e.ctrlKey &&
+          !e.metaKey &&
+          !e.shiftKey &&
+          !e.altKey &&
+          e.target instanceof HTMLAnchorElement &&
+          e.target.href.includes("/example-app")
+        ) {
+          demoAppClickHandler(e);
+        }
+      }}
+    >
+      <Layout>
+        <HomepageHeader />
+        <main>
+          <HomepageFeatures />
+          <PageSection2>
+            <PageSection2.Container>
+              <PageSection2.Title id="demo-app">
+                Demo Application
+              </PageSection2.Title>
+              <SectionType.Subtitle>
+                Bellow is an example application built with JUI. It mimics
+                Webstorm, and although it has some functionality implemented as
+                well, the main purpose is to show case features and components
+                JUI offers, rather than being a real IDE.
+              </SectionType.Subtitle>
+            </PageSection2.Container>
+            <ExampleWindowFrame>
+              <LazyExampleApp height="calc(100vh - 200px)" />
+            </ExampleWindowFrame>
+          </PageSection2>
+        </main>
+      </Layout>
+    </div>
   );
 }
+
+const ExampleWindowFrame = styled(WindowFrame)`
+  margin-top: 2rem;
+  width: clamp(85%, 1200px, calc(100vw - 1rem));
+  min-height: calc(100vh - 200px);
+`;

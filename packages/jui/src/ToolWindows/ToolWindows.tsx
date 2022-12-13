@@ -66,6 +66,13 @@ export interface ToolWindowsProps {
    * props to be passed to the container element.
    */
   containerProps?: Omit<HTMLProps<HTMLDivElement>, "as">;
+
+  /**
+   * By default, `ToolWindows` prevents focus from going to `body`, when something blurs. This is especially
+   * useful for global actions handled at the level of ToolWindows, to be able to consistently capture keyboard events.
+   * setting `disableFocusTrap` to true prevents that default behavior.
+   */
+  disableFocusTrap?: boolean;
 }
 
 export interface ToolWindowRefValue {
@@ -103,6 +110,7 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
   {
     hideToolWindowBars = false,
     useWidescreenLayout = false,
+    disableFocusTrap = false,
     height = "100%",
     minHeight = "0",
     toolWindowsState,
@@ -406,7 +414,7 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
      *  the editor).
      *  TODO: investigate alternative approaches for focus handling here.
      */
-    <AriaFocusScope contain>
+    <AriaFocusScope contain={!disableFocusTrap}>
       <StyledToolWindowOuterLayout.Shell
         {...containerProps}
         ref={containerRef}

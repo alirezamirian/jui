@@ -33,6 +33,7 @@ export const Editor = (props: Omit<EditorProps, "theme">) => {
         scrollbar: {
           verticalScrollbarSize: 10,
           verticalSliderSize: 7,
+          alwaysConsumeMouseWheel: false, // to let example-app be rendered as a part of a page.
         },
         ...props.options,
       }}

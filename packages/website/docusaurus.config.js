@@ -62,6 +62,7 @@ const config = {
       navbar: {
         style: "primary",
         title: "jui",
+        hideOnScroll: true, // especially useful for embedded demo app in homepage
         // logo: {
         //   alt: "jui logo",
         //   src: "../img/logo.svg",
