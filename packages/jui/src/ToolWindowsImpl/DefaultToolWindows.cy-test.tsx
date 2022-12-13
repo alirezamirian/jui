@@ -123,7 +123,7 @@ describe("DefaultToolWindowActions", () => {
       cy.findByTestId("Second window").find("input").eq(0).should("have.focus");
     });
 
-    it.only("opens the last activated tool window, if closed", () => {
+    it("opens the last activated tool window, if closed", () => {
       cy.mount(
         <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
           <SimpleToolWindows />
