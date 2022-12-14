@@ -13,6 +13,5 @@ export interface ItemStateContextType {
   isDisabled: boolean;
 }
 
-export const ItemStateContext = React.createContext<ItemStateContextType | null>(
-  null
-);
+export const ItemStateContext =
+  React.createContext<ItemStateContextType | null>(null);

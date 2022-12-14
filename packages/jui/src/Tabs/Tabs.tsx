@@ -120,10 +120,8 @@ export const Tabs = <T extends object>({
   const { tabListProps } = useTabList(props, state, ref);
 
   const { scrolledIndicatorProps, isScrolled } = useIsScrolled({ ref });
-  const {
-    overflowedKeys,
-    intersectionObserver,
-  } = useCollectionOverflowObserver(ref);
+  const { overflowedKeys, intersectionObserver } =
+    useCollectionOverflowObserver(ref);
 
   useEffect(() => {
     if (!noScroll) {

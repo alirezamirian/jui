@@ -1,0 +1,9 @@
+
+# Not possible to have .prettierignore in the relevant folders: https://github.com/prettier/prettier/issues/4081
+# packages/jui/.prettierignore
+packages/jui/themes
+dist
+
+# packages/website/.prettierignore
+build
+.docusaurus

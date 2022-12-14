@@ -47,9 +47,8 @@ export type BoundsInteractionHandlerProps = {
    */
   finishInteraction: () => void;
 };
-export const WindowInteractionHandlerContext = React.createContext<BoundsInteractionHandlerProps | null>(
-  null
-);
+export const WindowInteractionHandlerContext =
+  React.createContext<BoundsInteractionHandlerProps | null>(null);
 export const useWindowInteractionHandler = () =>
   useContext(WindowInteractionHandlerContext);
 
@@ -68,11 +67,8 @@ function useWindowResizer() {
   if (!interactionHandler) {
     return null;
   }
-  const {
-    finishInteraction,
-    startInteraction,
-    updateBounds,
-  } = interactionHandler;
+  const { finishInteraction, startInteraction, updateBounds } =
+    interactionHandler;
 
   const onResize = {
     right: (size: number) =>

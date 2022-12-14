@@ -1,4 +1,3 @@
-import { mount } from "cypress/react";
 import { composeStories } from "@storybook/testing-react";
 import React from "react";
 import * as stories from "./2-Tabs.stories";
@@ -7,13 +6,13 @@ const { Overflow, StaticItems } = composeStories(stories);
 
 describe("Tabs", () => {
   it("passes common dom props to the root element", () => {
-    mount(<StaticItems id="tabs" data-foo="bar" />);
+    cy.mount(<StaticItems id="tabs" data-foo="bar" />);
     cy.get("#tabs");
     cy.get("[data-foo=bar]");
   });
 
   it("shows overflowed items in overflow menu", () => {
-    mount(<Overflow />);
+    cy.mount(<Overflow />);
     matchImageSnapshot("tabs-overflow-menu");
     const arrowDownMenuBtn = cy.get('button[aria-haspopup="true"]');
     arrowDownMenuBtn.should("exist");
@@ -27,7 +26,7 @@ describe("Tabs", () => {
   });
 
   it("shows all tabs when multiRow is set", () => {
-    mount(<Overflow multiRow />);
+    cy.mount(<Overflow multiRow />);
     cy.get('[role="tab"]').contains("#1").should("be.visible");
     cy.get('[role="tab"]').contains("#7").should("be.visible");
     matchImageSnapshot("tabs-multi-row");
@@ -35,7 +34,7 @@ describe("Tabs", () => {
 
   it("makes sure selected tab is scrolled into view as expected", () => {
     cy.viewport(520, 520);
-    mount(
+    cy.mount(
       <div>
         <div style={{ height: 200 }} />
         <Overflow maxWidth={520} />

@@ -21,7 +21,7 @@ jobs:
         with:
           branch: gh-pages
           folder: packages/website/build
-          clean-exclude: '-'
+          clean-exclude: "-"
   maybe-release-packages:
     name: Release package(s) if needed
     runs-on: ubuntu-latest

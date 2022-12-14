@@ -8,11 +8,9 @@ export type ThemePropertyRawValue =
   | OsDependentValue;
 export type OS = "windows" | "linux" | "mac";
 export type OsDependentValueKey = `os.${OS}` | "os.default";
-export type OsDependentValue = RequireAtLeastOne<
-  {
-    [key in OsDependentValueKey]?: ThemePropertyValue;
-  }
->;
+export type OsDependentValue = RequireAtLeastOne<{
+  [key in OsDependentValueKey]?: ThemePropertyValue;
+}>;
 type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<
   T,
   Exclude<keyof T, Keys>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 import { RecoilRoot } from "recoil";
 import { BalloonsProvider, KeymapProvider } from "@intellij-platform/core";
 import { DefaultSuspense } from "./DefaultSuspense";
@@ -10,7 +10,7 @@ import { exampleAppKeymap } from "./exampleAppKeymap";
 /**
  * Example app root component. It expects ThemeProvider to be provided based on where it's rendered.
  */
-export const App = () => {
+export const App = ({ height }: { height?: CSSProperties["height"] }) => {
   return (
     // TODO: add an error boundary
     <DefaultSuspense>
@@ -20,7 +20,7 @@ export const App = () => {
             <RecoilRoot>
               <BalloonsProvider disablePortal>
                 {/* disablePortal to make example app more portable*/}
-                <Project />
+                <Project height={height} />
               </BalloonsProvider>
             </RecoilRoot>
           </KeymapProvider>

@@ -1,16 +1,27 @@
-import { mount } from "cypress/react";
 import React from "react";
 import { composeStories } from "@storybook/testing-react";
 import * as stories from "./Button.stories";
+import { createGlobalStyle } from "styled-components";
 
-const { SimpleUsage } = composeStories(stories);
+const { SimpleUsage: SimpleUsageStory } = composeStories(stories);
 
+const GlobalStyles = createGlobalStyle`
+  body {
+    padding: 10px;
+  }
+`;
+const SimpleUsage = (props: Parameters<typeof SimpleUsageStory>[0]) => (
+  <>
+    <GlobalStyles />
+    <SimpleUsageStory {...props} />
+  </>
+);
 const BUTTON_TEXT = "Button";
 
 describe("Button", () => {
   it("works!", () => {
     const onPress = cy.stub();
-    mount(<SimpleUsage onPress={onPress} />, { styles: "body{padding: 10px}" });
+    cy.mount(<SimpleUsage onPress={onPress} />, {});
     matchImageSnapshot("Button-simple");
     cy.contains(BUTTON_TEXT).click();
     cy.wrap(onPress).should("be.calledOnce");
@@ -18,34 +29,31 @@ describe("Button", () => {
     matchImageSnapshot("Button-simple-focused");
 
     // disabled
-    mount(<SimpleUsage isDisabled onPress={onPress} />, {
-      styles: "body{padding: 10px}",
-    });
+    cy.mount(<SimpleUsage isDisabled onPress={onPress} />);
     matchImageSnapshot("Button-simple-disabled");
     cy.contains(BUTTON_TEXT).click({ force: true });
     cy.wrap(onPress).should("be.calledOnce"); // no new calls
   });
 
   it('supports "default" variant', () => {
-    mount(<SimpleUsage variant="default" />, { styles: "body{padding: 10px}" });
+    cy.mount(<SimpleUsage variant="default" />);
     matchImageSnapshot("Button-default");
     cy.get("button").click();
     cy.get("button").focused();
     matchImageSnapshot("Button-default-focused");
 
     // disabled
-    mount(<SimpleUsage isDisabled />, { styles: "body{padding: 10px}" });
+    cy.mount(<SimpleUsage isDisabled />);
     matchImageSnapshot("Button-default-disabled");
   });
 
   it("supports autoFocus and excludeFromTabOrder", () => {
-    mount(
+    cy.mount(
       <>
         <SimpleUsage autoFocus id="firstButton" />
         <SimpleUsage excludeFromTabOrder />
         <SimpleUsage id="thirdButton" />
-      </>,
-      { styles: "body{padding: 10px}" }
+      </>
     );
     // autoFocus should move focus to the first Button
     cy.focused().should("have.id", "firstButton");
@@ -57,7 +65,7 @@ describe("Button", () => {
 
   it("supports preventFocus", () => {
     const onPress = cy.stub();
-    mount(
+    cy.mount(
       // The first element is intentionally something other than Button, to not tangle preventFocus testing with autoFocus
       <>
         <input autoFocus id="focused-element" />

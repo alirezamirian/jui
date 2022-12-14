@@ -1,15 +1,29 @@
 import React from "react";
-import { mount } from "cypress/react";
 import { composeStories } from "@storybook/testing-react";
 import * as stories from "./BalloonProvider.stories";
+import { createGlobalStyle } from "styled-components";
 
 const { BalloonsProviderStory } = composeStories(stories);
 
-const styles = "body{padding: 10px}";
+const GlobalStyles = createGlobalStyle`
+body{
+  padding: 10px;
+}
+`;
+const WithGlobalPadding: React.FC = ({ children }) => (
+  <>
+    <GlobalStyles />
+    {children}
+  </>
+);
 
 describe("Balloon", () => {
   it("works", () => {
-    mount(<BalloonsProviderStory />, { styles });
+    cy.mount(
+      <WithGlobalPadding>
+        <BalloonsProviderStory />
+      </WithGlobalPadding>
+    );
     cy.contains("show sticky balloon notification").click();
     matchImageSnapshot("BalloonProvider-one-balloon");
     cy.contains("show sticky balloon notification").click();

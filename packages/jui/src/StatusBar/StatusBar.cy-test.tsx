@@ -1,4 +1,3 @@
-import { mount } from "cypress/react";
 import React from "react";
 import { composeStories } from "@storybook/testing-react";
 import * as stories from "./StatusBar.stories";
@@ -7,7 +6,7 @@ const { Default } = composeStories(stories);
 
 describe("StatusBar", () => {
   it("works!", () => {
-    mount(<Default />);
+    cy.mount(<Default />);
     matchImageSnapshot("StatusBar-default");
   });
 });

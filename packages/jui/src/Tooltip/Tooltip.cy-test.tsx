@@ -1,4 +1,3 @@
-import { mount } from "cypress/react";
 import React from "react";
 import { composeStories } from "@storybook/testing-react";
 import * as stories from "./TooltipTrigger.stories";
@@ -15,7 +14,7 @@ describe("TooltipTrigger", () => {
   it("opens the tooltip on hover, and closes it when trigger area is left", () => {
     // https://jetbrains.github.io/ui/controls/tooltip/#17
     // https://jetbrains.github.io/ui/controls/tooltip/#18
-    mount(<Default />);
+    cy.mount(<Default />);
     workaroundHoverIssue();
     cy.get("button").first().realHover();
 
@@ -26,7 +25,7 @@ describe("TooltipTrigger", () => {
 
   it("allows user to click links in a tooltip, if any", () => {
     // https://jetbrains.github.io/ui/controls/tooltip/#20
-    mount(<Interactive />);
+    cy.mount(<Interactive />);
     workaroundHoverIssue();
     cy.get("button").realHover();
 
@@ -45,7 +44,7 @@ function workaroundHoverIssue() {
 
 describe("Tooltip", () => {
   it("renders as expected", () => {
-    mount(
+    cy.mount(
       <>
         <div style={{ padding: 8 }}>
           <ActionTooltipStories.Default />

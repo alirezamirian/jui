@@ -1,4 +1,3 @@
-import { mount } from "cypress/react";
 import { composeStories } from "@storybook/testing-react";
 import * as React from "react";
 import * as stories from "./SpeedSearchTree.stories";
@@ -10,7 +9,7 @@ const OS_NORMALIZED_META = Cypress.platform === "darwin" ? "Meta" : "Control";
 
 describe("SpeedSearchTree", () => {
   it("supports Speed Search in dynamic items mode", () => {
-    mount(<Dynamic />);
+    cy.mount(<Dynamic />);
 
     cy.get("#tree").focus(); // move focus to an element in tree. it could be the tree itself too.
 
@@ -52,7 +51,7 @@ describe("SpeedSearchTree", () => {
     matchImageSnapshot("SpeedSearchTree-8-search-exited");
   });
   it("preserves space before/after highlights", () => {
-    mount(<HighlightsWithSpace />);
+    cy.mount(<HighlightsWithSpace />);
     cy.contains("Paco de Lucia").type("de");
     // local snapshot is disappointing.
     cy.percySnapshot("SpeedSearchTree-highlights-with-space");

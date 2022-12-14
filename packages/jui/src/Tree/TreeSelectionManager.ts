@@ -83,11 +83,13 @@ export class TreeSelectionManager extends SelectionManager {
         : !this.isSelected(node.key)
         ? [node.key]
         : parentDescendants,
-      shrinkKeys: parentDescendants.every((key) => this.isSelected(key))
-        ? parentDescendants
-        : this.isSelected(node.key) && previousChild
-        ? [node.key]
-        : descendants.filter((key) => this.isSelected(key)),
+      shrinkKeys:
+        parentDescendants.length > 0 &&
+        parentDescendants.every((key) => this.isSelected(key))
+          ? parentDescendants
+          : this.isSelected(node.key) && previousChild
+          ? [node.key]
+          : descendants.filter((key) => this.isSelected(key)),
     };
   }
 

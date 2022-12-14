@@ -1,4 +1,3 @@
-import { mount } from "cypress/react";
 import React from "react";
 import { composeStories } from "@storybook/testing-react";
 import * as stories from "./ModalWindow.stories";
@@ -7,12 +6,12 @@ const { Default } = composeStories(stories);
 
 describe("ModalWindow", () => {
   it("works!", () => {
-    mount(<Default>Content</Default>);
+    cy.mount(<Default>Content</Default>);
     matchImageSnapshot("ModalWindow-default");
   });
   it("supports resize", () => {
     const onBoundsChange = cy.stub().as("onBoundsChange");
-    mount(
+    cy.mount(
       <Default
         defaultBounds={{ left: 100, top: 100, width: 200, height: 150 }}
         onBoundsChange={onBoundsChange}
@@ -60,7 +59,7 @@ describe("ModalWindow", () => {
   });
   it("supports drag header to move", () => {
     const onBoundsChange = cy.stub().as("onBoundsChange");
-    mount(
+    cy.mount(
       <Default
         defaultBounds={{ left: 100, top: 100, width: 200, height: 150 }}
         title="title"

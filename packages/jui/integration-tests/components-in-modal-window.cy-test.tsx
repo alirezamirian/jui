@@ -1,4 +1,3 @@
-import { mount } from "cypress/react";
 import React from "react";
 import { SpeedSearchTreeSample } from "@intellij-platform/core/story-components";
 import {
@@ -13,7 +12,7 @@ import { Item } from "@react-stately/collections";
 describe("integration of modal window with Tree components", () => {
   it("closes when escape is pressed on SpeedSearchTree", () => {
     const onClose = cy.stub().as("onClose");
-    mount(
+    cy.mount(
       <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
         <ModalWindow title="title" onClose={onClose}>
           <SpeedSearchTreeSample />
@@ -29,7 +28,7 @@ describe("integration of modal window with Tree components", () => {
 
   it("closes when escape is pressed on Tree", () => {
     const onClose = cy.stub().as("onClose");
-    mount(
+    cy.mount(
       <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
         <ModalWindow title="title" onClose={onClose}>
           <Tree

@@ -1,13 +1,11 @@
 import React, { ComponentProps, useState } from "react";
-import BrowserOnly from "@docusaurus/BrowserOnly";
 import Link from "@docusaurus/Link";
-import { PlatformIcon, styled, Color } from "@intellij-platform/core";
+import { Color, PlatformIcon, styled } from "@intellij-platform/core";
 import {
   ExampleContext,
   ExampleContextThemeName,
 } from "../components/ExampleContext";
-
-const App = React.lazy(() => import("../../../example-app/src/App"));
+import { LazyExampleApp } from "../components/LazyExampleApp";
 
 const ColumnContainer = styled.div`
   display: flex;
@@ -42,43 +40,36 @@ const StyledSpacer = styled.span`
 `;
 
 export default function ExampleAppPage(): JSX.Element {
-  const [themeName, setThemeName] = useState<
-    ComponentProps<typeof ExampleContext>["themeName"]
-  >("darcula");
+  const [themeName, setThemeName] =
+    useState<ComponentProps<typeof ExampleContext>["themeName"]>("darcula");
 
   return (
-    <>
-      <BrowserOnly>
-        {() => (
-          <ExampleContext themeName={themeName}>
-            <React.Suspense fallback="loading...">
-              <ColumnContainer>
-                <StyledBanner>
-                  <BannerLinkButton to="/">
-                    <PlatformIcon icon="actions/exit.svg" />
-                    &nbsp; Quit example app
-                  </BannerLinkButton>
-                  <StyledSpacer />
-                  <label>
-                    Theme: &nbsp;
-                    <select
-                      value={themeName}
-                      onChange={({ target }) =>
-                        setThemeName(target.value as ExampleContextThemeName)
-                      }
-                    >
-                      <option value="darcula">Darcula</option>
-                      <option value="light">Light</option>
-                      <option value="highContrast">High Contrast</option>
-                    </select>
-                  </label>
-                </StyledBanner>
-                <App />
-              </ColumnContainer>
-            </React.Suspense>
-          </ExampleContext>
-        )}
-      </BrowserOnly>
-    </>
+    <LazyExampleApp themeName={themeName}>
+      {(app) => (
+        <ColumnContainer>
+          <StyledBanner>
+            <BannerLinkButton to="/">
+              <PlatformIcon icon="actions/exit.svg" />
+              &nbsp; Quit example app
+            </BannerLinkButton>
+            <StyledSpacer />
+            <label>
+              Theme: &nbsp;
+              <select
+                value={themeName}
+                onChange={({ target }) =>
+                  setThemeName(target.value as ExampleContextThemeName)
+                }
+              >
+                <option value="darcula">Darcula</option>
+                <option value="light">Light</option>
+                <option value="highContrast">High Contrast</option>
+              </select>
+            </label>
+          </StyledBanner>
+          {app}
+        </ColumnContainer>
+      )}
+    </LazyExampleApp>
   );
 }

@@ -6,6 +6,8 @@ on:
 jobs:
   deploy-website:
     name: Deploy website to Github Pages to sub-folder
+    #   TODO: add environment (name,url). tag filter can be changed to "-/*" so that we can use ${{ github.ref_name }}
+    #    directly here as well. The base folder doesn't even have to be "-" and can be "archive", or some meaningful thing.
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️

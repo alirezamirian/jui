@@ -36,13 +36,11 @@ export const FloatView: React.FC<
     onBoundsChange: (bounds: WindowBounds) => void;
   } & Omit<HTMLProps<HTMLDivElement>, "ref" | "as">
 > = ({ children, state: { bounds }, onBoundsChange, ...otherProps }) => {
-  const {
-    bounds: effectiveBounds,
-    windowInteractionHandlerProps,
-  } = useResizableMovableWindow({
-    bounds,
-    onBoundsChange,
-  });
+  const { bounds: effectiveBounds, windowInteractionHandlerProps } =
+    useResizableMovableWindow({
+      bounds,
+      onBoundsChange,
+    });
 
   return (
     <StyledFloatView

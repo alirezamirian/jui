@@ -8,6 +8,8 @@
     "test": "yarn workspaces foreach run test",
     "lint": "yarn run lint:lib",
     "lint:lib": "yarn eslint packages/jui",
+    "format:check": "prettier packages/jui packages/website .github --check",
+    "format:fix": "prettier packages/jui packages/website .github --write",
     "build": "yarn workspaces foreach run build",
     "build:public": "yarn workspaces foreach --no-private run build",
     "deduplicate": "yarn dedupe '@react-aria/*' '@react-stately/*' '@react-types/*'",
@@ -28,6 +30,7 @@
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "parcel": "^2.7.0",
+    "prettier": "^2.8.1",
     "typescript": "4.7.4"
   },
   "packageManager": "yarn@3.2.1",

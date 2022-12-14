@@ -39,12 +39,14 @@ const toolWindowStripes: ToolWindowStripesData<{ name: string }> = {
 
 export const Stripe = (props: StyledToolWindowStripeProps) => {
   const { anchor = "bottom" } = props;
-  const paddingProp = ({
-    right: "paddingLeft",
-    left: "paddingRight",
-    bottom: "paddingTop",
-    top: "paddingBottom",
-  } as const)[anchor];
+  const paddingProp = (
+    {
+      right: "paddingLeft",
+      left: "paddingRight",
+      bottom: "paddingTop",
+      top: "paddingBottom",
+    } as const
+  )[anchor];
   return (
     <div
       style={{

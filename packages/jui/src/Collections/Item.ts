@@ -9,7 +9,7 @@ import { Item as StatelyItem, PartialNode } from "@react-stately/collections";
  * `useCollectionCacheInvalidation` for creating such context object.
  */
 function Item<T>(props: ItemProps<T>): ReactElement {
-  return (null as any) as React.ReactElement;
+  return null as any as React.ReactElement;
 }
 
 export type CacheInvalidationContext = { invalidated?: boolean };
@@ -25,9 +25,9 @@ Item.getCollectionNode = function* getCollectionNode<T>(
   props: ItemProps<T>,
   context: CacheInvalidationContext
 ): Generator<PartialNode<T>> {
-  const itemGenerator: Generator<
-    PartialNode<T>
-  > = (StatelyItem as any).getCollectionNode(props, context);
+  const itemGenerator: Generator<PartialNode<T>> = (
+    StatelyItem as any
+  ).getCollectionNode(props, context);
   const result = itemGenerator.next().value;
   const originalShouldInvalidate = result.shouldInvalidate;
   result.shouldInvalidate = (context: CacheInvalidationContext) =>

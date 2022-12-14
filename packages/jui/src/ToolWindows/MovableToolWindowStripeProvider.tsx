@@ -49,9 +49,8 @@ export type MovableToolWindowStripeProviderProps<T = unknown> = {
   onMove: (args: { from: StripeLocation<T>; to: StripeLocation<T> }) => void;
 };
 
-const MovableToolWindowStripeContext = React.createContext<MovableToolWindowStripeContextType<any> | null>(
-  null
-);
+const MovableToolWindowStripeContext =
+  React.createContext<MovableToolWindowStripeContextType<any> | null>(null);
 
 /**
  * A wrapper component to render around `ToolWindowStripe`s to make their button movable. Stripe buttons then become
@@ -73,9 +72,7 @@ export const MovableToolWindowStripeProvider = <T extends unknown>({
     dropPosition: DropPosition;
   } | null>(null);
   const getDropPositionRef = useRef<
-    (
-      to: Rect
-    ) => {
+    (to: Rect) => {
       id: string;
       dropPosition: DropPosition;
     } | null

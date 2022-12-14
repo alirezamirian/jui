@@ -89,13 +89,8 @@ const getComponentsAndProps = (
 };
 export const Default = ({ orientation, ...props }: StoryProps) => {
   const [size, setSize] = useState(200);
-  const {
-    Resizer,
-    Container,
-    FirstSide,
-    SecondSide,
-    sizeStyles,
-  } = getComponentsAndProps(orientation, size);
+  const { Resizer, Container, FirstSide, SecondSide, sizeStyles } =
+    getComponentsAndProps(orientation, size);
   return (
     <Container>
       <FirstSide style={sizeStyles}>Resizable panel</FirstSide>
@@ -136,13 +131,8 @@ const Handle = styled.div<{ orientation: "horizontal" | "vertical" }>`
 
 export const CustomAppearance = ({ orientation, ...props }: StoryProps) => {
   const [size, setSize] = useState(200);
-  const {
-    Resizer,
-    Container,
-    FirstSide,
-    SecondSide,
-    sizeStyles,
-  } = getComponentsAndProps(orientation, size);
+  const { Resizer, Container, FirstSide, SecondSide, sizeStyles } =
+    getComponentsAndProps(orientation, size);
 
   return (
     <Container>
@@ -177,13 +167,8 @@ export const WithMinSize = ({
   ...props
 }: StoryProps & { minSize: CSSProperties["minWidth" | "minHeight"] }) => {
   const [size, setSize] = useState(200);
-  const {
-    Resizer,
-    Container,
-    FirstSide,
-    SecondSide,
-    sizeStyles,
-  } = getComponentsAndProps(orientation, size);
+  const { Resizer, Container, FirstSide, SecondSide, sizeStyles } =
+    getComponentsAndProps(orientation, size);
   return (
     <Container>
       <FirstSide

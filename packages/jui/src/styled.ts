@@ -7,7 +7,10 @@ type JuiStyledComponentsModule = ThemedStyledComponentsModule<
   Theme<KnownThemePropertyPath>
 >;
 
-export const styled = styledComponents.default as JuiStyledComponentsModule["default"];
-export const useTheme = styledComponents.useTheme as JuiStyledComponentsModule["useTheme"];
+export const styled =
+  styledComponents.default as JuiStyledComponentsModule["default"];
+export const useTheme =
+  styledComponents.useTheme as JuiStyledComponentsModule["useTheme"];
 export const css = styledComponents.css as JuiStyledComponentsModule["css"];
-export const ThemeConsumer = styledComponents.ThemeConsumer as JuiStyledComponentsModule["ThemeConsumer"];
+export const ThemeConsumer =
+  styledComponents.ThemeConsumer as JuiStyledComponentsModule["ThemeConsumer"];

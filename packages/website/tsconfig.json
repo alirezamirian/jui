@@ -6,7 +6,7 @@
     "resolveJsonModule": true,
     "paths": {
       "jui": ["../jui/src"],
-      "jui/*": ["../jui/src/*"],
+      "jui/*": ["../jui/src/*"]
     },
     "jsx": "react"
   }

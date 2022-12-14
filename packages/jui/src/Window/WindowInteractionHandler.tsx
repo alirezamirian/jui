@@ -25,9 +25,8 @@ export type WindowInteractionHandlerProps = {
   finishInteraction: () => void;
 };
 
-const WindowInteractionHandlerContext = React.createContext<WindowInteractionHandlerProps | null>(
-  null
-);
+const WindowInteractionHandlerContext =
+  React.createContext<WindowInteractionHandlerProps | null>(null);
 
 /**
  * Provides the context used by components like {@link WindowMoveHandle} and {@link WindowResizeHandles} that provide

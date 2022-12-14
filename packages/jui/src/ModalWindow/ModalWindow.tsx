@@ -117,9 +117,8 @@ export const ModalWindowInner = ({
 
   const { dialogProps, titleProps } = useDialog(props, ref);
 
-  const { bounds, windowInteractionHandlerProps } = useResizableMovableWindow(
-    props
-  );
+  const { bounds, windowInteractionHandlerProps } =
+    useResizableMovableWindow(props);
 
   const renderTitle = (otherProps: HTMLAttributes<HTMLElement> = {}) => (
     <StyledWindowTitle {...mergeProps(titleProps, otherProps)}>
