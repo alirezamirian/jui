@@ -214,6 +214,9 @@ export const FileEditor = () => {
 const StyledFileEditorContainer = styled.div`
   position: relative;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: ${({ theme }) =>
     theme.color(
       "Editor.background",
