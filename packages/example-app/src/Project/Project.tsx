@@ -45,7 +45,7 @@ export const Project = ({ height }: { height: CSSProperties["height"] }) => {
             containerProps={shortcutHandlerProps}
             // To make it not annoying when the whole app is a part of a bigger page. It's fine to disable focus trap,
             // because the focusable element, the editor, fills the whole main content.
-            disableFocusTrap
+            allowBlurOnInteractionOutside
           >
             <FileEditor />
           </DefaultToolWindows>

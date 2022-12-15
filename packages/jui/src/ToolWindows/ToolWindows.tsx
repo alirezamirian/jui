@@ -27,6 +27,7 @@ import { UndockSide } from "./UndockSide";
 import { Anchor, isHorizontalToolWindow } from "./utils";
 import { useLatest } from "@intellij-platform/core/utils/useLatest";
 import { indexBy } from "ramda";
+import { useInteractOutside } from "@react-aria/interactions";
 
 interface ToolWindow {
   id: string;
@@ -72,7 +73,7 @@ export interface ToolWindowsProps {
    * useful for global actions handled at the level of ToolWindows, to be able to consistently capture keyboard events.
    * setting `disableFocusTrap` to true prevents that default behavior.
    */
-  disableFocusTrap?: boolean;
+  allowBlurOnInteractionOutside?: boolean;
 }
 
 export interface ToolWindowRefValue {
@@ -110,7 +111,7 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
   {
     hideToolWindowBars = false,
     useWidescreenLayout = false,
-    disableFocusTrap = false,
+    allowBlurOnInteractionOutside = false,
     height = "100%",
     minHeight = "0",
     toolWindowsState,
@@ -175,6 +176,18 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
     }),
     []
   );
+
+  const [interactionOutside, setInteractionOutside] = useState(false);
+  useInteractOutside({
+    ref: containerRef,
+    isDisabled: !allowBlurOnInteractionOutside,
+    onInteractOutsideStart: () => {
+      setInteractionOutside(true);
+    },
+    onInteractOutside: () => {
+      setInteractionOutside(false);
+    },
+  });
 
   // TODO: extract component candidate
   const renderStripe = ({
@@ -414,7 +427,9 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
      *  the editor).
      *  TODO: investigate alternative approaches for focus handling here.
      */
-    <AriaFocusScope contain={!disableFocusTrap}>
+    <AriaFocusScope
+      contain={!(allowBlurOnInteractionOutside && interactionOutside)}
+    >
       <StyledToolWindowOuterLayout.Shell
         {...containerProps}
         ref={containerRef}
