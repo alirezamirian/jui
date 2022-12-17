@@ -23,6 +23,7 @@ import {
   NestedSelectionState,
 } from "@intellij-platform/core";
 import { rollbackViewState } from "../Rollback/rollbackView.state";
+import { activePathsState } from "../../../Project/project.state";
 
 export interface ChangeBrowserNode<T extends string> {
   type: T;
@@ -157,8 +158,9 @@ export const includedChangesNestedSelection = selector<
     const { rootNodes } = get(changesTreeNodesState);
     const includedChangeKeys = get(includedChangeKeysState);
     const setSelectedKeys = getCallback(
-      ({ set }) => (setValue: (currentValue: Set<string>) => Set<string>) =>
-        set(includedChangeKeysState, setValue)
+      ({ set }) =>
+        (setValue: (currentValue: Set<string>) => Set<string>) =>
+          set(includedChangeKeysState, setValue)
     );
     return new NestedSelection(
       {
@@ -363,10 +365,27 @@ export const commitMessageState = atom({
 export const openRollbackWindowForSelectionCallback = ({
   set,
   snapshot,
-}: CallbackInterface) => () => {
-  const changesUnderSelection = snapshot
-    .getLoadable(changesUnderSelectedKeys)
-    .getValue();
-  set(rollbackViewState.initiallyIncludedChanges, changesUnderSelection);
-  set(rollbackViewState.isOpen, true);
+}: CallbackInterface) => {
+  return () => {
+    const activePaths = snapshot.getLoadable(activePathsState).getValue();
+    const changesUnderSelection = snapshot
+      .getLoadable(changesUnderSelectedKeys)
+      .getValue();
+    const changesBasedOnActivePaths =
+      activePaths.length > 0
+        ? snapshot
+            .getLoadable(allChangesState)
+            .getValue()
+            .filter((change) =>
+              activePaths.some((activePath) =>
+                change.after.path.startsWith(activePath)
+              )
+            )
+        : null;
+    set(
+      rollbackViewState.initiallyIncludedChanges,
+      changesBasedOnActivePaths ?? changesUnderSelection
+    );
+    set(rollbackViewState.isOpen, true);
+  };
 };

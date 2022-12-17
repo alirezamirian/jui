@@ -4,7 +4,6 @@ import { FileEditor } from "../Editor/FileEditor";
 import { useInitializeVcs } from "../VersionControl/file-status.state";
 import { toolWindows } from "./toolWindows";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { toolWindowsState } from "./toolWindows.state";
 import { useInitializeChanges } from "../VersionControl/Changes/change-lists.state";
 import styled from "styled-components";
 import { IdeStatusBar } from "../StatusBar/IdeStatusBar";
@@ -12,6 +11,7 @@ import { usePersistenceFsNotification } from "../usePersistenceFsNotification";
 import { useChangesViewActions } from "../VersionControl/Changes/useChangesViewActions";
 import { RollbackWindow } from "../VersionControl/Changes/Rollback/RollbackWindow";
 import { rollbackViewState } from "../VersionControl/Changes/Rollback/rollbackView.state";
+import { toolWindowsState } from "./toolWindows.state";
 
 const StyledWindowFrame = styled.div`
   display: flex;
