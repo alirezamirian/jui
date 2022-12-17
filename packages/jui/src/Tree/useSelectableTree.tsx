@@ -15,8 +15,11 @@ import { useCollectionAutoScroll } from "../Collections/useCollectionAutoScroll"
 import { useLatest } from "@intellij-platform/core/utils/useLatest";
 import { TreeContextType } from "./TreeContext";
 import { hasAnyModifier } from "@intellij-platform/core/utils/keyboard-utils";
+import { FocusEvents } from "@react-types/shared/src/events";
 
-export interface SelectableTreeProps<T> extends DOMProps {
+export interface SelectableTreeProps<T>
+  extends DOMProps,
+    Omit<FocusEvents, "onFocusChange"> {
   isVirtualized?: boolean;
   keyboardDelegate?: KeyboardDelegate;
   /**
@@ -34,7 +37,7 @@ export interface SelectableTreeProps<T> extends DOMProps {
  * react-aria, it makes sense to refactor this and use that. There will still be something on top of it here.
  */
 export function useSelectableTree<T>(
-  { onAction, ...props }: SelectableTreeProps<T>,
+  { onAction, onFocus, onBlur, ...props }: SelectableTreeProps<T>,
   state: TreeState<T>,
   ref: RefObject<HTMLElement>
 ) {
@@ -158,7 +161,8 @@ export function useSelectableTree<T>(
       focusWithinProps,
       collectionProps,
       keyboardProps,
-      domProps
+      domProps,
+      { onFocus, onBlur }
     ),
     treeContext,
     focused,
