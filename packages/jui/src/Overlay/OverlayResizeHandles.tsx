@@ -11,49 +11,47 @@ import {
 } from "../Resizer/ResizerProps";
 import {
   Bounds,
-  useWindowInteractionHandler,
-} from "./WindowInteractionHandler";
+  useOverlayInteractionHandler,
+} from "./OverlayInteractionHandler";
 
-const FLOAT_WINDOW_MIN_WIDTH = 100;
-const FLOAT_WINDOW_MIN_HEIGHT = 40; // in Intellij Platform it's zero but there is window frame which doesn't exist here
-type WindowResizeHandlesProps = {
+type OverlayResizeHandlesProps = {
   minWidth?: number;
   minHeight?: number;
 };
 
 /**
- * Renders invisible resize handles at the edges of the window it's rendered in. It uses the context provided by
- * {@link WindowInteractionHandler} to resize the window when the handles are used.
+ * Renders invisible resize handles at the edges of the overlay it's rendered in. It uses the context provided by
+ * {@link OverlayInteractionHandler} to resize the overlay when the handles are used.
  */
-export function WindowResizeHandles(props: WindowResizeHandlesProps) {
-  const windowResizer = useWindowResizer(props);
+export function OverlayResizeHandles(props: OverlayResizeHandlesProps) {
+  const overlayResizer = useOverlayResizer(props);
   return (
-    windowResizer && (
+    overlayResizer && (
       <>
-        <RightResizer {...windowResizer.getResizerProps("right")} />
-        <LeftResizer {...windowResizer.getResizerProps("left")} />
-        <TopResizer {...windowResizer.getResizerProps("top")} />
-        <BottomResizer {...windowResizer.getResizerProps("bottom")} />
+        <RightResizer {...overlayResizer.getResizerProps("right")} />
+        <LeftResizer {...overlayResizer.getResizerProps("left")} />
+        <TopResizer {...overlayResizer.getResizerProps("top")} />
+        <BottomResizer {...overlayResizer.getResizerProps("bottom")} />
       </>
     )
   );
 }
 
 /**
- * window resizing logic and state. When resizing is in progress, the source of truth is a local state, for performance
+ * overlay resizing logic and state. When resizing is in progress, the source of truth is a local state, for performance
  * reasons. When the resize is done (e.g. by mouse being released), `onBoundsChange` is called with the new bounds.
  */
-function useWindowResizer({
-  minWidth = FLOAT_WINDOW_MIN_WIDTH,
-  minHeight = FLOAT_WINDOW_MIN_HEIGHT,
-}: WindowResizeHandlesProps = {}) {
+function useOverlayResizer({
+  minWidth = 1,
+  minHeight = 1,
+}: OverlayResizeHandlesProps = {}) {
   const initialBoundsRef = useRef<Bounds>({
     top: 0,
     height: 0,
     width: 0,
     left: 0,
   });
-  const interactionHandler = useWindowInteractionHandler();
+  const interactionHandler = useOverlayInteractionHandler();
   if (!interactionHandler) {
     return null;
   }

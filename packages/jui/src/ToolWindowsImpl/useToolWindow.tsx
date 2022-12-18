@@ -8,7 +8,7 @@ import React, {
 import { useFocusWithin } from "@react-aria/interactions";
 import { mergeProps } from "@react-aria/utils";
 import { useToolWindowState } from "@intellij-platform/core/ToolWindows";
-import { useWindowMoveHandle } from "@intellij-platform/core/Window";
+import { useOverlayMoveHandle } from "@intellij-platform/core/Overlay";
 
 export function useToolWindow(
   {
@@ -69,7 +69,7 @@ export function useToolWindow(
     }
   }, []);
 
-  const { moveHandleProps } = useWindowMoveHandle();
+  const { moveHandleProps } = useOverlayMoveHandle();
 
   return {
     contentHasFocus,

@@ -13,11 +13,11 @@ import { WINDOW_SHADOW } from "@intellij-platform/core/style-constants";
 import { mergeProps } from "@react-aria/utils";
 import {
   Bounds,
-  useResizableMovableWindow,
-  WindowInteractionHandler,
-  WindowMoveHandle,
-  WindowResizeHandles,
-} from "@intellij-platform/core/Window";
+  useResizableMovableOverlay,
+  OverlayInteractionHandler,
+  OverlayMoveHandle,
+  OverlayResizeHandles,
+} from "@intellij-platform/core/Overlay";
 
 export interface ModalWindowProps extends AriaDialogProps {
   children: React.ReactNode;
@@ -117,8 +117,8 @@ export const ModalWindowInner = ({
 
   const { dialogProps, titleProps } = useDialog(props, ref);
 
-  const { bounds, windowInteractionHandlerProps } =
-    useResizableMovableWindow(props);
+  const { bounds, overlayInteractionHandlerProps } =
+    useResizableMovableOverlay(props);
 
   const renderTitle = (otherProps: HTMLAttributes<HTMLElement> = {}) => (
     <StyledWindowTitle {...mergeProps(titleProps, otherProps)}>
@@ -128,7 +128,7 @@ export const ModalWindowInner = ({
 
   return (
     <StyledWindowUnderlay {...underlayProps}>
-      <WindowInteractionHandler {...windowInteractionHandlerProps}>
+      <OverlayInteractionHandler {...overlayInteractionHandlerProps}>
         <FocusScope contain restoreFocus autoFocus>
           <StyledWindowContainer
             {...mergeProps(overlayProps, dialogProps, modalProps)}
@@ -137,9 +137,9 @@ export const ModalWindowInner = ({
           >
             <StyledWindowInnerContainer>
               {interactions !== "none" ? (
-                <WindowMoveHandle>
+                <OverlayMoveHandle>
                   {({ moveHandleProps }) => renderTitle(moveHandleProps)}
-                </WindowMoveHandle>
+                </OverlayMoveHandle>
               ) : (
                 renderTitle()
               )}
@@ -149,14 +149,14 @@ export const ModalWindowInner = ({
               {footer && <StyledWindowFooter>{footer}</StyledWindowFooter>}
             </StyledWindowInnerContainer>
             {interactions === "all" && (
-              <WindowResizeHandles
-                minWidth={props.minWidth}
-                minHeight={props.minHeight}
+              <OverlayResizeHandles
+                minWidth={props.minWidth ?? 100}
+                minHeight={props.minHeight ?? 40}
               />
             )}
           </StyledWindowContainer>
         </FocusScope>
-      </WindowInteractionHandler>
+      </OverlayInteractionHandler>
     </StyledWindowUnderlay>
   );
 };
@@ -173,7 +173,7 @@ export const ModalWindowInner = ({
  *
  * ![img.png](https://user-images.githubusercontent.com/3150694/181095858-968c5c66-2ae7-4e40-84e3-e6df43cd4aa4.png)
  *
- * NOTE: The part regarding rendering WindowInteractionHandler, and rendering as a dialog with a focus scope, in an
+ * NOTE: The part regarding rendering OverlayInteractionHandler, and rendering as a dialog with a focus scope, in an
  * overlay container could be extracted into a component which is then used to create custom resizable/movable overlay
  * dialogs, like "Branches", or "Search Everywhere".
  *

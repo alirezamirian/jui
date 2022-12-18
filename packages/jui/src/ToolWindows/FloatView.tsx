@@ -7,10 +7,13 @@ import { Theme } from "../Theme/Theme";
 import { FloatWindowState } from "./ToolWindowsState/ToolWindowsLayoutState";
 import { WindowBounds } from "./ToolWindowsState/ToolWindowsState";
 import {
-  useResizableMovableWindow,
-  WindowResizeHandles,
-  WindowInteractionHandler,
-} from "@intellij-platform/core/Window";
+  useResizableMovableOverlay,
+  OverlayResizeHandles,
+  OverlayInteractionHandler,
+} from "@intellij-platform/core/Overlay";
+
+const FLOAT_WINDOW_MIN_WIDTH = 100;
+const FLOAT_WINDOW_MIN_HEIGHT = 40; // in Intellij Platform it's zero but there is window frame which doesn't exist here
 
 const StyledFloatView = styled.div`
   position: absolute;
@@ -36,8 +39,8 @@ export const FloatView: React.FC<
     onBoundsChange: (bounds: WindowBounds) => void;
   } & Omit<HTMLProps<HTMLDivElement>, "ref" | "as">
 > = ({ children, state: { bounds }, onBoundsChange, ...otherProps }) => {
-  const { bounds: effectiveBounds, windowInteractionHandlerProps } =
-    useResizableMovableWindow({
+  const { bounds: effectiveBounds, overlayInteractionHandlerProps } =
+    useResizableMovableOverlay({
       bounds,
       onBoundsChange,
     });
@@ -47,10 +50,13 @@ export const FloatView: React.FC<
       {...otherProps}
       style={{ ...otherProps.style, ...effectiveBounds }}
     >
-      <WindowInteractionHandler {...windowInteractionHandlerProps}>
-        <WindowResizeHandles />
+      <OverlayInteractionHandler {...overlayInteractionHandlerProps}>
+        <OverlayResizeHandles
+          minWidth={FLOAT_WINDOW_MIN_WIDTH}
+          minHeight={FLOAT_WINDOW_MIN_HEIGHT}
+        />
         {children}
-      </WindowInteractionHandler>
+      </OverlayInteractionHandler>
     </StyledFloatView>
   );
 };

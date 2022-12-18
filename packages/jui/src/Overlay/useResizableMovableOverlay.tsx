@@ -3,12 +3,11 @@ import { ControlledStateProps } from "@intellij-platform/core/type-utils";
 import { useControlledState } from "@react-stately/utils";
 import {
   Bounds,
-  WindowInteractionHandlerProps,
-} from "./WindowInteractionHandler";
-import { ModalWindowProps } from "@intellij-platform/core/ModalWindow";
+  OverlayInteractionHandlerProps,
+} from "./OverlayInteractionHandler";
 import { clamp } from "ramda";
 
-export interface UseResizableMovableWindowOptions
+export interface UseResizableMovableOverlayOptions
   extends ControlledStateProps<{ bounds: Bounds }> {
   /**
    * Allows validating/intercepting bound changes during an interaction.
@@ -26,21 +25,21 @@ export interface UseResizableMovableWindowOptions
  * TODO: rename to something better :D
  * TODO: maybe an option like ensureInViewport that would move the final bound into the viewport (if necessary), when
  *  calling onBoundsChange at the end of an interaction. That's important because if move handle(s) (usually rendered
- *  at the top of the window) are out of reach, there would be no way back.
+ *  at the top of the overlay) are out of reach, there would be no way back.
  */
-export function useResizableMovableWindow({
+export function useResizableMovableOverlay({
   bounds: boundsProp,
   defaultBounds,
   onBoundsChange,
   interceptInteraction = (i) => i,
-}: UseResizableMovableWindowOptions) {
+}: UseResizableMovableOverlayOptions) {
   const [bounds, setBounds] = useControlledState(
     boundsProp!,
     defaultBounds || getDefaultBounds(),
     onBoundsChange!
   );
   const initialBoundsRef = useRef<null | Bounds>(null);
-  // local state of bounds for when window is in a UI interaction, like movement or resize with mouse.
+  // local state of bounds for when the overlay is in a UI interaction, like movement or resize with mouse.
   // We don't want to update the state in the higher levels repeatedly in such transactions, and we just want to
   // trigger on update when the UI interaction is done.
   // It's maintained during a UI interaction and then reset to null.
@@ -53,7 +52,7 @@ export function useResizableMovableWindow({
     setCurrentInteractionBounds(null);
   };
   const effectiveBounds = currentInteractionBounds || bounds;
-  const windowInteractionHandlerProps: WindowInteractionHandlerProps = {
+  const overlayInteractionHandlerProps: OverlayInteractionHandlerProps = {
     startInteraction: () => {
       setCurrentInteractionBounds(bounds);
       initialBoundsRef.current = bounds;
@@ -72,7 +71,7 @@ export function useResizableMovableWindow({
     },
     finishInteraction: onInteractionEnd,
   };
-  return { bounds: effectiveBounds, windowInteractionHandlerProps };
+  return { bounds: effectiveBounds, overlayInteractionHandlerProps };
 }
 
 export function getDefaultBounds(
@@ -93,10 +92,12 @@ export function getDefaultBounds(
  * @example
  * const ensureInViewPort = containedWithin({left: 0, top: 0, width: window.innerWidth, height: window.innerHeight})
  *
- * useResizableMovableWindow({ interceptInteraction: ensureInViewPort});
+ * useResizableMovableOverlay({ interceptInteraction: ensureInViewPort});
  */
 export const containedWithin =
-  (containerBounds: Bounds): ModalWindowProps["interceptInteraction"] =>
+  (
+    containerBounds: Bounds
+  ): UseResizableMovableOverlayOptions["interceptInteraction"] =>
   (bounds, interactionType) => {
     if (interactionType === "move") {
       const left = clamp(

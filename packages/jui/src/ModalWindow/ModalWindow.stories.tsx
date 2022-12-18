@@ -6,7 +6,7 @@ import {
   Bounds,
   containedWithin,
   getDefaultBounds,
-} from "@intellij-platform/core/Window";
+} from "@intellij-platform/core/Overlay";
 import {
   ActionButton,
   ActionToolbar,

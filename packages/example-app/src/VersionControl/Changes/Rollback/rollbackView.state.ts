@@ -8,7 +8,7 @@ import {
 } from "../ChangesView/ChangesView.state";
 import { Key } from "react";
 import { dfsVisit, getExpandAllKeys } from "../../../TreeUtils/tree-utils";
-import { Bounds, getDefaultBounds } from "@intellij-platform/core/Window";
+import { Bounds, getDefaultBounds } from "@intellij-platform/core/Overlay";
 
 const isOpen = atom<boolean>({
   key: "rollbackView.isOpen",
