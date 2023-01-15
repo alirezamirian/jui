@@ -107,6 +107,7 @@ export function RollbackWindow() {
       bounds={windowBounds}
       onBoundsChange={setWindowBounds}
       minHeight={200}
+      minWidth={275}
       footer={
         <>
           <div

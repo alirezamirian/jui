@@ -19,7 +19,7 @@ export function useOverlayMoveHandle() {
 
   const moveProps = useMove({
     onMoveStart: () => {
-      return startInteraction();
+      return startInteraction("move");
     },
     onMove: ({ startState, movement }) => {
       updateBounds({

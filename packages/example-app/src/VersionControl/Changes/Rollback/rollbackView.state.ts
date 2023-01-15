@@ -8,15 +8,15 @@ import {
 } from "../ChangesView/ChangesView.state";
 import { Key } from "react";
 import { dfsVisit, getExpandAllKeys } from "../../../TreeUtils/tree-utils";
-import { Bounds, getDefaultBounds } from "@intellij-platform/core/Overlay";
+import { Bounds } from "@intellij-platform/core/Overlay";
 
 const isOpen = atom<boolean>({
   key: "rollbackView.isOpen",
   default: false,
 });
-const windowBounds = atom<Bounds>({
+const windowBounds = atom<Partial<Bounds>>({
   key: "rollbackView.windowBounds",
-  default: new Promise((resolve) => resolve(getDefaultBounds(500, 500))),
+  default: { height: 500 },
 });
 const initiallyIncludedChanges = atom<ReadonlyArray<Change>>({
   key: "rollbackView.initiallySelectedChanges",

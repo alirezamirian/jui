@@ -14,7 +14,7 @@ export type OverlayInteractionHandlerProps = {
   /**
    * Signals start of a UI interaction like resize or move, in which overlay bounds change.
    */
-  startInteraction: () => Bounds;
+  startInteraction: (type: "move" | "resize") => Bounds;
   /**
    * Used to update bounds state during a UI interaction.
    */

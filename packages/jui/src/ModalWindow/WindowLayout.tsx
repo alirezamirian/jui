@@ -4,6 +4,7 @@ import React from "react";
 const StyledFooter = styled.div<{ hasBorder?: boolean }>`
   padding: 0.625rem 0.875rem;
   display: flex;
+  gap: 0.5rem;
   justify-content: space-between;
   align-items: center;
   border-top: 1px solid transparent;

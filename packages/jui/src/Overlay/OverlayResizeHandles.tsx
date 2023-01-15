@@ -105,7 +105,7 @@ function useOverlayResizer({
       size: 1,
       cursor: horizontal ? "ew" : "ns",
       onResizeStarted: () => {
-        initialBoundsRef.current = startInteraction();
+        initialBoundsRef.current = startInteraction("resize");
       },
       onResize: onResize[side],
       onResizeEnd: finishInteraction,

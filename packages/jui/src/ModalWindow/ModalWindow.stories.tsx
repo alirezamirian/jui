@@ -1,12 +1,8 @@
 import { Meta, Story } from "@storybook/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ModalWindow, ModalWindowProps } from "./ModalWindow";
 import { SpeedSearchTreeSample } from "@intellij-platform/core/story-components";
-import {
-  Bounds,
-  containedWithin,
-  getDefaultBounds,
-} from "@intellij-platform/core/Overlay";
+import { Bounds, containedWithin } from "@intellij-platform/core/Overlay";
 import {
   ActionButton,
   ActionToolbar,
@@ -17,22 +13,12 @@ import {
   WindowLayout,
 } from "@intellij-platform/core";
 
-export default {
-  title: "Components/ModalWindow",
-  component: ModalWindow,
-  args: {
-    children: <SpeedSearchTreeSample />,
-    title: "Dialog title",
-  },
-  // argTypes: {},
-} as Meta<ModalWindowProps>;
-
 const StyledContainer = styled.div`
   box-sizing: border-box;
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 1rem 0.75rem 0;
+  padding: 1rem 0.75rem;
 `;
 const StyledFrame = styled.div`
   border: 1px solid ${({ theme }) => theme.commonColors.contrastBorder};
@@ -46,9 +32,36 @@ const StyledLine = styled.div`
   color: ${({ theme }) => theme.commonColors.green};
 `;
 
+const RenderCount = () => {
+  const ref = React.useRef(1);
+  useEffect(() => {
+    ref.current++;
+  });
+  return <div>Number of re-renders {ref.current}</div>;
+};
+
+export default {
+  title: "Components/ModalWindow",
+  component: ModalWindow,
+  args: {
+    children: (
+      <StyledContainer>
+        <StyledFrame>
+          <SpeedSearchTreeSample />
+        </StyledFrame>
+      </StyledContainer>
+    ),
+    title: "Dialog title",
+  },
+  parameters: {
+    actions: { argTypesRegex: "^on((?!BoundsChanging).)*$" },
+  },
+  // argTypes: {},
+} as Meta<ModalWindowProps>;
+
 const rollbackWindowContent = (
   <>
-    <StyledContainer>
+    <StyledContainer style={{ paddingBottom: 0 }}>
       <div style={{ display: "flex" }}>
         <ActionToolbar>
           <ActionButton>
@@ -89,6 +102,7 @@ export const ControlledBounds: Story<ModalWindowProps> = (props) => {
     <ModalWindow {...props} bounds={bounds} onBoundsChange={setBounds}>
       <div style={{ padding: 16 }}>
         bounds: {JSON.stringify(bounds, null, 2)}
+        <RenderCount />
       </div>
     </ModalWindow>
   );
@@ -100,6 +114,20 @@ export const NoResize = Template.bind({});
 NoResize.args = {
   interactions: "move",
 };
+export const DefaultSize = Template.bind({});
+DefaultSize.args = {
+  defaultBounds: { width: 300, height: 300 },
+};
+
+export const DefaultPosition = Template.bind({});
+DefaultPosition.args = {
+  defaultBounds: { left: 100, top: 100 },
+};
+
+export const DefaultSizeAndPosition = Template.bind({});
+DefaultSizeAndPosition.args = {
+  defaultBounds: { left: 100, top: 100, width: 300, height: 300 },
+};
 
 export const NoInteraction = Template.bind({});
 NoInteraction.args = {
@@ -107,12 +135,12 @@ NoInteraction.args = {
 };
 
 export const LimitedMovement: Story<
-  Omit<ModalWindowProps, "interceptInteraction"> & { containerBounds: Bounds }
+  Omit<ModalWindowProps, "onBoundsChanging"> & { containerBounds: Bounds }
 > = ({ containerBounds, ...props }) => (
   <>
     <ModalWindow
       {...props}
-      interceptInteraction={containedWithin(containerBounds)}
+      onBoundsChanging={containedWithin(containerBounds)}
     />
     <div
       style={{
@@ -135,18 +163,33 @@ LimitedMovement.args = {
 
 const NestedWindowExample = () => {
   const [open, setOpen] = useState(false);
-  const [bounds, setBounds] = useState(getDefaultBounds(200, 200));
+  const close = () => setOpen(false);
   return (
     <div style={{ padding: "1rem" }}>
       <Button onPress={() => setOpen(true)}>Open another window</Button>
       {open && (
         <ModalWindow
           title="Nested window"
-          onClose={() => setOpen(false)}
-          bounds={bounds}
-          onBoundsChange={setBounds}
+          minWidth="content"
+          onClose={close}
+          footer={
+            <WindowLayout.Footer
+              right={
+                <>
+                  <Button autoFocus onPress={close}>
+                    Cancel
+                  </Button>
+                  <Button variant="default" onPress={close}>
+                    OK
+                  </Button>
+                </>
+              }
+            />
+          }
         >
-          {" "}
+          <StyledContainer>
+            Press Escape or any button to close this window.
+          </StyledContainer>
         </ModalWindow>
       )}
     </div>
@@ -155,16 +198,31 @@ const NestedWindowExample = () => {
 export const Nested = Template.bind({});
 Nested.args = {
   children: <NestedWindowExample />,
+  minWidth: window.innerWidth / 3,
+  minHeight: window.innerHeight / 3,
 };
 
 export const MinSize = Template.bind({});
 
 MinSize.args = {
-  minWidth: getDefaultBounds().width,
-  minHeight: getDefaultBounds().height,
+  minWidth: 300,
+  minHeight: 200,
   children: (
     <div style={{ padding: 16 }}>
-      Minimum size is set to the default size. You can resize to a bigger size.
+      Minimum size is set to 300x200 pixels. You can resize to a bigger size.
+    </div>
+  ),
+};
+export const MinSizeContent = Template.bind({});
+
+MinSizeContent.args = {
+  minWidth: "content",
+  minHeight: "content",
+  children: (
+    <div style={{ padding: 16, outline: "none" }} contentEditable>
+      Window Content. Window Content. Window Content. <br />
+      Window Content. Window Content. Window Content. <br />
+      Window Content. Window Content. Window Content.
     </div>
   ),
 };
@@ -173,9 +231,9 @@ export const WithTallFooter = Template.bind({});
 
 WithTallFooter.args = {
   minHeight: 200,
+  minWidth: 275,
   title: "Rollback Changes",
   children: rollbackWindowContent,
-  defaultBounds: getDefaultBounds(400, 500),
   footer: (
     <>
       <div
@@ -205,7 +263,6 @@ export const WithFooter = Template.bind({});
 WithFooter.args = {
   footer: (
     <WindowLayout.Footer
-      hasBorder
       left={
         <>
           <Button variant="icon">?</Button>

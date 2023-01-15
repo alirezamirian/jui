@@ -12,14 +12,16 @@ import { styled } from "@intellij-platform/core/styled";
 import { WINDOW_SHADOW } from "@intellij-platform/core/style-constants";
 import { mergeProps } from "@react-aria/utils";
 import {
-  Bounds,
-  useResizableMovableOverlay,
   OverlayInteractionHandler,
   OverlayMoveHandle,
   OverlayResizeHandles,
+  ResizableMovableOverlayOptions,
+  useResizableMovableOverlay,
 } from "@intellij-platform/core/Overlay";
 
-export interface ModalWindowProps extends AriaDialogProps {
+export interface ModalWindowProps
+  extends AriaDialogProps,
+    ResizableMovableOverlayOptions {
   children: React.ReactNode;
   title: React.ReactNode; // Maybe string here since it's a special case in the original impl, where title is OS-handled and can only be a string
   /**
@@ -28,24 +30,6 @@ export interface ModalWindowProps extends AriaDialogProps {
    */
   footer?: React.ReactNode;
   onClose?: () => void;
-  /**
-   * @default "all"
-   */
-  interactions?: "all" | "move" | "none";
-  defaultBounds?: Bounds;
-  bounds?: Bounds;
-  onBoundsChange?: (bounds: Bounds) => void;
-  minWidth?: number;
-  minHeight?: number;
-  /**
-   * For performance reason, window bounds is kept in a local state during a resize or move interaction, and
-   * `onBoundsChange` is called once at the end of interaction. `interceptInteraction` gives a chance of rectifying
-   * bounds changes during an interaction to for example apply custom size/placement constraints.
-   */
-  interceptInteraction?: (
-    newBounds: Bounds,
-    interactionType: "move" | "resize"
-  ) => Bounds;
 }
 
 const StyledWindowTitle = styled.h1`
@@ -64,7 +48,7 @@ const StyledWindowUnderlay = styled.div`
   inset: 0;
 `;
 const StyledWindowContainer = styled.div`
-  position: absolute;
+  position: fixed;
   // not checked if there should be a better substitute for * in the following colors. Maybe "Component"?
   background-color: ${({ theme }) => theme.color("*.background")};
   color: ${({ theme }) => theme.color("*.foreground")};
@@ -94,9 +78,14 @@ const StyledWindowFooter = styled.div`
   min-height: min-content;
 `;
 
+export const DEFAULT_WINDOW_MIN_WIDTH = 50;
+export const DEFAULT_WINDOW_MIN_HEIGHT = 24;
+
 export const ModalWindowInner = ({
   interactions = "all",
   footer,
+  minWidth = DEFAULT_WINDOW_MIN_WIDTH,
+  minHeight = DEFAULT_WINDOW_MIN_HEIGHT,
   ...props
 }: ModalWindowProps): React.ReactElement => {
   const { title, children } = props;
@@ -117,8 +106,8 @@ export const ModalWindowInner = ({
 
   const { dialogProps, titleProps } = useDialog(props, ref);
 
-  const { bounds, overlayInteractionHandlerProps } =
-    useResizableMovableOverlay(props);
+  const { bounds: style, overlayInteractionHandlerProps } =
+    useResizableMovableOverlay(ref, { ...props, minHeight, minWidth });
 
   const renderTitle = (otherProps: HTMLAttributes<HTMLElement> = {}) => (
     <StyledWindowTitle {...mergeProps(titleProps, otherProps)}>
@@ -131,8 +120,7 @@ export const ModalWindowInner = ({
       <OverlayInteractionHandler {...overlayInteractionHandlerProps}>
         <FocusScope contain restoreFocus autoFocus>
           <StyledWindowContainer
-            {...mergeProps(overlayProps, dialogProps, modalProps)}
-            style={bounds}
+            {...mergeProps(overlayProps, dialogProps, modalProps, { style })}
             ref={ref}
           >
             <StyledWindowInnerContainer>
@@ -148,12 +136,7 @@ export const ModalWindowInner = ({
               </StyledWindowContentWrapper>
               {footer && <StyledWindowFooter>{footer}</StyledWindowFooter>}
             </StyledWindowInnerContainer>
-            {interactions === "all" && (
-              <OverlayResizeHandles
-                minWidth={props.minWidth ?? 100}
-                minHeight={props.minHeight ?? 40}
-              />
-            )}
+            {interactions === "all" && <OverlayResizeHandles />}
           </StyledWindowContainer>
         </FocusScope>
       </OverlayInteractionHandler>
@@ -177,7 +160,6 @@ export const ModalWindowInner = ({
  * overlay container could be extracted into a component which is then used to create custom resizable/movable overlay
  * dialogs, like "Branches", or "Search Everywhere".
  *
- * TODO: support sizing the window based on minimum/natural size the content requires.
  * TODO: show close button (maybe os-aware styles?)
  * TODO: imperative API for opening a stack of windows (it may be not needed)
  *
