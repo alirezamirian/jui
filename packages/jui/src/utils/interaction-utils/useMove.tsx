@@ -51,6 +51,10 @@ export function useMove<S>({
 
   const onMouseDown = (event: React.MouseEvent) => {
     disableTextSelection();
+    if (event.button !== 0) {
+      restoreTextSelection();
+      return;
+    }
     const from = { x: event.pageX, y: event.pageY };
     let dragStarted = false;
     let startState: S;
