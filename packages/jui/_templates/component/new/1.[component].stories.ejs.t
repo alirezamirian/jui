@@ -12,7 +12,7 @@ export default {
 
   },
   argTypes: { },
-} as Meta;
+} as Meta<<%= componentName %>Props>;
 
 const Template: Story<<%= componentName %>Props> = (props) => {
   return <<%= componentName %> {...props} />;
