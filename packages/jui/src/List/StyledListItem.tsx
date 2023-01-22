@@ -43,7 +43,8 @@ export const StyledListItem = styled.li<StyledListItemProps>(
       position: "relative",
       display: "flex",
       whiteSpace: "nowrap",
-      paddingLeft: 8, // themed?
+      paddingLeft: "0.5rem", // themed?
+      paddingRight: "0.5rem", // themed?
       lineHeight: "20px",
       outline: "none",
       cursor: "default",

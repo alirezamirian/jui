@@ -23,6 +23,7 @@ export interface ToolWindowHeaderProps
 const StyledToolWindowHeader = styled.div<{ active: boolean }>`
   display: flex;
   align-items: center;
+  justify-content: end; // to have the content overflow from right, as the toolwindow shrinks. That will keep the left-most buttons in the view
   padding: 0 2px 0 4px;
   overflow: hidden; // for the negative margin applied on StyledToolWindowHeaderActions
   border-bottom: 1px solid

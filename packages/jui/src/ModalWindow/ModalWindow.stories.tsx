@@ -54,6 +54,7 @@ export default {
     title: "Dialog title",
   },
   parameters: {
+    // Excluding onBoundsChanging for story performance only
     actions: { argTypesRegex: "^on((?!BoundsChanging).)*$" },
   },
   // argTypes: {},
