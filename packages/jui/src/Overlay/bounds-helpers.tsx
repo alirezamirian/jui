@@ -103,25 +103,19 @@ export const position =
 
 export function ensureInViewport(
   bounds: Bounds,
-  { gap = 5 }: { gap?: number } = {}
+  { gap = 0 }: { gap?: number } = {}
 ): Bounds {
   const viewportWidth = window.innerWidth - gap;
   const viewportHeight = window.innerHeight - gap;
-  const distanceToRightEdge = viewportWidth - (bounds.left + bounds.width);
-  const distanceToBottomEdge = viewportHeight - (bounds.top + bounds.height);
-  if (distanceToRightEdge < 0 || distanceToBottomEdge < 0) {
+  const left = clamp(gap, viewportWidth - bounds.width, bounds.left);
+  const top = clamp(gap, viewportHeight - bounds.height, bounds.top);
+  if (left !== bounds.left || top !== bounds.top) {
     return {
-      left: bounds.left + Math.min(distanceToRightEdge, 0),
-      top: bounds.top + Math.min(distanceToBottomEdge, 0),
-      width: bounds.width,
-      height: bounds.height,
-    };
-  } else {
-    return {
-      left: Math.max(bounds.left, 0),
-      top: Math.max(bounds.top, 0),
+      left,
+      top,
       width: bounds.width,
       height: bounds.height,
     };
   }
+  return bounds;
 }

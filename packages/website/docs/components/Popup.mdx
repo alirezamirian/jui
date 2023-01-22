@@ -1,0 +1,98 @@
+---
+---
+
+import { ApiDescription } from "@site/src/components/ApiDescription";
+import { EmbeddedStory } from "@site/src/components/EmbeddedStory";
+import { Popup, PopupOnTrigger } from "@intellij-platform/core";
+
+# Popup
+
+### Features
+
+- Sizing based on content
+- Resizable and movable (by dragging header)
+- Connected to, and positioned by a trigger, or positioned in center otherwise.
+- Layout with Header, Content and Hint
+
+### Live example
+
+```jsx live themed
+// import { PopupOnTrigger, Popup, Button } from "@intellij-platform/core";
+
+<PopupOnTrigger
+  trigger={<Button>Open popup</Button>}
+  interactions="move" // Other values: "all", "none"
+  placement="bottom" // Other values: "top"
+  nonDismissable={false} // Other values: true
+  allowScroll="auto" // Other values: false, true
+>
+  <Popup.Layout
+    header={<Popup.Header>Header</Popup.Header>}
+    content={
+      <div style={{ padding: "0.5rem" }}>
+        Popup Content. Popup Content. Popup Content. <br />
+        Popup Content. Popup Content. Popup Content. <br />
+        Popup Content. Popup Content. Popup Content. <br />
+      </div>
+    }
+    footer={<Popup.Hint>Hint text</Popup.Hint>}
+  />
+</PopupOnTrigger>
+```
+
+## Popup
+
+<ApiDescription of={Popup} />
+
+## PopupOnTrigger
+
+<ApiDescription of={PopupOnTrigger} />
+
+## Popup Content
+
+### Popup.Layout
+
+<ApiDescription of={Popup.Layout} />
+
+```tsx
+<Popup>
+  <Popup.Layout
+    header={<Popup.Header>Header</Popup.Header>}
+    content={<>...</>}
+    footer={<Popup.Hint>Hint text</Popup.Hint>}
+  />
+</Popup>
+```
+
+### Popup.Header
+
+<ApiDescription of={Popup.Header} />
+
+```tsx
+<Popup>
+  <Popup.Layout header={<Popup.Header>Header</Popup.Header>} />
+</Popup>
+```
+
+#### Custom header
+
+By default, Popup header is a simple centered title. But more complex cases can be handled by just rendering a custom
+UI inside the header, without any specific support for those variations, from `Popup.Header`:
+
+<EmbeddedStory storyId="components-popup--custom-header" height={350} />
+
+Note how anywhere on the header, except for the action button, can still be used to move the Popup.
+
+### Hint
+
+Use `Popup.Hint` to render a hint (aka Advertiser) in Popup's footer.
+
+```tsx
+<Popup>
+  <Popup.Layout footer={<Popup.Hint>Hint text</Popup.Hint>} />
+</Popup>
+```
+
+## Sizing and positioning
+
+TODO

@@ -77,6 +77,7 @@ export const ActionButton = React.forwardRef(function ActionButton(
   const ref = useObjectRef(forwardedRef);
   const { focusableProps } = useFocusable({ isDisabled }, ref);
   const { pressProps, isPressed } = usePress({
+    ref,
     isPressed: isPressedInput,
     isDisabled,
     onPress,

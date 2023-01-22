@@ -13,6 +13,7 @@
     "**/*.cy-test.tsx",
     "src/ForwardRefPatch.d.ts",
     "cypress/cypress-plugin-snapshots-types.d.ts",
-    "cypress/cypress.d.ts"
+    "cypress/cypress.d.ts",
+    "cypress/support/*.ts"
   ]
 }
