@@ -23,6 +23,9 @@ export type OverlayInteractionHandlerProps = {
    * Signals end of a UI interaction.
    */
   finishInteraction: () => void;
+
+  minWidth?: number;
+  minHeight?: number;
 };
 
 const OverlayInteractionHandlerContext =

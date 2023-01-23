@@ -41,10 +41,7 @@ export function OverlayResizeHandles(props: OverlayResizeHandlesProps) {
  * overlay resizing logic and state. When resizing is in progress, the source of truth is a local state, for performance
  * reasons. When the resize is done (e.g. by mouse being released), `onBoundsChange` is called with the new bounds.
  */
-function useOverlayResizer({
-  minWidth = 1,
-  minHeight = 1,
-}: OverlayResizeHandlesProps = {}) {
+function useOverlayResizer(props: OverlayResizeHandlesProps = {}) {
   const initialBoundsRef = useRef<Bounds>({
     top: 0,
     height: 0,
@@ -52,6 +49,10 @@ function useOverlayResizer({
     left: 0,
   });
   const interactionHandler = useOverlayInteractionHandler();
+  const {
+    minWidth = interactionHandler?.minWidth ?? 1,
+    minHeight = interactionHandler?.minHeight ?? 1,
+  } = props;
   if (!interactionHandler) {
     return null;
   }

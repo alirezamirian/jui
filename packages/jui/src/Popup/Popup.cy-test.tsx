@@ -126,16 +126,22 @@ describe("Popup", () => {
       );
     });
 
-    it.skip("reduces the size to minWidth when mouse jumps passed that size", () => {
-      // FIXME
+    it("reduces the size to minWidth when mouse jumps passed that size", () => {
+      const onBoundsChanging = cy.stub();
       cy.mount(
         <Default
           minWidth={130}
-          defaultBounds={{ width: 150 }}
+          defaultBounds={{ left: 50, top: 150, width: 150, height: 100 }}
+          onBoundsChanging={onBoundsChanging}
           interactions="all"
         />
       );
       cy.get("#popup").resize("right", -40).invoke("width").should("eq", 130);
+      cy.wrap(onBoundsChanging).should(
+        "be.calledOnceWith",
+        Cypress.sinon.match({ left: 50, top: 150, width: 130, height: 100 }),
+        "resize"
+      );
     });
 
     it("supports moving the popup by dragging the header", () => {

@@ -151,14 +151,7 @@ export function useResizableMovableOverlay(
     },
     updateBounds: (updatedBounds) => {
       setCurrentInteraction((currentInteraction) => {
-        if (
-          currentInteraction &&
-          // FIXME: this way of checking on min size in resize interactions is prone to a UX issue, where fast
-          //  mouse movement doesn't resize to minimum size. We should keep minWidth and minHeight in the context
-          //  and read it in resize handler instead of this. minWidth and maxWidth props can still be kept on the
-          //  resize handler to override the values from the context, if needed. Or maybe they can be removed.
-          applyMinSize(updatedBounds) === updatedBounds
-        ) {
+        if (currentInteraction) {
           const { type } = currentInteraction;
           return {
             type,
@@ -174,6 +167,8 @@ export function useResizableMovableOverlay(
       }
       setCurrentInteraction(null);
     },
+    minWidth: effectiveMinWidth,
+    minHeight: effectiveMinHeight,
   };
 
   const partialBounds = currentInteraction?.bounds ?? bounds;
