@@ -26,10 +26,11 @@ export const StyledMenuItem = styled.li<{
   ${({ isActive, theme }) =>
     isActive &&
     css`
-      background: ${theme.color(
-        "MenuItem.selectionBackground" as UnknownThemeProp<"MenuItem.selectionBackground">
+      background: ${theme.asCurrentForeground(
+        theme.color(
+          "MenuItem.selectionBackground" as UnknownThemeProp<"MenuItem.selectionBackground">
+        )
       )};
-      color: ${undefined};
     `}
   // would be nice to have a visual clue for focus visible state, but it's not like that in intellij platform
   //border-left: 3px solid transparent;

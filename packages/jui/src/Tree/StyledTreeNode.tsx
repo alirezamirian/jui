@@ -20,12 +20,11 @@ export const StyledTreeNode = styled(StyledListItem).attrs({ as: "div" })<{
         );
     if (selected) {
       if (containerFocused) {
-        color =
+        color = theme.asCurrentForeground(
           theme.color(
             "Tree.selectionForeground" as UnknownThemeProp<"Tree.selectionForeground">
-          ) ||
-          theme.commonColors
-            .labelSelectedForeground /* Prioritizing "*.selectionForeground" over labelSelectedForeground*/;
+          ) || theme.commonColors.labelSelectedForeground
+        ) /* Prioritizing "*.selectionForeground" over labelSelectedForeground*/;
         backgroundColor = theme.color(
           "Tree.selectionBackground" as UnknownThemeProp<"Tree.selectionBackground">
         );

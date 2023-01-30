@@ -204,6 +204,7 @@ const ToggleWrapper: React.FC<{
   const toggleIcon = (
     <StyledToggleIconContainer>
       <AutoHoverPlatformIcon
+        hoverContainerSelector={`${Component}`}
         icon={`ide/notification/${iconName}.svg`}
         className="icon"
       />

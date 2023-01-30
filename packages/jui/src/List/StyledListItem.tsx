@@ -18,12 +18,11 @@ export const StyledListItem = styled.li<StyledListItemProps>(
         );
     if (selected) {
       if (containerFocused) {
-        color =
+        color = theme.asCurrentForeground(
           theme.color(
             "List.selectionForeground" as UnknownThemeProp<"List.selectionForeground">
-          ) ||
-          theme.commonColors
-            .labelSelectedForeground /* Prioritizing "*.selectionForeground" over labelSelectedForeground*/;
+          ) || theme.commonColors.labelSelectedForeground
+        ) /* Prioritizing "*.selectionForeground" over labelSelectedForeground*/;
         backgroundColor = theme.color(
           "List.selectionBackground" as UnknownThemeProp<"List.selectionBackground">
         );
