@@ -85,7 +85,7 @@ export function TreeNode<T>({
           value={{
             isDisabled,
             isSelected,
-            isFocused: containerFocused,
+            isContainerFocused: containerFocused,
             node: item,
           }}
         >

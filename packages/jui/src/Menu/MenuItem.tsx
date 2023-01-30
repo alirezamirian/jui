@@ -125,6 +125,7 @@ export function MenuItem<T>({
     },
   });
 
+  const isContainerFocused = state.selectionManager.isFocused || isExpanded;
   return (
     <>
       <StyledMenuItem
@@ -144,7 +145,12 @@ export function MenuItem<T>({
           </StyledSelectedMark>
         )}
         <ItemStateContext.Provider
-          value={{ isDisabled, isFocused, isSelected, node: item }}
+          value={{
+            isDisabled,
+            isContainerFocused: isContainerFocused,
+            isSelected,
+            node: item,
+          }}
         >
           {typeof item.rendered === "string" ? (
             <StyledMenuItemText>{item.rendered}</StyledMenuItemText>

@@ -126,7 +126,7 @@ const FileTreeFileNodeText = ({
   node: FileTreeFileNode;
 }): React.ReactElement => {
   const state = useContext(ItemStateContext);
-  return state?.isSelected && state?.isFocused ? (
+  return state?.isSelected && state?.isContainerFocused ? (
     <HighlightedTextValue />
   ) : (
     <FileStatusColor filepath={node.path}>

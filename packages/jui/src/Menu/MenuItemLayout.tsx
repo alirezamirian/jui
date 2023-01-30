@@ -43,7 +43,7 @@ export const MenuItemLayout = ({
   shortcut,
   icon,
 }: MenuItemLayoutProps) => {
-  const { isFocused, isSelected } = useContextOrThrow(
+  const { isContainerFocused, isSelected } = useContextOrThrow(
     ItemStateContext,
     "MenuItemLayout is meant to be rendered in Item component in Menus"
   );
@@ -51,7 +51,9 @@ export const MenuItemLayout = ({
     <StyledMenuItemLayout>
       <Icon>{!isSelected && icon}</Icon>
       <Content>{content}</Content>
-      {shortcut && <Shortcut selected={isFocused}>{shortcut}</Shortcut>}
+      {shortcut && (
+        <Shortcut selected={isContainerFocused}>{shortcut}</Shortcut>
+      )}
     </StyledMenuItemLayout>
   );
 };

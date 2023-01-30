@@ -9,7 +9,7 @@ import { Node } from "@react-types/shared";
 export interface ItemStateContextType {
   node: Node<unknown>;
   isSelected: boolean;
-  isFocused: boolean;
+  isContainerFocused: boolean;
   isDisabled: boolean;
 }
 

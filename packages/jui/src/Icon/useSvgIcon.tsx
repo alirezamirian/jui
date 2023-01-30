@@ -14,7 +14,7 @@ export function useSvgIcon(
 ) {
   const theme = useTheme();
   const itemState = useContext(ItemStateContext);
-  const selected = itemState?.isSelected || itemState?.isFocused;
+  const selected = itemState?.isSelected || itemState?.isContainerFocused;
   useEffect(() => {
     let unmounted = false;
     const fetchIcon = async () => {
