@@ -6,8 +6,8 @@ import { useTheme } from "styled-components";
 
 import vsCodeTheme from "../resources/dracula-color-theme.json"; // FIXME: don't read a fixed color scheme
 
-const darculaColorSchemeTokenRules: editor.ITokenThemeRule[] = vsCodeTheme.tokenColors.flatMap(
-  ({ scope, settings }) =>
+const darculaColorSchemeTokenRules: editor.ITokenThemeRule[] =
+  vsCodeTheme.tokenColors.flatMap(({ scope, settings }) =>
     ([] as string[])
       .concat(scope)
       .flatMap((scope) => scope.split(" "))
@@ -23,7 +23,7 @@ const darculaColorSchemeTokenRules: editor.ITokenThemeRule[] = vsCodeTheme.token
         });
         return values;
       })
-);
+  );
 
 export const useEditorTheme = () => {
   const monaco = useMonaco();

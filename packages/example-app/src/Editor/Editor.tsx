@@ -9,6 +9,10 @@ export const StyledEditor = styled(MonacoEditor)`
       text-align: left;
       padding-left: 7px;
     }
+
+    .scrollbar .slider {
+      border-radius: 0.25rem;
+    }
   }
 `;
 /**
@@ -30,9 +34,14 @@ export const Editor = (props: Omit<EditorProps, "theme">) => {
         lineHeight: 20,
         showFoldingControls: "always",
         renderIndentGuides: true,
+        overviewRulerBorder: false,
         scrollbar: {
-          verticalScrollbarSize: 10,
-          verticalSliderSize: 7,
+          verticalScrollbarSize: 14,
+          horizontalScrollbarSize: 8,
+          verticalSliderSize: 8,
+          horizontalSliderSize: 8,
+          horizontal: "auto",
+          vertical: "visible",
           alwaysConsumeMouseWheel: false, // to let example-app be rendered as a part of a page.
         },
         ...props.options,
