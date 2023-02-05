@@ -49,7 +49,9 @@ export class TreeCollection<T> extends _TreeCollection<T> {
 }
 export interface TreeProps<T>
   extends _TreeProps<T>,
-    CollectionCacheInvalidationProps {}
+    CollectionCacheInvalidationProps {
+  childExpansionBehaviour?: "multi" | "single";
+}
 /**
  * Provides state management for tree-like components. Handles building a collection
  * of items from props, item expanded state, and manages multiple selection state.
@@ -71,7 +73,7 @@ export interface TreeProps<T>
  *   instead of the more generic `Collection`.
  */
 export function useTreeState<T extends object>(
-  props: TreeProps<T>,
+  { childExpansionBehaviour = "multi", ...props }: TreeProps<T>,
   treeRef?: ForwardedRef<TreeRefValue>
 ): TreeState<T> {
   let [expandedKeys, setExpandedKeys] = useControlledState(
@@ -117,22 +119,37 @@ export function useTreeState<T extends object>(
     }
   }, [tree, selectionState.focusedKey]);
 
-  const onToggle = (key: Key) => {
-    // @ts-expect-error: callback syntax is not officially supported by @react-stately/utils.
-    // more info: https://github.com/adobe/react-spectrum/issues/2320
-    // But we rely on it in Menu, because of how it's implemented currently. Alternative solutions to Menu's problem:
-    // - Expose setExpandedKeys to let Menu not just toggle keys, but to collapse some item and expand another in one go.
-    // - Add an option for collapsing same level items when an item is being toggled open. (menu/accordion behavior)
-    setExpandedKeys((expandedKeys) =>
-      toggleTreeNode(tree as Collection<Node<T>>, expandedKeys, key)
+  const toggleKey = (key: Key) => {
+    let newExpandedKeys = toggleTreeNode(
+      tree as Collection<Node<T>>,
+      expandedKeys,
+      key
     );
+    if (childExpansionBehaviour === "single") {
+      const parentKey = tree.getItem(key)?.parentKey;
+      const expandedSiblings = (
+        parentKey
+          ? [...(tree.getItem(parentKey)?.childNodes || [])].map(
+              ({ key }) => key
+            )
+          : tree.rootKeys
+      ).filter((aKey) => aKey !== key && expandedKeys.has(aKey));
+      newExpandedKeys = expandedSiblings.reduce((expandedKeys, expandedKey) => {
+        return toggleTreeNode(
+          tree as Collection<Node<T>>,
+          expandedKeys,
+          expandedKey
+        );
+      }, newExpandedKeys);
+    }
+    setExpandedKeys(newExpandedKeys);
   };
 
   return {
     collection: tree as Collection<Node<T>>,
     expandedKeys,
     disabledKeys,
-    toggleKey: onToggle,
+    toggleKey,
     selectionManager,
   };
 }
@@ -141,6 +158,10 @@ function toggleTreeNode(
   expandedKeys: Set<Key>,
   key: Key
 ): Set<Key> {
+  // toggling a non-expandable node should be no-op
+  if (!expandedKeys.has(key) && !tree.getItem(key).hasChildNodes) {
+    return expandedKeys;
+  }
   const newKeys = toggleKey(expandedKeys, key);
   // In Intellij impl, when a node is collapsed, all descendants are also collapsed. In other words, keys that are
   // not a part of the list of visible nodes, will be excluded from the expanded keys, with the toggle action.

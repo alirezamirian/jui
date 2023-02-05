@@ -1,20 +1,21 @@
-import { styled } from "@intellij-platform/core/styled";
-import React, { Key } from "react";
+import React from "react";
 import { useMenuSection } from "@react-aria/menu";
-import { MenuItem } from "@intellij-platform/core/Menu/MenuItem";
 import { Node } from "@react-types/shared";
 import { TreeState } from "@react-stately/tree";
+import { styled } from "@intellij-platform/core/styled";
+
+import { renderMenuNode } from "./renderMenuNode";
 
 export interface MenuSectionProps<T> {
   item: Node<T>;
   state: TreeState<T>;
-  onAction?: (key: Key) => void;
-  expandOn?: "hover" | "press";
 }
 
 const StyledMenuHeading = styled.li`
   cursor: default;
   padding: 2px 0 2px 12px;
+  font-weight: bold;
+  font-size: 0.8125rem;
   color: ${({ theme }) =>
     theme.color(
       "MenuItem.disabledForeground"
@@ -29,8 +30,6 @@ const StyledMenuSectionItemsContainer = styled.ul`
 export const MenuSection = <T extends unknown>({
   item,
   state,
-  onAction,
-  expandOn,
 }: MenuSectionProps<T>): React.ReactElement => {
   let { itemProps, headingProps, groupProps } = useMenuSection({
     heading: item.rendered,
@@ -46,17 +45,7 @@ export const MenuSection = <T extends unknown>({
           </StyledMenuHeading>
         )}
         <StyledMenuSectionItemsContainer {...groupProps}>
-          {[...item.childNodes].map((node) => {
-            return (
-              <MenuItem
-                key={node.key}
-                item={node}
-                state={state}
-                onAction={onAction}
-                expandOn={expandOn}
-              />
-            );
-          })}
+          {[...item.childNodes].map((node) => renderMenuNode(state, node))}
         </StyledMenuSectionItemsContainer>
       </li>
     </>
