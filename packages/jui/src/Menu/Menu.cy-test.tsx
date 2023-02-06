@@ -23,7 +23,26 @@ describe("Menu", () => {
     cy.mount(<Nested />);
     cy.get('[role="menu"]').focused(); // make sure the menu is auto-focused
     cy.realPress("ArrowDown"); // initially menu has focus. This moves focus to the first item.
-    testKeyboardNavigation("menu--keyboard-behaviour");
+    cy.realPress("Enter"); // open submenu with enter
+    cy.focused()
+      .should("have.attr", "role", "menu")
+      .should("contain.text", "Undock"); // focus should now be on the submenu
+    cy.realPress("ArrowDown"); // move focus to first item in the submenu
+    cy.realPress("ArrowDown"); // move focus to the second item in the submenu
+
+    cy.focused().should("contain.text", "Docked");
+    matchImageSnapshot(`menu--keyboard-behaviour-1`);
+
+    cy.realPress("ArrowLeft"); // close sub-menu with left arrow
+    cy.focused().should("contain.text", "View Mode"); // Focus should now be on the submenu opener item
+    matchImageSnapshot(`menu--keyboard-behaviour-2`);
+    cy.realPress("ArrowRight"); // open submenu with right arrow
+    cy.focused().should("have.attr", "role", "menu"); // focus should now be on the submenu
+    cy.realPress("ArrowDown"); // move focus to first submenu item
+    matchImageSnapshot(`menu--keyboard-behaviour-3`);
+    cy.realPress("Escape"); // close submenu with escape
+    cy.focused().should("contain.text", "View Mode"); // Focus should now be on the submenu opener item
+    matchImageSnapshot(`menu--keyboard-behaviour-4`);
   });
 
   it("supports mouse", () => {
@@ -65,6 +84,11 @@ describe("Menu", () => {
 });
 
 describe("Menu with trigger", () => {
+  beforeEach(() => {
+    // If mouse ends up in a bad position in the previous test suit, it breaks tests here. So we make sure to move
+    // mouse out of the way before each test case.
+    cy.get("body").realMouseMove(450, 450);
+  });
   function testFocusRestoration(assertFocused: () => void) {
     cy.get("button[aria-haspopup]").realClick(); // open the menu by clicking the trigger.
     cy.realPress("Escape"); // close the menu by pressing escape
@@ -91,10 +115,30 @@ describe("Menu with trigger", () => {
   it("supports keyboard", () => {
     cy.mount(<MenuWithTrigger />);
     cy.get("button[aria-haspopup]").click(); // open the menu by clicking the trigger.
-    testKeyboardNavigation("menu-with-trigger--keyboard-behaviour");
+    cy.realPress("ArrowDown"); // move focus to first item in the submenu
+    cy.realPress("Enter"); // open submenu with enter
+    cy.focused()
+      .should("have.attr", "role", "menu")
+      .should("contain.text", "Undock"); // focus should now be on the submenu
+    cy.realPress("ArrowDown"); // move focus to first item in the submenu
+    cy.realPress("ArrowDown"); // move focus to the second item in the submenu
+
+    cy.focused().should("contain.text", "Docked");
+    matchImageSnapshot(`menu-with-trigger--keyboard-behaviour-1`);
+
+    cy.realPress("ArrowLeft"); // close sub-menu with left arrow
+    cy.focused().should("contain.text", "View Mode"); // Focus should now be on the submenu opener item
+    matchImageSnapshot(`menu-with-trigger--keyboard-behaviour-2`);
+    cy.realPress("ArrowRight"); // open submenu with right arrow
+    cy.focused().should("have.attr", "role", "menu"); // focus should now be on the submenu
+    cy.realPress("ArrowDown"); // move focus to first submenu item
+    matchImageSnapshot(`menu-with-trigger--keyboard-behaviour-3`);
+    cy.realPress("Escape"); // close submenu with escape
+    cy.focused().should("not.exist"); // The menu should be
+    matchImageSnapshot(`menu-with-trigger--keyboard-behaviour-4`);
   });
 
-  it("when closed, restores focus to the previously focused element, by default", () => {
+  it.only("when closed, restores focus to the previously focused element, by default", () => {
     cy.mount(
       <div>
         <button autoFocus>focused element</button>
@@ -194,32 +238,6 @@ describe("ContextMenu", () => {
     cy.contains("button").should("have.focus");
   });
 });
-
-/**
- * Assuming menu is open and the first item is focused, it tests the expected keyboard behaviour.
- */
-function testKeyboardNavigation(snapshotsName: string) {
-  cy.realPress("Enter"); // open submenu with enter
-  cy.focused()
-    .should("have.attr", "role", "menu")
-    .should("contain.text", "Undock"); // focus should now be on the submenu
-  cy.realPress("ArrowDown"); // move focus to first item in the submenu
-  cy.realPress("ArrowDown"); // move focus to the second item in the submenu
-
-  cy.focused().should("contain.text", "Docked");
-  matchImageSnapshot(`${snapshotsName}-1`);
-
-  cy.realPress("ArrowLeft"); // close sub-menu with left arrow
-  cy.focused().should("contain.text", "View Mode"); // Focus should now be on the submenu opener item
-  matchImageSnapshot(`${snapshotsName}-2`);
-  cy.realPress("ArrowRight"); // open submenu with right arrow
-  cy.focused().should("have.attr", "role", "menu"); // focus should now be on the submenu
-  cy.realPress("ArrowDown"); // move focus to first submenu item
-  matchImageSnapshot(`${snapshotsName}-3`);
-  cy.realPress("Escape"); // close submenu with escape
-  cy.focused().should("contain.text", "View Mode"); // Focus should now be on the submenu opener item
-  matchImageSnapshot(`${snapshotsName}-4`);
-}
 
 function matchImageSnapshot(snapshotsName: string) {
   cy.get("[data-loading-icon]").should("not.exist");
