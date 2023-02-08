@@ -119,7 +119,13 @@ export function Menu<T extends object>({
     }
   }, [props.autoFocus]);
   return (
-    // TODO: explain why we need a context
+    /**
+     * MenuContext is used to pass onAction and onClose to be passed to useMenu in submenus.
+     * That's needed because in useMenuItem onAction and onClose are read off a WeakMap which has the menu state
+     * (TreeState) as key. So we have to pass onAction and onClose everytime we call useMenu in submenus, to let the
+     * menu items in that submenu access the right value of onAction and onClose. To avoid drilling these props down,
+     * we keep it in a context.
+     */
     <MenuContext.Provider
       value={{
         onAction,
