@@ -1,4 +1,4 @@
-import React, { Key, useContext, useEffect } from "react";
+import React, { Key, useContext } from "react";
 import { useMenu } from "@react-aria/menu";
 import { AriaMenuProps } from "@react-types/menu";
 import { Node } from "@react-types/shared";
@@ -29,6 +29,18 @@ export interface MenuProps<T>
    * @deprecated
    */
   expandOn?: "hover" | "press"; // hover delay doesn't seem to be needed as an option
+
+  /**
+   * Defines the press behaviour (either by mouse or by pressing Enter when focused) on menu items with submenu.
+   * By default (undefined), pressing or hovering over a menu item with submenu, opens the submenu.
+   * When set to "toggle", pressing a menu item with submenu will toggle the submenu. Hovering over such items will
+   * no longer open the submenu.
+   * When set to "action", pressing a menu item with submenu will call onAction for that item, and closes the menu.
+   * Hovering over such items will no longer open the submenu.
+   *
+   * In all cases, pressing the right arrow will always open the submenu.
+   */
+  submenuBehavior?: "default" | "toggleOnPress" | "actionOnPress";
 }
 
 /**
@@ -50,12 +62,12 @@ export interface MenuProps<T>
  */
 export const MenuOverlayContext = React.createContext({ close: () => {} });
 export const MenuContext = React.createContext<
-  Pick<MenuProps<unknown>, "onClose" | "onAction">
+  Pick<MenuProps<unknown>, "onClose" | "onAction" | "submenuBehavior">
 >({});
 
 /**
  * UI for menus which are normally shown in a popover. Being rendered as an overlay is not handled here.
- * Also there is no coupling with any higher level entity like "Action", since this is just for the UI layer.
+ * Also, there is no coupling with any higher level entity like "Action", since this is just for the UI layer.
  * Something like ActionMenu which creates a menu out of a list of actions can be implemented on top of this.
  *
  * @example
@@ -77,6 +89,7 @@ export const MenuContext = React.createContext<
  */
 export function Menu<T extends object>({
   onAction: onActionProp,
+  submenuBehavior = "default",
   ...props
 }: MenuProps<T>) {
   const { close } = useContext(MenuOverlayContext);
@@ -90,7 +103,9 @@ export function Menu<T extends object>({
       // covered nested menus.
       !state.collection.getItem(key)?.hasChildNodes
     ) {
-      // close();
+      return onActionProp?.(key);
+    } else if (submenuBehavior === "actionOnPress") {
+      onClose();
       return onActionProp?.(key);
     }
   };
@@ -109,15 +124,6 @@ export function Menu<T extends object>({
   const ref = React.useRef<HTMLUListElement>(null);
   const { menuProps } = useMenu({ ...props, onAction, onClose }, state, ref);
 
-  useEffect(() => {
-    if (props.autoFocus) {
-      setTimeout(() => {
-        // we need this hack until the nested menu is properly supported. That's because when the element is hovered
-        // it sets the focus key, which will move focus to that item.
-        ref.current?.focus();
-      });
-    }
-  }, [props.autoFocus]);
   return (
     /**
      * MenuContext is used to pass onAction and onClose to be passed to useMenu in submenus.
@@ -128,6 +134,7 @@ export function Menu<T extends object>({
      */
     <MenuContext.Provider
       value={{
+        submenuBehavior,
         onAction,
         onClose,
       }}

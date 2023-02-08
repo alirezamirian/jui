@@ -18,7 +18,7 @@ export function Submenu<T>({
 }) {
   const ref = useRef<HTMLUListElement>(null);
   const state = useSubmenuState(parentState);
-  const parentMenuProps = useContext(MenuContext);
+  const { submenuBehavior, ...parentMenuProps } = useContext(MenuContext);
 
   const rootItem = state.collection.getItem(rootKey);
   let { menuProps } = useMenu(
@@ -39,6 +39,21 @@ export function Submenu<T>({
   );
   const { submenuProps } = useSubmenu({ rootKey }, parentState, ref);
 
+  const submenuBehaviorProps = {
+    onKeyDown: (e: React.KeyboardEvent) => {
+      if (e.key === "Escape") {
+        // Close the menu and submenu root node.
+        state.toggleKey(rootKey);
+        state.selectionManager.setFocusedKey(rootKey);
+        parentState.selectionManager.setFocused(true);
+        if (submenuBehavior !== "default") {
+          e.stopPropagation();
+        }
+        return;
+      }
+    },
+  };
+
   useEffect(() => {
     setTimeout(() => {
       // we need this hack until the nested menu is properly supported. That's because when the element is hovered
@@ -48,7 +63,10 @@ export function Submenu<T>({
   }, []);
 
   return (
-    <StyledMenu {...mergeProps(menuProps, submenuProps)} ref={ref}>
+    <StyledMenu
+      {...mergeProps(menuProps, submenuProps, submenuBehaviorProps)}
+      ref={ref}
+    >
       {[...(rootKey ? rootItem?.childNodes || [] : state.collection)].map(
         (node: Node<T>) => renderMenuNode(state, node)
       )}

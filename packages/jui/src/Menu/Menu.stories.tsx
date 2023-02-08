@@ -6,18 +6,89 @@ import { ActionToolbar } from "../ActionToolbar/ActionToolbar";
 import { Divider, DividerItem } from "../Collections/Divider";
 import { PlatformIcon } from "../Icon";
 import { styledComponentsControlsExclude } from "../story-helpers";
-import { Menu } from "./Menu";
+import { Menu, MenuProps } from "./Menu";
 import { MenuItemLayout } from "./MenuItemLayout";
 import { MenuTrigger, MenuTriggerProps } from "./MenuTrigger";
 import { ContextMenuContainer, styled } from "@intellij-platform/core";
 
+type MenuItem =
+  | {
+      title: string;
+      icon?: string;
+      shortcut?: string;
+      subItems?: MenuItem[];
+    }
+  | DividerItem;
+const viewModeItems: Array<MenuItem> = [
+  {
+    title: "Undock",
+  },
+  {
+    title: "Docked",
+    subItems: [
+      {
+        title: "Pinned",
+      },
+      {
+        title: "UnPinned",
+      },
+    ],
+  },
+  {
+    title: "Float",
+  },
+  {
+    title: "Window",
+  },
+];
+const items: Array<MenuItem> = [
+  {
+    title: "View Mode",
+    subItems: viewModeItems,
+  },
+  new DividerItem(),
+  {
+    title: "Group tabs",
+    icon: "toolwindows/documentation",
+  },
+];
+
+const renderItem = (item: MenuItem) => {
+  if (item instanceof DividerItem) {
+    return <Divider key={item.key} />;
+  }
+  return (
+    <Item key={item.title} textValue={item.title} childItems={item.subItems}>
+      <MenuItemLayout
+        icon={item.icon && <PlatformIcon icon={item.icon} />}
+        content={item.title}
+        shortcut={item.shortcut}
+      />
+    </Item>
+  );
+};
+
 export default {
   title: "Components/Menu",
+  component: Menu,
   parameters: {
     controls: { exclude: styledComponentsControlsExclude },
-    component: Menu, // doesn't work for some reason.
   },
-} as Meta;
+  args: {
+    items,
+    children: renderItem,
+    onAction: (key) => {
+      alert(`action: ${key}`);
+    },
+    onClose: () => {
+      console.log("close");
+    },
+  },
+} as Meta<MenuProps<unknown>>;
+
+const Template: Story<MenuProps<MenuItem>> = (props: MenuProps<MenuItem>) => (
+  <Menu {...props} />
+);
 
 export const Static: Story = () => {
   return (
@@ -76,55 +147,12 @@ export const StaticWithTextItems: Story = () => (
     </Item>
   </Menu>
 );
-type MenuItem =
-  | {
-      title: string;
-      icon?: string;
-      shortcut?: string;
-      subItems?: MenuItem[];
-    }
-  | DividerItem;
-const viewModeItems: Array<MenuItem> = [
-  {
-    title: "Undock",
-  },
-  {
-    title: "Docked",
-    subItems: [
-      {
-        title: "Pinned",
-      },
-      {
-        title: "UnPinned",
-      },
-    ],
-  },
 
-  {
-    title: "Float",
-  },
-  {
-    title: "Window",
-  },
-];
-const items: Array<MenuItem> = [
-  {
-    title: "View Mode",
-    subItems: viewModeItems,
-  },
-  new DividerItem(),
-  {
-    title: "Group tabs",
-    icon: "toolwindows/documentation",
-  },
-];
+export const Nested = Template.bind(null);
 
-export const Nested: Story = () => {
-  return (
-    <Menu items={items} selectedKeys={["Pinned"]} autoFocus>
-      {renderItem}
-    </Menu>
-  );
+Nested.args = {
+  items,
+  disabledKeys: ["Float"],
 };
 
 export const Position = ({ offsetRight = 230 }: { offsetRight: number }) => {
@@ -135,12 +163,28 @@ export const Position = ({ offsetRight = 230 }: { offsetRight: number }) => {
   );
 };
 
+export const ToggleSubmenuOnPress = Template.bind(null);
+ToggleSubmenuOnPress.args = {
+  submenuBehavior: "toggleOnPress",
+};
+
+export const SubmenuWithAction = Template.bind(null);
+SubmenuWithAction.args = {
+  submenuBehavior: "actionOnPress",
+};
+
 export const MenuWithTrigger: Story<
   {
     offsetRight?: number;
     offsetBottom?: number;
+    menuProps: Partial<MenuProps<any>>;
   } & Pick<MenuTriggerProps, "preventFocusOnPress" | "restoreFocus">
-> = ({ offsetRight, offsetBottom, ...otherProps }) => {
+> = ({
+  offsetRight,
+  offsetBottom,
+  menuProps: otherMenuProps,
+  ...otherProps
+}) => {
   return (
     <div
       style={{
@@ -160,9 +204,11 @@ export const MenuWithTrigger: Story<
           renderMenu={({ menuProps }) => (
             <Menu
               items={items}
+              disabledKeys={["Float"]}
               {...menuProps}
+              {...otherMenuProps}
               onAction={(key) => {
-                console.log(key);
+                console.log("onAction", key);
               }}
             >
               {renderItem}
@@ -239,18 +285,4 @@ export const ContextMenu: Story<{ children?: ReactNode }> = ({ children }) => {
 };
 ContextMenu.parameters = {
   layout: "fullscreen",
-};
-const renderItem = (item: MenuItem) => {
-  if (item instanceof DividerItem) {
-    return <Divider key={item.key} />;
-  }
-  return (
-    <Item key={item.title} childItems={item.subItems}>
-      <MenuItemLayout
-        icon={item.icon && <PlatformIcon icon={item.icon} />}
-        content={item.title}
-        shortcut={item.shortcut}
-      />
-    </Item>
-  );
 };

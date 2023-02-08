@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { useHover } from "@react-aria/interactions";
+import React, { HTMLAttributes, useContext } from "react";
+import { useHover, usePress } from "@react-aria/interactions";
 import { useMenuItem } from "@react-aria/menu";
 import { OverlayContainer, useOverlayPosition } from "@react-aria/overlays";
 import { mergeProps } from "@react-aria/utils";
@@ -59,7 +59,7 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
   const isExpanded = state.expandedKeys.has(item.key);
   const isSelected = state.selectionManager.selectedKeys.has(item.key);
   const isFocused = state.selectionManager.focusedKey === item.key;
-  const { onClose } = useContext(MenuContext);
+  const { onClose, submenuBehavior } = useContext(MenuContext);
 
   const { menuItemProps } = useMenuItem(
     {
@@ -73,17 +73,30 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
   );
 
   const { hoverProps } = useHover({
-    isDisabled: isDisabled,
+    isDisabled: isDisabled || submenuBehavior !== "default",
     onHoverStart: () => {
       if (!isExpanded) {
         state.toggleKey(item.key);
       }
     },
   });
+  const { pressProps: togglePressProps } = usePress({
+    isDisabled: isDisabled,
+    onPressUp: (e) => {
+      state.toggleKey(item.key);
+      if (isExpanded) {
+        // submenu was expanded and is closed now. moving focus back to the parent item
+        state.selectionManager.setFocusedKey(item.key);
+      }
+    },
+  });
 
   const keyboardProps = {
     onKeyDown: (e: React.KeyboardEvent) => {
-      if (["ArrowRight", "Enter", " "].includes(e.key)) {
+      if (
+        submenuBehavior !== "actionOnPress" &&
+        ["ArrowRight", "Enter", " "].includes(e.key)
+      ) {
         state.toggleKey(item.key);
         e.stopPropagation();
         return;
@@ -102,10 +115,26 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
     isOpen: isExpanded,
   });
 
+  const arrowProps: HTMLAttributes<HTMLElement> =
+    submenuBehavior !== "default"
+      ? {
+          role: "button",
+          "aria-label": "Open",
+          ...mergeProps(togglePressProps, {
+            // to prevent pointer up event handler on the item, which would trigger action.
+            onPointerUp: (e: React.PointerEvent) => e.stopPropagation(),
+          }),
+        }
+      : {};
   return (
     <>
       <StyledMenuItem
-        {...mergeProps(menuItemProps, hoverProps, keyboardProps)}
+        {...mergeProps(
+          menuItemProps,
+          hoverProps,
+          keyboardProps,
+          submenuBehavior === "toggleOnPress" ? togglePressProps : {}
+        )}
         isDisabled={isDisabled}
         isActive={isFocused || isExpanded}
         ref={ref}
@@ -135,7 +164,7 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
           )}
         </ItemStateContext.Provider>
         {item.hasChildNodes && (
-          <StyledNestedArrow>
+          <StyledNestedArrow {...arrowProps}>
             <StyledMenuItemPlatformIcon icon="icons/ide/menuArrow" />
           </StyledNestedArrow>
         )}
