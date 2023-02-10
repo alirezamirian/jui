@@ -29,11 +29,13 @@ const viewModeItems: Array<MenuItem> = [
       {
         title: "Pinned",
       },
+      new DividerItem(),
       {
         title: "UnPinned",
       },
     ],
   },
+  new DividerItem(),
   {
     title: "Float",
   },
@@ -107,7 +109,7 @@ export const Static: Story = () => {
           shortcut={"⌘C"}
         />
       </Item>
-      <Item textValue="Paste">
+      <Item textValue="Paste" key="Paste">
         <MenuItemLayout
           icon={<PlatformIcon icon={"actions/menu-paste"} />}
           content="Paste"

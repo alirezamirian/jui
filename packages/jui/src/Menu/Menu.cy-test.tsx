@@ -1,8 +1,16 @@
 import { composeStories } from "@storybook/testing-react";
 import * as React from "react";
 import * as stories from "./Menu.stories";
-import { Item, Menu, Theme, ThemeProvider } from "@intellij-platform/core";
+import {
+  Divider,
+  Item,
+  Menu,
+  MenuItemLayout,
+  Theme,
+  ThemeProvider,
+} from "@intellij-platform/core";
 import darculaThemeJson from "../../themes/darcula.theme.json";
+import { Section } from "@react-stately/collections";
 
 const {
   Nested,
@@ -120,6 +128,31 @@ describe("Menu", () => {
     cy.realPress("Enter");
     cy.wrap(onAction).should("be.calledOnceWith", "Group tabs");
     cy.wrap(onClose).should("be.calledOnce");
+  });
+
+  it("supports any sections and dividers inside nested menus", () => {
+    cy.mount(
+      <Menu aria-label="Nested menu with sections and dividers">
+        <Section title="Section 1">
+          <Item
+            textValue="Item 1-1"
+            title={<MenuItemLayout content="Item 1-1" />}
+          >
+            <Item>Item 1-2</Item>
+            <Divider />
+            <Item title="Item 1-3">
+              <Item>Item 1-3.1</Item>
+              <Divider />
+              <Item>Item 1-3.2</Item>
+              <Item>Item 1-3.3</Item>
+            </Item>
+            <Item>Item 1-4</Item>
+          </Item>
+        </Section>
+      </Menu>
+    );
+    cy.findByRole("menuitem", { name: "Item 1-1" }).realHover();
+    cy.findByRole("menuitem", { name: "Item 1-3" }).realHover();
   });
 
   describe("submenuBehavior=toggleOnPress", () => {

@@ -5,6 +5,7 @@ import { Node } from "@react-types/shared";
 import { useTreeState } from "../Tree/useTreeState"; // shared dependency between tree and menu, that could be lifted up import {Submenu} from '@intellij-platform/core/Menu/Submenu'
 import { renderMenuNode } from "./renderMenuNode";
 import { StyledMenu } from "./StyledMenu";
+import { patchCollectionProps } from "@intellij-platform/core/Collections/PatchedItem"; // internal export
 
 export interface MenuProps<T>
   extends Omit<
@@ -92,6 +93,7 @@ export function Menu<T extends object>({
   submenuBehavior = "default",
   ...props
 }: MenuProps<T>) {
+  props = patchCollectionProps(props);
   const { close } = useContext(MenuOverlayContext);
   const onClose = () => {
     props.onClose?.();
