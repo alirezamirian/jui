@@ -126,14 +126,9 @@ export function useTreeState<T extends object>(
       key
     );
     if (childExpansionBehaviour === "single") {
-      const parentKey = tree.getItem(key)?.parentKey;
-      const expandedSiblings = (
-        parentKey
-          ? [...(tree.getItem(parentKey)?.childNodes || [])].map(
-              ({ key }) => key
-            )
-          : tree.rootKeys
-      ).filter((aKey) => aKey !== key && expandedKeys.has(aKey));
+      const expandedSiblings = getSiblings(tree, key).filter(
+        (aKey) => aKey !== key && expandedKeys.has(aKey)
+      );
       newExpandedKeys = expandedSiblings.reduce((expandedKeys, expandedKey) => {
         return toggleTreeNode(
           tree as Collection<Node<T>>,
@@ -152,6 +147,50 @@ export function useTreeState<T extends object>(
     toggleKey,
     selectionManager,
   };
+}
+
+function getChildItems<T>(node: Node<T>): Node<T>[] {
+  const childNodes = [...(node.childNodes || [])];
+  const childItems = childNodes.filter(({ type }) => type === "item");
+  const sectionItems = childNodes.filter(({ type }) => type === "section");
+
+  return childItems.concat(sectionItems.flatMap(getChildItems));
+}
+
+/**
+ * Returns the siblings of an item in tree, ignoring sections.
+ * Disclaimer: The code is done quick and dirty and in a rush. Unpleasant code, good candidate for refactoring :D
+ */
+function getSiblings(tree: TreeCollection<unknown>, key: Key): Key[] {
+  const parentKey = tree.getItem(key)?.parentKey;
+  if (!parentKey) {
+    return [...tree.rootKeys].concat(
+      tree.rootKeys
+        .map((key) => tree.getItem(key))
+        .filter(notNull)
+        .flatMap(getChildItems)
+        .map(({ key }) => key)
+    );
+  }
+  let parent = parentKey ? tree.getItem(parentKey) : null;
+  if (parent?.type === "item") {
+    return getChildItems(parent).map(({ key }) => key);
+  }
+  const siblings: Key[] = [];
+  while (parent) {
+    siblings.push(...getChildItems(parent).map(({ key }) => key));
+    if (parent.type === "section") {
+      if (parent.parentKey) {
+        parent = tree.getItem(parent.parentKey);
+      } else {
+        siblings.push(...tree.rootKeys);
+        parent = null;
+      }
+    } else {
+      parent = null;
+    }
+  }
+  return siblings;
 }
 function toggleTreeNode(
   tree: Collection<Node<unknown>>,

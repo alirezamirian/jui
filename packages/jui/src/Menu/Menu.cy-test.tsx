@@ -155,6 +155,32 @@ describe("Menu", () => {
     cy.findByRole("menuitem", { name: "Item 1-3" }).realHover();
   });
 
+  it("submenu is closed when sibling items in are hovered, in a section", () => {
+    cy.mount(
+      <Menu aria-label="Nested menu with sections and dividers">
+        <Section title="Section 1">
+          <Item
+            textValue="Section 1 - Item 1"
+            title={<MenuItemLayout content="Section 1 - Item 1" />}
+          >
+            <Item>Section 1 - Item 1-1</Item>
+          </Item>
+          <Item>Section 1 - Item 2</Item>
+        </Section>
+        <Item>Item 2</Item>
+      </Menu>
+    );
+    cy.findByRole("menuitem", { name: "Section 1 - Item 1" }).realHover(); // let the submenu open
+    // Hovering an item within the same section, should close the submenu
+    cy.findByRole("menuitem", { name: "Section 1 - Item 2" }).realHover();
+    cy.findAllByRole("menu").should("have.length", 1);
+
+    cy.findByRole("menuitem", { name: "Section 1 - Item 1" }).realHover(); // let the submenu open
+    // Hovering an item outside the section
+    cy.findByRole("menuitem", { name: "Item 2" }).realHover();
+    cy.findAllByRole("menu").should("have.length", 1);
+  });
+
   describe("submenuBehavior=toggleOnPress", () => {
     it("doesn't open the submenu on hover, when submenuBehavior is toggleOnPress", () => {
       cy.mount(<ToggleSubmenuOnPress />);
