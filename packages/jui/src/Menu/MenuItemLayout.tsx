@@ -1,7 +1,6 @@
 import React from "react";
 import { ItemStateContext } from "../Collections/ItemStateContext";
 import { styled } from "../styled";
-import { UnknownThemeProp } from "../Theme/Theme";
 import { useContextOrThrow } from "../utils/useContextOrThrow";
 
 interface MenuItemLayoutProps {
@@ -26,16 +25,14 @@ const Icon = styled.span`
   margin-left: -21px;
 `;
 
-const Shortcut = styled.kbd<{ selected: boolean }>`
+const Shortcut = styled.kbd`
   font-family: system-ui, sans-serif;
   margin-left: 30px;
   margin-right: -0.625rem;
-  color: ${({ theme, selected }) =>
-    selected
-      ? theme.color(
-          "MenuItem.selectionForeground" as UnknownThemeProp<"MenuItem.selectionForeground">
-        )
-      : theme.color("MenuItem.acceleratorForeground")};
+  color: ${({ theme }) =>
+    theme.currentForegroundAware(
+      theme.color("MenuItem.acceleratorForeground")
+    )};
 `;
 
 export const MenuItemLayout = ({
@@ -43,7 +40,7 @@ export const MenuItemLayout = ({
   shortcut,
   icon,
 }: MenuItemLayoutProps) => {
-  const { isContainerFocused, isSelected } = useContextOrThrow(
+  const { isSelected } = useContextOrThrow(
     ItemStateContext,
     "MenuItemLayout is meant to be rendered in Item component in Menus"
   );
@@ -51,9 +48,7 @@ export const MenuItemLayout = ({
     <StyledMenuItemLayout>
       <Icon>{!isSelected && icon}</Icon>
       <Content>{content}</Content>
-      {shortcut && (
-        <Shortcut selected={isContainerFocused}>{shortcut}</Shortcut>
-      )}
+      {shortcut && <Shortcut>{shortcut}</Shortcut>}
     </StyledMenuItemLayout>
   );
 };

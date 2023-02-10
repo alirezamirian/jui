@@ -15,8 +15,10 @@ export const StyledMenuItem = styled.li<{
       return theme.color("MenuItem.disabledForeground");
     }
     if (isActive) {
-      return theme.color(
-        "MenuItem.selectionForeground" as UnknownThemeProp<"MenuItem.selectionForeground">
+      return theme.asCurrentForeground(
+        theme.color(
+          "MenuItem.selectionForeground" as UnknownThemeProp<"MenuItem.selectionForeground">
+        )
       );
     }
     return theme.color(
@@ -26,10 +28,8 @@ export const StyledMenuItem = styled.li<{
   ${({ isActive, theme }) =>
     isActive &&
     css`
-      background: ${theme.asCurrentForeground(
-        theme.color(
-          "MenuItem.selectionBackground" as UnknownThemeProp<"MenuItem.selectionBackground">
-        )
+      background: ${theme.color(
+        "MenuItem.selectionBackground" as UnknownThemeProp<"MenuItem.selectionBackground">
       )};
     `}
   // would be nice to have a visual clue for focus visible state, but it's not like that in intellij platform
