@@ -1,6 +1,6 @@
 import React, { ForwardedRef, RefObject, useEffect, useState } from "react";
 import { DOMProps } from "@react-types/shared";
-import { useFocusWithin } from "@react-aria/interactions";
+import { useFocusWithin, useInteractOutside } from "@react-aria/interactions";
 import { useFocusable } from "@react-aria/focus";
 import { Overlay, useOverlay, usePreventScroll } from "@react-aria/overlays";
 import { filterDOMProps, useObjectRef } from "@react-aria/utils";
@@ -87,22 +87,37 @@ export const _Popup = (
   forwardedRef: ForwardedRef<HTMLDivElement>
 ): JSX.Element => {
   const ref = useObjectRef<HTMLDivElement>(forwardedRef);
+  const shouldCloseOnInteractOutside = (element: Element) => {
+    return !positioning?.targetRef.current?.contains(element);
+  };
   const { overlayProps } = useOverlay(
     {
       isOpen: true, // FIXME?
       onClose,
       shouldCloseOnBlur: !nonDismissable,
-      shouldCloseOnInteractOutside: (element) =>
-        !positioning?.targetRef.current?.contains(element),
-      /**
-       * NOTE: passing isDismissable sets up useInteractOutside handlers that call preventDefault and stopPropagation
-       *  on press events, which prevents focus from going to elements outside the popup. It doesn't seem necessary
-       *  tho, because shouldCloseOnBlur seems to cover interaction outside, because Popup loses focus on interaction
-       *  outside.
-       */
+      shouldCloseOnInteractOutside,
     },
     ref
   );
+  // Passing isDismissable to useOverlay also utilizes useInteractOutside and closes the overlay, but it calls
+  // preventDefault() and stopPropagation() on the event, which prevents focus from going to elements outside the popup.
+  // Not sure why they do this in react-aria, but it seems we are better off not using that option and using
+  // useInteractOutside directly here like this:
+  useInteractOutside({
+    ref,
+    onInteractOutsideStart: (e) => {
+      if (
+        !ref.current?.contains(document.activeElement) && // If we are focused, shouldCloseOnBlur will call onClose.
+        !nonDismissable &&
+        shouldCloseOnInteractOutside(e.target as Element)
+      ) {
+        onClose();
+      }
+    },
+    // onInteractOutsideStart will not be called if onInteractOutside is not passed!
+    onInteractOutside: () => {},
+  });
+
   usePreventScroll({
     isDisabled: allowScroll === "auto" ? !positioning : allowScroll,
   });

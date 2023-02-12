@@ -219,9 +219,11 @@ describe("Popup", () => {
 
   it("calls onClose when Escape is pressed", () => {
     const onClose = cy.stub();
-    cy.mount(<Default onClose={onClose} />);
+    cy.mount(<Default onClose={onClose} id="popup" />);
+    cy.get("#popup").focus();
     cy.realPress("Escape");
-    cy.mount(<Default onClose={onClose} nonDismissable />);
+    cy.mount(<Default onClose={onClose} id="popup" nonDismissable />);
+    cy.get("#popup").focus();
     cy.realPress("Escape");
     // Regardless of nonDismissable, pressing Escape should always close the popup
     cy.wrap(onClose).should("be.calledTwice");
