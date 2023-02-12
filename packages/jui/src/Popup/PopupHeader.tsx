@@ -17,6 +17,7 @@ const StyledPopupHeader = styled.div<{
   height: ${({ hasControls }) => hasControls && "1.75rem"};
   cursor: default;
   white-space: nowrap;
+  padding: 0 0.5rem; // not checked with original impl
   color: ${({ theme, active }) =>
     active
       ? theme.color(
