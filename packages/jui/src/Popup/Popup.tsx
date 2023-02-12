@@ -108,7 +108,12 @@ export const _Popup = (
   });
 
   const { bounds, positioned, overlayInteractionHandlerProps } =
-    useResizableMovableOverlay(ref, { ...props, minWidth, minHeight });
+    useResizableMovableOverlay(ref, {
+      ...props,
+      minWidth,
+      minHeight,
+      observeContentResize: true,
+    });
   const positionedBounds =
     positioning?.targetRef.current && !positioned
       ? pipe(

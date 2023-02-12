@@ -62,6 +62,13 @@ export interface ResizableMovableOverlayOptions {
    * @default "all"
    */
   interactions?: "all" | "move" | "none"; // FIXME: it's not used in useResizableMovableOverlay, maybe separate props?
+
+  /**
+   * When the size is not specified by `bounds` or `defaultBounds` props, the content size is measured and used in the
+   * returned bounds. By default, the content size is measured initially. If `observeContentSize` is true, the DOM
+   * mutations will be observed and the content is re-measured as changes are observed.
+   */
+  observeContentResize?: boolean;
 }
 /**
  *
@@ -85,6 +92,7 @@ export function useResizableMovableOverlay(
     onBoundsChanging = (i) => i,
     minWidth,
     minHeight,
+    observeContentResize,
   }: ResizableMovableOverlayOptions
 ): {
   /**
@@ -120,7 +128,9 @@ export function useResizableMovableOverlay(
       reason: "resize" | "move"
     ) => void
   );
-  const [contentSize] = useContentSize(overlayRef);
+  const [contentSize] = useContentSize(overlayRef, {
+    observe: observeContentResize,
+  });
   // local state of bounds for when the overlay is in a UI interaction, like movement or resize with mouse.
   // We don't want to update the state in the higher levels repeatedly in such transactions, and we just want to
   // trigger on update when the UI interaction is done.

@@ -1,4 +1,5 @@
-import { RefObject, useLayoutEffect, useState } from "react";
+import { RefObject, useEffect, useLayoutEffect, useState } from "react";
+import { useDebouncedCallback } from "@intellij-platform/core/utils/useDebounce";
 
 const withTemporaryStyle =
   <T extends any>(
@@ -32,7 +33,19 @@ export const getContentSize = withTemporaryStyle(
   })
 );
 
-export const useContentSize = (ref: RefObject<HTMLElement>) => {
+export const useContentSize = (
+  ref: RefObject<HTMLElement>,
+  {
+    observe = false,
+  }: {
+    /**
+     * if false, the content size is measured only initially. If true, the dom changes are observed, and content size
+     * is updated accordingly.
+     * @default false
+     */
+    observe?: boolean;
+  } = {}
+) => {
   const [measuredSizes, setMeasuredSizes] = useState<Size[]>([]);
   useLayoutEffect(() => {
     const element = ref.current;
@@ -60,6 +73,23 @@ export const useContentSize = (ref: RefObject<HTMLElement>) => {
       setMeasuredSizes([]); // or should we set to last measured size?
     }
   };
+  const debouncedMeasure = useDebouncedCallback(measure);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (observe && element) {
+      const mutationObserver = new MutationObserver(() => {
+        debouncedMeasure();
+      });
+      mutationObserver.observe(element, {
+        subtree: true,
+        childList: true,
+      });
+      return () => {
+        mutationObserver.disconnect();
+      };
+    }
+  }, [observe]);
   return [measuredSizes.at(-1) || { width: 0, height: 0 }, measure] as const;
 };
 
