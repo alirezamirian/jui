@@ -44,6 +44,23 @@ const TestThemeProvider = ({
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 };
 
+const originalDispatchEvent = window.dispatchEvent;
+
+Cypress.Screenshot.defaults({
+  onBeforeScreenshot: () => {
+    window.dispatchEvent = (e) => {
+      console.log(
+        "Ignored event dispatched during snapshot testing. That's to prevent overlays from getting closed on scroll event",
+        e
+      );
+      return false;
+    };
+  },
+  onAfterScreenshot: () => {
+    window.dispatchEvent = originalDispatchEvent;
+  },
+});
+
 Cypress.Commands.add(
   "mount",
   (
