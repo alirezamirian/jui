@@ -53,13 +53,14 @@ export const PopupHeader = ({
   children?: React.ReactNode;
   hasControls?: boolean;
 }) => {
-  const { isActive, movable } = useContext(PopupContext);
+  const { isActive, movable, titleProps } = useContext(PopupContext);
   return movable ? (
     <OverlayMoveHandle>
       {({ moveHandleProps }) => (
         <StyledPopupHeader
           active={isActive}
           hasControls={hasControls}
+          {...titleProps} // probably don't need to merge props
           {...moveHandleProps}
         >
           {children}

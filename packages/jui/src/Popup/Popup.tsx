@@ -1,4 +1,4 @@
-import React, { ForwardedRef, RefObject, useEffect, useState } from "react";
+import React, { ForwardedRef, RefObject, useState } from "react";
 import { DOMProps } from "@react-types/shared";
 import { useFocusWithin, useInteractOutside } from "@react-aria/interactions";
 import { useFocusable } from "@react-aria/focus";
@@ -18,6 +18,7 @@ import { styled } from "@intellij-platform/core/styled";
 import { WINDOW_SHADOW } from "@intellij-platform/core/style-constants";
 import { mergeNonNullProps } from "@intellij-platform/core/utils/mergeNonNullProps";
 
+import { useDialog } from "./_useDialog";
 import { PopupHeader } from "./PopupHeader";
 import { PopupContext } from "./PopupContext";
 import { PopupLayout } from "./PopupLayout";
@@ -150,19 +151,8 @@ export const _Popup = (
     },
     ref
   );
-  // FIXME: This messes with autofocus content, and removing it leaves the popup not-focused, if there is no autofocus
-  //  content. There might be some other API in react-aria for autofocus overlays.
-  //  ALSO: panel should delegate focus to the first focusable element, similar to tool windows. it should not be
-  //  focusable itself, when there is a focusable child.
-  // TODO: Cover these with test
-  useEffect(() => {
-    if (
-      !document.activeElement ||
-      !ref.current?.contains(document.activeElement)
-    ) {
-      ref.current?.focus();
-    }
-  }, []);
+
+  const { dialogProps, titleProps } = useDialog(props, ref);
 
   /**
    * A hook like useOverlayStack or useOverlayZIndex can be introduced which would handle focus/blur, and return/set
@@ -184,11 +174,16 @@ export const _Popup = (
             focusWithinProps,
             focusableProps,
             overlayProps,
+            dialogProps,
             filterDOMProps(props)
           )}
         >
           <PopupContext.Provider
-            value={{ isActive, movable: interactions !== "none" }}
+            value={{
+              isActive,
+              movable: interactions !== "none",
+              titleProps,
+            }}
           >
             <StyledInnerContainer>{props.children}</StyledInnerContainer>
             {interactions === "all" && <OverlayResizeHandles />}

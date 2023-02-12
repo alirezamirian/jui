@@ -5,7 +5,7 @@ import { Button } from "@intellij-platform/core/Button";
 import * as stories from "./PopupOnTrigger.stories";
 import { PopupOnTrigger } from "./PopupOnTrigger";
 
-const { Positioning } = composeStories(stories);
+const { Positioning, Default, MenuContent } = composeStories(stories);
 
 describe("PopupOnTrigger", () => {
   describe("positioning", () => {
@@ -74,6 +74,21 @@ describe("PopupOnTrigger", () => {
         cy.wrap(left).should("eq", 100);
         cy.wrap(top).should("eq", 50);
       });
+    });
+  });
+
+  describe("focus behavior", () => {
+    it("autofocuses the popup container if there is no autofocus element in the content", () => {
+      cy.mount(<Default data-testid="popup" />);
+      cy.findByRole("button", { expanded: false }).click();
+      cy.findByTestId("popup").should("have.focus");
+    });
+
+    it("doesn't change the focus if there is an autofocus element in the content", () => {
+      cy.mount(<MenuContent data-testid="popup" />);
+      cy.findByRole("button", { expanded: false }).click();
+      cy.findByTestId("popup").should("not.have.focus");
+      cy.findByRole("menu").should("have.focus");
     });
   });
 

@@ -32,6 +32,19 @@ describe("Popup", () => {
     });
   });
 
+  describe("focus behavior", () => {
+    it("autofocuses the popup container if there is no autofocus element in the content", () => {
+      cy.mount(<Default data-testid="popup" />);
+      cy.findByTestId("popup").should("have.focus");
+    });
+
+    it("doesn't change the focus if there is an autofocus element in the content", () => {
+      cy.mount(<MenuContent data-testid="popup" />);
+      cy.findByTestId("popup").should("not.have.focus");
+      cy.findByRole("menu").should("have.focus");
+    });
+  });
+
   describe("interactions", function () {
     it("supports resizing from left", () => {
       const onBoundsChange = cy.stub();

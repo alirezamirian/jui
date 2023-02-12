@@ -42,6 +42,8 @@ const Template: Story<PopupOnTriggerProps> = (props) => {
   return <PopupOnTrigger {...props} />;
 };
 
+export const Default = Template.bind(null);
+
 export const Positioning: Story<PopupOnTriggerProps> = ({
   trigger,
   ...props
