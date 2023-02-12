@@ -22,7 +22,7 @@ function TreeActionButtons() {
       {actions.map((action) => (
         <Button
           key={action.id}
-          onPress={action?.actionPerformed}
+          onPress={() => action?.actionPerformed()}
           preventFocusOnPress
         >
           {action?.title} {action.shortcut && <span>({action.shortcut})</span>}

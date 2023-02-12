@@ -1,5 +1,5 @@
-import {mergeProps} from '@react-aria/utils'
-import {filter} from 'ramda'
+import { mergeProps } from "@react-aria/utils";
+import { filter } from "ramda";
 
 /**
  * Like mergeProps, but doesn't merge props where value is null or undefined. That's needed because useFocusable (and

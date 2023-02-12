@@ -46,26 +46,29 @@ PatchedSection.getCollectionNode = function getCollectionNode<T>(
   return patchCollectionItem(Section.getCollectionNode(props, context));
 };
 function convertCollectionElement<T>(
-  result: CollectionElement<T>
+  result: CollectionElement<T> | React.ReactNode
 ): CollectionElement<T> {
-  if (result.type === Item || result.type === Item2) {
+  if (
+    React.isValidElement(result) &&
+    (result.type === Item || result.type === Item2)
+  ) {
     return React.createElement(
       PatchedItem,
       {
         key: result.key != null ? result.key : undefined,
-        ...result.props,
+        ...(result.props as ItemProps<T>),
       },
       convertChildren(result.props.children)
     ) as CollectionElement<T>;
   }
-  if (result.type === Section) {
+  if (React.isValidElement(result) && result.type === Section) {
     return React.createElement(
       PatchedSection,
       {
         key: result.key != null ? result.key : undefined,
-        ...result.props,
+        ...(result.props as SectionProps<T>),
       } as any,
-      convertChildren(result.props.children)
+      convertChildren((result.props as any).children)
     ) as CollectionElement<T>;
   }
   return result as CollectionElement<T>;
