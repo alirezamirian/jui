@@ -87,6 +87,7 @@ MinSizeContent.args = {
       </div>
     </>
   ),
+  interactions: "all",
   minHeight: "content",
   minWidth: "content",
 };
@@ -194,5 +195,4 @@ TreeContent.args = {
 export const MenuContent = Template.bind(null);
 MenuContent.args = {
   children: menuPopupContent,
-  interactions: "move",
 };

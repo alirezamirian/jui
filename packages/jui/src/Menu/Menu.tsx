@@ -42,6 +42,11 @@ export interface MenuProps<T>
    * In all cases, pressing the right arrow will always open the submenu.
    */
   submenuBehavior?: "default" | "toggleOnPress" | "actionOnPress";
+
+  /**
+   * fills the available horizontal or vertical space, when rendered in a flex container.
+   */
+  fillAvailableSpace?: boolean;
 }
 
 /**
@@ -91,6 +96,7 @@ export const MenuContext = React.createContext<
 export function Menu<T extends object>({
   onAction: onActionProp,
   submenuBehavior = "default",
+  fillAvailableSpace = false,
   ...props
 }: MenuProps<T>) {
   props = patchCollectionProps(props);
@@ -141,7 +147,11 @@ export function Menu<T extends object>({
         onClose,
       }}
     >
-      <StyledMenu {...menuProps} ref={ref}>
+      <StyledMenu
+        {...menuProps}
+        ref={ref}
+        fillAvailableSpace={fillAvailableSpace}
+      >
         {[...state.collection].map((node: Node<T>) =>
           renderMenuNode(state, node)
         )}

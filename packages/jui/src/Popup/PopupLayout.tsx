@@ -12,6 +12,11 @@ const StyledPopupLayoutHeader = styled.div`
 const StyledPopupLayoutContent = styled.div`
   flex: 1;
   overflow: auto;
+  // Not sure about making the content area a vertical flex container, but it seemed it makes sense as default.
+  // The use case at hand where this was added was "Branches" popup, which would of course be implementable without this
+  // too, with an extra flex container around the menu.
+  display: flex;
+  flex-direction: column;
 `;
 const StyledPopupLayoutFooter = styled.div`
   flex-shrink: 0;

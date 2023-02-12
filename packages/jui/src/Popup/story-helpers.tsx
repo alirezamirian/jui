@@ -16,7 +16,7 @@ export const menuPopupContent = (
   <Popup.Layout
     header={<Popup.Header>Title</Popup.Header>}
     content={
-      <Menu autoFocus>
+      <Menu autoFocus fillAvailableSpace>
         <Item textValue="File">
           <MenuItemLayout
             icon={<PlatformIcon icon={"fileTypes/text"} />}
