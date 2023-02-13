@@ -68,7 +68,10 @@ export interface MenuProps<T>
  */
 export const MenuOverlayContext = React.createContext({ close: () => {} });
 export const MenuContext = React.createContext<
-  Pick<MenuProps<unknown>, "onClose" | "onAction" | "submenuBehavior">
+  Pick<
+    MenuProps<unknown>,
+    "onClose" | "onAction" | "submenuBehavior" | "autoFocus"
+  >
 >({});
 
 /**
@@ -143,6 +146,7 @@ export function Menu<T extends object>({
     <MenuContext.Provider
       value={{
         submenuBehavior,
+        autoFocus: props.autoFocus,
         onAction,
         onClose,
       }}

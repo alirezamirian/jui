@@ -18,7 +18,11 @@ export function Submenu<T>({
 }) {
   const ref = useRef<HTMLUListElement>(null);
   const state = useSubmenuState(parentState);
-  const { submenuBehavior, ...parentMenuProps } = useContext(MenuContext);
+  const {
+    submenuBehavior,
+    autoFocus = true,
+    ...parentMenuProps
+  } = useContext(MenuContext);
 
   const rootItem = state.collection.getItem(rootKey);
   let { menuProps } = useMenu(
@@ -32,7 +36,7 @@ export function Submenu<T>({
         state.disabledKeys,
         ref
       ),
-      autoFocus: true,
+      autoFocus,
     },
     state,
     ref

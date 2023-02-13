@@ -60,7 +60,7 @@ describe("Menu", () => {
   });
 
   it("supports mouse", () => {
-    cy.mount(<Nested />);
+    cy.mount(<Nested disabledKeys={[]} />);
     cy.get("body").click(); // This is necessary because of some implementation details of react-aria. More info in cypress/NOTES.md
     cy.get('[role="menuitem"]').contains("View Mode").realHover(); // open first submenu via hover
     cy.focused().should("have.attr", "role", "menu"); // focus should be on submenu, when opened by hover
@@ -394,7 +394,7 @@ describe("Menu with trigger", () => {
     cy.realPress("ArrowDown"); // move focus to first submenu item
     matchImageSnapshot(`menu-with-trigger--keyboard-behaviour-3`);
     cy.realPress("Escape"); // close submenu with escape
-    cy.focused().should("not.exist"); // The menu should be
+    cy.focused().should("not.exist"); // The menu should be closed
     matchImageSnapshot(`menu-with-trigger--keyboard-behaviour-4`);
   });
 
@@ -428,6 +428,8 @@ describe("Menu with trigger", () => {
 
     function openSubMenusAndSnapshotTestPosition(num: number) {
       cy.get("button[aria-haspopup]").click(); // open the menu by clicking the trigger.
+      cy.findByRole("menu").focus();
+      cy.realPress("ArrowDown"); // move focus to the first menu item
       cy.realPress("Enter"); // open submenu with enter
       cy.realPress("ArrowDown"); // move focus to the first menu item
       cy.realPress("ArrowDown"); // move focus to the first menu item
@@ -446,10 +448,7 @@ describe("ContextMenu", () => {
     cy.get("#context-menu-container").rightclick("bottomRight", {
       scrollBehavior: false,
     });
-    matchImageSnapshot(`'context-menu-opened'`);
-    cy.get("#context-menu-container").rightclick("topLeft", {
-      scrollBehavior: false,
-    });
+    matchImageSnapshot("context-menu-opened");
   });
 
   it("is closed by escape key", () => {
