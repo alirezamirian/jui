@@ -351,20 +351,21 @@ describe("Menu with trigger", () => {
     });
   });
   function testFocusRestoration(assertFocused: () => void) {
-    cy.get("button[aria-haspopup]").realClick(); // open the menu by clicking the trigger.
+    cy.get("button[aria-haspopup]").click(); // open the menu by clicking the trigger.
     cy.realPress("Escape"); // close the menu by pressing escape
     assertFocused();
 
-    cy.get("button[aria-haspopup]").realClick(); // open the menu by clicking the trigger.
+    cy.get("button[aria-haspopup]").click(); // open the menu by clicking the trigger.
     cy.get("body").click(); // close the menu by clicking outside
     assertFocused();
 
-    cy.get("button[aria-haspopup]").realClick(); // open the menu by clicking the trigger.
+    cy.get("button[aria-haspopup]").click(); // open the menu by clicking the trigger.
     cy.realPress("Enter"); // open submenu with enter
     cy.realPress("Escape"); // close the menu by pressing escape
     assertFocused();
 
-    cy.get("button[aria-haspopup]").realClick(); // open the menu by clicking the trigger.
+    cy.get("button[aria-haspopup]").click(); // open the menu by clicking the trigger.
+    cy.realPress("ArrowDown"); // move focus to the first menu item
     cy.realPress("Enter"); // open submenu with enter
     cy.realPress("ArrowDown"); // move focus to the first menu item
     cy.realPress("ArrowDown"); // move focus to the second menu item
