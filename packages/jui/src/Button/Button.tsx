@@ -47,15 +47,16 @@ const variants: { [key in ButtonVariant]: typeof StyledButton } = {
  */
 export const Button: React.FC<ButtonProps> = React.forwardRef(function Button(
   { variant, ...props }: ButtonProps,
-  ref: ForwardedRef<HTMLElement>
+  forwardedRef: ForwardedRef<HTMLButtonElement>
 ) {
-  const { buttonProps } = useButton(props, useObjectRef(ref));
+  const ref = useObjectRef(forwardedRef);
+  const { buttonProps } = useButton(props, ref);
   const domProps = filterDOMProps(props);
   const { autoFocus } = props;
 
   const Component = (variant && variants[variant]) || StyledButton;
   return (
-    <Component {...mergeProps(domProps, buttonProps, { autoFocus })}>
+    <Component {...mergeProps(domProps, buttonProps, { autoFocus })} ref={ref}>
       {props.children}
     </Component>
   );

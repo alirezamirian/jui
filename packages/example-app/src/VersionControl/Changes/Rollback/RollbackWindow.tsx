@@ -69,7 +69,9 @@ export function RollbackWindow() {
     rollbackViewState.windowBounds
   );
   const rootNodes = useRecoilValue(rollbackViewState.rootNodes);
-  const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set<Key>());
+  const [selectedKeys, setSelectedKeys] = useState<Selection>(
+    new Set<Key>(initiallyIncludedChangeKeys.slice(0, 1))
+  );
   const [expandedKeys, setExpandedKeys] =
     useState<Set<Key>>(defaultExpandedKeys);
   const [includedChangeKeys, setIncludedChangeKeys] = useState(
@@ -105,6 +107,7 @@ export function RollbackWindow() {
       bounds={windowBounds}
       onBoundsChange={setWindowBounds}
       minHeight={200}
+      minWidth={275}
       footer={
         <>
           <div

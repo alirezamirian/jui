@@ -36,6 +36,8 @@ import { useUpdateFileStatus } from "../VersionControl/file-status.state";
 import * as path from "path";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
 import { useAction } from "@intellij-platform/core";
+import { mergeProps } from "@react-aria/utils";
+import { useActivePathsProvider } from "../Project/project.state";
 
 /**
  * Used as main content in the main ToolWindows. Shows currently opened files tabs and the editor.
@@ -86,16 +88,22 @@ export const FileEditor = () => {
     }
   }, [activeTab?.filePath]);
 
+  const { activePathsProviderProps } = useActivePathsProvider([
+    activeTab.filePath,
+  ]);
+
   const content = contentLoadable.valueMaybe();
 
   return (
     <StyledFileEditorContainer
-      onFocus={() => {
-        setActive(true);
-        setEditorRef({
-          focus: () => editorRef.current?.focus(),
-        });
-      }}
+      {...mergeProps(activePathsProviderProps, {
+        onFocus: () => {
+          setActive(true);
+          setEditorRef({
+            focus: () => editorRef.current?.focus(),
+          });
+        },
+      })}
     >
       {editorStateManager.tabs.length > 0 && (
         <ContextMenuContainer

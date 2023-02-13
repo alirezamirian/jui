@@ -1,7 +1,7 @@
 import { minusculeMatch } from "./minusculeMatch";
 import { TextRange } from "./TextRange";
 
-describe("findInText", () => {
+describe("minusculeMatch", () => {
   it("finds simple matches", () => {
     const ranges = minusculeMatch("Paco de lucia", "lucia");
     expect(ranges).toEqual(createRanges("Paco de {lucia}"));
@@ -12,19 +12,37 @@ describe("findInText", () => {
     expect(ranges).toEqual(createRanges("{Paco} de lucia"));
   });
 
-  it("ignores spaces", () => {
-    const ranges = minusculeMatch("Paco de lucia", "pacode");
-    expect(ranges).toEqual(createRanges("{Paco} {de} lucia"));
+  it("ignores spaces or non-alphanumeric chars", () => {
+    expect(minusculeMatch("Paco de lucia", "pacode")).toEqual(
+      createRanges("{Paco} {de} lucia")
+    );
+    expect(minusculeMatch("Vicente-Amigo", "VicenteAm")).toEqual(
+      createRanges("{Vicente}-{Am}igo")
+    );
+    expect(minusculeMatch("Vicente_Amigo", "VicenteAm")).toEqual(
+      createRanges("{Vicente}_{Am}igo")
+    );
+    expect(minusculeMatch("Vicente.Amigo", "VicenteAm")).toEqual(
+      createRanges("{Vicente}.{Am}igo")
+    );
   });
 
-  it("works", () => {
-    let ranges = minusculeMatch("findInText.test.ts", "finittt");
+  it("matches when initial parts of words are typed", () => {
+    const ranges = minusculeMatch("myCoolFunction.test.ts", "mcofuntt");
     expect(ranges).not.toEqual(null);
-    expect(ranges).toEqual(createRanges("{fin}d{I}n{T}ext.{t}est.{t}s"));
+    expect(ranges).toEqual(createRanges("{m}y{Co}ol{Fun}ction.{t}est.{t}s"));
+  });
 
-    ranges = minusculeMatch("WCCJ-130-css-module-types", "wccs");
+  it("merges immediate ranges", () => {
+    const ranges = minusculeMatch("someThing", "someTh");
     expect(ranges).not.toEqual(null);
-    expect(ranges).toEqual(createRanges("{WC}CJ-130-{cs}s-module-types"));
+    expect(ranges).toEqual(createRanges("{someTh}ing"));
+  });
+
+  it("Prioritizes finding a full match over matching continuously", () => {
+    const ranges = minusculeMatch("wccj-130-css-module-types", "wccs");
+    expect(ranges).not.toEqual(null);
+    expect(ranges).toEqual(createRanges("{wc}cj-130-{cs}s-module-types"));
   });
 });
 

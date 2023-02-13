@@ -17,7 +17,7 @@ const FLOAT_WINDOW_MIN_HEIGHT = 40; // in Intellij Platform it's zero but there 
  * NOTE: can be used in other kinds of resizable overlays too, in future.
  */
 export function WindowResizeHandles() {
-  const windowResizer = useWindowResizer();
+  const windowResizer = useOverlayResizer();
   return (
     windowResizer && (
       <>
@@ -47,23 +47,23 @@ export type BoundsInteractionHandlerProps = {
    */
   finishInteraction: () => void;
 };
-export const WindowInteractionHandlerContext =
+export const OverlayInteractionHandlerContext =
   React.createContext<BoundsInteractionHandlerProps | null>(null);
-export const useWindowInteractionHandler = () =>
-  useContext(WindowInteractionHandlerContext);
+export const useOverlayInteractionHandler = () =>
+  useContext(OverlayInteractionHandlerContext);
 
 /**
  * window resizing logic and state. When resizing is in progress, the source of truth is a local state, for performance
  * reasons. When the resize is done (e.g. by mouse being released), `onBoundsChange` is called with the new bounds.
  */
-function useWindowResizer() {
+function useOverlayResizer() {
   const initialBoundsRef = useRef<WindowBounds>({
     top: 0,
     height: 0,
     width: 0,
     left: 0,
   });
-  const interactionHandler = useWindowInteractionHandler();
+  const interactionHandler = useOverlayInteractionHandler();
   if (!interactionHandler) {
     return null;
   }

@@ -15,6 +15,15 @@ export function useCollectionOverflowObserver(
   const [overflowedKeys, setOverflowedKeys] = useState<Set<Key>>(new Set());
 
   useEffect(() => {
+    const notScrollable =
+      scrollableItemsContainerRef.current?.scrollWidth ===
+      scrollableItemsContainerRef.current?.offsetWidth;
+    if (notScrollable && overflowedKeys.size > 0) {
+      setOverflowedKeys(new Set());
+    }
+  });
+
+  useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         const newHiddenKeys = entries

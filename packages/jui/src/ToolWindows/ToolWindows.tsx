@@ -135,13 +135,33 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
   const latestRef = useLatest({ toolWindowsState, onToolWindowStateChange });
 
   useLayoutEffect(() => {
-    setLayoutState(
-      getToolWindowsLayoutState(
-        toolWindowsState,
-        containerRef.current!.getBoundingClientRect(),
-        windows.map(({ id }) => id)
-      )
-    );
+    const container = containerRef.current;
+    const _setLayoutState = () =>
+      setLayoutState(
+        getToolWindowsLayoutState(
+          toolWindowsState,
+          container!.getBoundingClientRect(),
+          windows.map(({ id }) => id)
+        )
+      );
+
+    // If container is rendered but has zero dimensions for any reason, we start observing size changes, until
+    // it's no longer collapsed. Note that we don't want to unconditionally observe resizes and update the layout state.
+    // because tool windows are not supposed to keep the fraction width as the window resizes. They are supposed to have
+    // a fixed width which is determined fraction-based, but only when the tool window is opened. In fact, updating the
+    // layout state, on each and every change to toolWindowsState is also not quite correct, as some state changes
+    // are unrelated and shouldn't cause a re-calculation of the size. FIXME: don't re-calculate fraction base sizes on
+    //  every state change.
+    if (container?.offsetWidth === 0 || container?.offsetHeight === 0) {
+      const observer = new ResizeObserver(([resize]) => {
+        if (resize.contentRect.width > 0 && resize.contentRect.height > 0) {
+          _setLayoutState();
+          observer.unobserve(container);
+        }
+      });
+      observer.observe(container);
+    }
+    _setLayoutState();
   }, [toolWindowsState]);
 
   useImperativeHandle(

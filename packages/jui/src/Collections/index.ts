@@ -3,7 +3,6 @@ export { Item } from "./Item";
 export * from "./Divider";
 export * from "./ItemStateContext";
 export * from "./ItemLayout";
-export { SelectionAwareSpan } from "./SelectionAwareSpan";
 
 // NOTE: some stuff like `useCollectionCacheInvalidation` are not exported from the index, since the index is re-exported
 // from other modules like Menu, Tabs, etc., but that part of the API is not considered a public API at the moment.

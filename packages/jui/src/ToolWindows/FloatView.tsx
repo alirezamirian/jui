@@ -1,5 +1,5 @@
 import { isMac } from "@react-aria/utils";
-import React, { HTMLProps } from "react";
+import React, { HTMLProps, useRef } from "react";
 import { css } from "styled-components";
 import { WINDOW_SHADOW } from "../style-constants";
 import { styled } from "../styled";
@@ -7,14 +7,20 @@ import { Theme } from "../Theme/Theme";
 import { FloatWindowState } from "./ToolWindowsState/ToolWindowsLayoutState";
 import { WindowBounds } from "./ToolWindowsState/ToolWindowsState";
 import {
-  useResizableMovableWindow,
-  WindowResizeHandles,
-  WindowInteractionHandler,
-} from "@intellij-platform/core/Window";
+  OverlayInteractionHandler,
+  OverlayResizeHandles,
+  useResizableMovableOverlay,
+} from "@intellij-platform/core/Overlay";
+import { Overlay } from "@react-aria/overlays";
+
+const FLOAT_WINDOW_MIN_WIDTH = 100;
+const FLOAT_WINDOW_MIN_HEIGHT = 40; // in Intellij Platform it's zero but there is window frame which doesn't exist here
 
 const StyledFloatView = styled.div`
+  box-sizing: border-box;
   position: absolute;
-  background: inherit;
+  background: ${({ theme }) => theme.commonColors.panelBackground};
+  color: ${({ theme }) => theme.color("*.foreground")};
   // border color doesn't seem to be correct and needs more investigation. might be even os-specific and outside
   // theme colors.
   border: ${({ theme }) => `1px solid ${theme.color("Component.borderColor")}`};
@@ -36,21 +42,28 @@ export const FloatView: React.FC<
     onBoundsChange: (bounds: WindowBounds) => void;
   } & Omit<HTMLProps<HTMLDivElement>, "ref" | "as">
 > = ({ children, state: { bounds }, onBoundsChange, ...otherProps }) => {
-  const { bounds: effectiveBounds, windowInteractionHandlerProps } =
-    useResizableMovableWindow({
+  const ref = useRef(null);
+  const { bounds: boundsStyle, overlayInteractionHandlerProps } =
+    useResizableMovableOverlay(ref, {
       bounds,
       onBoundsChange,
     });
 
   return (
-    <StyledFloatView
-      {...otherProps}
-      style={{ ...otherProps.style, ...effectiveBounds }}
-    >
-      <WindowInteractionHandler {...windowInteractionHandlerProps}>
-        <WindowResizeHandles />
-        {children}
-      </WindowInteractionHandler>
-    </StyledFloatView>
+    <Overlay>
+      <StyledFloatView
+        {...otherProps}
+        ref={ref}
+        style={{ ...otherProps.style, ...boundsStyle }}
+      >
+        <OverlayInteractionHandler {...overlayInteractionHandlerProps}>
+          <OverlayResizeHandles
+            minWidth={FLOAT_WINDOW_MIN_WIDTH}
+            minHeight={FLOAT_WINDOW_MIN_HEIGHT}
+          />
+          {children}
+        </OverlayInteractionHandler>
+      </StyledFloatView>
+    </Overlay>
   );
 };

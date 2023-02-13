@@ -1,6 +1,5 @@
 import { styled } from "@intellij-platform/core/styled";
 import { Theme, UnknownThemeProp } from "@intellij-platform/core/Theme";
-import { StyledHoverContainer } from "@intellij-platform/core/Icon";
 
 const CORNER_RADIUS = 12; // it used to be 8. After introduction of Notifications tool window, it's 12
 
@@ -114,7 +113,7 @@ export const StyledToggleIconContainer = styled.span`
   padding-left: 0.5rem;
 `;
 
-export const StyledToggleExpandButtonContainer = styled(StyledHoverContainer)`
+export const StyledToggleExpandButtonContainer = styled.span`
   display: block;
   position: relative; // for icon absolute positioning
   cursor: pointer;

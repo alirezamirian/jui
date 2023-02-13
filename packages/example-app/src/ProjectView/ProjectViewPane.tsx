@@ -13,7 +13,10 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { DefaultSuspense } from "../DefaultSuspense";
 import { useEditorStateManager } from "../Editor/editor.state";
 import { DIR_ICON, FILE_ICON, getIconForFile } from "../file-utils";
-import { currentProjectState } from "../Project/project.state";
+import {
+  currentProjectState,
+  useActivePathsProvider,
+} from "../Project/project.state";
 import {
   currentProjectTreeState,
   expandedKeysState,
@@ -46,10 +49,18 @@ export const ProjectViewPane = (): React.ReactElement => {
     ? sortBy<ProjectTreeNode>((a) => (a.type === "dir" ? 1 : 2))
     : identity;
 
+  const selectedKeysArray =
+    selectedKeys === "all"
+      ? [] // FIXME
+      : [...selectedKeys].filter((i): i is string => typeof i === "string");
+  const { activePathsProviderProps } =
+    useActivePathsProvider(selectedKeysArray);
+
   return (
     <DefaultSuspense>
       <SpeedSearchTree
         ref={treeRef}
+        {...activePathsProviderProps}
         items={[projectTree] as ProjectTreeNode[]}
         onAction={(path) => {
           editor.openPath(`${path}`);
@@ -115,7 +126,7 @@ const FileTreeFileNodeText = ({
   node: FileTreeFileNode;
 }): React.ReactElement => {
   const state = useContext(ItemStateContext);
-  return state?.isSelected && state?.isFocused ? (
+  return state?.isSelected && state?.isContainerFocused ? (
     <HighlightedTextValue />
   ) : (
     <FileStatusColor filepath={node.path}>

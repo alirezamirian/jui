@@ -9,6 +9,7 @@ export const StyledTreeNode = styled(StyledListItem).attrs({ as: "div" })<{
   // There are some theme properties for tree node padding (theme.ui.Tree.leftChildIndent and
   // theme.ui.Tree.leftChildIndent), but they doesn't seem to be applicable.
   padding-left: ${({ level }) => `${(level + 1) * TREE_ICON_SIZE + 8}px`};
+  padding-right: 0.25rem;
   ${({ containerFocused, selected, disabled, theme }) => {
     let backgroundColor;
     let color = disabled
@@ -19,12 +20,11 @@ export const StyledTreeNode = styled(StyledListItem).attrs({ as: "div" })<{
         );
     if (selected) {
       if (containerFocused) {
-        color =
+        color = theme.asCurrentForeground(
           theme.color(
             "Tree.selectionForeground" as UnknownThemeProp<"Tree.selectionForeground">
-          ) ||
-          theme.commonColors
-            .labelSelectedForeground /* Prioritizing "*.selectionForeground" over labelSelectedForeground*/;
+          ) || theme.commonColors.labelSelectedForeground
+        ) /* Prioritizing "*.selectionForeground" over labelSelectedForeground*/;
         backgroundColor = theme.color(
           "Tree.selectionBackground" as UnknownThemeProp<"Tree.selectionBackground">
         );

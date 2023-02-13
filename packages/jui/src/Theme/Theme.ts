@@ -17,9 +17,14 @@ export type UnknownThemeProp<T> = T extends KnownThemePropertyPath
   ? unknown
   : KnownThemePropertyPath;
 
+enum CssProperties {
+  CURRENT_FOREGROUND = "--jui-foreground",
+}
+
 const defaultValues: { [key in KnownThemePropertyPath]?: string } = {
   "*.disabledForeground": "#8C8C8C",
 };
+
 /**
  * TODO: flattening the map once seems like a reasonable refactoring.
  */
@@ -39,6 +44,8 @@ export class Theme<P extends string = string> {
    * @private
    */
   private readonly DEFAULTS;
+
+  public CssProperties = CssProperties;
 
   constructor(
     public readonly themeJson: ThemeJson,
@@ -150,6 +157,55 @@ export class Theme<P extends string = string> {
   }
 
   /**
+   * Returns the input color, concatenated with a css rule, setting the "current foreground" color as a css property.
+   * The returned value is a drop-in replacement for the input value, in terms of usage as css property value.
+   * @example
+   * ```ts
+   * const MyComponent = styled.div`
+   *   color: ${ ({theme}) => theme.commonColors.red};
+   * `;
+   * ```
+   * results:
+   * ```css
+   * color: rgb(255,100,100);
+   * ```
+   *
+   * While
+   * ```ts
+   * const MyComponent = styled.div`
+   *   color: ${ ({theme}) => theme.asCurrentForeground(theme.commonColors.red)}
+   * `;
+   * ```
+   * results:
+   * ```css
+   * color: rgb(255,100,100);
+   * --jui-foreground: currentColor;
+   * ```
+   * @see currentForegroundAware
+   */
+  asCurrentForeground(colorValue: string | undefined) {
+    return (
+      colorValue &&
+      `${colorValue}; ${this.CssProperties.CURRENT_FOREGROUND}: currentColor`
+    );
+  }
+
+  /**
+   * Given a color, returns a css var(...) expression which resolves to that color, only if the element is not used
+   * where {@link CssProperties.CURRENT_FOREGROUND} is set. For example, items in tree/menu/list/etc., set
+   * {@link CssProperties.CURRENT_FOREGROUND} when in active state. That's because they have a contrasted background
+   * (blue by default), in such states, and the corresponding foreground should take precedence over other foregrounds,
+   * to ensure enough contrast required for accessibility.
+   * @param colorValue
+   */
+  currentForegroundAware(colorValue: string | undefined) {
+    return (
+      colorValue &&
+      `var(${this.CssProperties.CURRENT_FOREGROUND}, ${colorValue})`
+    );
+  }
+
+  /**
    * Resolves platform icon path to svg.
    * by default, it fetches the svg icon from Github, but there are other Theme implementations
    */
@@ -240,6 +296,10 @@ export class Theme<P extends string = string> {
         theme.dark ? "#bbb" : "#000"
       ),
       labelSelectedForeground: theme.color("Label.selectedForeground", "#fff"),
+      labelDisabledForeground: theme.color(
+        "Label.disabledForeground",
+        "rgb(128, 128, 128)"
+      ),
       contextHelpForeground: theme.color(
         "Label.infoForeground",
         theme.dark ? "#8c8c8c" : "#787878"

@@ -51,7 +51,7 @@ export function ListItem<T>({
         value={{
           isDisabled,
           isSelected,
-          isFocused: listFocused,
+          isContainerFocused: listFocused,
           node: item,
         }}
       >

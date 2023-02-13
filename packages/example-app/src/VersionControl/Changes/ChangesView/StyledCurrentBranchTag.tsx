@@ -1,12 +1,7 @@
 import React from "react";
-import {
-  Color,
-  SelectionAwareSpan,
-  styled,
-  UnknownThemeProp,
-} from "@intellij-platform/core";
+import { Color, styled } from "@intellij-platform/core";
 
-export const StyledCurrentBranchTag = styled(SelectionAwareSpan)`
+export const StyledCurrentBranchTag = styled.span`
   display: inline-flex;
   align-self: center;
   height: 1.1rem;
@@ -26,8 +21,10 @@ export const StyledCurrentBranchTag = styled(SelectionAwareSpan)`
       )
       .toString()};
   color: ${({ theme }) =>
-    theme.color(
-      "VersionControl.RefLabel.foreground" as UnknownThemeProp<"VersionControl.RefLabel.foreground">,
-      theme.dark ? "#909090" : "#7a7a7a"
+    theme.currentForegroundAware(
+      theme.color(
+        "VersionControl.RefLabel.foreground",
+        theme.dark ? "#909090" : "#7a7a7a"
+      )
     )};
 `;

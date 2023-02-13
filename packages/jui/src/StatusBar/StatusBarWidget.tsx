@@ -2,6 +2,8 @@ import React, { ForwardedRef } from "react";
 import { PressProps, usePress } from "@react-aria/interactions";
 import { styled } from "@intellij-platform/core/styled";
 import { UnknownThemeProp } from "@intellij-platform/core/Theme";
+import { mergeProps, useObjectRef } from "@react-aria/utils";
+import { useFocusable } from "@react-aria/focus";
 
 export interface StatusBarWidgetProps extends PressProps {
   label?: React.ReactNode;
@@ -15,20 +17,23 @@ export interface StatusBarWidgetProps extends PressProps {
  */
 export const StatusBarWidget = React.forwardRef(function StatusBarWidget(
   props: StatusBarWidgetProps,
-  ref: ForwardedRef<HTMLSpanElement>
+  forwardedRef: ForwardedRef<HTMLSpanElement>
 ) {
+  const ref = useObjectRef(forwardedRef);
   // Maybe it's better for a11y to use useButton, or at least use button element?
   const { pressProps, isPressed } = usePress({
+    ref,
     ...props,
     preventFocusOnPress: true,
   });
+  const { focusableProps } = useFocusable({ excludeFromTabOrder: true }, ref);
 
   const StyledWrapper = props.label
     ? StyledStatusBarWidget
     : StyledStatusBarIconWidget;
   return (
     <StyledWrapper
-      {...pressProps}
+      {...mergeProps(pressProps, focusableProps)}
       className={isPressed ? "pressed" : ""}
       ref={ref}
     >

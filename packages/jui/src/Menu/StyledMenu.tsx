@@ -2,11 +2,12 @@ import { WINDOW_SHADOW } from "../style-constants";
 import { styled } from "../styled";
 import { StyledVerticalSeparator } from "../StyledSeparator";
 import { UnknownThemeProp } from "../Theme/Theme";
+import { css } from "styled-components";
 
 export const MENU_VERTICAL_PADDING = 5;
 export const MENU_BORDER_WIDTH = 1;
 
-export const StyledMenu = styled.ul`
+export const StyledMenu = styled.ul<{ fillAvailableSpace?: boolean }>`
   font-size: 0.87rem;
   margin: 0;
   padding: ${MENU_VERTICAL_PADDING}px 0;
@@ -38,4 +39,11 @@ export const StyledMenu = styled.ul`
     margin: ${({ theme }) =>
       `0 ${theme.value("PopupMenuSeparator.withToEdge") ?? 1}px`};
   }
+  ${({ fillAvailableSpace }) =>
+    fillAvailableSpace &&
+    css`
+      flex: 1;
+      width: fill-available; // will be converted to --webkit-fill-available and --moz-available, but doesn't work in FF
+      height: fill-available;
+    `}
 `;

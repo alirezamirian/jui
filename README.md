@@ -186,6 +186,10 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
             <td>❌</td>
         </tr>
         <tr>
+            <td rowspan="1" colspan="3"><a href="https://jetbrains.github.io/ui/components/popup/">Popup</a></td>
+            <td>✅</td>
+        </tr>
+        <tr>
             <td rowspan="7"><a href="https://jetbrains.github.io/ui/controls/tabs/">Tabs</a></td>
         </tr>
         <tr>

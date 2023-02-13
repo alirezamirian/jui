@@ -15,6 +15,7 @@ import {
 } from "./ChangesView.state";
 import { ChangesViewTreeContextMenu } from "./ChangesViewTreeContextMenu";
 import { getChangeListTreeItemProps } from "./changesTreeNodeRenderers";
+import { useActivePathsProvider } from "../../../Project/project.state";
 
 /**
  * TODO: unversioned files
@@ -25,10 +26,29 @@ export const ChangeViewTree = ({
 }: {
   treeRef: RefObject<TreeRefValue>;
 }): JSX.Element => {
-  const { rootNodes, fileCountsMap } = useRecoilValue(changesTreeNodesState);
+  const { rootNodes, fileCountsMap, byKey } = useRecoilValue(
+    changesTreeNodesState
+  );
   const [selectedKeys, setSelectedKeys] = useRecoilState(selectedKeysState);
   const [expandedKeys, setExpandedKeys] = useRecoilState(expandedKeysState);
   const nestedSelection = useRecoilValue(includedChangesNestedSelection);
+
+  const { activePathsProviderProps } = useActivePathsProvider(
+    selectedKeys === "all"
+      ? [] // FIXME
+      : [...selectedKeys]
+          .map((key) => {
+            const node = byKey.get(key);
+            if (node?.type === "directory") {
+              return node.dirPath;
+            }
+            if (node?.type === "change") {
+              return node.change.after.path;
+            }
+            return null;
+          })
+          .filter((i): i is string => i != null)
+  );
 
   return (
     <ContextMenuContainer
@@ -45,6 +65,7 @@ export const ChangeViewTree = ({
         onSelectionChange={setSelectedKeys}
         nestedSelection={nestedSelection}
         fillAvailableSpace
+        {...activePathsProviderProps}
       >
         {(node) => {
           const props = getChangeListTreeItemProps({

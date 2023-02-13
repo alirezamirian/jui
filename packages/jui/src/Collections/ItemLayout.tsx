@@ -1,6 +1,5 @@
 import React from "react";
 import { styled } from "../styled";
-import { SelectionAwareSpan } from "@intellij-platform/core/Collections/SelectionAwareSpan";
 
 const StyledItemLayout = styled.div`
   display: flex;
@@ -9,10 +8,12 @@ const StyledItemLayout = styled.div`
   gap: 0.2rem;
 `;
 
-const StyledHint = styled(SelectionAwareSpan)`
+const StyledHint = styled.span<{ small?: boolean }>`
   display: inline-flex;
-  color: ${({ theme }) => theme.commonColors.inactiveTextColor};
+  color: ${({ theme }) =>
+    theme.currentForegroundAware(theme.commonColors.inactiveTextColor)};
   padding-left: 0.1rem;
+  font-size: ${({ small }) => small && "0.9em"};
 `;
 
 /**

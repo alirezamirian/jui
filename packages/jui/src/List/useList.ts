@@ -1,4 +1,4 @@
-import { SelectableListOptions } from "@react-aria/selection";
+import { AriaSelectableListOptions } from "@react-aria/selection";
 import { ListState } from "@react-stately/list";
 import React, { useEffect, useState } from "react";
 import { useSelectableList } from "./useSelectableList";
@@ -7,7 +7,7 @@ import { mergeProps } from "@react-aria/utils";
 
 export interface ListProps
   extends Omit<
-    SelectableListOptions,
+    AriaSelectableListOptions,
     | "disallowEmptySelection"
     | "selectOnFocus"
     | "selectionManager" // Grouped as state, the second argument, like in useListBox

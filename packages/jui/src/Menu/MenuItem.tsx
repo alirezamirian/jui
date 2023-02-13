@@ -1,9 +1,8 @@
-import React, { Key } from "react";
-import { useHover, useKeyboard } from "@react-aria/interactions";
+import React, { HTMLAttributes, useContext } from "react";
+import { useHover, usePress } from "@react-aria/interactions";
 import { useMenuItem } from "@react-aria/menu";
 import { OverlayContainer, useOverlayPosition } from "@react-aria/overlays";
 import { mergeProps } from "@react-aria/utils";
-import { Item } from "@react-stately/collections";
 import { TreeState } from "@react-stately/tree";
 import { Node } from "@react-types/shared";
 import { FocusScope } from "@intellij-platform/core/utils/FocusScope";
@@ -11,16 +10,15 @@ import { ItemStateContext } from "@intellij-platform/core/Collections/ItemStateC
 
 import { LafIcon, PlatformIcon } from "../Icon";
 import { styled } from "../styled";
-import { Menu } from "./Menu";
+import { MenuContext } from "./Menu";
 import { MENU_BORDER_WIDTH, MENU_VERTICAL_PADDING } from "./StyledMenu";
 import { StyledMenuItem } from "./StyledMenuItem";
+import { Submenu } from "@intellij-platform/core/Menu/Submenu";
 
 export interface MenuItemProps<T> {
   item: Node<T>;
   state: TreeState<T>;
-  onAction?: (key: Key) => void;
   onSubmenuClose?: () => void;
-  expandOn?: "hover" | "press";
 }
 
 const StyledNestedArrow = styled.span`
@@ -53,12 +51,7 @@ const StyledMenuItemLafIcon = styled(LafIcon)`
   }
 `;
 
-export function MenuItem<T>({
-  item,
-  state,
-  onAction,
-  expandOn,
-}: MenuItemProps<T>) {
+export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
   // Get props for the menu item element
   const ref = React.useRef<HTMLLIElement>(null);
   const nestedMenuRef = React.useRef<HTMLDivElement>(null);
@@ -66,71 +59,84 @@ export function MenuItem<T>({
   const isExpanded = state.expandedKeys.has(item.key);
   const isSelected = state.selectionManager.selectedKeys.has(item.key);
   const isFocused = state.selectionManager.focusedKey === item.key;
+  const { onClose, submenuBehavior } = useContext(MenuContext);
 
   const { menuItemProps } = useMenuItem(
     {
       key: item.key,
-      isDisabled,
-      onAction: !item.hasChildNodes ? onAction : undefined,
+      // hack to prevent react-aria to call onClose when nested items are selected, which is incorrect, and because
+      // react-aria doesn't officially support nested menus at the moment
+      onClose: item.hasChildNodes ? () => {} : undefined,
     },
     state,
     ref
   );
 
-  const maybeOpenSubmenu = () => {
-    // Not the best way to clear expandedKeys, but current implementation of tree state only allows toggling keys
-    state.expandedKeys.forEach((key) => {
-      state.toggleKey(key);
-    });
-    if (item.hasChildNodes) {
-      state.toggleKey(item.key);
-    }
-  };
-
   const { hoverProps } = useHover({
-    isDisabled: isDisabled || expandOn !== "hover",
+    isDisabled: isDisabled || submenuBehavior !== "default",
     onHoverStart: () => {
-      maybeOpenSubmenu();
-    },
-  });
-
-  const { keyboardProps } = useKeyboard({
-    onKeyDown: (e) => {
-      if (["ArrowRight", "Enter", " "].includes(e.key)) {
-        maybeOpenSubmenu();
-      } else {
-        e.continuePropagation();
+      if (!isExpanded) {
+        state.toggleKey(item.key);
       }
     },
   });
+  const { pressProps: togglePressProps } = usePress({
+    isDisabled: isDisabled,
+    onPressUp: (e) => {
+      state.toggleKey(item.key);
+      if (isExpanded) {
+        // submenu was expanded and is closed now. moving focus back to the parent item
+        state.selectionManager.setFocusedKey(item.key);
+      }
+    },
+  });
+
+  const keyboardProps = {
+    onKeyDown: (e: React.KeyboardEvent) => {
+      if (
+        submenuBehavior !== "actionOnPress" &&
+        ["ArrowRight", "Enter", " "].includes(e.key)
+      ) {
+        state.toggleKey(item.key);
+        e.stopPropagation();
+        return;
+      }
+    },
+  };
 
   let { overlayProps: positionProps } = useOverlayPosition({
     targetRef: ref,
     overlayRef: nestedMenuRef,
     placement: "right top",
     shouldFlip: true,
-    onClose: () => {
-      console.log("on close");
-    },
+    onClose,
     offset: 0,
     crossOffset: -(MENU_VERTICAL_PADDING + MENU_BORDER_WIDTH),
     isOpen: isExpanded,
   });
 
-  const { subMenuProps } = useSubmenu({
-    onClose: () => {
-      state.toggleKey(item.key);
-      // setting focus with selection manager didn't work. Perhaps because of patchy implementation of nested menus
-      ref.current?.focus();
-    },
-  });
-
+  const arrowProps: HTMLAttributes<HTMLElement> =
+    submenuBehavior !== "default"
+      ? {
+          role: "button",
+          "aria-label": "Open",
+          ...mergeProps(togglePressProps, {
+            // to prevent pointer up event handler on the item, which would trigger action.
+            onPointerUp: (e: React.PointerEvent) => e.stopPropagation(),
+          }),
+        }
+      : {};
   return (
     <>
       <StyledMenuItem
-        {...mergeProps(menuItemProps, hoverProps, keyboardProps)}
+        {...mergeProps(
+          menuItemProps,
+          hoverProps,
+          keyboardProps,
+          submenuBehavior === "toggleOnPress" ? togglePressProps : {}
+        )}
         isDisabled={isDisabled}
-        isActive={isFocused}
+        isActive={isFocused || isExpanded}
         ref={ref}
       >
         {isSelected && (
@@ -144,7 +150,12 @@ export function MenuItem<T>({
           </StyledSelectedMark>
         )}
         <ItemStateContext.Provider
-          value={{ isDisabled, isFocused, isSelected, node: item }}
+          value={{
+            isDisabled,
+            isContainerFocused: state.selectionManager.isFocused,
+            isSelected,
+            node: item,
+          }}
         >
           {typeof item.rendered === "string" ? (
             <StyledMenuItemText>{item.rendered}</StyledMenuItemText>
@@ -153,7 +164,7 @@ export function MenuItem<T>({
           )}
         </ItemStateContext.Provider>
         {item.hasChildNodes && (
-          <StyledNestedArrow>
+          <StyledNestedArrow {...arrowProps}>
             <StyledMenuItemPlatformIcon icon="icons/ide/menuArrow" />
           </StyledNestedArrow>
         )}
@@ -180,31 +191,8 @@ export function MenuItem<T>({
          */
         <OverlayContainer>
           <FocusScope>
-            <div
-              ref={nestedMenuRef}
-              {...mergeProps(positionProps, subMenuProps)}
-            >
-              <Menu
-                aria-label={item["aria-label"] || item.textValue}
-                items={item.childNodes}
-                disabledKeys={state.disabledKeys}
-                selectedKeys={state.selectionManager.selectedKeys}
-                onAction={onAction}
-                autoFocus
-              >
-                {(childItem) => {
-                  // FIXME: This is not complete and doesn't support section and divider
-                  return (
-                    <Item
-                      childItems={childItem.childNodes}
-                      hasChildItems={childItem.hasChildNodes}
-                      textValue={childItem.textValue}
-                    >
-                      {childItem.rendered}
-                    </Item>
-                  );
-                }}
-              </Menu>
+            <div ref={nestedMenuRef} {...positionProps}>
+              <Submenu parentState={state} rootKey={item.key} />
             </div>
           </FocusScope>
         </OverlayContainer>
@@ -212,16 +200,3 @@ export function MenuItem<T>({
     </>
   );
 }
-
-const useSubmenu = ({ onClose }: { onClose: () => void }) => {
-  const { keyboardProps } = useKeyboard({
-    onKeyDown: (e) => {
-      if (e.key === "ArrowLeft" || e.key === "Escape") {
-        onClose();
-      } else if (!["ArrowUp", "ArrowDown"].includes(e.key)) {
-        e.continuePropagation();
-      }
-    },
-  });
-  return { subMenuProps: keyboardProps };
-};
