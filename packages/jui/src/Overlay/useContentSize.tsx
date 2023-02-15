@@ -58,14 +58,14 @@ export const useContentSize = (
     if (!lastMeasuredSize || !Size.isEqual(lastMeasuredSize, size)) {
       setMeasuredSizes([size]);
     }
-    const id = window.requestIdleCallback(() => {
+    const id = window.requestAnimationFrame(() => {
       const newSize = getContentSize(element);
       if (!Size.isEqual(newSize, size)) {
         setMeasuredSizes([...measuredSizes, newSize]);
       }
     });
     return () => {
-      window.cancelIdleCallback(id);
+      window.cancelAnimationFrame(id);
     };
   }, [measuredSizes]);
   const measure = () => {
