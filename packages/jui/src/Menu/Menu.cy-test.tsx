@@ -290,6 +290,14 @@ describe("Menu", () => {
       cy.wrap(onClose).should("be.calledOnce");
     });
 
+    it("opens the submenu when right arrow is pressed", () => {
+      cy.mount(<SubmenuWithAction />);
+      cy.mount(<SubmenuWithAction />);
+      cy.findByRole("menuitem", { name: "View Mode" }).focus();
+      cy.realPress("ArrowRight");
+      cy.findByRole("menuitem", { name: "Docked" }).should("be.visible");
+    });
+
     it("doesn't trigger action when the right chevron arrow is pressed", () => {
       cy.mount(<SubmenuWithAction />);
       const onAction = cy.stub();

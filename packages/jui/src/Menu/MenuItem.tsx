@@ -94,8 +94,9 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
   const keyboardProps = {
     onKeyDown: (e: React.KeyboardEvent) => {
       if (
-        submenuBehavior !== "actionOnPress" &&
-        ["ArrowRight", "Enter", " "].includes(e.key)
+        ((e.key === "Enter" || e.key === " ") &&
+          submenuBehavior !== "actionOnPress") ||
+        "ArrowRight" === e.key
       ) {
         state.toggleKey(item.key);
         e.stopPropagation();
