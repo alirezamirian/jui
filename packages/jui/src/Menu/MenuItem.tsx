@@ -1,16 +1,20 @@
-import React, { HTMLAttributes, useContext } from "react";
+import React, { HTMLAttributes, RefObject, useContext } from "react";
 import { useHover, usePress } from "@react-aria/interactions";
-import { useMenuItem } from "@react-aria/menu";
+import {
+  AriaMenuItemProps,
+  MenuItemAria,
+  useMenuItem as useMenuItemAria,
+} from "@react-aria/menu";
 import { OverlayContainer, useOverlayPosition } from "@react-aria/overlays";
 import { mergeProps } from "@react-aria/utils";
 import { TreeState } from "@react-stately/tree";
-import { Node } from "@react-types/shared";
+import { FocusableElement, Node } from "@react-types/shared";
 import { FocusScope } from "@intellij-platform/core/utils/FocusScope";
 import { ItemStateContext } from "@intellij-platform/core/Collections/ItemStateContext";
 
 import { LafIcon, PlatformIcon } from "../Icon";
 import { styled } from "../styled";
-import { MenuContext } from "./Menu";
+import { MenuContext, MenuProps } from "./Menu";
 import { MENU_BORDER_WIDTH, MENU_VERTICAL_PADDING } from "./StyledMenu";
 import { StyledMenuItem } from "./StyledMenuItem";
 import { Submenu } from "@intellij-platform/core/Menu/Submenu";
@@ -51,6 +55,39 @@ const StyledMenuItemLafIcon = styled(LafIcon)`
   }
 `;
 
+function useMenuItem<T extends unknown>(
+  {
+    submenuBehavior,
+    ...props
+  }: AriaMenuItemProps & { submenuBehavior: MenuProps<T>["submenuBehavior"] },
+  state: TreeState<T>,
+  ref: RefObject<FocusableElement>
+): MenuItemAria {
+  const item = state.collection.getItem(props.key!);
+  const {
+    menuItemProps: { onMouseEnter, onPointerEnter, ...otherMenuItemProps },
+    ...result
+  } = useMenuItemAria(
+    {
+      key: item.key,
+      // hack to prevent react-aria to call onClose when nested items are selected, which is incorrect, and because
+      // react-aria doesn't officially support nested menus at the moment
+      onClose: item.hasChildNodes ? () => {} : undefined,
+    },
+    state,
+    ref
+  );
+  return {
+    ...result,
+    menuItemProps:
+      submenuBehavior === "default" ||
+      state.selectionManager.isFocused ||
+      (item.parentKey == null && state.expandedKeys.size === 0)
+        ? { onMouseEnter, onPointerEnter, ...otherMenuItemProps }
+        : otherMenuItemProps,
+  };
+}
+
 export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
   // Get props for the menu item element
   const ref = React.useRef<HTMLLIElement>(null);
@@ -63,10 +100,8 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
 
   const { menuItemProps } = useMenuItem(
     {
+      submenuBehavior,
       key: item.key,
-      // hack to prevent react-aria to call onClose when nested items are selected, which is incorrect, and because
-      // react-aria doesn't officially support nested menus at the moment
-      onClose: item.hasChildNodes ? () => {} : undefined,
     },
     state,
     ref

@@ -251,6 +251,27 @@ describe("Menu", () => {
         .click();
       cy.findByRole("menuitem", { name: "Docked" }).should("not.exist");
     });
+
+    it("doesn't focus items on hover, when a submenu is open and focused", () => {
+      cy.mount(<ToggleSubmenuOnPress autoFocus />);
+      // Open submenu
+      cy.findByRole("menuitem", { name: "View Mode" })
+        .findByRole("button")
+        .click();
+      // Hover a menu item in outside the currently opened submenu, and expect the focus not to move to it
+      cy.findByRole("menuitem", { name: "Group tabs" })
+        .realHover()
+        .should("not.have.focus");
+      cy.findByRole("menu", { name: "View Mode" }).should("have.focus");
+    });
+
+    it("focuses top level items on hover, when there is no submenu opened, even if the menu is not focused", () => {
+      cy.mount(<ToggleSubmenuOnPress autoFocus={false} />);
+      cy.findByRole("menu").should("not.have.focus");
+      cy.findByRole("menuitem", { name: "Group tabs" })
+        .realHover()
+        .should("have.focus");
+    });
   });
 
   describe("submenuBehavior=actionOnPress", () => {
@@ -321,6 +342,27 @@ describe("Menu", () => {
         .findByRole("button")
         .click();
       cy.findByRole("menuitem", { name: "Docked" }).should("not.exist");
+    });
+
+    it("doesn't focus items on hover, when a submenu is open and focused", () => {
+      cy.mount(<SubmenuWithAction autoFocus />);
+      // Open submenu
+      cy.findByRole("menuitem", { name: "View Mode" })
+        .findByRole("button")
+        .click();
+      // Hover a menu item in outside the currently opened submenu, and expect the focus not to move to it
+      cy.findByRole("menuitem", { name: "Group tabs" })
+        .realHover()
+        .should("not.have.focus");
+      cy.findByRole("menu", { name: "View Mode" }).should("have.focus");
+    });
+
+    it("focuses top level items on hover, when there is no submenu opened, even if the menu is not focused", () => {
+      cy.mount(<SubmenuWithAction autoFocus={false} />);
+      cy.findByRole("menu").should("not.have.focus");
+      cy.findByRole("menuitem", { name: "Group tabs" })
+        .realHover()
+        .should("have.focus");
     });
   });
 });
