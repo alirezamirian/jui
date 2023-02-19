@@ -36,6 +36,10 @@ export const MenuSection = <T extends unknown>({
     "aria-label": item["aria-label"],
   });
 
+  const nodes = [...item.childNodes];
+  if (nodes.length === 0) {
+    return <></>;
+  }
   return (
     <>
       <li {...itemProps}>

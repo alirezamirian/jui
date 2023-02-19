@@ -17,6 +17,7 @@ type MenuItem =
       icon?: string;
       shortcut?: string;
       subItems?: MenuItem[];
+      section?: true;
     }
   | DividerItem;
 const viewModeItems: Array<MenuItem> = [
@@ -58,6 +59,13 @@ const items: Array<MenuItem> = [
 const renderItem = (item: MenuItem) => {
   if (item instanceof DividerItem) {
     return <Divider key={item.key} />;
+  }
+  if (item.section) {
+    return (
+      <Section key={item.title} title={item.title}>
+        {item.subItems?.map(renderItem) as any}
+      </Section>
+    );
   }
   return (
     <Item key={item.title} textValue={item.title} childItems={item.subItems}>
@@ -173,6 +181,27 @@ ToggleSubmenuOnPress.args = {
 export const SubmenuWithAction = Template.bind(null);
 SubmenuWithAction.args = {
   submenuBehavior: "actionOnPress",
+};
+
+export const Sections = Template.bind(null);
+Sections.args = {
+  items: [
+    {
+      title: "Local Branches",
+      subItems: [{ title: "master" }, { title: "dev" }],
+      section: true,
+    },
+    {
+      title: "Remote Branches",
+      subItems: [{ title: "origin/master" }, { title: "origin/dev" }],
+      section: true,
+    },
+    {
+      title: "Empty section",
+      subItems: [],
+      section: true,
+    },
+  ],
 };
 
 export const MenuWithTrigger: Story<

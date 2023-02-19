@@ -19,6 +19,7 @@ const {
   ContextMenu,
   ToggleSubmenuOnPress,
   SubmenuWithAction,
+  Sections,
 } = composeStories(stories);
 
 describe("Menu", () => {
@@ -153,6 +154,11 @@ describe("Menu", () => {
     );
     cy.findByRole("menuitem", { name: "Item 1-1" }).realHover();
     cy.findByRole("menuitem", { name: "Item 1-3" }).realHover();
+  });
+
+  it("Doesn't render empty sections", () => {
+    cy.mount(<Sections />);
+    cy.contains("Empty section").should("not.exist");
   });
 
   it("submenu is closed when sibling items in are hovered, in a section", () => {
