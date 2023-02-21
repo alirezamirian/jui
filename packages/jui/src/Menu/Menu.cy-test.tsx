@@ -455,6 +455,45 @@ describe("Menu with trigger", () => {
     matchImageSnapshot(`menu-with-trigger--keyboard-behaviour-4`);
   });
 
+  it("supports keyboard when sections and dividers are used", () => {
+    cy.mount(
+      <Menu>
+        <Item title="Group 1">
+          <Item>G1. Item 1</Item>
+          <Divider />
+          <Item>G1. Item 2</Item>
+          <Section title="section 1">
+            <Item>G1. S1. Item 1</Item>
+          </Section>
+        </Item>
+        <Divider />
+        <Section title="section 1">
+          <Item>S1. Item 1</Item>
+        </Section>
+        <Section title="section 2">
+          <Item>S2. Item 1</Item>
+        </Section>
+      </Menu>
+    );
+    cy.findByRole("menuitem", { name: "Group 1" }).focus().should("have.focus");
+
+    cy.realPress("Enter"); // Going to first level menu to check navigation
+    cy.findByRole("menuitem", { name: "G1. Item 1" })
+      .focus()
+      .should("have.focus");
+    cy.realPress("ArrowDown");
+    cy.findByRole("menuitem", { name: "G1. Item 2" }).should("have.focus");
+    cy.realPress("ArrowDown");
+    cy.findByRole("menuitem", { name: "G1. S1. Item 1" }).should("have.focus");
+
+    cy.realPress("ArrowLeft"); // back to first level menu
+    cy.findByRole("menuitem", { name: "Group 1" }).should("have.focus");
+    cy.realPress("ArrowDown");
+    cy.findByRole("menuitem", { name: "S1. Item 1" }).should("have.focus");
+    cy.realPress("ArrowDown");
+    cy.findByRole("menuitem", { name: "S2. Item 1" }).should("have.focus");
+  });
+
   it("when closed, restores focus to the previously focused element, by default", () => {
     cy.mount(
       <div>

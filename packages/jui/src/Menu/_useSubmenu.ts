@@ -16,8 +16,16 @@ export class MenuKeyboardDelegate<T> extends ListKeyboardDelegate<T> {
     super(collection, disabledKeys, ref, collator);
     this.keys = [...collection.getKeys()]
       .map((key) => collection.getItem(key))
-      .filter((item) => item.parentKey == rootKey)
-      .map(({ key }) => key);
+      .flatMap((item) => {
+        if (item.parentKey == rootKey) {
+          if (item.type === "item") {
+            return [item.key];
+          } else if (item.type === "section") {
+            return [...item.childNodes].map(({ key }) => key);
+          }
+        }
+        return [];
+      });
   }
 
   getFirstKey(): React.Key {
