@@ -1,4 +1,4 @@
-import { Item } from "@react-stately/collections";
+import { Item, Section } from "@react-stately/collections";
 import { Meta, Story } from "@storybook/react";
 import React, { ReactNode } from "react";
 import { ActionButton } from "../ActionButton";
@@ -100,9 +100,12 @@ const Template: Story<MenuProps<MenuItem>> = (props: MenuProps<MenuItem>) => (
   <Menu {...props} />
 );
 
-export const Static: Story = () => {
-  return (
-    <Menu disabledKeys={["jumpToExternalEditor"]}>
+export const Static = Template.bind(null);
+
+Static.args = {
+  disabledKeys: ["jumpToExternalEditor"],
+  children: (
+    <>
       <Item textValue="Cut">
         <MenuItemLayout
           icon={<PlatformIcon icon={"actions/menu-cut"} />}
@@ -143,10 +146,9 @@ export const Static: Story = () => {
       <Item key="jumpToExternalEditor" textValue="Jump to external editor">
         <MenuItemLayout content="Jump to external editor" shortcut={"⌥⌘F4"} />
       </Item>
-    </Menu>
-  );
+    </>
+  ).props.children,
 };
-
 export const StaticWithTextItems: Story = () => (
   <Menu>
     <Item>Restart Typescript Service</Item>

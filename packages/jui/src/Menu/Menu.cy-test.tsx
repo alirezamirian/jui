@@ -13,6 +13,7 @@ import darculaThemeJson from "../../themes/darcula.theme.json";
 import { Section } from "@react-stately/collections";
 
 const {
+  Static,
   Nested,
   MenuWithTrigger,
   StaticWithTextItems,
@@ -185,6 +186,21 @@ describe("Menu", () => {
     // Hovering an item outside the section
     cy.findByRole("menuitem", { name: "Item 2" }).realHover();
     cy.findAllByRole("menu").should("have.length", 1);
+  });
+
+  it("scrolls items focused item into viewport, if needed", () => {
+    cy.mount(
+      <div style={{ height: 100 }}>
+        <Static fillAvailableSpace />
+      </div>
+    );
+    cy.findByRole("menuitem", { name: "Reformat Code" }).focus();
+    cy.realPress("ArrowDown");
+    cy.findByRole("menuitem", { name: "Optimize Imports" }).should(
+      "be.visible"
+    );
+    cy.realPress("ArrowDown");
+    cy.findByRole("menuitem", { name: "Delete" }).should("be.visible");
   });
 
   describe("submenuBehavior=toggleOnPress", () => {
