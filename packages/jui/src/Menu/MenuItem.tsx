@@ -88,6 +88,16 @@ function useMenuItem<T extends unknown>(
   };
 }
 
+const MenuItemContext = React.createContext<{
+  labelProps: HTMLAttributes<HTMLElement>;
+  descriptionProps: HTMLAttributes<HTMLElement>;
+  keyboardShortcutProps: HTMLAttributes<HTMLElement>;
+}>({ descriptionProps: {}, labelProps: {}, keyboardShortcutProps: {} });
+
+export const useMenuItemLayout = () => {
+  return useContext(MenuItemContext);
+};
+
 export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
   // Get props for the menu item element
   const ref = React.useRef<HTMLLIElement>(null);
@@ -98,14 +108,15 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
   const isFocused = state.selectionManager.focusedKey === item.key;
   const { onClose, submenuBehavior } = useContext(MenuContext);
 
-  const { menuItemProps } = useMenuItem(
-    {
-      submenuBehavior,
-      key: item.key,
-    },
-    state,
-    ref
-  );
+  const { menuItemProps, labelProps, descriptionProps, keyboardShortcutProps } =
+    useMenuItem(
+      {
+        submenuBehavior,
+        key: item.key,
+      },
+      state,
+      ref
+    );
 
   const { hoverProps } = useHover({
     isDisabled: isDisabled || submenuBehavior !== "default",
@@ -193,11 +204,20 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
             node: item,
           }}
         >
-          {typeof item.rendered === "string" ? (
-            <StyledMenuItemText>{item.rendered}</StyledMenuItemText>
-          ) : (
-            item.rendered
-          )}
+          <MenuItemContext.Provider
+            value={{ labelProps, descriptionProps, keyboardShortcutProps }}
+          >
+            {itemWrapper(
+              typeof item.rendered === "string" ? (
+                <StyledMenuItemText {...labelProps}>
+                  {item.rendered}
+                </StyledMenuItemText>
+              ) : (
+                item.rendered
+              ),
+              item
+            )}
+          </MenuItemContext.Provider>
         </ItemStateContext.Provider>
         {item.hasChildNodes && (
           <StyledNestedArrow {...arrowProps}>
