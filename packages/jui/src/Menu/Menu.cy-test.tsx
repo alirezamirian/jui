@@ -203,6 +203,13 @@ describe("Menu", () => {
     cy.findByRole("menuitem", { name: "Delete" }).should("be.visible");
   });
 
+  it('focuses the first item, when autofocus is "first"', () => {
+    cy.mount(<Nested autoFocus="first" />);
+    cy.findByRole("menuitem", { name: "View Mode" }).should("have.focus");
+    cy.realPress("Enter");
+    cy.findByRole("menuitem", { name: "Undock" }).should("have.focus");
+  });
+
   describe("submenuBehavior=toggleOnPress", () => {
     it("doesn't open the submenu on hover, when submenuBehavior is toggleOnPress", () => {
       cy.mount(<ToggleSubmenuOnPress />);

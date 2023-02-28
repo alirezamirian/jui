@@ -68,7 +68,9 @@ export function useSubmenu<T>(
     setTimeout(() => {
       // we need this hack until the nested menu is properly supported. That's because when the element is hovered
       // it sets the focus key, which will move focus to that item.
-      ref.current?.focus();
+      if (props.autoFocus === true) {
+        ref.current?.focus();
+      }
     });
   }, []);
 

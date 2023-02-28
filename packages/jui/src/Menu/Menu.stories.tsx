@@ -96,6 +96,12 @@ Static.args = {
     </>
   ).props.children,
 };
+
+export const AutoFocusFirst = Template.bind(null);
+AutoFocusFirst.args = {
+  autoFocus: "first",
+};
+
 export const StaticWithTextItems: Story = () => (
   <Menu>
     <Item>Restart Typescript Service</Item>
