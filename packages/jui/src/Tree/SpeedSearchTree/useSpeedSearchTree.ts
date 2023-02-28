@@ -32,6 +32,7 @@ export function useSpeedSearchTree<T>(
       state.disabledKeys,
       ref
     ),
+    ref,
     // TODO: maybe allow control over speed search via other props
   });
 
@@ -44,8 +45,7 @@ export function useSpeedSearchTree<T>(
         ["Enter", "ArrowLeft", "ArrowRight"].includes(e.key) &&
         !hasAnyModifier(e)
       ) {
-        speedSearch.setSearchTerm("");
-        speedSearch.setActive(false);
+        speedSearch.clear();
       } else {
         e.continuePropagation();
       }

@@ -2,12 +2,23 @@ import { useGhostInput } from "./useGhostInput";
 import { useFocusWithin, useKeyboard } from "@react-aria/interactions";
 import { useControlledState } from "@react-stately/utils";
 import { ControlledStateProps } from "../type-utils";
+import { RefObject } from "react";
 
 export interface SpeedSearchState {
+  /**
+   * Whether speed search is active. Speed search becomes active when the user starts to type and becomes inactive
+   * when Escape is pressed, or when the speed search container is blurred and `stickySearch` is false.
+   * Whenever speed search becomes inactive, search text is also cleared.
+   * Note that speed search can be active while search term is empty.
+   */
   active: boolean;
   setActive: (value: boolean) => void;
   searchTerm: string;
   setSearchTerm: (value: string) => void;
+  /**
+   * clears search term and sets active to false
+   */
+  clear: () => void;
 }
 
 export interface SpeedSearchStateProps
@@ -31,10 +42,14 @@ export function useSpeedSearchState(
   );
 
   return {
-    active: active,
+    active,
     searchTerm,
     setActive,
     setSearchTerm,
+    clear: () => {
+      setSearchTerm("");
+      setActive(false);
+    },
   };
 }
 
@@ -52,7 +67,8 @@ export interface SpeedSearchProps {
  */
 export function useSpeedSearch(
   { stickySearch }: SpeedSearchProps,
-  { searchTerm, active, setActive, setSearchTerm }: SpeedSearchState
+  { searchTerm, active, setActive, setSearchTerm }: SpeedSearchState,
+  ref: RefObject<HTMLElement>
 ) {
   const { onKeyDown: ghostInputKeydown } = useGhostInput({
     value: searchTerm,
@@ -73,6 +89,13 @@ export function useSpeedSearch(
     keyboardProps: { onKeyDown, onKeyUp },
   } = useKeyboard({
     onKeyDown: (e) => {
+      if (!ref.current?.contains(e.target as HTMLElement)) {
+        // In case events are propagated through portals
+        return;
+      }
+      if ((e.key === "a" && e.metaKey) || e.ctrlKey) {
+        e.preventDefault();
+      }
       if (e.key === "Escape") {
         if (searchTerm) {
           clear();

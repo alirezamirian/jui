@@ -17,7 +17,7 @@ import { styled } from "../styled";
 import { MenuContext, MenuProps } from "./Menu";
 import { MENU_BORDER_WIDTH, MENU_VERTICAL_PADDING } from "./StyledMenu";
 import { StyledMenuItem } from "./StyledMenuItem";
-import { Submenu } from "@intellij-platform/core/Menu/Submenu";
+import { Submenu, SubmenuProps } from "@intellij-platform/core/Menu/Submenu";
 
 export interface MenuItemProps<T> {
   item: Node<T>;
@@ -82,6 +82,9 @@ function useMenuItem<T extends unknown>(
     menuItemProps:
       submenuBehavior === "default" ||
       state.selectionManager.isFocused ||
+      // If nothing is expanded, let top level menu items grab focus as well.
+      // TODO: improve these conditions to a more generic one: if this menu item belongs to the "active" submenu.
+      //  Which would be the last opened submenu, or deepest submenu.
       (item.parentKey == null && state.expandedKeys.size === 0)
         ? { onMouseEnter, onPointerEnter, ...otherMenuItemProps }
         : otherMenuItemProps,
@@ -106,7 +109,12 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
   const isExpanded = state.expandedKeys.has(item.key);
   const isSelected = state.selectionManager.selectedKeys.has(item.key);
   const isFocused = state.selectionManager.focusedKey === item.key;
-  const { onClose, submenuBehavior } = useContext(MenuContext);
+  const {
+    onClose,
+    submenuBehavior,
+    renderSubmenu = (props: SubmenuProps<T>) => <Submenu {...props} />,
+    itemWrapper = (i: React.ReactNode) => i,
+  } = useContext(MenuContext);
 
   const { menuItemProps, labelProps, descriptionProps, keyboardShortcutProps } =
     useMenuItem(
@@ -128,7 +136,7 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
   });
   const { pressProps: togglePressProps } = usePress({
     isDisabled: isDisabled,
-    onPressUp: (e) => {
+    onPressUp: () => {
       state.toggleKey(item.key);
       if (isExpanded) {
         // submenu was expanded and is closed now. moving focus back to the parent item
@@ -183,7 +191,7 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
           submenuBehavior === "toggleOnPress" ? togglePressProps : {}
         )}
         isDisabled={isDisabled}
-        isActive={isFocused || isExpanded}
+        isActive={state.selectionManager.isFocused ? isFocused : isExpanded}
         ref={ref}
       >
         {isSelected && (
@@ -248,7 +256,7 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
         <OverlayContainer>
           <FocusScope>
             <div ref={nestedMenuRef} {...positionProps}>
-              <Submenu parentState={state} rootKey={item.key} />
+              {renderSubmenu({ parentState: state, rootKey: item.key })}
             </div>
           </FocusScope>
         </OverlayContainer>

@@ -1,13 +1,28 @@
+import { HTMLAttributes, RefObject, useMemo } from "react";
 import { Collection, KeyboardDelegate, Node } from "@react-types/shared";
 import { SelectionManager } from "@react-stately/selection";
+import { SpeedSearchPopupProps } from "@intellij-platform/core/SpeedSearch";
 import {
+  SpeedSearchState,
   SpeedSearchStateProps,
   useSpeedSearch,
   useSpeedSearchState,
 } from "../SpeedSearch/useSpeedSearch";
-import { useCollectionSpeedSearchResult } from "./useCollectionSpeedSearchResult";
-import { useMemo } from "react";
+import { CollectionSpeedSearchContextValue } from "./CollectionSpeedSearchContext";
+import {
+  CollectionSpeedSearchMatches,
+  useCollectionSpeedSearchResult,
+} from "./useCollectionSpeedSearchResult";
 import { createSpeedSearchKeyboardDelegate } from "./createSpeedSearchKeyboardDelegate";
+
+export interface CollectionSpeedSearch {
+  containerProps: HTMLAttributes<HTMLElement>;
+  selectionManager: SelectionManager;
+  keyboardDelegate: KeyboardDelegate;
+  speedSearch: SpeedSearchState & { matches: CollectionSpeedSearchMatches };
+  searchPopupProps: SpeedSearchPopupProps;
+  speedSearchContextValue: CollectionSpeedSearchContextValue;
+}
 
 /**
  * Given a `collection`, a `selectionManager` and a `keyboardDelegate`, it returns:
@@ -28,13 +43,15 @@ export function useCollectionSpeedSearch<T>({
   selectionManager,
   stickySearch,
   keyboardDelegate,
+  ref,
   ...speedSearchStateProps
 }: {
   collection: Collection<Node<T>>;
   selectionManager: SelectionManager;
   keyboardDelegate: KeyboardDelegate;
+  ref: RefObject<HTMLElement>;
   stickySearch?: boolean;
-} & SpeedSearchStateProps) {
+} & SpeedSearchStateProps): CollectionSpeedSearch {
   const speedSearch = useSpeedSearchState(speedSearchStateProps); // maybe allow control over state
   // via props?
 
@@ -44,7 +61,7 @@ export function useCollectionSpeedSearch<T>({
       selectionManager,
       speedSearch,
     });
-  const { containerProps } = useSpeedSearch({ stickySearch }, speedSearch);
+  const { containerProps } = useSpeedSearch({ stickySearch }, speedSearch, ref);
   const speedSearchKeyboardDelegate = useMemo(
     () =>
       createSpeedSearchKeyboardDelegate(

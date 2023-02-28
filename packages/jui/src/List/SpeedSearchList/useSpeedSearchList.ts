@@ -44,6 +44,7 @@ export function useSpeedSearchList<T>(
       ref
     ),
     stickySearch,
+    ref,
   });
   const { listProps, focused } = useList(
     {

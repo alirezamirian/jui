@@ -1,12 +1,13 @@
 import React, { Key, RefObject, useContext } from "react";
-import { useMenu as useMenuAria } from "@react-aria/menu";
+import { AriaMenuOptions, useMenu as useMenuAria } from "@react-aria/menu";
+import { TreeState } from "@react-stately/tree";
 import { AriaMenuProps } from "@react-types/menu";
 import { Node } from "@react-types/shared";
+import { patchCollectionProps } from "@intellij-platform/core/Collections/patchCollectionProps";
 import { TreeProps, useTreeState } from "../Tree/useTreeState"; // shared dependency between tree and menu, that could be lifted up import {Submenu} from '@intellij-platform/core/Menu/Submenu'
-import { renderMenuNode } from "./renderMenuNode";
+import { renderMenuNodes } from "./renderMenuNodes";
 import { StyledMenu } from "./StyledMenu";
-import { patchCollectionProps } from "@intellij-platform/core/Collections/PatchedItem";
-import { TreeState } from "@react-stately/tree"; // internal export
+import { SubmenuProps } from "./Submenu"; // internal export
 
 export interface MenuProps<T>
   extends Omit<
@@ -72,7 +73,13 @@ export const MenuContext = React.createContext<
   Pick<
     MenuProps<unknown>,
     "onClose" | "onAction" | "submenuBehavior" | "autoFocus"
-  >
+  > & {
+    itemWrapper?: (
+      renderedItem: React.ReactNode,
+      item: Node<unknown>
+    ) => React.ReactNode;
+    renderSubmenu?: (props: SubmenuProps<unknown>) => React.ReactNode;
+  }
 >({});
 
 export function useMenu<T>(
@@ -80,7 +87,7 @@ export function useMenu<T>(
     onAction: onActionProp,
     submenuBehavior = "default",
     ...props
-  }: MenuProps<T>,
+  }: MenuProps<T> & AriaMenuOptions<T>,
   state: TreeState<T>,
   ref: RefObject<HTMLElement>
 ) {
@@ -160,10 +167,7 @@ export function useMenuState<T extends object>(
  *    be a workaround for it.
  *  - when a parent menu item which has an open submenu is hovered, it gets focus.
  */
-export function Menu<T extends object>({
-  fillAvailableSpace = false,
-  ...props
-}: MenuProps<T>) {
+export function Menu<T extends object>(props: MenuProps<T>) {
   const ref = React.useRef<HTMLUListElement>(null);
   const state = useMenuState(props);
   const { menuContextValue, menuProps } = useMenu(props, state, ref);
@@ -180,11 +184,9 @@ export function Menu<T extends object>({
       <StyledMenu
         {...menuProps}
         ref={ref}
-        fillAvailableSpace={fillAvailableSpace}
+        fillAvailableSpace={props.fillAvailableSpace}
       >
-        {[...state.collection].map((node: Node<T>) =>
-          renderMenuNode(state, node)
-        )}
+        {renderMenuNodes(state, [...state.collection])}
       </StyledMenu>
     </MenuContext.Provider>
   );

@@ -313,6 +313,37 @@ export class Theme<P extends string = string> {
       ),
     };
   }
+
+  /**
+   * From DarculaUiUtil.java
+   */
+  @cache()
+  public getOutlineColor(enabled: boolean, focused: boolean) {
+    const theme = this as Theme<KnownThemePropertyPath>;
+    return enabled
+      ? focused
+        ? theme.color(
+            "Component.focusedBorderColor",
+            theme.color(
+              "Outline.focusedColor" as UnknownThemeProp<"Outline.focusedColor">,
+              "#87AFDA"
+            )
+          )
+        : theme.color(
+            "Component.borderColor",
+            theme.color(
+              "Outline.color" as UnknownThemeProp<"Outline.color">,
+              "#BFBFBF"
+            )
+          )
+      : theme.color(
+          "Component.disabledBorderColor",
+          theme.color(
+            "Outline.disabledColor" as UnknownThemeProp<"Outline.disabledColor">,
+            "#CFCFCF"
+          )
+        );
+  }
 }
 
 function detectOs(): OS | null {

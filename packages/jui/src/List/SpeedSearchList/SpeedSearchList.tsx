@@ -1,21 +1,25 @@
 import React, { useRef } from "react";
 import { AriaListBoxProps } from "@react-types/listbox";
-import { StyledList } from "../StyledList";
-import { ListProps } from "../List";
-import { useSpeedSearchList } from "./useSpeedSearchList";
-import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
-import { listItemRenderer } from "../listItemRenderer";
-import { useListState } from "../useListState";
-import { ListItem } from "../ListItem";
-import { CollectionSpeedSearchContainer } from "../../CollectionSpeedSearch/CollectionSpeedSearchContainer";
 import {
+  CollectionSpeedSearchContainer,
   CollectionSpeedSearchContext,
   SpeedSearchItemHighlightsProvider,
 } from "@intellij-platform/core/CollectionSpeedSearch";
+import {
+  SpeedSearchProps,
+  SpeedSearchPopup,
+} from "@intellij-platform/core/SpeedSearch";
 
-interface SpeedSearchListProps<T extends object> extends ListProps<T> {
-  stickySearch?: boolean;
-}
+import { StyledList } from "../StyledList";
+import { ListProps } from "../List";
+import { useSpeedSearchList } from "./useSpeedSearchList";
+import { listItemRenderer } from "../listItemRenderer";
+import { useListState } from "../useListState";
+import { ListItem } from "../ListItem";
+
+interface SpeedSearchListProps<T extends object>
+  extends ListProps<T>,
+    SpeedSearchProps {}
 
 /**
  * TODO:

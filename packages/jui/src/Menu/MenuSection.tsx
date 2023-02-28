@@ -4,11 +4,12 @@ import { Node } from "@react-types/shared";
 import { TreeState } from "@react-stately/tree";
 import { styled } from "@intellij-platform/core/styled";
 
-import { renderMenuNode } from "./renderMenuNode";
+import { renderMenuNodes } from "./renderMenuNodes";
 
 export interface MenuSectionProps<T> {
   item: Node<T>;
   state: TreeState<T>;
+  filter?: (node: Node<T>) => boolean;
 }
 
 const StyledMenuHeading = styled.li`
@@ -30,14 +31,15 @@ const StyledMenuSectionItemsContainer = styled.ul`
 export const MenuSection = <T extends unknown>({
   item,
   state,
+  filter = () => true,
 }: MenuSectionProps<T>): React.ReactElement => {
   let { itemProps, headingProps, groupProps } = useMenuSection({
     heading: item.rendered,
     "aria-label": item["aria-label"],
   });
 
-  const nodes = [...item.childNodes];
-  if (nodes.length === 0) {
+  const nodes = [...item.childNodes].filter(filter);
+  if (nodes.filter(({ type }) => type === "item").length === 0) {
     return <></>;
   }
   return (
@@ -49,7 +51,7 @@ export const MenuSection = <T extends unknown>({
           </StyledMenuHeading>
         )}
         <StyledMenuSectionItemsContainer {...groupProps}>
-          {[...item.childNodes].map((node) => renderMenuNode(state, node))}
+          {renderMenuNodes(state, nodes)}
         </StyledMenuSectionItemsContainer>
       </li>
     </>
