@@ -1,6 +1,8 @@
-import { Item } from "@react-stately/collections";
-import { Meta, Story } from "@storybook/react";
 import React, { ReactNode } from "react";
+import { Meta, Story } from "@storybook/react";
+import { Item } from "@react-stately/collections";
+import { ContextMenuContainer, styled } from "@intellij-platform/core";
+
 import { ActionButton } from "../ActionButton";
 import { ActionToolbar } from "../ActionToolbar/ActionToolbar";
 import { Divider, DividerItem } from "../Collections/Divider";
@@ -9,41 +11,9 @@ import { styledComponentsControlsExclude } from "../story-helpers";
 import { Menu, MenuProps } from "./Menu";
 import { MenuItemLayout } from "./MenuItemLayout";
 import { MenuTrigger, MenuTriggerProps } from "./MenuTrigger";
-import { ContextMenuContainer, styled } from "@intellij-platform/core";
+import { ExampleMenuItem, renderItem, viewModeItems } from "./story-helpers";
 
-type MenuItem =
-  | {
-      title: string;
-      icon?: string;
-      shortcut?: string;
-      subItems?: MenuItem[];
-    }
-  | DividerItem;
-const viewModeItems: Array<MenuItem> = [
-  {
-    title: "Undock",
-  },
-  {
-    title: "Docked",
-    subItems: [
-      {
-        title: "Pinned",
-      },
-      new DividerItem(),
-      {
-        title: "UnPinned",
-      },
-    ],
-  },
-  new DividerItem(),
-  {
-    title: "Float",
-  },
-  {
-    title: "Window",
-  },
-];
-const items: Array<MenuItem> = [
+const exampleMenuItems: Array<ExampleMenuItem> = [
   {
     title: "View Mode",
     subItems: viewModeItems,
@@ -55,21 +25,6 @@ const items: Array<MenuItem> = [
   },
 ];
 
-const renderItem = (item: MenuItem) => {
-  if (item instanceof DividerItem) {
-    return <Divider key={item.key} />;
-  }
-  return (
-    <Item key={item.title} textValue={item.title} childItems={item.subItems}>
-      <MenuItemLayout
-        icon={item.icon && <PlatformIcon icon={item.icon} />}
-        content={item.title}
-        shortcut={item.shortcut}
-      />
-    </Item>
-  );
-};
-
 export default {
   title: "Components/Menu",
   component: Menu,
@@ -77,7 +32,7 @@ export default {
     controls: { exclude: styledComponentsControlsExclude },
   },
   args: {
-    items,
+    items: exampleMenuItems,
     children: renderItem,
     onAction: (key) => {
       alert(`action: ${key}`);
@@ -88,13 +43,16 @@ export default {
   },
 } as Meta<MenuProps<unknown>>;
 
-const Template: Story<MenuProps<MenuItem>> = (props: MenuProps<MenuItem>) => (
-  <Menu {...props} />
-);
+const Template: Story<MenuProps<ExampleMenuItem>> = (
+  props: MenuProps<ExampleMenuItem>
+) => <Menu {...props} />;
 
-export const Static: Story = () => {
-  return (
-    <Menu disabledKeys={["jumpToExternalEditor"]}>
+export const Static = Template.bind(null);
+
+Static.args = {
+  disabledKeys: ["jumpToExternalEditor"],
+  children: (
+    <>
       <Item textValue="Cut">
         <MenuItemLayout
           icon={<PlatformIcon icon={"actions/menu-cut"} />}
@@ -135,10 +93,9 @@ export const Static: Story = () => {
       <Item key="jumpToExternalEditor" textValue="Jump to external editor">
         <MenuItemLayout content="Jump to external editor" shortcut={"⌥⌘F4"} />
       </Item>
-    </Menu>
-  );
+    </>
+  ).props.children,
 };
-
 export const StaticWithTextItems: Story = () => (
   <Menu>
     <Item>Restart Typescript Service</Item>
@@ -153,14 +110,14 @@ export const StaticWithTextItems: Story = () => (
 export const Nested = Template.bind(null);
 
 Nested.args = {
-  items,
+  items: exampleMenuItems,
   disabledKeys: ["Float"],
 };
 
 export const Position = ({ offsetRight = 230 }: { offsetRight: number }) => {
   return (
     <div style={{ paddingLeft: `calc(100% - ${offsetRight}px)` }}>
-      <Menu items={items}>{renderItem}</Menu>
+      <Menu items={exampleMenuItems}>{renderItem}</Menu>
     </div>
   );
 };
@@ -173,6 +130,27 @@ ToggleSubmenuOnPress.args = {
 export const SubmenuWithAction = Template.bind(null);
 SubmenuWithAction.args = {
   submenuBehavior: "actionOnPress",
+};
+
+export const Sections = Template.bind(null);
+Sections.args = {
+  items: [
+    {
+      title: "Local Branches",
+      subItems: [{ title: "master" }, { title: "dev" }],
+      section: true,
+    },
+    {
+      title: "Remote Branches",
+      subItems: [{ title: "origin/master" }, { title: "origin/dev" }],
+      section: true,
+    },
+    {
+      title: "Empty section",
+      subItems: [],
+      section: true,
+    },
+  ],
 };
 
 export const MenuWithTrigger: Story<
@@ -205,7 +183,7 @@ export const MenuWithTrigger: Story<
           {...otherProps}
           renderMenu={({ menuProps }) => (
             <Menu
-              items={items}
+              items={exampleMenuItems}
               disabledKeys={["Float"]}
               {...menuProps}
               {...otherMenuProps}

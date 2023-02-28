@@ -6,7 +6,8 @@ export const ListDivider: React.FC = () => {
   return (
     <StyledVerticalSeparator
       as={"li"}
-      {...useSeparator({ orientation: "vertical" })}
+      {...useSeparator({ elementType: "li", orientation: "vertical" })
+        .separatorProps}
     />
   );
 };

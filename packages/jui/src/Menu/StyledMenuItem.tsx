@@ -1,7 +1,31 @@
-import { css } from "styled-components";
-import { styled } from "../styled";
+import { css, styled } from "@intellij-platform/core/styled";
+
 import { UnknownThemeProp } from "../Theme/Theme";
 
+const highlightedStyle = css`
+  color: ${({ theme }) =>
+    theme.asCurrentForeground(
+      theme.color(
+        "MenuItem.selectionForeground" as UnknownThemeProp<"MenuItem.selectionForeground">
+      )
+    )};
+  background: ${({ theme }) =>
+    theme.color(
+      "MenuItem.selectionBackground" as UnknownThemeProp<"MenuItem.selectionBackground">
+    )};
+`;
+const defaultStyle = css`
+  color: ${({ theme }) =>
+    theme.color(
+      "MenuItem.foreground" as UnknownThemeProp<"MenuItem.foreground">
+    )};
+  background: unset;
+`;
+const disabledStyle = css`
+  color: ${({ theme }) =>
+    theme.color("MenuItem.disabledForeground") + "!important"};
+  background: unset !important;
+`;
 export const StyledMenuItem = styled.li<{
   isDisabled: boolean;
   isActive: boolean;
@@ -10,28 +34,27 @@ export const StyledMenuItem = styled.li<{
   outline: none;
   cursor: default;
   white-space: nowrap;
-  color: ${({ isActive, isDisabled, theme }) => {
-    if (isDisabled) {
-      return theme.color("MenuItem.disabledForeground");
-    }
-    if (isActive) {
-      return theme.asCurrentForeground(
-        theme.color(
-          "MenuItem.selectionForeground" as UnknownThemeProp<"MenuItem.selectionForeground">
-        )
-      );
-    }
-    return theme.color(
-      "MenuItem.foreground" as UnknownThemeProp<"MenuItem.foreground">
-    );
-  }};
-  ${({ isActive, theme }) =>
-    isActive &&
-    css`
-      background: ${theme.color(
-        "MenuItem.selectionBackground" as UnknownThemeProp<"MenuItem.selectionBackground">
-      )};
-    `}
+
+  // bg/fg style for different states. Order is based on how they should override each other
+  ${defaultStyle};
+  ${({ isActive }) => isActive && highlightedStyle};
+  ${({ isDisabled }) => isDisabled && disabledStyle};
+
+  // With default submenu behavior, items get focused on hover, and highlighting the active (focused) item is fine.
+  // With other submenu behaviors, in the reference implementation, the hover item takes precedence over focused key.
+  // i.e., submenus can be open while mouse is on sibling of submenu's parent item. In that case, the hovered item
+  // will be highlighted even though the focus is kept within the opened submenu. This behavior (which may be even a
+  // little questionable UX-wise), seemed better implemented by css, because otherwise, we would need MenuItem to know
+  // if it's parent menu is hovered or not.
+  // TODO: cover this with tests
+
+  ul[role="menu"]:not(:focus-within):hover & {
+    ${defaultStyle};
+  }
+  ul[role="menu"]:not(:focus-within):hover &:hover {
+    ${highlightedStyle};
+  }
+
   // would be nice to have a visual clue for focus visible state, but it's not like that in intellij platform
   //border-left: 3px solid transparent;
   //&:focus-visible {

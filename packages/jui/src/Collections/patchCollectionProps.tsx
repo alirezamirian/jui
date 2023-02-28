@@ -24,7 +24,7 @@ function* patchCollectionItem<T>(nodes: Generator<PartialNode<T>>) {
     };
 }
 
-export const PatchedItem = Item.bind(null);
+const PatchedItem = Item.bind(null);
 
 // @ts-expect-error: getCollectionNode is not public
 PatchedItem.getCollectionNode = function getCollectionNode<T>(
@@ -35,7 +35,7 @@ PatchedItem.getCollectionNode = function getCollectionNode<T>(
   return patchCollectionItem(Item.getCollectionNode(props, context));
 };
 
-export const PatchedSection = Section.bind(null);
+const PatchedSection = Section.bind(null);
 
 // @ts-expect-error: getCollectionNode is not public
 PatchedSection.getCollectionNode = function getCollectionNode<T>(

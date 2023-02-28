@@ -13,12 +13,14 @@ import darculaThemeJson from "../../themes/darcula.theme.json";
 import { Section } from "@react-stately/collections";
 
 const {
+  Static,
   Nested,
   MenuWithTrigger,
   StaticWithTextItems,
   ContextMenu,
   ToggleSubmenuOnPress,
   SubmenuWithAction,
+  Sections,
 } = composeStories(stories);
 
 describe("Menu", () => {
@@ -155,6 +157,11 @@ describe("Menu", () => {
     cy.findByRole("menuitem", { name: "Item 1-3" }).realHover();
   });
 
+  it("Doesn't render empty sections", () => {
+    cy.mount(<Sections />);
+    cy.contains("Empty section").should("not.exist");
+  });
+
   it("submenu is closed when sibling items in are hovered, in a section", () => {
     cy.mount(
       <Menu aria-label="Nested menu with sections and dividers">
@@ -179,6 +186,21 @@ describe("Menu", () => {
     // Hovering an item outside the section
     cy.findByRole("menuitem", { name: "Item 2" }).realHover();
     cy.findAllByRole("menu").should("have.length", 1);
+  });
+
+  it("scrolls items focused item into viewport, if needed", () => {
+    cy.mount(
+      <div style={{ height: 100 }}>
+        <Static fillAvailableSpace />
+      </div>
+    );
+    cy.findByRole("menuitem", { name: "Reformat Code" }).focus();
+    cy.realPress("ArrowDown");
+    cy.findByRole("menuitem", { name: "Optimize Imports" }).should(
+      "be.visible"
+    );
+    cy.realPress("ArrowDown");
+    cy.findByRole("menuitem", { name: "Delete" }).should("be.visible");
   });
 
   describe("submenuBehavior=toggleOnPress", () => {
@@ -251,6 +273,27 @@ describe("Menu", () => {
         .click();
       cy.findByRole("menuitem", { name: "Docked" }).should("not.exist");
     });
+
+    it("doesn't focus items on hover, when a submenu is open and focused", () => {
+      cy.mount(<ToggleSubmenuOnPress autoFocus />);
+      // Open submenu
+      cy.findByRole("menuitem", { name: "View Mode" })
+        .findByRole("button")
+        .click();
+      // Hover a menu item in outside the currently opened submenu, and expect the focus not to move to it
+      cy.findByRole("menuitem", { name: "Group tabs" })
+        .realHover()
+        .should("not.have.focus");
+      cy.findByRole("menu", { name: "View Mode" }).should("have.focus");
+    });
+
+    it("focuses top level items on hover, when there is no submenu opened, even if the menu is not focused", () => {
+      cy.mount(<ToggleSubmenuOnPress autoFocus={false} />);
+      cy.findByRole("menu").should("not.have.focus");
+      cy.findByRole("menuitem", { name: "Group tabs" })
+        .realHover()
+        .should("have.focus");
+    });
   });
 
   describe("submenuBehavior=actionOnPress", () => {
@@ -290,6 +333,14 @@ describe("Menu", () => {
       cy.wrap(onClose).should("be.calledOnce");
     });
 
+    it("opens the submenu when right arrow is pressed", () => {
+      cy.mount(<SubmenuWithAction />);
+      cy.mount(<SubmenuWithAction />);
+      cy.findByRole("menuitem", { name: "View Mode" }).focus();
+      cy.realPress("ArrowRight");
+      cy.findByRole("menuitem", { name: "Docked" }).should("be.visible");
+    });
+
     it("doesn't trigger action when the right chevron arrow is pressed", () => {
       cy.mount(<SubmenuWithAction />);
       const onAction = cy.stub();
@@ -313,6 +364,27 @@ describe("Menu", () => {
         .findByRole("button")
         .click();
       cy.findByRole("menuitem", { name: "Docked" }).should("not.exist");
+    });
+
+    it("doesn't focus items on hover, when a submenu is open and focused", () => {
+      cy.mount(<SubmenuWithAction autoFocus />);
+      // Open submenu
+      cy.findByRole("menuitem", { name: "View Mode" })
+        .findByRole("button")
+        .click();
+      // Hover a menu item in outside the currently opened submenu, and expect the focus not to move to it
+      cy.findByRole("menuitem", { name: "Group tabs" })
+        .realHover()
+        .should("not.have.focus");
+      cy.findByRole("menu", { name: "View Mode" }).should("have.focus");
+    });
+
+    it("focuses top level items on hover, when there is no submenu opened, even if the menu is not focused", () => {
+      cy.mount(<SubmenuWithAction autoFocus={false} />);
+      cy.findByRole("menu").should("not.have.focus");
+      cy.findByRole("menuitem", { name: "Group tabs" })
+        .realHover()
+        .should("have.focus");
     });
   });
 });
@@ -397,6 +469,45 @@ describe("Menu with trigger", () => {
     cy.realPress("Escape"); // close submenu with escape
     cy.focused().should("not.exist"); // The menu should be closed
     matchImageSnapshot(`menu-with-trigger--keyboard-behaviour-4`);
+  });
+
+  it("supports keyboard when sections and dividers are used", () => {
+    cy.mount(
+      <Menu>
+        <Item title="Group 1">
+          <Item>G1. Item 1</Item>
+          <Divider />
+          <Item>G1. Item 2</Item>
+          <Section title="section 1">
+            <Item>G1. S1. Item 1</Item>
+          </Section>
+        </Item>
+        <Divider />
+        <Section title="section 1">
+          <Item>S1. Item 1</Item>
+        </Section>
+        <Section title="section 2">
+          <Item>S2. Item 1</Item>
+        </Section>
+      </Menu>
+    );
+    cy.findByRole("menuitem", { name: "Group 1" }).focus().should("have.focus");
+
+    cy.realPress("Enter"); // Going to first level menu to check navigation
+    cy.findByRole("menuitem", { name: "G1. Item 1" })
+      .focus()
+      .should("have.focus");
+    cy.realPress("ArrowDown");
+    cy.findByRole("menuitem", { name: "G1. Item 2" }).should("have.focus");
+    cy.realPress("ArrowDown");
+    cy.findByRole("menuitem", { name: "G1. S1. Item 1" }).should("have.focus");
+
+    cy.realPress("ArrowLeft"); // back to first level menu
+    cy.findByRole("menuitem", { name: "Group 1" }).should("have.focus");
+    cy.realPress("ArrowDown");
+    cy.findByRole("menuitem", { name: "S1. Item 1" }).should("have.focus");
+    cy.realPress("ArrowDown");
+    cy.findByRole("menuitem", { name: "S2. Item 1" }).should("have.focus");
   });
 
   it("when closed, restores focus to the previously focused element, by default", () => {

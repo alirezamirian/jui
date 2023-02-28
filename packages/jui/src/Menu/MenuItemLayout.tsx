@@ -2,6 +2,7 @@ import React from "react";
 import { ItemStateContext } from "../Collections/ItemStateContext";
 import { styled } from "../styled";
 import { useContextOrThrow } from "../utils/useContextOrThrow";
+import { useMenuItemLayout } from "@intellij-platform/core/Menu/MenuItem";
 
 interface MenuItemLayoutProps {
   icon?: React.ReactNode;
@@ -44,11 +45,12 @@ export const MenuItemLayout = ({
     ItemStateContext,
     "MenuItemLayout is meant to be rendered in Item component in Menus"
   );
+  const { labelProps, keyboardShortcutProps } = useMenuItemLayout();
   return (
     <StyledMenuItemLayout>
       <Icon>{!isSelected && icon}</Icon>
-      <Content>{content}</Content>
-      {shortcut && <Shortcut>{shortcut}</Shortcut>}
+      <Content {...labelProps}>{content}</Content>
+      {shortcut && <Shortcut {...keyboardShortcutProps}>{shortcut}</Shortcut>}
     </StyledMenuItemLayout>
   );
 };

@@ -1,20 +1,26 @@
+import { css } from "styled-components";
+
 import { WINDOW_SHADOW } from "../style-constants";
 import { styled } from "../styled";
 import { StyledVerticalSeparator } from "../StyledSeparator";
 import { UnknownThemeProp } from "../Theme/Theme";
-import { css } from "styled-components";
 
 export const MENU_VERTICAL_PADDING = 5;
 export const MENU_BORDER_WIDTH = 1;
 
+// noinspection CssInvalidPropertyValue
 export const StyledMenu = styled.ul<{ fillAvailableSpace?: boolean }>`
-  font-size: 0.87rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8rem;
   margin: 0;
   padding: ${MENU_VERTICAL_PADDING}px 0;
   outline: none;
   list-style: none;
   width: fit-content;
-  min-width: 100px;
+  min-width: 120px;
+  overflow: auto;
   // Border doesn't seem to be painted in the original impl. IdeaPopupMenuUI.isUnderPopup(c) seemed to return false
   // in all cases. More info: https://github.com/JetBrains/intellij-community/blob/c5ece483811a3ab546fc3880225efb02cc8b94dd/platform/platform-impl/src/com/intellij/ide/ui/laf/darcula/ui/DarculaPopupMenuBorder.java#L24
   /*  border: ${MENU_BORDER_WIDTH}px solid
@@ -30,6 +36,11 @@ export const StyledMenu = styled.ul<{ fillAvailableSpace?: boolean }>`
       "PopupMenu.foreground" as UnknownThemeProp<"PopupMenu.foreground">
     )};
 
+  ${StyledVerticalSeparator}:first-child,
+  ${StyledVerticalSeparator}:last-child, 
+  ${StyledVerticalSeparator} + ${StyledVerticalSeparator} {
+    display: none;
+  }
   ${StyledVerticalSeparator} {
     background-color: ${({ theme }) => theme.color("Menu.separatorColor")};
     height: ${({ theme }) =>

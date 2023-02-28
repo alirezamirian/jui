@@ -1,11 +1,13 @@
-import React, { Key, useContext } from "react";
-import { useMenu } from "@react-aria/menu";
+import React, { Key, RefObject, useContext } from "react";
+import { AriaMenuOptions, useMenu as useMenuAria } from "@react-aria/menu";
+import { TreeState } from "@react-stately/tree";
 import { AriaMenuProps } from "@react-types/menu";
 import { Node } from "@react-types/shared";
-import { useTreeState } from "../Tree/useTreeState"; // shared dependency between tree and menu, that could be lifted up import {Submenu} from '@intellij-platform/core/Menu/Submenu'
-import { renderMenuNode } from "./renderMenuNode";
+import { patchCollectionProps } from "@intellij-platform/core/Collections/patchCollectionProps";
+import { TreeProps, useTreeState } from "../Tree/useTreeState"; // shared dependency between tree and menu, that could be lifted up import {Submenu} from '@intellij-platform/core/Menu/Submenu'
+import { renderMenuNodes } from "./renderMenuNodes";
 import { StyledMenu } from "./StyledMenu";
-import { patchCollectionProps } from "@intellij-platform/core/Collections/PatchedItem"; // internal export
+import { SubmenuProps } from "./Submenu"; // internal export
 
 export interface MenuProps<T>
   extends Omit<
@@ -71,8 +73,77 @@ export const MenuContext = React.createContext<
   Pick<
     MenuProps<unknown>,
     "onClose" | "onAction" | "submenuBehavior" | "autoFocus"
-  >
+  > & {
+    itemWrapper?: (
+      renderedItem: React.ReactNode,
+      item: Node<unknown>
+    ) => React.ReactNode;
+    renderSubmenu?: (props: SubmenuProps<unknown>) => React.ReactNode;
+  }
 >({});
+
+export function useMenu<T>(
+  {
+    onAction: onActionProp,
+    submenuBehavior = "default",
+    ...props
+  }: MenuProps<T> & AriaMenuOptions<T>,
+  state: TreeState<T>,
+  ref: RefObject<HTMLElement>
+) {
+  const { close } = useContext(MenuOverlayContext);
+  const onClose = () => {
+    props.onClose?.();
+    close();
+  };
+  const onAction = (key: Key) => {
+    if (
+      // The following check should have been in useMenu, but it's not currently. Probably because they haven't yet
+      // covered nested menus.
+      !state.collection.getItem(key)?.hasChildNodes
+    ) {
+      return onActionProp?.(key);
+    } else if (submenuBehavior === "actionOnPress") {
+      onClose();
+      return onActionProp?.(key);
+    }
+  };
+  const menuContextValue: React.ContextType<typeof MenuContext> = {
+    submenuBehavior,
+    autoFocus: props.autoFocus,
+    onAction,
+    onClose,
+  };
+  const { menuProps } = useMenuAria(
+    { ...props, onAction, onClose },
+    state,
+    ref
+  );
+
+  return {
+    menuProps,
+    menuContextValue,
+  };
+}
+
+export function useMenuState<T extends object>(
+  props: TreeProps<T> &
+    Pick<
+      MenuProps<T>,
+      "expandedKey" | "defaultExpandedKey" | "onExpandedKeyChange"
+    >
+) {
+  props = patchCollectionProps(props);
+  return useTreeState({
+    ...props,
+    childExpansionBehaviour: "single",
+    expandedKeys: props.expandedKey ? [props.expandedKey] : undefined,
+    onExpandedChange: ([firstKey]) => props?.onExpandedKeyChange?.(firstKey),
+    defaultExpandedKeys: props.defaultExpandedKey
+      ? [props.defaultExpandedKey]
+      : undefined,
+  });
+}
 
 /**
  * UI for menus which are normally shown in a popover. Being rendered as an overlay is not handled here.
@@ -96,44 +167,10 @@ export const MenuContext = React.createContext<
  *    be a workaround for it.
  *  - when a parent menu item which has an open submenu is hovered, it gets focus.
  */
-export function Menu<T extends object>({
-  onAction: onActionProp,
-  submenuBehavior = "default",
-  fillAvailableSpace = false,
-  ...props
-}: MenuProps<T>) {
-  props = patchCollectionProps(props);
-  const { close } = useContext(MenuOverlayContext);
-  const onClose = () => {
-    props.onClose?.();
-    close();
-  };
-  const onAction = (key: Key) => {
-    if (
-      // The following check should have been in useMenu, but it's not currently. Probably because they haven't yet
-      // covered nested menus.
-      !state.collection.getItem(key)?.hasChildNodes
-    ) {
-      return onActionProp?.(key);
-    } else if (submenuBehavior === "actionOnPress") {
-      onClose();
-      return onActionProp?.(key);
-    }
-  };
-  // Create state based on the incoming props
-  let state = useTreeState({
-    ...props,
-    childExpansionBehaviour: "single",
-    expandedKeys: props.expandedKey ? [props.expandedKey] : undefined,
-    onExpandedChange: ([firstKey]) => props?.onExpandedKeyChange?.(firstKey),
-    defaultExpandedKeys: props.defaultExpandedKey
-      ? [props.defaultExpandedKey]
-      : undefined,
-  });
-
-  // Get props for the menu element
+export function Menu<T extends object>(props: MenuProps<T>) {
   const ref = React.useRef<HTMLUListElement>(null);
-  const { menuProps } = useMenu({ ...props, onAction, onClose }, state, ref);
+  const state = useMenuState(props);
+  const { menuContextValue, menuProps } = useMenu(props, state, ref);
 
   return (
     /**
@@ -143,22 +180,13 @@ export function Menu<T extends object>({
      * menu items in that submenu access the right value of onAction and onClose. To avoid drilling these props down,
      * we keep it in a context.
      */
-    <MenuContext.Provider
-      value={{
-        submenuBehavior,
-        autoFocus: props.autoFocus,
-        onAction,
-        onClose,
-      }}
-    >
+    <MenuContext.Provider value={menuContextValue}>
       <StyledMenu
         {...menuProps}
         ref={ref}
-        fillAvailableSpace={fillAvailableSpace}
+        fillAvailableSpace={props.fillAvailableSpace}
       >
-        {[...state.collection].map((node: Node<T>) =>
-          renderMenuNode(state, node)
-        )}
+        {renderMenuNodes(state, [...state.collection])}
       </StyledMenu>
     </MenuContext.Provider>
   );

@@ -14,30 +14,50 @@ export function createSpeedSearchKeyboardDelegate(
 ): KeyboardDelegate {
   // TODO: page up and down deactivate speed search. If we want that, we can pass the speedSearch
   //  object too. but doesn't seem like the best way to do it, even it the same behavior is expected
+  const findFirstMatch = <T extends React.Key | undefined, K>(
+    fromKey: React.Key | undefined | null,
+    direction: "up" | "down"
+  ) => {
+    let currentKey: React.Key | undefined | null = fromKey;
+    while (currentKey != null) {
+      if (!matches || matches.has(currentKey)) {
+        return currentKey;
+      }
+      currentKey =
+        direction === "up"
+          ? wrappedKeyboardDelegate.getKeyAbove?.(currentKey)
+          : wrappedKeyboardDelegate.getKeyBelow?.(currentKey);
+    }
+    return currentKey ?? undefined;
+  };
   return Object.create(wrappedKeyboardDelegate, {
     getKeyBelow: {
-      value: (key: React.Key): React.Key | undefined => {
-        let keyBelow = wrappedKeyboardDelegate.getKeyBelow?.(key);
-        while (keyBelow != null) {
-          if (!matches || matches.has(keyBelow)) {
-            return keyBelow;
-          }
-          keyBelow = wrappedKeyboardDelegate.getKeyBelow?.(keyBelow);
-        }
-        return keyBelow ?? undefined;
-      },
+      value: (key) =>
+        findFirstMatch(wrappedKeyboardDelegate.getKeyBelow?.(key), "down"),
     },
     getKeyAbove: {
-      value: (key: React.Key): React.Key | undefined => {
-        let keyAfter = wrappedKeyboardDelegate.getKeyAbove?.(key);
-        while (keyAfter != null) {
-          if (!matches || matches.has(keyAfter)) {
-            return keyAfter;
-          }
-          keyAfter = wrappedKeyboardDelegate.getKeyAbove?.(keyAfter);
-        }
-        return keyAfter ?? undefined;
+      value: (key) =>
+        findFirstMatch(wrappedKeyboardDelegate.getKeyAbove?.(key), "up"),
+    },
+    getFirstKey: {
+      value: (key?: React.Key, global?: boolean): React.Key | null => {
+        const firstKey = findFirstMatch(
+          wrappedKeyboardDelegate.getFirstKey?.(key, global),
+          "down"
+        );
+        return firstKey == null ? matches?.values().next().value : firstKey;
       },
     },
-  });
+    getLastKey: {
+      value: (key?: React.Key, global?: boolean): React.Key | null => {
+        const lastKey = findFirstMatch(
+          wrappedKeyboardDelegate.getLastKey?.(key, global),
+          "down"
+        );
+        return lastKey == null
+          ? [...(matches?.keys() || [])].pop() ?? null
+          : lastKey;
+      },
+    },
+  } as { [key in keyof KeyboardDelegate]: { value: KeyboardDelegate[key] } });
 }

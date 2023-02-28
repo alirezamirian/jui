@@ -1,19 +1,23 @@
-import React, { HTMLAttributes, useContext } from "react";
+import React, { HTMLAttributes, RefObject, useContext } from "react";
 import { useHover, usePress } from "@react-aria/interactions";
-import { useMenuItem } from "@react-aria/menu";
+import {
+  AriaMenuItemProps,
+  MenuItemAria,
+  useMenuItem as useMenuItemAria,
+} from "@react-aria/menu";
 import { OverlayContainer, useOverlayPosition } from "@react-aria/overlays";
 import { mergeProps } from "@react-aria/utils";
 import { TreeState } from "@react-stately/tree";
-import { Node } from "@react-types/shared";
+import { FocusableElement, Node } from "@react-types/shared";
 import { FocusScope } from "@intellij-platform/core/utils/FocusScope";
 import { ItemStateContext } from "@intellij-platform/core/Collections/ItemStateContext";
 
 import { LafIcon, PlatformIcon } from "../Icon";
 import { styled } from "../styled";
-import { MenuContext } from "./Menu";
+import { MenuContext, MenuProps } from "./Menu";
 import { MENU_BORDER_WIDTH, MENU_VERTICAL_PADDING } from "./StyledMenu";
 import { StyledMenuItem } from "./StyledMenuItem";
-import { Submenu } from "@intellij-platform/core/Menu/Submenu";
+import { Submenu, SubmenuProps } from "@intellij-platform/core/Menu/Submenu";
 
 export interface MenuItemProps<T> {
   item: Node<T>;
@@ -51,17 +55,19 @@ const StyledMenuItemLafIcon = styled(LafIcon)`
   }
 `;
 
-export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
-  // Get props for the menu item element
-  const ref = React.useRef<HTMLLIElement>(null);
-  const nestedMenuRef = React.useRef<HTMLDivElement>(null);
-  const isDisabled = state.disabledKeys.has(item.key);
-  const isExpanded = state.expandedKeys.has(item.key);
-  const isSelected = state.selectionManager.selectedKeys.has(item.key);
-  const isFocused = state.selectionManager.focusedKey === item.key;
-  const { onClose, submenuBehavior } = useContext(MenuContext);
-
-  const { menuItemProps } = useMenuItem(
+function useMenuItem<T extends unknown>(
+  {
+    submenuBehavior,
+    ...props
+  }: AriaMenuItemProps & { submenuBehavior: MenuProps<T>["submenuBehavior"] },
+  state: TreeState<T>,
+  ref: RefObject<FocusableElement>
+): MenuItemAria {
+  const item = state.collection.getItem(props.key!);
+  const {
+    menuItemProps: { onMouseEnter, onPointerEnter, ...otherMenuItemProps },
+    ...result
+  } = useMenuItemAria(
     {
       key: item.key,
       // hack to prevent react-aria to call onClose when nested items are selected, which is incorrect, and because
@@ -71,6 +77,54 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
     state,
     ref
   );
+  return {
+    ...result,
+    menuItemProps:
+      submenuBehavior === "default" ||
+      state.selectionManager.isFocused ||
+      // If nothing is expanded, let top level menu items grab focus as well.
+      // TODO: improve these conditions to a more generic one: if this menu item belongs to the "active" submenu.
+      //  Which would be the last opened submenu, or deepest submenu.
+      (item.parentKey == null && state.expandedKeys.size === 0)
+        ? { onMouseEnter, onPointerEnter, ...otherMenuItemProps }
+        : otherMenuItemProps,
+  };
+}
+
+const MenuItemContext = React.createContext<{
+  labelProps: HTMLAttributes<HTMLElement>;
+  descriptionProps: HTMLAttributes<HTMLElement>;
+  keyboardShortcutProps: HTMLAttributes<HTMLElement>;
+}>({ descriptionProps: {}, labelProps: {}, keyboardShortcutProps: {} });
+
+export const useMenuItemLayout = () => {
+  return useContext(MenuItemContext);
+};
+
+export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
+  // Get props for the menu item element
+  const ref = React.useRef<HTMLLIElement>(null);
+  const nestedMenuRef = React.useRef<HTMLDivElement>(null);
+  const isDisabled = state.disabledKeys.has(item.key);
+  const isExpanded = state.expandedKeys.has(item.key);
+  const isSelected = state.selectionManager.selectedKeys.has(item.key);
+  const isFocused = state.selectionManager.focusedKey === item.key;
+  const {
+    onClose,
+    submenuBehavior,
+    renderSubmenu = (props: SubmenuProps<T>) => <Submenu {...props} />,
+    itemWrapper = (i: React.ReactNode) => i,
+  } = useContext(MenuContext);
+
+  const { menuItemProps, labelProps, descriptionProps, keyboardShortcutProps } =
+    useMenuItem(
+      {
+        submenuBehavior,
+        key: item.key,
+      },
+      state,
+      ref
+    );
 
   const { hoverProps } = useHover({
     isDisabled: isDisabled || submenuBehavior !== "default",
@@ -82,7 +136,7 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
   });
   const { pressProps: togglePressProps } = usePress({
     isDisabled: isDisabled,
-    onPressUp: (e) => {
+    onPressUp: () => {
       state.toggleKey(item.key);
       if (isExpanded) {
         // submenu was expanded and is closed now. moving focus back to the parent item
@@ -94,8 +148,9 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
   const keyboardProps = {
     onKeyDown: (e: React.KeyboardEvent) => {
       if (
-        submenuBehavior !== "actionOnPress" &&
-        ["ArrowRight", "Enter", " "].includes(e.key)
+        ((e.key === "Enter" || e.key === " ") &&
+          submenuBehavior !== "actionOnPress") ||
+        "ArrowRight" === e.key
       ) {
         state.toggleKey(item.key);
         e.stopPropagation();
@@ -136,7 +191,7 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
           submenuBehavior === "toggleOnPress" ? togglePressProps : {}
         )}
         isDisabled={isDisabled}
-        isActive={isFocused || isExpanded}
+        isActive={state.selectionManager.isFocused ? isFocused : isExpanded}
         ref={ref}
       >
         {isSelected && (
@@ -157,11 +212,20 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
             node: item,
           }}
         >
-          {typeof item.rendered === "string" ? (
-            <StyledMenuItemText>{item.rendered}</StyledMenuItemText>
-          ) : (
-            item.rendered
-          )}
+          <MenuItemContext.Provider
+            value={{ labelProps, descriptionProps, keyboardShortcutProps }}
+          >
+            {itemWrapper(
+              typeof item.rendered === "string" ? (
+                <StyledMenuItemText {...labelProps}>
+                  {item.rendered}
+                </StyledMenuItemText>
+              ) : (
+                item.rendered
+              ),
+              item
+            )}
+          </MenuItemContext.Provider>
         </ItemStateContext.Provider>
         {item.hasChildNodes && (
           <StyledNestedArrow {...arrowProps}>
@@ -192,7 +256,7 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
         <OverlayContainer>
           <FocusScope>
             <div ref={nestedMenuRef} {...positionProps}>
-              <Submenu parentState={state} rootKey={item.key} />
+              {renderSubmenu({ parentState: state, rootKey: item.key })}
             </div>
           </FocusScope>
         </OverlayContainer>
