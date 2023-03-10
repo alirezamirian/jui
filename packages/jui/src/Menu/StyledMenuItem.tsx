@@ -1,6 +1,22 @@
 import { css, styled } from "@intellij-platform/core/styled";
 
 import { UnknownThemeProp } from "../Theme/Theme";
+import { StyledMenu } from "./StyledMenu";
+
+const ICON_MARGIN = "0.3125rem"; // 5px
+const ICON_WIDTH = "1rem"; // 16px
+const LIST_ITEM_PADDING = "0.75rem"; // 12px
+export const StyledMenuItemIcon = styled.span`
+  display: inline-flex; // prevents unwanted increased height
+  min-width: ${ICON_WIDTH};
+  margin-right: ${ICON_MARGIN};
+`;
+
+export const StyledNestedArrow = styled.span`
+  display: inline-flex; // to make it not take more height than the icon
+  margin-right: -0.75rem;
+  margin-left: 0.75rem;
+`;
 
 const highlightedStyle = css`
   color: ${({ theme }) =>
@@ -60,7 +76,15 @@ export const StyledMenuItem = styled.li<{
   //&:focus-visible {
   //  border-left: 3px solid rgba(255, 255, 255, 0.1);
   //}
-  padding: 0 20px 0 27px;
+
+  // NOTE: The left margin seems not to be consistent in all menus.
+  padding: 0 1.25rem 0 ${LIST_ITEM_PADDING};
+  // CSS-only solution to conditionally add left margin to menu items without icon, if there is at least one menu item
+  // with icon, in the current menu. To have text in all menu items aligned. The extra margin is avoided if there is no
+  // menu item with icon. It relies on :has() css pseudo-class which is not supported in FF at the moment.
+  ${StyledMenu}:has(${StyledMenuItemIcon}) &:not(:has(${StyledMenuItemIcon})) {
+    padding-left: calc(${LIST_ITEM_PADDING} + ${ICON_WIDTH} + ${ICON_MARGIN});
+  }
   line-height: 1.5; // to make the item have the right height
   display: flex;
   align-items: center;

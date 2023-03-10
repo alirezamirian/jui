@@ -6,6 +6,7 @@ import {
   Item,
   Menu,
   MenuItemLayout,
+  PlatformIcon,
   Theme,
   ThemeProvider,
 } from "@intellij-platform/core";
@@ -33,6 +34,43 @@ describe("Menu", () => {
   it("shows arrow in the right position when plain text is used in menu items", () => {
     cy.mount(<StaticWithTextItems />);
     matchImageSnapshot("menu--plain-text-arrow-position");
+  });
+
+  it("aligns text of items with or without icon", () => {
+    cy.mount(
+      <Menu>
+        <Item textValue="MenuItemLayout with icon">
+          <MenuItemLayout
+            icon={<PlatformIcon icon={"actions/menu-cut"} />}
+            content="MenuItemLayout with icon"
+            shortcut={"⌘X"}
+          />
+        </Item>
+        <Item textValue="MenuItemLayout without icon">
+          <MenuItemLayout
+            content="MenuItemLayout without icon"
+            shortcut={"⌘Y"}
+          />
+        </Item>
+        <Item>Plain text content</Item>
+      </Menu>
+    );
+    matchImageSnapshot("menu--text-alignment--icon");
+  });
+
+  it("avoid extra padding when no item has icon", () => {
+    cy.mount(
+      <Menu>
+        <Item textValue="MenuItemLayout without icon">
+          <MenuItemLayout
+            content="MenuItemLayout without icon"
+            shortcut={"⌘Y"}
+          />
+        </Item>
+        <Item>Plain text content</Item>
+      </Menu>
+    );
+    matchImageSnapshot("menu--text-alignment--no-icon");
   });
 
   it("supports keyboard", () => {

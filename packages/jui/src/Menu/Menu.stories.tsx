@@ -22,6 +22,7 @@ const exampleMenuItems: Array<ExampleMenuItem> = [
   {
     title: "Group tabs",
     icon: "toolwindows/documentation",
+    shortcut: "^G",
   },
 ];
 
