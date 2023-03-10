@@ -144,12 +144,21 @@ Sections.args = {
   items: [
     {
       title: "Local Branches",
-      subItems: [{ title: "master" }, { title: "dev" }],
+      subItems: [
+        { title: "master", subItems: [{ title: "Pull" }, { title: "Update" }] },
+        { title: "dev" },
+      ],
       section: true,
     },
     {
       title: "Remote Branches",
-      subItems: [{ title: "origin/master" }, { title: "origin/dev" }],
+      subItems: [
+        {
+          title: "origin/master",
+          subItems: [{ title: "Checkout" }],
+        },
+        { title: "origin/dev" },
+      ],
       section: true,
     },
     {

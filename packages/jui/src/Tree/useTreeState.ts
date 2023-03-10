@@ -157,6 +157,13 @@ function getChildItems<T>(node: Node<T>): Node<T>[] {
   return childItems.concat(sectionItems.flatMap(getChildItems));
 }
 
+function getRootItemKeys(tree: TreeCollection<unknown>) {
+  return tree.rootKeys
+    .map((key) => tree.getItem(key))
+    .filter(notNull)
+    .flatMap(getChildItems)
+    .map(({ key }) => key);
+}
 /**
  * Returns the siblings of an item in tree, ignoring sections.
  * Disclaimer: The code is done quick and dirty and in a rush. Unpleasant code, good candidate for refactoring :D
@@ -164,13 +171,7 @@ function getChildItems<T>(node: Node<T>): Node<T>[] {
 function getSiblings(tree: TreeCollection<unknown>, key: Key): Key[] {
   const parentKey = tree.getItem(key)?.parentKey;
   if (!parentKey) {
-    return [...tree.rootKeys].concat(
-      tree.rootKeys
-        .map((key) => tree.getItem(key))
-        .filter(notNull)
-        .flatMap(getChildItems)
-        .map(({ key }) => key)
-    );
+    return [...tree.rootKeys].concat(getRootItemKeys(tree));
   }
   let parent = parentKey ? tree.getItem(parentKey) : null;
   if (parent?.type === "item") {
@@ -183,14 +184,14 @@ function getSiblings(tree: TreeCollection<unknown>, key: Key): Key[] {
       if (parent.parentKey) {
         parent = tree.getItem(parent.parentKey);
       } else {
-        siblings.push(...tree.rootKeys);
+        siblings.push(...getRootItemKeys(tree));
         parent = null;
       }
     } else {
       parent = null;
     }
   }
-  return siblings;
+  return Array.from(new Set(siblings));
 }
 function toggleTreeNode(
   tree: Collection<Node<unknown>>,

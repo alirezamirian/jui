@@ -522,6 +522,37 @@ describe("Menu with trigger", () => {
     matchImageSnapshot(`menu-with-trigger--keyboard-behaviour-4`);
   });
 
+  it("doesn't open multiple submenus open, when parent items are in sections", () => {
+    cy.mount(
+      <Menu aria-label="Test Menu">
+        <Section title="section 1">
+          <Item title="S1. Item 1">
+            <Item>S1. Item 1.1</Item>
+            <Item>S1. Item 1.2</Item>
+          </Item>
+          <Item title="S1. Item 2">
+            <Item>S1. Item 2.1</Item>
+            <Item>S1. Item 2.2</Item>
+          </Item>
+        </Section>
+        <Section title="section 2">
+          <Item title="S2. Item 1">
+            <Item>S2. Item 1.1</Item>
+            <Item>S2. Item 1.2</Item>
+          </Item>
+          <Item>S2. Item 2</Item>
+        </Section>
+      </Menu>
+    );
+    cy.findByRole("menuitem", { name: "S1. Item 1" }).click();
+    cy.findByRole("menuitem", { name: "S2. Item 1" }).click();
+    cy.findAllByRole("menu").should("have.length", 2); // Only parent menu and one submenu should be opened
+
+    cy.findByRole("menuitem", { name: "S1. Item 1" }).click();
+    cy.findByRole("menuitem", { name: "S1. Item 2" }).click();
+    cy.findAllByRole("menu").should("have.length", 2); // Only parent menu and one submenu should be opened
+  });
+
   it("supports keyboard when sections and dividers are used", () => {
     cy.mount(
       <Menu>
