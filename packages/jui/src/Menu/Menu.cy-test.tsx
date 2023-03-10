@@ -113,6 +113,12 @@ describe("Menu", () => {
     matchImageSnapshot("menu--mouse-behaviour-3");
   });
 
+  // in the absence of it.fail():
+  it("(as a known issue) doesn't focus menu when there is a selected item, even in nested menus", () => {
+    cy.mount(<Nested autoFocus selectedKeys={["Pinned"]} />);
+    cy.findByRole("menu").should("not.have.focus"); // "not" is because of the known issue
+  });
+
   it("closes previously opened submenu, when a new submenu opens", () => {
     cy.mount(
       <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
