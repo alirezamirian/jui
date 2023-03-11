@@ -85,6 +85,7 @@ function useSpeedSearchMenu<T>(
       ref
     ),
     stickySearch: true,
+    focusBestMatch: true,
     ref,
   });
 

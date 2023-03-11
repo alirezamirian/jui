@@ -28,6 +28,7 @@ describe("SpeedSearchMenu", () => {
     );
     matchImageSnapshot("SpeedSearchMenu top level items filtered");
   });
+
   it("lets user filter menu items in submenus", () => {
     cy.mount(<Default />);
     cy.findByRole("menuitem", { name: "View Mode" }).click();
@@ -48,6 +49,7 @@ describe("SpeedSearchMenu", () => {
      */
     matchImageSnapshot("SpeedSearchMenu submenu items filtered");
   });
+
   it("moves focus to filtered items only, when arrow keys are used", () => {
     cy.mount(<Default />);
     cy.realType("se");
@@ -63,12 +65,14 @@ describe("SpeedSearchMenu", () => {
       "be.focused"
     );
   });
+
   it("clears and closes search when clear button is pressed", () => {
     cy.mount(<Default />);
     cy.realType("se");
     cy.findByRole("button").click(); // press clear button
     cy.findAllByRole("menuitem").should("have.length", 5);
   });
+
   it("does not move the focus out from focused item to the menu itself, when the search box is clicked", () => {
     cy.mount(<Default />);
     cy.realType("se");
@@ -76,12 +80,14 @@ describe("SpeedSearchMenu", () => {
     cy.focused().debug();
     cy.findByRole("menuitem", { name: "Select..." }).should("be.focused");
   });
+
   it("doesn't render empty section headers", () => {
     cy.mount(<WithSections />);
     cy.contains("Local Branches").should("exist");
     cy.realType("orig");
     cy.contains("Local Branches").should("not.exist");
   });
+
   it("renders 'nothing to show' text when there is no hit for the current search", () => {
     // Default emptyText
     cy.mount(<Default />);
@@ -99,6 +105,7 @@ describe("SpeedSearchMenu", () => {
     cy.realType("foobar");
     cy.contains("Nothing here").should("exist");
   });
+
   it("let's options get scrolled if many items are matched with current search", () => {
     cy.mount(
       <SpeedSearchMenu>
@@ -121,10 +128,11 @@ describe("SpeedSearchMenu", () => {
     cy.findAllByRole("menuitem").should("have.length", 5);
     cy.findByRole("menuitem", { name: "All" }).should("not.exist");
     cy.realType("Dock");
-    cy.realPress("ArrowDown").realPress("Enter");
+    cy.findByRole("menuitem", { name: "Docked" }).focus().realPress("Enter");
     cy.findByRole("menuitem", { name: "Float" }).should("not.exist");
     cy.findAllByRole("menuitem").should("have.length", 5);
   });
+
   it("doesn't clear the search when a submenu is opened by mouse", () => {
     cy.mount(<Default />);
     cy.realType("View");
@@ -135,6 +143,28 @@ describe("SpeedSearchMenu", () => {
     cy.findByRole("menuitem", { name: "Docked" }).click();
     cy.findByRole("menuitem", { name: "Float" }).should("not.exist");
     cy.findAllByRole("menuitem").should("have.length", 5);
+  });
+
+  it("Moves focus to the Longest Common Prefix match, if such match exists", () => {
+    cy.mount(
+      <SpeedSearchMenu>
+        <Item>Foo</Item>
+        <Item>Bar</Item>
+        <Item>New branch from 'master'</Item>
+        <Item>Checkout and rebase onto 'feat/SpeedSearchMenu'</Item>
+        <Item>Compare</Item>
+      </SpeedSearchMenu>
+    );
+    cy.realType("c");
+    // first item
+    cy.findAllByRole("menuitem", { name: "New branch from 'master'" }).should(
+      "exist"
+    );
+    cy.findAllByRole("menuitem", {
+      name: "Checkout and rebase onto 'feat/SpeedSearchMenu'",
+    }).should("have.focus");
+    cy.realType("o");
+    cy.findAllByRole("menuitem", { name: "Compare" }).should("have.focus");
   });
 });
 

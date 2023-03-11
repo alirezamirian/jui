@@ -43,6 +43,7 @@ export function useCollectionSpeedSearch<T>({
   selectionManager,
   stickySearch,
   keyboardDelegate,
+  focusBestMatch,
   ref,
   ...speedSearchStateProps
 }: {
@@ -51,6 +52,7 @@ export function useCollectionSpeedSearch<T>({
   keyboardDelegate: KeyboardDelegate;
   ref: RefObject<HTMLElement>;
   stickySearch?: boolean;
+  focusBestMatch?: boolean;
 } & SpeedSearchStateProps): CollectionSpeedSearch {
   const speedSearch = useSpeedSearchState(speedSearchStateProps); // maybe allow control over state
   // via props?
@@ -60,6 +62,7 @@ export function useCollectionSpeedSearch<T>({
       collection,
       selectionManager,
       speedSearch,
+      focusBestMatch,
     });
   const { containerProps } = useSpeedSearch({ stickySearch }, speedSearch, ref);
   const speedSearchKeyboardDelegate = useMemo(
