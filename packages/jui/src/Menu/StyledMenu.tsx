@@ -5,6 +5,8 @@ import { styled } from "../styled";
 import { StyledVerticalSeparator } from "../StyledSeparator";
 import { UnknownThemeProp } from "../Theme/Theme";
 
+import { StyledMenuItem, StyledMenuItemIcon } from "./StyledMenuItem";
+
 export const MENU_VERTICAL_PADDING = 5;
 export const MENU_BORDER_WIDTH = 1;
 
@@ -57,4 +59,32 @@ export const StyledMenu = styled.ul<{ fillAvailableSpace?: boolean }>`
       width: fill-available; // will be converted to --webkit-fill-available and --moz-available, but doesn't work in FF
       height: fill-available;
     `}
+
+  --jui-menu-item-padding: 1rem;
+  --jui-menu-item-icon-width: 1rem;
+  --jui-menu-item-icon-spacing: 0.3125rem;
+
+  ${StyledMenuItem} {
+    // NOTE: The left margin seems not to be consistent in all menus.
+    padding-left: var(--jui-menu-item-padding);
+  }
+  &:has(${StyledMenuItemIcon}) {
+    // Adjusting item padding for menus with icon to be slightly smaller. Based on observations on the reference impl.
+    // Could be handled by a negative margin on icons as well.
+    --jui-menu-item-padding: 0.75rem;
+
+    // CSS-only solution to conditionally add left margin to menu items without icon, if there is at least one menu item
+    // with icon, in the current menu. To have text in all menu items aligned. The extra margin is avoided if there is no
+    // menu item with icon. It relies on :has() css pseudo-class which is not supported in FF at the moment.
+    ${StyledMenuItem}:not(:has(${StyledMenuItemIcon})) {
+      padding-left: calc(
+        var(--jui-menu-item-padding) + var(--jui-menu-item-icon-width) +
+          var(--jui-menu-item-icon-spacing)
+      );
+    }
+  }
+  ${StyledMenuItemIcon} {
+    width: var(--jui-menu-item-icon-width);
+    margin-right: var(--jui-menu-item-icon-spacing);
+  }
 `;
