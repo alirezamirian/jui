@@ -1,11 +1,16 @@
 import React, { CSSProperties } from "react";
 import { RecoilRoot } from "recoil";
+import git from "isomorphic-git";
 import { BalloonsProvider, KeymapProvider } from "@intellij-platform/core";
 import { DefaultSuspense } from "./DefaultSuspense";
 import { Project } from "./Project/Project";
 import { SampleRepoInitializer } from "./SampleRepoInitializer";
-import { WaitForFs } from "./fs/fs";
+import { fs, WaitForFs } from "./fs/fs";
 import { exampleAppKeymap } from "./exampleAppKeymap";
+
+// useful globals for debugging purposes
+(window as any).git = git;
+(window as any).fs = fs;
 
 /**
  * Example app root component. It expects ThemeProvider to be provided based on where it's rendered.

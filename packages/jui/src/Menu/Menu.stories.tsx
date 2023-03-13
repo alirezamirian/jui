@@ -22,6 +22,7 @@ const exampleMenuItems: Array<ExampleMenuItem> = [
   {
     title: "Group tabs",
     icon: "toolwindows/documentation",
+    shortcut: "^G",
   },
 ];
 
@@ -96,6 +97,12 @@ Static.args = {
     </>
   ).props.children,
 };
+
+export const AutoFocusFirst = Template.bind(null);
+AutoFocusFirst.args = {
+  autoFocus: "first",
+};
+
 export const StaticWithTextItems: Story = () => (
   <Menu>
     <Item>Restart Typescript Service</Item>
@@ -137,12 +144,21 @@ Sections.args = {
   items: [
     {
       title: "Local Branches",
-      subItems: [{ title: "master" }, { title: "dev" }],
+      subItems: [
+        { title: "master", subItems: [{ title: "Pull" }, { title: "Update" }] },
+        { title: "dev" },
+      ],
       section: true,
     },
     {
       title: "Remote Branches",
-      subItems: [{ title: "origin/master" }, { title: "origin/dev" }],
+      subItems: [
+        {
+          title: "origin/master",
+          subItems: [{ title: "Checkout" }],
+        },
+        { title: "origin/dev" },
+      ],
       section: true,
     },
     {

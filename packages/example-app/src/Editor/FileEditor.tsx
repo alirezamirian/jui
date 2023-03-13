@@ -73,9 +73,11 @@ export const FileEditor = () => {
   const updateContent = (newContent: string = "") => {
     setActive(false);
     setContent(newContent);
-    updateFileStatus(activeTab.filePath).catch((e) => {
-      console.error("Could not update file status", e);
-    });
+    if (activeTab) {
+      updateFileStatus(activeTab.filePath).catch((e) => {
+        console.error("Could not update file status", e);
+      });
+    }
   };
 
   // For now, when the first tab content is changed, we focus the editor.
@@ -88,9 +90,9 @@ export const FileEditor = () => {
     }
   }, [activeTab?.filePath]);
 
-  const { activePathsProviderProps } = useActivePathsProvider([
-    activeTab.filePath,
-  ]);
+  const { activePathsProviderProps } = useActivePathsProvider(
+    activeTab ? [activeTab.filePath] : []
+  );
 
   const content = contentLoadable.valueMaybe();
 

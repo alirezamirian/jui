@@ -1,15 +1,16 @@
 import { atom, CallbackInterface, selector, useRecoilCallback } from "recoil";
 import { checkout, resetIndex, statusMatrix, StatusRow } from "isomorphic-git";
-import { fs } from "../../fs/fs";
-import {
-  useUpdateFileStatus,
-  VcsRootForFile,
-  vcsRootsState,
-} from "../file-status.state";
 import { useEffect } from "react";
 import path from "path";
 import { groupBy } from "ramda";
+
+import { fs } from "../../fs/fs";
 import { reloadFileFromDiskCallback } from "../../fs/fs.state";
+import {
+  useUpdateFileStatus,
+  vcsRootForFile,
+  vcsRootsState,
+} from "../file-status.state";
 
 export type Revision = {
   path: string;
@@ -66,47 +67,49 @@ export const allChangesState = selector<ReadonlyArray<Change>>({
 const isAChange = ([, head, workingDir, stage]: StatusRow): boolean =>
   head !== 1 || workingDir !== 1 || stage !== 1;
 
-const refreshChanges = ({ snapshot, set }: CallbackInterface) => async () => {
-  const gitRoots = (await snapshot.getPromise(vcsRootsState)).filter(
-    (root) => root.vcs === "git"
-  );
-  const allStatusMatrices = await Promise.all(
-    gitRoots.map(async ({ dir }) => {
-      const rows = await statusMatrix({ fs, dir });
-      return rows
-        .filter(isAChange)
-        .map(
-          ([pathname, ...theRest]) =>
-            [path.join(dir, pathname), ...theRest] as StatusRow
-        );
-    })
-  );
-  const unversionedPaths = []; // FIXME: handle unversioned files
-  const changes = allStatusMatrices
-    .flat()
-    .map(([path, head, workdir, stage]) => ({
-      // FIXME: change object creation doesn't cover all kind of changes.
-      after: { path, isDir: false },
-      before: { path, isDir: false },
-    }));
+const refreshChanges =
+  ({ snapshot, set }: CallbackInterface) =>
+  async () => {
+    const gitRoots = (await snapshot.getPromise(vcsRootsState)).filter(
+      (root) => root.vcs === "git"
+    );
+    const allStatusMatrices = await Promise.all(
+      gitRoots.map(async ({ dir }) => {
+        const rows = await statusMatrix({ fs, dir });
+        return rows
+          .filter(isAChange)
+          .map(
+            ([pathname, ...theRest]) =>
+              [path.join(dir, pathname), ...theRest] as StatusRow
+          );
+      })
+    );
+    const unversionedPaths = []; // FIXME: handle unversioned files
+    const changes = allStatusMatrices
+      .flat()
+      .map(([path, head, workdir, stage]) => ({
+        // FIXME: change object creation doesn't cover all kind of changes.
+        after: { path, isDir: false },
+        before: { path, isDir: false },
+      }));
 
-  // FIXME: changes now all go to default change list on each refresh. fix it.
-  set(changeListsState, (changeLists) =>
-    changeLists.map((changeList) => {
-      if (changeList.active) {
-        console.log(changes);
+    // FIXME: changes now all go to default change list on each refresh. fix it.
+    set(changeListsState, (changeLists) =>
+      changeLists.map((changeList) => {
+        if (changeList.active) {
+          console.log(changes);
+          return {
+            ...changeList,
+            changes,
+          };
+        }
         return {
           ...changeList,
-          changes,
+          changes: [],
         };
-      }
-      return {
-        ...changeList,
-        changes: [],
-      };
-    })
-  );
-};
+      })
+    );
+  };
 
 export interface ChangeListManager {
   addChangeList(name: string, comment: string): void;
@@ -137,7 +140,7 @@ export const useRollbackChanges = () => {
           .filter((change) => !change.after.isDir)
           .map(async (change) => {
             const repoRoot = (await snapshot.getPromise(
-              VcsRootForFile(change.after.path)
+              vcsRootForFile(change.after.path)
             ))!; // FIXME: handle null
             return {
               repoRoot,

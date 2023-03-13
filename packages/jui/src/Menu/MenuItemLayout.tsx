@@ -1,8 +1,10 @@
 import React from "react";
-import { ItemStateContext } from "../Collections/ItemStateContext";
-import { styled } from "../styled";
-import { useContextOrThrow } from "../utils/useContextOrThrow";
-import { useMenuItemLayout } from "@intellij-platform/core/Menu/MenuItem";
+import { ItemStateContext } from "@intellij-platform/core/Collections/ItemStateContext";
+import { styled } from "@intellij-platform/core/styled";
+import { useContextOrThrow } from "@intellij-platform/core/utils/useContextOrThrow";
+
+import { useMenuItemLayout } from "./MenuItem";
+import { StyledMenuItemIcon } from "./StyledMenuItem";
 
 interface MenuItemLayoutProps {
   icon?: React.ReactNode;
@@ -17,13 +19,6 @@ const StyledMenuItemLayout = styled.div`
 `;
 const Content = styled.span`
   flex: 1;
-`;
-
-const Icon = styled.span`
-  display: inline-flex; // prevents unwanted increased height
-  min-width: 16px;
-  margin-right: 5px;
-  margin-left: -21px;
 `;
 
 const Shortcut = styled.kbd`
@@ -46,9 +41,10 @@ export const MenuItemLayout = ({
     "MenuItemLayout is meant to be rendered in Item component in Menus"
   );
   const { labelProps, keyboardShortcutProps } = useMenuItemLayout();
+  const allowedIcon = !isSelected && icon;
   return (
     <StyledMenuItemLayout>
-      <Icon>{!isSelected && icon}</Icon>
+      {allowedIcon && <StyledMenuItemIcon>{allowedIcon}</StyledMenuItemIcon>}
       <Content {...labelProps}>{content}</Content>
       {shortcut && <Shortcut {...keyboardShortcutProps}>{shortcut}</Shortcut>}
     </StyledMenuItemLayout>

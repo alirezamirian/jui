@@ -61,7 +61,9 @@ const directoryNodeItemProps: NodeRenderer<DirectoryNode> = (
   node,
   { fileCount }
 ) => ({
-  textValue: path.relative(node.parentNodePath, node.dirPath),
+  textValue: node.parentNodePath
+    ? path.relative(node.parentNodePath, node.dirPath)
+    : node.dirPath,
   rendered: (
     <ItemLayout>
       <PlatformIcon icon={DIR_ICON} />

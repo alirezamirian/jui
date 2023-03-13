@@ -1,3 +1,4 @@
+import { Key } from "react";
 import {
   atom,
   atomFamily,
@@ -7,7 +8,7 @@ import {
   selector,
 } from "recoil";
 import { Selection } from "@react-types/shared";
-import { Key } from "react";
+
 import {
   allChangesState,
   Change,
@@ -24,6 +25,7 @@ import {
 } from "@intellij-platform/core";
 import { rollbackViewState } from "../Rollback/rollbackView.state";
 import { activePathsState } from "../../../Project/project.state";
+import { branchForFile } from "../../file-status.state";
 
 export interface ChangeBrowserNode<T extends string> {
   type: T;
@@ -67,9 +69,9 @@ export interface ChangeGrouping<T extends AnyGroupNode, I = string> {
   groupFn: MaybeRecoilValue<GroupFn<T>>;
 }
 
-export const currentBranchState = atomFamily<string, string>({
+export const currentBranchState = atomFamily<string | null, string>({
   key: "vcs/currentBranchName",
-  default: "master",
+  default: branchForFile,
   // TODO: effect for syncing (when toolWindow state changes?)
 });
 
@@ -366,13 +368,13 @@ export const openRollbackWindowForSelectionCallback = ({
   set,
   snapshot,
 }: CallbackInterface) => {
-  return () => {
+  return (contextual = true) => {
     const activePaths = snapshot.getLoadable(activePathsState).getValue();
     const changesUnderSelection = snapshot
       .getLoadable(changesUnderSelectedKeys)
       .getValue();
     const changesBasedOnActivePaths =
-      activePaths.length > 0
+      contextual && activePaths.length > 0
         ? snapshot
             .getLoadable(allChangesState)
             .getValue()

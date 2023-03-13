@@ -33,6 +33,7 @@ import { SubmenuProps, useSubmenu } from "./Submenu";
 import { useSubmenuState } from "./_useSubmenuState";
 import { MenuKeyboardDelegate } from "./_useSubmenu";
 import { styled } from "@intellij-platform/core/styled";
+import { StyledVerticalSeparator } from "@intellij-platform/core/StyledSeparator";
 
 export interface SpeedSearchMenuProps<T>
   extends Omit<MenuProps<T>, "submenuBehavior"> {
@@ -53,6 +54,30 @@ const StyledItemsContainer = styled.ul`
 const StyledSearchFieldWrapper = styled.div`
   flex-shrink: 0;
   padding: 0 0.2rem 0.3rem;
+`;
+
+const StyledSpeedSearchMenu = styled(StyledMenu)`
+  --jui-menu-item-padding: 1.25rem;
+  ${StyledVerticalSeparator} {
+    margin: 0 3px; // FIXME: probably use theme
+  }
+`;
+
+const StyledPlaceholder = styled.div`
+  color: ${({ theme }) =>
+    // Ref: StatusText => DEFAULT_ATTRIBUTES => SimpleTextAttributes.GRAYED_ATTRIBUTES
+    theme.color(
+      "Component.infoForeground",
+      theme.dark ? "#787878" : "#999999"
+    )};
+
+  // center positioning. Intentionally different from reference impl.
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+
+  white-space: nowrap;
 `;
 
 function useSpeedSearchMenu<T>(
@@ -85,6 +110,7 @@ function useSpeedSearchMenu<T>(
       ref
     ),
     stickySearch: true,
+    focusBestMatch: true,
     ref,
   });
 
@@ -199,7 +225,7 @@ export const SpeedSearchMenu = <T extends object>({
         ),
       }}
     >
-      <StyledMenu
+      <StyledSpeedSearchMenu
         as="div"
         ref={containerRef}
         {...speedSearchContainerProps}
@@ -214,27 +240,11 @@ export const SpeedSearchMenu = <T extends object>({
           menuProps={menuProps}
           menuRef={ref}
         />
-      </StyledMenu>
+      </StyledSpeedSearchMenu>
     </MenuContext.Provider>
   );
 };
 
-const StyledPlaceholder = styled.div`
-  color: ${({ theme }) =>
-    // Ref: StatusText => DEFAULT_ATTRIBUTES => SimpleTextAttributes.GRAYED_ATTRIBUTES
-    theme.color(
-      "Component.infoForeground",
-      theme.dark ? "#787878" : "#999999"
-    )};
-
-  // center positioning. Intentionally different from reference impl.
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-
-  white-space: nowrap;
-`;
 function SpeedSearchMenuContent<T>({
   items,
   state,
@@ -301,7 +311,11 @@ function SpeedSearchSubmenu<T>({
   );
 
   return (
-    <StyledMenu {...speedSearchContainerProps} as="div" ref={containerRef}>
+    <StyledSpeedSearchMenu
+      {...speedSearchContainerProps}
+      as="div"
+      ref={containerRef}
+    >
       <SpeedSearchMenuContent
         items={[...(rootItem?.childNodes || [])]}
         speedSearch={speedSearch}
@@ -311,6 +325,6 @@ function SpeedSearchSubmenu<T>({
         menuRef={ref}
         emptyText={emptyText}
       />
-    </StyledMenu>
+    </StyledSpeedSearchMenu>
   );
 }

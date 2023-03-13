@@ -13,10 +13,19 @@ export function useCollectionSpeedSearchResult<T>({
   collection,
   selectionManager,
   speedSearch,
+  focusBestMatch = false,
 }: {
   collection: Collection<Node<T>>;
   selectionManager: SelectionManager;
   speedSearch: SpeedSearchState;
+  /**
+   * If true, focusing the best match (the longest "start-with" match) will be preferred.
+   * By default, the focus is moved to the first match that comes after the currently focused item, if currently
+   * focused item itself is not a match.
+   * A typical use case would be collections that filter out non-match items.
+   * @default false
+   */
+  focusBestMatch?: boolean;
 }) {
   const { searchTerm, active } = speedSearch;
 
@@ -30,6 +39,7 @@ export function useCollectionSpeedSearchResult<T>({
    * will usually involve a size change in the collection.
    */
   const result = useMemo(() => {
+    console.log("calculating matches");
     const matches: CollectionSpeedSearchMatches = new Map(); // maybe make it nullable makes more sense
     if (speedSearch.active) {
       // it's important not to iterate on items, since they can be nested.
@@ -53,7 +63,7 @@ export function useCollectionSpeedSearchResult<T>({
     };
   }, [searchTerm, collection, active]);
 
-  const latestValues = useLatest({ ...result, collection });
+  const latestValues = useLatest({ ...result, collection, focusBestMatch });
 
   // On every query change, if the current selection doesn't include any of the matched items, move selection to the
   // first matched item.
@@ -63,16 +73,20 @@ export function useCollectionSpeedSearchResult<T>({
     const noneOfTheMatchesAreSelected = !matchedKeys.some((matchedKey) =>
       selectionManager.isSelected(matchedKey)
     );
-
-    if (matchedKeys.length > 0 && noneOfTheMatchesAreSelected) {
-      const newSelectedKey = getMatchToSelect({
+    let keyToFocus: Key | undefined;
+    if (latestValues.current.focusBestMatch) {
+      keyToFocus = getLongestCommonPrefixMatch(matches);
+    }
+    if (!keyToFocus && matchedKeys.length > 0 && noneOfTheMatchesAreSelected) {
+      keyToFocus = getMatchToSelect({
         collection,
         selectionManager,
         matchedKeys,
       });
-
-      selectionManager.setFocusedKey(newSelectedKey);
-      selectionManager.replaceSelection(newSelectedKey);
+    }
+    if (keyToFocus) {
+      selectionManager.setFocusedKey(keyToFocus);
+      selectionManager.replaceSelection(keyToFocus);
     }
   }, [
     searchTerm,
@@ -103,4 +117,16 @@ function getMatchToSelect({
     }
   }
   return matchedKeys[0];
+}
+
+/**
+ * Returns the longest match from the beginning, if exists.
+ */
+function getLongestCommonPrefixMatch(matches: CollectionSpeedSearchMatches) {
+  return [...matches.entries()]
+    .filter(([, [firstRange]]) => firstRange?.from === 0)
+    .sort(
+      ([, [rangeA]], [, [rangeB]]) =>
+        rangeB.to - rangeB.from - rangeA.to - rangeA.from
+    )?.[0]?.[0];
 }

@@ -56,9 +56,10 @@ const activeEditorTabIndexState = atom<number>({
   default: 0,
 });
 
-export const activeEditorTabState = selector({
+export const activeEditorTabState = selector<EditorTabState | null>({
   key: "editor.activeTab",
-  get: ({ get }) => get(editorTabsState)[get(activeEditorTabIndexState)],
+  get: ({ get }) =>
+    get(editorTabsState)[get(activeEditorTabIndexState)] || null,
 });
 
 export const editorCursorPositionState = atom<Position>({
@@ -88,9 +89,10 @@ export const useEditorStateManager = (): EditorStateManager => {
   const [tabsState, setTabsState] = useRecoilState(editorTabsState);
   const setActiveTabIndex = useSetRecoilState(activeEditorTabIndexState);
   const focus = useRecoilCallback(
-    ({ snapshot }) => () => {
-      snapshot.getLoadable(editorRefState).valueOrThrow()?.focus();
-    },
+    ({ snapshot }) =>
+      () => {
+        snapshot.getLoadable(editorRefState).valueOrThrow()?.focus();
+      },
     []
   );
 

@@ -6,6 +6,7 @@ import {
   Item,
   Menu,
   MenuItemLayout,
+  PlatformIcon,
   Theme,
   ThemeProvider,
 } from "@intellij-platform/core";
@@ -33,6 +34,43 @@ describe("Menu", () => {
   it("shows arrow in the right position when plain text is used in menu items", () => {
     cy.mount(<StaticWithTextItems />);
     matchImageSnapshot("menu--plain-text-arrow-position");
+  });
+
+  it("aligns text of items with or without icon", () => {
+    cy.mount(
+      <Menu>
+        <Item textValue="MenuItemLayout with icon">
+          <MenuItemLayout
+            icon={<PlatformIcon icon={"actions/menu-cut"} />}
+            content="MenuItemLayout with icon"
+            shortcut={"⌘X"}
+          />
+        </Item>
+        <Item textValue="MenuItemLayout without icon">
+          <MenuItemLayout
+            content="MenuItemLayout without icon"
+            shortcut={"⌘Y"}
+          />
+        </Item>
+        <Item>Plain text content</Item>
+      </Menu>
+    );
+    matchImageSnapshot("menu--text-alignment--icon");
+  });
+
+  it("avoid extra padding when no item has icon", () => {
+    cy.mount(
+      <Menu>
+        <Item textValue="MenuItemLayout without icon">
+          <MenuItemLayout
+            content="MenuItemLayout without icon"
+            shortcut={"⌘Y"}
+          />
+        </Item>
+        <Item>Plain text content</Item>
+      </Menu>
+    );
+    matchImageSnapshot("menu--text-alignment--no-icon");
   });
 
   it("supports keyboard", () => {
@@ -73,6 +111,12 @@ describe("Menu", () => {
     matchImageSnapshot("menu--mouse-behaviour-2");
     cy.get('[role="menuitem"]').contains("Group tabs").realHover(); // Close first submenu by hovering another item
     matchImageSnapshot("menu--mouse-behaviour-3");
+  });
+
+  // in the absence of it.fail():
+  it("(as a known issue) doesn't focus menu when there is a selected item, even in nested menus", () => {
+    cy.mount(<Nested autoFocus selectedKeys={["Pinned"]} />);
+    cy.findByRole("menu").should("not.have.focus"); // "not" is because of the known issue
   });
 
   it("closes previously opened submenu, when a new submenu opens", () => {
@@ -201,6 +245,13 @@ describe("Menu", () => {
     );
     cy.realPress("ArrowDown");
     cy.findByRole("menuitem", { name: "Delete" }).should("be.visible");
+  });
+
+  it('focuses the first item, when autofocus is "first"', () => {
+    cy.mount(<Nested autoFocus="first" />);
+    cy.findByRole("menuitem", { name: "View Mode" }).should("have.focus");
+    cy.realPress("Enter");
+    cy.findByRole("menuitem", { name: "Undock" }).should("have.focus");
   });
 
   describe("submenuBehavior=toggleOnPress", () => {
@@ -469,6 +520,37 @@ describe("Menu with trigger", () => {
     cy.realPress("Escape"); // close submenu with escape
     cy.focused().should("not.exist"); // The menu should be closed
     matchImageSnapshot(`menu-with-trigger--keyboard-behaviour-4`);
+  });
+
+  it("doesn't open multiple submenus open, when parent items are in sections", () => {
+    cy.mount(
+      <Menu aria-label="Test Menu">
+        <Section title="section 1">
+          <Item title="S1. Item 1">
+            <Item>S1. Item 1.1</Item>
+            <Item>S1. Item 1.2</Item>
+          </Item>
+          <Item title="S1. Item 2">
+            <Item>S1. Item 2.1</Item>
+            <Item>S1. Item 2.2</Item>
+          </Item>
+        </Section>
+        <Section title="section 2">
+          <Item title="S2. Item 1">
+            <Item>S2. Item 1.1</Item>
+            <Item>S2. Item 1.2</Item>
+          </Item>
+          <Item>S2. Item 2</Item>
+        </Section>
+      </Menu>
+    );
+    cy.findByRole("menuitem", { name: "S1. Item 1" }).click();
+    cy.findByRole("menuitem", { name: "S2. Item 1" }).click();
+    cy.findAllByRole("menu").should("have.length", 2); // Only parent menu and one submenu should be opened
+
+    cy.findByRole("menuitem", { name: "S1. Item 1" }).click();
+    cy.findByRole("menuitem", { name: "S1. Item 2" }).click();
+    cy.findAllByRole("menu").should("have.length", 2); // Only parent menu and one submenu should be opened
   });
 
   it("supports keyboard when sections and dividers are used", () => {

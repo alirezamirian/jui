@@ -74,14 +74,11 @@ function convertCollectionElement<T>(
   return result as CollectionElement<T>;
 }
 
-function convertChildren<T>(children: React.ReactNode) {
+function convertChildren<T>(children: React.ReactNode): React.ReactNode {
   return Array.isArray(children)
-    ? children.map((child) =>
-        React.isValidElement(child) ? convertCollectionElement(child) : child
-      )
-    : React.isValidElement(children)
-    ? convertCollectionElement(children)
-    : children;
+    ? // NOTE: We intentionally avoid using React.Children.map as it messes with keys.
+      children.map(convertChildren)
+    : convertCollectionElement(children);
 }
 
 /**

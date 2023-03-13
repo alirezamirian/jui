@@ -1,6 +1,15 @@
 import { css, styled } from "@intellij-platform/core/styled";
 
-import { UnknownThemeProp } from "../Theme/Theme";
+import { UnknownThemeProp } from "@intellij-platform/core/Theme";
+export const StyledMenuItemIcon = styled.span`
+  display: inline-flex; // prevents unwanted increased height
+`;
+
+export const StyledNestedArrow = styled.span`
+  display: inline-flex; // to make it not take more height than the icon
+  margin-right: -0.75rem;
+  margin-left: 0.75rem;
+`;
 
 const highlightedStyle = css`
   color: ${({ theme }) =>
@@ -60,7 +69,8 @@ export const StyledMenuItem = styled.li<{
   //&:focus-visible {
   //  border-left: 3px solid rgba(255, 255, 255, 0.1);
   //}
-  padding: 0 20px 0 27px;
+
+  padding-right: 1.25rem;
   line-height: 1.5; // to make the item have the right height
   display: flex;
   align-items: center;

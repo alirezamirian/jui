@@ -16,7 +16,11 @@ import { LafIcon, PlatformIcon } from "../Icon";
 import { styled } from "../styled";
 import { MenuContext, MenuProps } from "./Menu";
 import { MENU_BORDER_WIDTH, MENU_VERTICAL_PADDING } from "./StyledMenu";
-import { StyledMenuItem } from "./StyledMenuItem";
+import {
+  StyledMenuItem,
+  StyledMenuItemIcon,
+  StyledNestedArrow,
+} from "./StyledMenuItem";
 import { Submenu, SubmenuProps } from "@intellij-platform/core/Menu/Submenu";
 
 export interface MenuItemProps<T> {
@@ -24,20 +28,6 @@ export interface MenuItemProps<T> {
   state: TreeState<T>;
   onSubmenuClose?: () => void;
 }
-
-const StyledNestedArrow = styled.span`
-  margin-right: -11px;
-  margin-left: 11px;
-  display: inline-flex; // to make it not take more height than the icon
-`;
-
-const StyledSelectedMark = styled.span`
-  position: absolute;
-  left: 4px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: inline-flex; // to make it not take more height than the icon
-`;
 
 const StyledMenuItemText = styled.span`
   flex: 1;
@@ -195,14 +185,14 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
         ref={ref}
       >
         {isSelected && (
-          <StyledSelectedMark>
+          <StyledMenuItemIcon>
             <StyledMenuItemLafIcon
               icon={{
                 name: "checkmark",
                 modifiers: { Selected: isFocused },
               }}
             />
-          </StyledSelectedMark>
+          </StyledMenuItemIcon>
         )}
         <ItemStateContext.Provider
           value={{

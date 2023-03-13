@@ -60,11 +60,20 @@ WithSections.args = {
   children: (
     <>
       <Section title="Local Branches">
-        <Item>master</Item>
-        <Item>feat/speed-search-menu</Item>
+        <Item title="master">
+          <Item>Update</Item>
+          <Item>Push</Item>
+        </Item>
+        <Item title="feat/speed-search-menu">
+          <Item>Update</Item>
+          <Item>Push</Item>
+        </Item>
       </Section>
       <Section title="Remove Branches">
-        <Item>origin/master</Item>
+        <Item title="origin/master">
+          <Item>Checkout</Item>
+          <Item>New Branch from 'origin/master'...</Item>
+        </Item>
         <Item>origin/feat/speed-search-menu</Item>
       </Section>
     </>

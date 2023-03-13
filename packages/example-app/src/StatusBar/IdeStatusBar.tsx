@@ -1,22 +1,27 @@
 import {
+  ActionTooltip,
   Divider,
   Item,
   Menu,
   MenuItemLayout,
+  MenuOverlayContext,
   MenuTrigger,
   PlatformIcon,
+  PopupOnTrigger,
   ProgressBar,
   ProgressBarPauseButton,
   ProgressBarStopButton,
   StatusBar,
   StatusBarWidget,
+  TooltipTrigger,
 } from "@intellij-platform/core";
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useRecoilValue } from "recoil";
 import { editorCursorPositionState } from "../Editor/editor.state";
-import { currentBranchState } from "../VersionControl/Changes/ChangesView/ChangesView.state";
 import { switchToPersistentFsProcess } from "../usePersistenceFsNotification";
+import { BranchesPopupContent } from "../VersionControl/Branches/BranchesPopupContent";
+import { activeFileCurrentBranch } from "../VersionControl/active-file.state";
 
 const StyledLastMessage = styled.div`
   margin-left: 0.75rem;
@@ -56,7 +61,8 @@ const StatusBarProcess = () => {
 
 export const IdeStatusBar = () => {
   const cursorPosition = useRecoilValue(editorCursorPositionState);
-  const currentBranch = useRecoilValue(currentBranchState("" /*FIXME*/));
+  const currentBranch = useRecoilValue(activeFileCurrentBranch);
+  const [isBranchesPopupOpen, setBranchesPopupOpen] = useState(false);
 
   return (
     <StatusBar
@@ -136,10 +142,31 @@ export const IdeStatusBar = () => {
               <StatusBarWidget {...props} ref={ref} label="TypeScript 4.4.3" />
             )}
           </MenuTrigger>
-          <StatusBarWidget
-            icon={<PlatformIcon icon="vcs/branch.svg" />}
-            label={currentBranch}
-          />
+          <PopupOnTrigger
+            isOpen={isBranchesPopupOpen}
+            onOpenChange={setBranchesPopupOpen}
+            placement="top"
+            interactions="all"
+            trigger={
+              <TooltipTrigger
+                tooltip={
+                  <ActionTooltip actionName={`Git Branch: ${currentBranch}`} />
+                }
+              >
+                <StatusBarWidget
+                  icon={<PlatformIcon icon="vcs/branch.svg" />}
+                  label={currentBranch}
+                />
+              </TooltipTrigger>
+            }
+          >
+            {/* TODO: Menu in Popover should be easier out of the box */}
+            <MenuOverlayContext.Provider
+              value={{ close: () => setBranchesPopupOpen(false) }}
+            >
+              <BranchesPopupContent />
+            </MenuOverlayContext.Provider>
+          </PopupOnTrigger>
           <StatusBarWidget icon={<PlatformIcon icon="ide/readwrite.svg" />} />
           <StatusBarWidget icon={<PlatformIcon icon="ide/fatalError.svg" />} />
         </>
