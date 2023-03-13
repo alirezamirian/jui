@@ -45,12 +45,12 @@ export const dirContentState = selectorFamily({
   },
 });
 
-export const reloadFileFromDiskCallback = ({
-  set,
-}: CallbackInterface) => async (path: string) =>
-  set(fileContent(path), await fetchFileContent(path));
+export const reloadFileFromDiskCallback =
+  ({ set }: CallbackInterface) =>
+  async (path: string) =>
+    set(fileContent(path), await fetchFileContent(path));
 
-const fetchFileContent = async (filepath: string) => {
+const fetchFileContent = async (filepath: string | undefined) => {
   if (!filepath) {
     return "";
   }
@@ -75,23 +75,25 @@ const fetchFileContent = async (filepath: string) => {
  * [recoil-atom-effects]: https://recoiljs.org/docs/guides/atom-effects#write-through-cache-example
  * [vfs]: https://plugins.jetbrains.com/docs/intellij/virtual-file-system.html
  **/
-export const fileContent = atomFamily<string, string>({
+export const fileContent = atomFamily<string, string | undefined>({
   key: "fileContent",
   default: fetchFileContent,
   effects: (filepath) => [
     ({ onSet }) => {
       onSet((content) => {
-        // Should a sync API be used here?
-        fs.promises
-          .writeFile(
-            filepath,
-            // @ts-expect-error: string should also be acceptable. Seems like bad typing
-            content,
-            { encoding: "utf8" }
-          )
-          .catch((e) => {
-            console.error("failed to sync the file back to the fs", e);
-          });
+        if (filepath) {
+          // Should a sync API be used here?
+          fs.promises
+            .writeFile(
+              filepath,
+              // @ts-expect-error: string should also be acceptable. Seems like bad typing
+              content,
+              { encoding: "utf8" }
+            )
+            .catch((e) => {
+              console.error("failed to sync the file back to the fs", e);
+            });
+        }
       });
     },
   ],

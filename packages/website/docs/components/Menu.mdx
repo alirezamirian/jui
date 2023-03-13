@@ -1,13 +1,6 @@
 ---
 ---
 
-import { RefToIntellijPlatform } from "@site/src/components/RefToIntellijPlatform.tsx";
-import {
-  Static,
-  MenuWithTrigger,
-} from "@intellij-platform/core/Menu/Menu.stories";
-import { Example } from "@site/src/components/ExampleContext";
-
 # Menu
 
 ### Features
@@ -17,6 +10,8 @@ import { Example } from "@site/src/components/ExampleContext";
 - Default menu layout with icon, text and keyboard shortcut
 - Full keyboard support
 - Viewport-aware positioning with respect to a trigger.
+- Toggle submenus by press, instead of hover. (example: Git Branches popup menu)
+- Ability to define action for menu items with submenu (Run Configurations dropdown menu)
 
 #### Remaining
 
@@ -29,6 +24,12 @@ import { Example } from "@site/src/components/ExampleContext";
 - In the reference impl, there is a delay in opening submenu
 - Moving mouse out of the menu de-highlights currently highlighted menu, if it's not a menu item with a nested menu.
   Here menu items are not de-highlighted when mouse goes away from the menu.
+- If `selectedKeys` is passed and non-empty, it will be autofocused, irrespective of autoFocus value being true, "first"
+  or "last", as long as autofocus is not `false`.
+
+#### Known issues
+
+- The first selected key is a key in a submenu, `autoFocus` being set to "first" or "last" won't work.
 
 ## Menu
 
@@ -314,3 +315,51 @@ In future versions, there might be an integrated support for context menu in Lis
 just by composition of those components and `ContextMenuContainer`. A caveat to have in mind is the extra wrapper
 element that will be added if you want context menu, which may need some styling to have no effect on the layout.
 :::
+
+## Submenu Behaviour
+
+By default, menu items with submenu open the submenu on hover. Pressing such items also opens the submenu, if not
+already opened (e.g. when keyboard is used for navigation). Using `submenuBehavior` prop, this default behavior can be
+fine-tuned for specific use cases:
+
+- `toggleOnPress`:
+- `actionOnPress`:
+
+## SpeedSearchMenu
+
+A drop-in replacement for Menu, which lets user filter items.
+
+```tsx live
+<MenuTrigger
+  renderMenu={({ menuProps }) => (
+    <SpeedSearchMenu
+      {...menuProps}
+      onAction={(key) => {
+        console.log(key);
+      }}
+    >
+      <Item textValue="Cut">
+        <MenuItemLayout
+          icon={<PlatformIcon icon={"actions/menu-cut"} />}
+          content="Cut"
+          shortcut={"⌘X"}
+        />
+      </Item>
+      <Item textValue="Copy">
+        <MenuItemLayout
+          icon={<PlatformIcon icon={"actions/copy"} />}
+          content="Copy"
+          shortcut={"⌘C"}
+        />
+      </Item>
+      <Item textValue="Paste">
+        <MenuItemLayout
+          icon={<PlatformIcon icon={"actions/menu-paste"} />}
+          content="Paste"
+          shortcut={"⌘V"}
+        />
+      </Item>
+    </SpeedSearchMenu>
+  )}
+>
+```

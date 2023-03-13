@@ -21,23 +21,21 @@ const repositoryGrouping: ChangeGrouping<RepositoryNode, "repository"> = {
   }),
   groupFn: selector({
     key: "repositoryGrouping/groupFn",
-    get: ({ get }: { get: GetRecoilValue }) => (
-      nodes: ReadonlyArray<ChangeNode>
-    ) => {
-      const repos = get(vcsRootsState);
-      return repos.map(
-        (repository): RepositoryNode => {
+    get:
+      ({ get }: { get: GetRecoilValue }) =>
+      (nodes: ReadonlyArray<ChangeNode>) => {
+        const repos = get(vcsRootsState);
+        return repos.map((repository): RepositoryNode => {
           return repositoryNode(
             repository,
             nodes.filter((node) =>
-              (node.change.after?.path || node.change.before?.path).startsWith(
+              (node.change.after?.path || node.change.before?.path)?.startsWith(
                 repository.dir
               )
             )
           );
-        }
-      );
-    },
+        });
+      },
   }),
 };
 

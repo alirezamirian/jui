@@ -8,7 +8,7 @@ import {
   useRecoilCallback,
 } from "recoil";
 import { currentProjectState } from "../Project/project.state";
-import { status, statusMatrix } from "isomorphic-git";
+import git, { status, statusMatrix } from "isomorphic-git";
 import { fs } from "../fs/fs";
 import {
   convertGitStatus,
@@ -41,11 +41,34 @@ export const vcsRootsState = atom<VcsDirectoryMapping[]>({
 /**
  * Given the absolute path of a file, returns the relevant VCS root path, if any.
  */
-export const VcsRootForFile = selectorFamily<string | null, string>({
+export const vcsRootForFile = selectorFamily<string | null, string>({
   key: "gitRootForFile",
-  get: (filepath: string) => ({ get }) =>
-    get(vcsRootsState).find((root) => filepath.startsWith(root.dir))?.dir ??
-    null,
+  get:
+    (filepath: string) =>
+    ({ get }) =>
+      get(vcsRootsState).find((root) => filepath.startsWith(root.dir))?.dir ??
+      null,
+});
+/**
+ * Given the absolute path of a file, returns the current branch on the repository this file belongs to.
+ */
+export const branchForFile = selectorFamily<string | null, string>({
+  key: "gitBranchForFile",
+  get:
+    (filepath: string) =>
+    async ({ get }) => {
+      const root = get(vcsRootForFile(filepath));
+      return root ? get(repoCurrentBranch(root)) : null;
+    },
+});
+
+export const repoCurrentBranch = selectorFamily({
+  key: "gitRepoCurrentBranch",
+  get: (repoRoot: string) => async () => {
+    return (
+      (await git.currentBranch({ fs, dir: repoRoot, fullname: false })) || null
+    );
+  },
 });
 
 /**
@@ -62,41 +85,46 @@ export const fileStatusState = atomFamily<FileStatus, string>({
 
 export const useUpdateFileStatus = () =>
   useRecoilCallback(
-    ({ snapshot, set }: CallbackInterface) => async (filepath: string) => {
-      const repoRoot = await snapshot.getPromise(VcsRootForFile(filepath));
-      if (repoRoot != null) {
-        console.time(`status ${filepath}`);
-        const fileStatus = await status({
-          fs,
-          dir: repoRoot,
-          filepath: path.relative(repoRoot, filepath),
-        });
-        console.timeEnd(`status ${filepath}`);
-        set(fileStatusState(filepath), convertGitStatus(fileStatus));
-      }
-    },
+    ({ snapshot, set }: CallbackInterface) =>
+      async (filepath: string) => {
+        const repoRoot = await snapshot.getPromise(vcsRootForFile(filepath));
+        if (repoRoot != null) {
+          console.time(`status ${filepath}`);
+          const fileStatus = await status({
+            fs,
+            dir: repoRoot,
+            filepath: path.relative(repoRoot, filepath),
+          });
+          console.timeEnd(`status ${filepath}`);
+          set(fileStatusState(filepath), convertGitStatus(fileStatus));
+        }
+      },
     []
   );
 
 export const useUpdateVcsFileStatuses = () =>
   useRecoilCallback(
-    ({ snapshot, transact_UNSTABLE }: CallbackInterface) => async () => {
-      const vcsDirectoryMappings = await snapshot.getPromise(vcsRootsState);
-      return Promise.all(
-        vcsDirectoryMappings
-          .filter(({ vcs }) => vcs === "git")
-          .map(async ({ dir }) => {
-            console.time("statusMatrix");
-            const rows = await statusMatrix({ fs, dir });
-            console.timeEnd("statusMatrix");
-            transact_UNSTABLE(({ set }) => {
-              rows.forEach((row) => {
-                set(fileStatusState(`${dir}/${row[0]}`), convertGitStatus(row));
+    ({ snapshot, transact_UNSTABLE }: CallbackInterface) =>
+      async () => {
+        const vcsDirectoryMappings = await snapshot.getPromise(vcsRootsState);
+        return Promise.all(
+          vcsDirectoryMappings
+            .filter(({ vcs }) => vcs === "git")
+            .map(async ({ dir }) => {
+              console.time("statusMatrix");
+              const rows = await statusMatrix({ fs, dir });
+              console.timeEnd("statusMatrix");
+              transact_UNSTABLE(({ set }) => {
+                rows.forEach((row) => {
+                  set(
+                    fileStatusState(`${dir}/${row[0]}`),
+                    convertGitStatus(row)
+                  );
+                });
               });
-            });
-          })
-      );
-    },
+            })
+        );
+      },
     []
   );
 
