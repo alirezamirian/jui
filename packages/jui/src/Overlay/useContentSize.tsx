@@ -67,7 +67,12 @@ export const useContentSize = (
     return () => {
       window.cancelAnimationFrame(id);
     };
-  }, [measuredSizes]);
+  }, [
+    measuredSizes,
+    // ref value shouldn't normally be an effect's dependency, but for some reason, ref value is null in the first call
+    // when built for website. Interestingly, it doesn't happen in storybook. So maybe something to investigate further
+    ref.current,
+  ]);
   const measure = () => {
     if (ref.current) {
       setMeasuredSizes([]); // or should we set to last measured size?
@@ -89,7 +94,12 @@ export const useContentSize = (
         mutationObserver.disconnect();
       };
     }
-  }, [observe]);
+  }, [
+    observe,
+    // ref value shouldn't normally be an effect's dependency, but for some reason, ref value is null in the first call
+    // when built for website. Interestingly, it doesn't happen in storybook. So maybe something to investigate further
+    ref.current,
+  ]);
   return [measuredSizes.at(-1) || { width: 0, height: 0 }, measure] as const;
 };
 
