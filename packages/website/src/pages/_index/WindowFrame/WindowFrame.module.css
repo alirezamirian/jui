@@ -4,6 +4,7 @@
   border: 1px solid #acacac;
   border-radius: 6px;
   box-shadow: 0 0 20px #acacac;
+  position: relative;
 }
 
 .titlebar {
