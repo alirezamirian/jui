@@ -1,7 +1,7 @@
-import React, { useRef } from "react";
+import React, { ForwardedRef } from "react";
 import { OverlayTriggerProps, useOverlayTrigger } from "@react-aria/overlays";
 import { PressResponder } from "@react-aria/interactions";
-import { mergeProps } from "@react-aria/utils";
+import { mergeProps, useObjectRef } from "@react-aria/utils";
 import {
   OverlayTriggerProps as OverlayTriggerStateProps,
   useOverlayTriggerState,
@@ -22,13 +22,12 @@ export interface PopupOnTriggerProps
  * {@link ActionButton}), and is rendered in place. Similar to {@link Popup component}, `children` defines the content
  * of Popup.
  */
-export const PopupOnTrigger = React.forwardRef(function PopupOnTrigger({
-  trigger,
-  placement,
-  ...props
-}: PopupOnTriggerProps) {
+export const PopupOnTrigger = React.forwardRef(function PopupOnTrigger(
+  { trigger, placement, ...props }: PopupOnTriggerProps,
+  forwardedRef: ForwardedRef<HTMLButtonElement>
+) {
   const state = useOverlayTriggerState(props);
-  const triggerRef = useRef<HTMLButtonElement>(null);
+  const triggerRef = useObjectRef(forwardedRef);
   const { overlayProps, triggerProps } = useOverlayTrigger(
     { type: props.type || "menu" },
     state,
