@@ -39,7 +39,6 @@ export function useCollectionSpeedSearchResult<T>({
    * will usually involve a size change in the collection.
    */
   const result = useMemo(() => {
-    console.log("calculating matches");
     const matches: CollectionSpeedSearchMatches = new Map(); // maybe make it nullable makes more sense
     if (speedSearch.active) {
       // it's important not to iterate on items, since they can be nested.
