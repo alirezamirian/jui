@@ -15,13 +15,13 @@ import {
 
 import {
   useLatestRecoilValue,
-  useRefreshRecoilValueOnMount,
+  // useRefreshRecoilValueOnMount,
 } from "../../recoil-utils";
 import { allBranchesState } from "../branches.state";
 
 export function BranchesPopupContent() {
   const repoBranches = useLatestRecoilValue(allBranchesState);
-  useRefreshRecoilValueOnMount(allBranchesState);
+  // useRefreshRecoilValueOnMount(allBranchesState);
 
   const isFavoriteBranch = (branch: string) => branch === "master"; // TODO;
 
