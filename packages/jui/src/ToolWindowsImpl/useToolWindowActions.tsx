@@ -62,12 +62,12 @@ const getAnchorName = ({
       : "Top"
   }`;
 
-export const ViewModeToActionId: Record<ViewMode, string> = {
+export const ViewModeToActionId: Record<Exclude<ViewMode, "window">, string> = {
   docked_pinned: DOCK_PINNED_MODE_ACTION_ID,
   docked_unpinned: DOCK_UNPINNED_MODE_ACTION_ID,
   undock: UNDOCK_MODE_ACTION_ID,
   float: FLOAT_MODE_ACTION_ID,
-  window: WINDOW_MODE_ACTION_ID,
+  // window: WINDOW_MODE_ACTION_ID,
 };
 
 export const VIEW_MODE_ACTION_IDS = Object.values(ViewModeToActionId);

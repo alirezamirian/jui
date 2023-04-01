@@ -18,7 +18,7 @@ const FLOAT_WINDOW_MIN_HEIGHT = 40; // in Intellij Platform it's zero but there 
 
 const StyledFloatView = styled.div`
   box-sizing: border-box;
-  position: absolute;
+  position: fixed;
   background: ${({ theme }) => theme.commonColors.panelBackground};
   color: ${({ theme }) => theme.color("*.foreground")};
   // border color doesn't seem to be correct and needs more investigation. might be even os-specific and outside
