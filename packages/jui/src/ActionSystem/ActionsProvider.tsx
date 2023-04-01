@@ -7,7 +7,15 @@ import { Shortcut } from "@intellij-platform/core/ActionSystem/Shortcut";
 
 export interface ActionDefinition {
   title: string;
-  actionPerformed: () => void;
+  actionPerformed: (
+    /**
+     * UI event that triggered the action, if a shortcut triggered the action.
+     */
+    event?:
+      | React.MouseEvent<HTMLElement>
+      | React.KeyboardEvent<HTMLElement>
+      | undefined
+  ) => void;
   icon?: React.ReactNode;
   description?: string;
   isDisabled?: boolean;
@@ -43,9 +51,12 @@ export function ActionsProvider(props: ActionsProviderProps): JSX.Element {
   const actionIds = Object.keys(props.actions);
   const shortcuts = pick(actionIds, keymap || {});
 
-  const { shortcutHandlerProps } = useShortcuts(shortcuts, (actionId) => {
-    props.actions[actionId]?.actionPerformed();
-  });
+  const { shortcutHandlerProps } = useShortcuts(
+    shortcuts,
+    (actionId, { event }) => {
+      props.actions[actionId]?.actionPerformed(event);
+    }
+  );
 
   const actions = mapObjIndexed((value, actionId): Action => {
     const shortcuts = keymap?.[actionId];

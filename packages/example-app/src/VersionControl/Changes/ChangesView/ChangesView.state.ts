@@ -368,6 +368,9 @@ export const openRollbackWindowForSelectionCallback = ({
   set,
   snapshot,
 }: CallbackInterface) => {
+  /**
+   * If contextual is true, changes related to {@link activePathsState} will be preselected.
+   */
   return (contextual = true) => {
     const activePaths = snapshot.getLoadable(activePathsState).getValue();
     const changesUnderSelection = snapshot

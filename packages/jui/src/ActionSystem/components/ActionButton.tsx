@@ -19,7 +19,7 @@ export const ActionButton = ({
   }
   const actionButton = (
     <ActionButtonUI
-      onPress={action.actionPerformed}
+      onPress={() => action.actionPerformed()}
       isDisabled={action.isDisabled}
     >
       {action.icon || children}
