@@ -113,7 +113,15 @@ export function useSelectableTree<T>(
       // selectionKeyDown currently doesn't report back if it handled the event or not. We could have conditionally
       // continued propagation if the event was not handled. Then we could change Speed Search impl to only handle
       // inputs when the propagation is not prevented.
-      selectionKeyDown?.(event);
+      // Also, selectionKeyDown is not accurate in handling actions like "select all". e.g. it takes 'cmd+shift+a' too,
+      // as select all which can conflict with action system. So we don't call it if there are multiple modifiers.
+      const hasAtMostOneModifier =
+        [event.metaKey, event.ctrlKey, event.shiftKey, event.altKey].filter(
+          (i) => i
+        ).length < 2;
+      if (hasAtMostOneModifier) {
+        selectionKeyDown?.(event);
+      }
       event.continuePropagation();
     }
   };
@@ -162,7 +170,7 @@ export function useSelectableTree<T>(
       collectionProps,
       keyboardProps,
       domProps,
-      { onFocus, onBlur }
+      { onFocus, onBlur, role: "tree" }
     ),
     treeContext,
     focused,

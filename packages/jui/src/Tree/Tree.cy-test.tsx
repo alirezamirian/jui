@@ -1,6 +1,7 @@
 import { composeStories } from "@storybook/testing-react";
 import * as React from "react";
 import * as stories from "./Tree.stories";
+import { isMac } from "@react-aria/utils";
 
 const { Static, ScrollAndContainerWidth } = composeStories(stories);
 
@@ -56,6 +57,19 @@ describe("Tree", () => {
     cy.get("@onAction").should("be.calledOnceWith", "index.ts");
     cy.contains("index.ts").type("{enter}");
     cy.get("@onAction").should("be.calledTwice");
+  });
+
+  it("doesn't select all when more modifiers than 'cmd' (or 'ctrl' on windows) are pressed", () => {
+    cy.mount(<Static />);
+    const modifier = isMac() ? "Meta" : "Control";
+    cy.findAllByRole("treeitem").first().click();
+    cy.findAllByRole("treeitem", { selected: true }).should("have.length", 1);
+    cy.realPress([modifier, "Shift", "a"]);
+    cy.findAllByRole("treeitem", { selected: true }).should("have.length", 1);
+    cy.realPress([modifier, "Alt", "a"]);
+    cy.findByRole("treeitem", { selected: true }).should("have.length", 1);
+    cy.realPress([modifier, "a"]);
+    cy.findAllByRole("treeitem", { selected: true }).should("have.length", 12);
   });
 });
 
