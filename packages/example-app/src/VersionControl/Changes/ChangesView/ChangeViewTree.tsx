@@ -1,5 +1,5 @@
-import React, { RefObject } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import React, { Key, RefObject } from "react";
+import { useRecoilCallback, useRecoilState, useRecoilValue } from "recoil";
 import {
   ContextMenuContainer,
   Item,
@@ -16,6 +16,7 @@ import {
 import { ChangesViewTreeContextMenu } from "./ChangesViewTreeContextMenu";
 import { getChangeListTreeItemProps } from "./changesTreeNodeRenderers";
 import { useActivePathsProvider } from "../../../Project/project.state";
+import { useEditorStateManager } from "../../../Editor/editor.state";
 
 /**
  * TODO: unversioned files
@@ -32,6 +33,21 @@ export const ChangeViewTree = ({
   const [selectedKeys, setSelectedKeys] = useRecoilState(selectedKeysState);
   const [expandedKeys, setExpandedKeys] = useRecoilState(expandedKeysState);
   const nestedSelection = useRecoilValue(includedChangesNestedSelection);
+  const { openPath } = useEditorStateManager();
+  const openChangeInEditor = useRecoilCallback(
+    ({ snapshot }) =>
+      (key: Key) => {
+        const change = snapshot
+          .getLoadable(changesTreeNodesState)
+          .getValue()
+          .byKey.get(key);
+        if (change?.type === "change") {
+          openPath(change.change.after.path);
+        }
+        return change;
+      },
+    []
+  );
 
   const { activePathsProviderProps } = useActivePathsProvider(
     selectedKeys === "all"
@@ -63,6 +79,7 @@ export const ChangeViewTree = ({
         expandedKeys={expandedKeys}
         onExpandedChange={setExpandedKeys}
         onSelectionChange={setSelectedKeys}
+        onAction={openChangeInEditor}
         nestedSelection={nestedSelection}
         fillAvailableSpace
         {...activePathsProviderProps}
