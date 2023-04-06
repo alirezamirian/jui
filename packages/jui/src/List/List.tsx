@@ -1,11 +1,12 @@
 import { AriaListBoxProps } from "@react-types/listbox";
 import { AsyncLoadable } from "@react-types/shared";
-import React, { Key, useRef } from "react";
+import React, { ForwardedRef, Key, RefObject, useEffect, useRef } from "react";
 import { useList } from "./useList";
 import { ListItem } from "./ListItem";
 import { StyledList } from "./StyledList";
 import { listItemRenderer } from "./listItemRenderer";
 import { useListState } from "./useListState";
+import { useObjectRef } from "@react-aria/utils";
 
 export type ListProps<T extends object> = Omit<
   Omit<AriaListBoxProps<T>, "disallowEmptySelection">,
@@ -40,18 +41,21 @@ export type ListProps<T extends object> = Omit<
  *  - Support custom rendering
  *  -
  */
-export function List<T extends object>({
-  allowEmptySelection = false,
-  alwaysShowAsFocused = false,
-  fillAvailableSpace = false,
-  onAction,
-  ...inputProps
-}: ListProps<T>) {
+export const List = React.forwardRef(function List<T extends object>(
+  {
+    allowEmptySelection = false,
+    alwaysShowAsFocused = false,
+    fillAvailableSpace = false,
+    onAction,
+    ...inputProps
+  }: ListProps<T>,
+  forwardedRef: ForwardedRef<HTMLUListElement>
+) {
   const props: AriaListBoxProps<T> = {
     ...inputProps,
     disallowEmptySelection: !allowEmptySelection,
   };
-  const ref = useRef<HTMLUListElement>(null);
+  const ref = useObjectRef(forwardedRef);
   const state = useListState(props);
   const { listProps, focused } = useList(props, state, ref);
 
@@ -76,4 +80,4 @@ export function List<T extends object>({
       )}
     </StyledList>
   );
-}
+});
