@@ -61,8 +61,8 @@ export const DefaultToolWindows = React.forwardRef(function DefaultToolWindows(
             content,
           }))}
           containerProps={mergeProps(
-            shortcutHandlerProps,
-            props.containerProps || {}
+            props.containerProps || {},
+            shortcutHandlerProps
           )}
         />
       )}
