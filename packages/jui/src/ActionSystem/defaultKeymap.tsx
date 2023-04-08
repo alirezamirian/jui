@@ -161,4 +161,22 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
+  [CommonActionId.GO_TO_ACTION]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta", "Shift"],
+        code: "KeyA",
+      },
+    },
+  ],
+  [CommonActionId.SHOW_INTENTION_ACTIONS]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Alt"],
+        code: "Enter",
+      },
+    },
+  ],
 };

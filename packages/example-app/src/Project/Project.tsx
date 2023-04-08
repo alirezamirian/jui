@@ -1,17 +1,26 @@
-import { ActionsProvider, DefaultToolWindows } from "@intellij-platform/core";
+import {
+  ActionDefinition,
+  ActionsProvider,
+  DefaultToolWindows,
+  styled,
+} from "@intellij-platform/core";
 import React, { CSSProperties } from "react";
 import { FileEditor } from "../Editor/FileEditor";
 import { useInitializeVcs } from "../VersionControl/file-status.state";
 import { toolWindows } from "./toolWindows";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useInitializeChanges } from "../VersionControl/Changes/change-lists.state";
-import styled from "styled-components";
 import { IdeStatusBar } from "../StatusBar/IdeStatusBar";
 import { usePersistenceFsNotification } from "../usePersistenceFsNotification";
 import { useChangesViewActions } from "../VersionControl/Changes/useChangesViewActions";
 import { RollbackWindow } from "../VersionControl/Changes/Rollback/RollbackWindow";
 import { rollbackViewState } from "../VersionControl/Changes/Rollback/rollbackView.state";
 import { toolWindowsState } from "./toolWindows.state";
+import {
+  SearchEverywherePopup,
+  searchEveryWhereState,
+} from "../SearchEverywhere/SearchEverywherePopup";
+import { useProjectActions } from "./useProjectActions";
 
 const StyledWindowFrame = styled.div`
   display: flex;
@@ -23,13 +32,15 @@ const StyledWindowFrame = styled.div`
 export const Project = ({ height }: { height: CSSProperties["height"] }) => {
   const [state, setState] = useRecoilState(toolWindowsState);
   const isRollbackWindowOpen = useRecoilValue(rollbackViewState.isOpen);
+  const isSearchEveryWhereOpen = useRecoilValue(searchEveryWhereState.isOpen);
 
   useInitializeVcs();
   useInitializeChanges();
   usePersistenceFsNotification();
 
-  const allActions = {
+  const allActions: Record<string, ActionDefinition> = {
     ...useChangesViewActions(),
+    ...useProjectActions(),
   };
 
   return (
@@ -53,6 +64,7 @@ export const Project = ({ height }: { height: CSSProperties["height"] }) => {
       </ActionsProvider>
 
       <IdeStatusBar />
+      {isSearchEveryWhereOpen && <SearchEverywherePopup />}
       {isRollbackWindowOpen && <RollbackWindow />}
     </StyledWindowFrame>
   );

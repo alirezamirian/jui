@@ -1,5 +1,6 @@
 export { Section } from "@react-stately/collections";
 export { SelectionManager } from "@react-stately/selection";
+export { type Selection } from "@react-types/shared";
 export { Item } from "./Item";
 export * from "./Divider";
 export * from "./ItemStateContext";

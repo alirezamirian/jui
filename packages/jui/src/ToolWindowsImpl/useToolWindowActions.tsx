@@ -76,7 +76,11 @@ export const MOVE_TO_ACTION_GROUP = anchors.map(
   (anchor) => `TW.MoveTo.${anchor.id}`
 );
 
-export function useToolWindowActions(): { [key: string]: ActionDefinition } {
+export function useToolWindowActions({
+  mainContentTitle,
+}: {
+  mainContentTitle: string;
+}): { [key: string]: ActionDefinition } {
   const {
     stretchWidth,
     stretchHeight,
@@ -139,7 +143,7 @@ export function useToolWindowActions(): { [key: string]: ActionDefinition } {
       )
     ),
     [FOCUS_EDITOR_ACTION_ID]: {
-      title: "Escape", // in intellij it says "Focus Editor" but it's not generic enough.
+      title: `Focus ${mainContentTitle}`, // in intellij it says "Focus Editor" but it's not generic enough.
       actionPerformed: () => {
         focusMainContent();
       },

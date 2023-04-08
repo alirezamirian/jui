@@ -1,6 +1,9 @@
 import React from "react";
 import { isMac } from "@react-aria/utils";
 
+/**
+ * TODO: The current name is not accurate, and can be confusing. Rename to something better.
+ */
 export function isCtrlKeyPressed(
   e: { metaKey: boolean; ctrlKey: boolean } | undefined
 ) {

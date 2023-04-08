@@ -271,7 +271,6 @@ function SpeedSearchMenuContent<T>({
       {searchPopupProps.children && (
         <StyledSearchFieldWrapper
           onClick={(e) => {
-            console.log("clickkkkcc");
             e.preventDefault();
           }}
         >

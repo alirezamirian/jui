@@ -20,6 +20,10 @@ const withTemporaryStyle =
     return returnValue;
   };
 
+/**
+ * FIXME: withTemporaryStyle is not side-effect free and can cause scroll jumps. It creates awfully hard-to-debug
+ *  issues.
+ */
 export const getContentSize = withTemporaryStyle(
   {
     width: "",
@@ -74,8 +78,20 @@ export const useContentSize = (
     ref.current,
   ]);
   const measure = () => {
-    if (ref.current) {
-      setMeasuredSizes([]); // or should we set to last measured size?
+    const lastMeasuredSize = measuredSizes.at(-1);
+    if (ref.current && lastMeasuredSize) {
+      const currentSize = getContentSize(ref.current);
+      if (
+        currentSize.height !== lastMeasuredSize.height ||
+        currentSize.width !== lastMeasuredSize.width
+      ) {
+        console.log("setting measured size!", lastMeasuredSize, currentSize);
+        setMeasuredSizes(
+          measuredSizes.map((aSize) =>
+            aSize === lastMeasuredSize ? currentSize : aSize
+          )
+        );
+      }
     }
   };
   const debouncedMeasure = useDebouncedCallback(measure);

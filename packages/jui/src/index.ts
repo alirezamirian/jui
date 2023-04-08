@@ -36,4 +36,8 @@ export * from "./ModalWindow";
 export * from "./Tooltip";
 export * from "./Popup";
 
+export { Bounds } from "./Overlay";
+export { TextRange } from "./TextRange";
+
 export { Pressable } from "@react-aria/interactions";
+export { FocusScope, FocusScopeProps } from "@react-aria/focus";

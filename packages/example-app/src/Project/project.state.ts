@@ -80,6 +80,8 @@ export const currentProjectFilesState = selector({
  *   Whether that behaviour is a good thing or not, in order to follow it, having support for Action Data, will help
  *   implementing this behavior, since the action data will be set based on the context, only when the action is
  *   triggered via shortcut.
+ *   UPDATE: that's fixed now by introducing the optional `event` argument passed to actionPerformed, which gives us a
+ *   chance to know if the action was performed by a shortcut or by clicking an action button.
  * - Action data would allow for lazy evaluation of the required data, only when the action is triggered via a shortcut,
  *   and based on the dom element from which the event is triggered. While in the current approach, the data is
  *   unnecessarily updated as it changes and the data-holder component is focused.
