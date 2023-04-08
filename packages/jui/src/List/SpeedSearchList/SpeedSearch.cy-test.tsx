@@ -1,38 +1,24 @@
 import { composeStories } from "@storybook/testing-react";
 import * as React from "react";
-import * as stories from "./List.stories";
+import * as stories from "./SpeedSearchList.stories";
 
-const { Default, WithConnectedInput } = composeStories(stories);
+const { WithHighlight, WithConnectedInput } = composeStories(stories);
 
-describe("List", () => {
+describe("SpeedSearch", () => {
   it("renders as expected", () => {
-    cy.mount(<Default />);
-    matchImageSnapshot("List-default");
-  });
-
-  it.skip("supports keyboard navigation", () => {
-    // TODO
+    cy.mount(<WithHighlight />);
+    cy.findByRole("list").focus().realType("g");
+    matchImageSnapshot("SpeedSearch-searched");
   });
 
   it("calls onAction for items on click or Enter", () => {
     const onAction = cy.stub().as("onAction");
-    cy.mount(<Default onAction={onAction} />);
+    cy.mount(<WithHighlight onAction={onAction} />);
 
     cy.contains("Vicente Amigo").dblclick();
     cy.get("@onAction").should("be.calledOnceWith", "Vicente Amigo");
     cy.contains("Vicente Amigo").type("{enter}");
     cy.get("@onAction").should("be.calledTwice");
-  });
-
-  it("auto selects the first item when empty selection is disallowed and nothing is selected", () => {
-    cy.mount(<Default allowEmptySelection={false} selectionMode="single" />);
-    cy.findByRole("list").focus();
-    cy.findAllByRole("listitem").first().should("be.selected");
-    cy.realPress("ArrowDown");
-    // Make sure the first item is also set as focused item and pressing arrow down selects the second item.
-    cy.findAllByRole("listitem")
-      .eq(1) // second list item
-      .should("be.selected");
   });
 
   describe("Connection to input", () => {
@@ -64,7 +50,6 @@ describe("List", () => {
       cy.realPress("ArrowDown");
       cy.findAllByRole("listitem").first().should("be.selected");
     });
-
     it("works as expected when empty selection is not allowed and the first item is auto-selected", () => {
       cy.mount(
         <WithConnectedInput

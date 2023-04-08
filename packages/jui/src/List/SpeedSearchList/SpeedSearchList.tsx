@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { ForwardedRef } from "react";
 import { AriaListBoxProps } from "@react-types/listbox";
 import {
   CollectionSpeedSearchContainer,
@@ -16,27 +16,33 @@ import { useSpeedSearchList } from "./useSpeedSearchList";
 import { listItemRenderer } from "../listItemRenderer";
 import { useListState } from "../useListState";
 import { ListItem } from "../ListItem";
+import { CollectionRefProps } from "@intellij-platform/core/Collections/useCollectionRef";
+import { useObjectRef } from "@react-aria/utils";
 
-interface SpeedSearchListProps<T extends object>
+export interface SpeedSearchListProps<T extends object>
   extends ListProps<T>,
     SpeedSearchProps {}
 
 /**
- * TODO:
- *  - Override keyboard navigation (arrows, ctrl+A, etc.) when speed search is active.
+ * List component with {@link SpeedSearch}, which is a more advanced version of typeahead.
  */
-export function SpeedSearchList<T extends object>({
-  allowEmptySelection = false,
-  alwaysShowAsFocused = false,
-  fillAvailableSpace = false,
-  onAction,
-  ...inputProps
-}: SpeedSearchListProps<T>) {
-  const props: AriaListBoxProps<T> = {
+export const SpeedSearchList = React.forwardRef(function SpeedSearchList<
+  T extends object
+>(
+  {
+    allowEmptySelection = false,
+    alwaysShowAsFocused = false,
+    fillAvailableSpace = false,
+    onAction,
+    ...inputProps
+  }: SpeedSearchListProps<T>,
+  forwardedRef: ForwardedRef<HTMLUListElement>
+) {
+  const props: AriaListBoxProps<T> & CollectionRefProps = {
     ...inputProps,
     disallowEmptySelection: !allowEmptySelection,
   };
-  const ref = useRef<HTMLUListElement>(null);
+  const ref = useObjectRef(forwardedRef);
   const state = useListState(props);
 
   const { listProps, searchPopupProps, focused, speedSearchContextValue } =
@@ -70,4 +76,4 @@ export function SpeedSearchList<T extends object>({
       </CollectionSpeedSearchContext.Provider>
     </CollectionSpeedSearchContainer>
   );
-}
+});

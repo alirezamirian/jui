@@ -1,10 +1,11 @@
 import React from "react";
-import { Meta } from "@storybook/react";
-import { SpeedSearchList } from "./SpeedSearchList";
+import { Meta, Story } from "@storybook/react";
+import { SpeedSearchList, SpeedSearchListProps } from "./SpeedSearchList";
 import { legends } from "../../../test-data";
 import { HighlightedTextValue } from "../../CollectionSpeedSearch/HighlightedTextValue";
 import { Pane } from "../../story-components";
 import {
+  commonListStories,
   itemRenderer,
   renderItemCustomUI,
   renderItemText,
@@ -16,7 +17,7 @@ export default {
   component: SpeedSearchList,
 } as Meta;
 
-export const WithHighlight = () => {
+export const WithHighlight: Story<SpeedSearchListProps<any>> = (props) => {
   return (
     <Pane>
       <SpeedSearchList
@@ -24,6 +25,7 @@ export const WithHighlight = () => {
         items={legends}
         disabledKeys={["El Amir"]}
         fillAvailableSpace
+        {...props}
       >
         {itemRenderer(renderItemTextWithHighlights)}
       </SpeedSearchList>
@@ -58,3 +60,6 @@ export const HighlightInCustomUI = () => {
     </Pane>
   );
 };
+
+export const WithConnectedInput =
+  commonListStories.withConnectedInput(SpeedSearchList);
