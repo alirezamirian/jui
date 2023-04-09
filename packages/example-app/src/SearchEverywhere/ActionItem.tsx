@@ -42,7 +42,7 @@ export function ActionItem({
           action.title
         )}
       </StyledTitleWrapper>
-      <ItemLayout.Hint style={{ fontSize: ".9em", fontWeight: "bold" }}>
+      <ItemLayout.Hint style={{ fontSize: ".85em", fontWeight: "bold" }}>
         {action.shortcut}
       </ItemLayout.Hint>
     </StyledItemLayout>

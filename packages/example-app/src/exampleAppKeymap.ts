@@ -20,7 +20,7 @@ export const exampleAppKeymap: Keymap = {
   [ChangesViewActionIds.ROLLBACK]: [
     {
       type: "keyboard",
-      firstKeyStroke: { code: "KeyZ", modifiers: ["Meta", "Alt"] },
+      firstKeyStroke: { code: "KeyZ", modifiers: ["Alt", "Meta"] },
     },
   ],
   [ChangesViewActionIds.SHOW_DIFF]: [

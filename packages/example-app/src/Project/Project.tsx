@@ -16,11 +16,9 @@ import { useChangesViewActions } from "../VersionControl/Changes/useChangesViewA
 import { RollbackWindow } from "../VersionControl/Changes/Rollback/RollbackWindow";
 import { rollbackViewState } from "../VersionControl/Changes/Rollback/rollbackView.state";
 import { toolWindowsState } from "./toolWindows.state";
-import {
-  SearchEverywherePopup,
-  searchEveryWhereState,
-} from "../SearchEverywhere/SearchEverywherePopup";
+import { SearchEverywherePopup } from "../SearchEverywhere/SearchEverywherePopup";
 import { useProjectActions } from "./useProjectActions";
+import { searchEverywhereState } from "../SearchEverywhere/searchEverywhere.state";
 
 const StyledWindowFrame = styled.div`
   display: flex;
@@ -32,7 +30,7 @@ const StyledWindowFrame = styled.div`
 export const Project = ({ height }: { height: CSSProperties["height"] }) => {
   const [state, setState] = useRecoilState(toolWindowsState);
   const isRollbackWindowOpen = useRecoilValue(rollbackViewState.isOpen);
-  const isSearchEveryWhereOpen = useRecoilValue(searchEveryWhereState.isOpen);
+  const isSearchEveryWhereOpen = useRecoilValue(searchEverywhereState.isOpen);
 
   useInitializeVcs();
   useInitializeChanges();
