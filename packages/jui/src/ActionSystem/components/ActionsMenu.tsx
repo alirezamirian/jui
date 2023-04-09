@@ -48,7 +48,7 @@ export function ActionsMenu({
       onAction={(key) => {
         const action = allActions.find(({ id }) => id === key);
         if (action && isAction(action)) {
-          action.actionPerformed();
+          action.perform();
         }
       }}
       selectedKeys={selectedKeys} // FIXME: keep isSelected on actions (toggle action)?

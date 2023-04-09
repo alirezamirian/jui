@@ -24,6 +24,11 @@ export interface DefaultToolWindowProps extends DOMProps {
    * Actions to be provided in the tool window, in addition to the default tool window actions.
    */
   actions?: Record<string, ActionDefinition>;
+  /**
+   * The title of main part of the tool windows component. Used in tool window actions.
+   * @default "Editor"
+   */
+  mainContentTitle?: string;
   onFocusChange?: (focused: boolean) => void;
 }
 
@@ -67,6 +72,7 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
   additionalActions,
   onFocusChange,
   actions,
+  mainContentTitle = "Editor",
   ...otherProps
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -92,7 +98,9 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
     }),
     [contentHasFocus]
   );
-  const toolWindowActions = useToolWindowActions();
+  const toolWindowActions = useToolWindowActions({
+    mainContentTitle,
+  });
   const allActions = {
     ...toolWindowActions,
     ...actions,

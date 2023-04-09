@@ -5,6 +5,7 @@ import { legends } from "../../test-data";
 import { Divider } from "../Collections/Divider";
 import { Pane } from "../story-components";
 import {
+  commonListStories,
   itemRenderer,
   renderItemCustomUI,
   renderItemText,
@@ -39,6 +40,8 @@ export const Default: Story<ListProps<never>> = (props) => {
 };
 
 Default.args = {};
+
+export const WithConnectedInput = commonListStories.withConnectedInput(List);
 
 export const AlwaysShownAsFocused = () => {
   return (

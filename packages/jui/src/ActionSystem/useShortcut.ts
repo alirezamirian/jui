@@ -12,14 +12,16 @@ export function useShortcuts(
   shortcuts: { [actionId: string]: ReadonlyArray<Shortcut> },
   onAction: (
     actionId: string,
-    args: { event: React.MouseEvent | React.KeyboardEvent }
+    args: {
+      event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>;
+    }
   ) => void | boolean
 ) {
   const firstKeyActivatedShortcutsRef = useRef<
     Array<{ actionId: string; shortcut: KeyboardShortcut }>
   >([]);
   const secondStrokeResetTimerIdRef = useRef<number | null>(null);
-  const onKeyDown: KeyboardEventHandler = useEventCallback((e) => {
+  const onKeyDown: KeyboardEventHandler<HTMLElement> = useEventCallback((e) => {
     if (isModifierOnly(e.nativeEvent) || e.repeat) {
       return;
     }
@@ -89,6 +91,15 @@ export function useShortcuts(
     }
   });
   const shortcutHandlerProps = {
+    /**
+     * by setting onKeyDownCapture is set instead of onKeyDown, we can prioritize action event handler over
+     * component-specific handlers. That might be useful for some components that aggressively stop propagation of
+     * events they handle, if the action is considered of higher priority compared to the conflicting component-internal
+     * functionality. So maybe an option would be in order to define whether the shortcut's event handling should be done
+     * in capture or bubbling phase.
+     * Another thing to get clarified as action system is more used, is to decide if action handler should stop
+     * propagation or not. Or should it be an option?
+     */
     onKeyDown,
   };
   return { shortcutHandlerProps };

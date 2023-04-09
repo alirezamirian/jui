@@ -62,21 +62,27 @@ const getAnchorName = ({
       : "Top"
   }`;
 
-export const ViewModeToActionId: Record<Exclude<ViewMode, "window">, string> = {
+export const ViewModeToActionId: Record<ViewMode, string> = {
   docked_pinned: DOCK_PINNED_MODE_ACTION_ID,
   docked_unpinned: DOCK_UNPINNED_MODE_ACTION_ID,
   undock: UNDOCK_MODE_ACTION_ID,
   float: FLOAT_MODE_ACTION_ID,
-  // window: WINDOW_MODE_ACTION_ID,
+  window: WINDOW_MODE_ACTION_ID,
 };
 
-export const VIEW_MODE_ACTION_IDS = Object.values(ViewModeToActionId);
+export const VIEW_MODE_ACTION_IDS = Object.values(ViewModeToActionId).filter(
+  (id) => id !== WINDOW_MODE_ACTION_ID
+);
 
 export const MOVE_TO_ACTION_GROUP = anchors.map(
   (anchor) => `TW.MoveTo.${anchor.id}`
 );
 
-export function useToolWindowActions(): { [key: string]: ActionDefinition } {
+export function useToolWindowActions({
+  mainContentTitle,
+}: {
+  mainContentTitle: string;
+}): { [key: string]: ActionDefinition } {
   const {
     stretchWidth,
     stretchHeight,
@@ -139,7 +145,7 @@ export function useToolWindowActions(): { [key: string]: ActionDefinition } {
       )
     ),
     [FOCUS_EDITOR_ACTION_ID]: {
-      title: "Escape", // in intellij it says "Focus Editor" but it's not generic enough.
+      title: `Focus ${mainContentTitle}`, // in intellij it says "Focus Editor" but it's not generic enough.
       actionPerformed: () => {
         focusMainContent();
       },

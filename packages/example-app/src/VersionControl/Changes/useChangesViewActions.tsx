@@ -25,7 +25,9 @@ export const useChangesViewActions = (): Record<string, ActionDefinition> => {
     [ChangesViewActionIds.ROLLBACK]: {
       title: "Rollback...",
       icon: <PlatformIcon icon="actions/rollback.svg" />,
-      actionPerformed: openRollbackWindow,
+      actionPerformed: (event) => {
+        openRollbackWindow(Boolean(event));
+      },
     },
     [ChangesViewActionIds.REFRESH]: {
       title: "Refresh",

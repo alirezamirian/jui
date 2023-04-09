@@ -1,5 +1,6 @@
 import React from "react";
 import { styled } from "../styled";
+import { DOMAttributes } from "@react-types/shared";
 
 const StyledItemLayout = styled.div`
   display: flex;
@@ -32,8 +33,10 @@ const StyledHint = styled.span<{ small?: boolean }>`
  * ```
  * @beta
  */
-export const ItemLayout = ({ children }: { children: React.ReactNode }) => {
-  return <StyledItemLayout>{children}</StyledItemLayout>;
+export const ItemLayout = (
+  props: { children: React.ReactNode } & DOMAttributes
+) => {
+  return <StyledItemLayout {...props} />;
 };
 
 /**

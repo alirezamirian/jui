@@ -4,17 +4,19 @@ import React, { useEffect, useState } from "react";
 import { useSelectableList } from "./useSelectableList";
 import { useFocusWithin } from "@react-aria/interactions";
 import { mergeProps } from "@react-aria/utils";
+import { CollectionRefProps } from "@intellij-platform/core/Collections/useCollectionRef";
 
 export interface ListProps
   extends Omit<
-    AriaSelectableListOptions,
-    | "disallowEmptySelection"
-    | "selectOnFocus"
-    | "selectionManager" // Grouped as state, the second argument, like in useListBox
-    | "collection" // Grouped as state, the second argument, like in useListBox
-    | "disabledKeys" // Grouped as state, the second argument, like in useListBox
-    | "ref" // Third argument
-  > {
+      AriaSelectableListOptions,
+      | "disallowEmptySelection"
+      | "selectOnFocus"
+      | "selectionManager" // Grouped as state, the second argument, like in useListBox
+      | "collection" // Grouped as state, the second argument, like in useListBox
+      | "disabledKeys" // Grouped as state, the second argument, like in useListBox
+      | "ref" // Third argument
+    >,
+    CollectionRefProps {
   allowEmptySelection?: boolean;
   id?: string;
 }
@@ -51,6 +53,7 @@ export function useList<T>(
       state.selectionManager.isEmpty &&
       firstKey
     ) {
+      state.selectionManager.setFocusedKey(firstKey);
       state.selectionManager.select(firstKey);
     }
   }, [!props.allowEmptySelection]);

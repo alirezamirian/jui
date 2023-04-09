@@ -180,7 +180,7 @@ export const FileEditor = () => {
                       }
                       containerProps={{
                         onDoubleClick: () => {
-                          hideAllAction?.actionPerformed();
+                          hideAllAction?.perform();
                         },
                       }}
                     />

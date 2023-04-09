@@ -7,7 +7,10 @@ import { useFocusable } from "@react-aria/focus";
 export interface ActionButtonProps
   extends PressProps,
     // Maybe we should allow any arbitrary HTMLProps<HTMLButtonElement> props, instead of whitelisting?
-    Pick<HTMLProps<HTMLElement>, "onFocus" | "onBlur"> {
+    Pick<
+      HTMLProps<HTMLButtonElement>,
+      "onFocus" | "onBlur" | "style" | "className"
+    > {
   children?: React.ReactNode;
   minSize?: number;
   /**

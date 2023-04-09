@@ -7,3 +7,5 @@ dist
 # packages/website/.prettierignore
 build
 .docusaurus
+
+storybook-static

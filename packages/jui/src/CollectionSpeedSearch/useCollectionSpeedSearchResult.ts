@@ -11,7 +11,7 @@ export type CollectionSpeedSearchMatches = Map<Key, TextRange[]>;
 
 export function useCollectionSpeedSearchResult<T>({
   collection,
-  selectionManager,
+  selectionManager: inputSelectionManager,
   speedSearch,
   focusBestMatch = false,
 }: {
@@ -38,7 +38,7 @@ export function useCollectionSpeedSearchResult<T>({
    * assuming that searchable text in collections won't change, and assuming that the important changes (search-wise)
    * will usually involve a size change in the collection.
    */
-  const result = useMemo(() => {
+  const { matches } = useMemo(() => {
     const matches: CollectionSpeedSearchMatches = new Map(); // maybe make it nullable makes more sense
     if (speedSearch.active) {
       // it's important not to iterate on items, since they can be nested.
@@ -55,14 +55,19 @@ export function useCollectionSpeedSearchResult<T>({
 
     return {
       matches,
-      selectionManager: createSpeedSearchSelectionManager(
-        selectionManager,
-        active ? matches : null
-      ),
     };
   }, [searchTerm, collection, active]);
 
-  const latestValues = useLatest({ ...result, collection, focusBestMatch });
+  const selectionManager = createSpeedSearchSelectionManager(
+    inputSelectionManager,
+    active ? matches : null
+  );
+  const latestValues = useLatest({
+    matches,
+    selectionManager,
+    collection,
+    focusBestMatch,
+  });
 
   // On every query change, if the current selection doesn't include any of the matched items, move selection to the
   // first matched item.
@@ -91,7 +96,10 @@ export function useCollectionSpeedSearchResult<T>({
     searchTerm,
     latestValues /*it's a ref object, so no harm in listing it here to comply with rules of hooks*/,
   ]);
-  return result;
+  return {
+    matches,
+    selectionManager,
+  };
 }
 
 /**

@@ -85,6 +85,11 @@ export interface EditorStateManager {
   select(index: number): void;
 }
 
+/**
+ * TODO: refactor this to expose actions in a way that doesn't create dependency to state. A piece of UI that only
+ *  needs to open a file in editor in response to some action (e.g. ProjectViewPane or ChangeViewTree) doesn't need to
+ *  re-render on editor state changes
+ */
 export const useEditorStateManager = (): EditorStateManager => {
   const [tabsState, setTabsState] = useRecoilState(editorTabsState);
   const setActiveTabIndex = useSetRecoilState(activeEditorTabIndexState);
@@ -122,7 +127,9 @@ export const useEditorStateManager = (): EditorStateManager => {
       select(newIndex);
     }
     if (shouldFocus) {
-      focus();
+      // Without setTimeout editor gets focused immediately and "Enter" key press (if openPath is called in a keyboard
+      // event handler) is picked up by editor, adding unwanted new line.
+      setTimeout(focus);
     }
   };
   const closeTab = (index: number) => {
