@@ -1,14 +1,14 @@
+import React, { CSSProperties } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
   ActionDefinition,
   ActionsProvider,
   DefaultToolWindows,
   styled,
 } from "@intellij-platform/core";
-import React, { CSSProperties } from "react";
 import { FileEditor } from "../Editor/FileEditor";
 import { useInitializeVcs } from "../VersionControl/file-status.state";
 import { toolWindows } from "./toolWindows";
-import { useRecoilState, useRecoilValue } from "recoil";
 import { useInitializeChanges } from "../VersionControl/Changes/change-lists.state";
 import { IdeStatusBar } from "../StatusBar/IdeStatusBar";
 import { usePersistenceFsNotification } from "../usePersistenceFsNotification";

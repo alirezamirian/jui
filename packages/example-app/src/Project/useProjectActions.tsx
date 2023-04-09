@@ -1,5 +1,9 @@
 import { useRecoilCallback } from "recoil";
-import { ActionContext, ActionDefinition } from "@intellij-platform/core";
+import {
+  ActionContext,
+  ActionDefinition,
+  CommonActionId,
+} from "@intellij-platform/core";
 
 import { searchEverywhereState } from "../SearchEverywhere/searchEverywhere.state";
 
@@ -17,11 +21,10 @@ export function useProjectActions(): { [key: string]: ActionDefinition } {
   );
 
   return {
-    GotoAction: {
+    [CommonActionId.GO_TO_ACTION]: {
       title: "Find Action",
       description: "Quickly navigate to action by name",
       actionPerformed: (event) => {
-        console.log("GotoAction performed");
         openFindAction(event);
       },
     },
