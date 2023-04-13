@@ -3,25 +3,18 @@ import {
   Action,
   ItemLayout,
   ItemStateContext,
-  styled,
   TextRange,
   TextWithHighlights,
 } from "@intellij-platform/core";
+import {
+  StyledIconWrapper,
+  StyledItemLayout,
+  StyledTitleWrapper,
+} from "../ItemHelpers";
 
-const StyledIconWrapper = styled.span`
-  width: 1.125rem;
-  display: inline-flex;
-  justify-content: center;
-`;
-const StyledItemLayout = styled(ItemLayout)`
-  min-height: 1.375rem;
-`;
-const StyledTitleWrapper = styled.span<{ isDisabled?: boolean }>`
-  color: ${({ theme, isDisabled }) =>
-    isDisabled &&
-    theme.currentForegroundAware(theme.commonColors.inactiveTextColor)};
-`;
-
+/**
+ * UI of actions in SearchEverywhere list
+ */
 export function ActionItem({
   action,
   highlights,

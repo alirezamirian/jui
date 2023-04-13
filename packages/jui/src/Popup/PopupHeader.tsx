@@ -13,8 +13,8 @@ const StyledPopupHeader = styled.div<{
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 1.5rem;
-  height: ${({ hasControls }) => hasControls && "1.75rem"};
+  min-height: 1.5rem;
+  min-height: ${({ hasControls }) => hasControls && "1.75rem"};
   cursor: default;
   white-space: nowrap;
   color: ${({ theme, active }) =>

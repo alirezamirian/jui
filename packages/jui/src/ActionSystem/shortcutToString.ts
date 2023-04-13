@@ -56,8 +56,15 @@ const KeystrokeToString: {
       separator: "+",
       codeToStr: defaultKeyToStr,
     };
+
+const modifiersOrder: KeyStrokeModifier[] = ["Control", "Alt", "Shift", "Meta"];
 export const keystrokeToString = (keystroke: KeyStroke) => {
-  return [...(keystroke.modifiers || []), keystroke.code]
+  return [
+    ...(keystroke.modifiers || []).sort(
+      (a, b) => modifiersOrder.indexOf(a) - modifiersOrder.indexOf(b)
+    ),
+    keystroke.code,
+  ]
     .map((code) => KeystrokeToString.codeToStr[code] || code)
     .map((code) => code.replace(/^(Key|Digit|Numpad)(.)$/, "$2"))
     .join(KeystrokeToString.separator);

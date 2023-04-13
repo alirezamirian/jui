@@ -131,3 +131,9 @@ export const selectKeyAndFocusCallback =
     treeRef?.replaceSelection(key);
     treeRef?.focus(key);
   };
+
+export const selectPathInProjectViewCallback =
+  (callbackInterface: CallbackInterface) => (path: string) => {
+    expandToPathCallback(callbackInterface)(path);
+    selectKeyAndFocusCallback(callbackInterface)(path);
+  };

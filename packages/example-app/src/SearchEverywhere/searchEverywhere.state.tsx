@@ -1,5 +1,5 @@
 import { Bounds } from "@intellij-platform/core";
-import { atom } from "recoil";
+import { atom, atomFamily } from "recoil";
 
 export type SearchEveryWhereTab =
   | "All"
@@ -20,7 +20,7 @@ export const searchEverywhereState = {
   /**
    * Currently selected tab, e.g. "Actions", "Files", etc.
    */
-  tab: atom<SearchEveryWhereTab>({
+  tab: atom<string>({
     key: "search.everywhere.tab",
     default: "All",
   }),
@@ -32,9 +32,9 @@ export const searchEverywhereState = {
     default: undefined,
   }),
   /**
-   * Initial search query. TODO: make it per contributor
+   * Initial search query.
    */
-  searchQuery: atom<string>({
+  initialSearchQuery: atomFamily<string, string>({
     key: "search.everywhere.initialQuery",
     default: "",
   }),

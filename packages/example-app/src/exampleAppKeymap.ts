@@ -1,5 +1,6 @@
 import { Keymap } from "@intellij-platform/core";
 import { ChangesViewActionIds } from "./VersionControl/Changes/useChangesViewActions";
+import { SearchEverywhereActionIds } from "./SearchEverywhere/SearchEverywhereActionIds";
 
 export const exampleAppKeymap: Keymap = {
   ActivateProjectWindow: [
@@ -39,6 +40,18 @@ export const exampleAppKeymap: Keymap = {
     {
       type: "keyboard",
       firstKeyStroke: { code: "KeyU", modifiers: ["Meta", "Alt"] },
+    },
+  ],
+  [SearchEverywhereActionIds.PREVIOUS_TAB]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: { code: "Tab", modifiers: ["Shift"] },
+    },
+  ],
+  [SearchEverywhereActionIds.NEXT_TAB]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: { code: "Tab" },
     },
   ],
 };

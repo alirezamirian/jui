@@ -8,7 +8,7 @@ describe("SpeedSearch", () => {
   it("renders as expected", () => {
     cy.mount(<WithHighlight />);
     cy.findByRole("list").focus().realType("g");
-    matchImageSnapshot("SpeedSearch-searched");
+    matchImageSnapshot("SpeedSearchList-searched");
   });
 
   it("calls onAction for items on click or Enter", () => {

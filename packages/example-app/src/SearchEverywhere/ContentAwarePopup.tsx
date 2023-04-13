@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { RecoilState, useRecoilCallback, useSetRecoilState } from "recoil";
+import { RecoilState, useSetRecoilState } from "recoil";
 import { Bounds, Popup, PopupProps } from "@intellij-platform/core";
+import { useRecoilInitialValue } from "../recoil-utils";
 
 /**
  * A special type of popup, where the content can be toggled on and off. Needed only for SearchEveryWhere at the moment,
@@ -33,15 +34,10 @@ export function ContentAwarePopup({
   persistedBoundsState: RecoilState<Partial<Bounds> | null>;
 } & Omit<PopupProps, "bounds" | "onBoundsChange">) {
   const persistBounds = useSetRecoilState(persistedBoundsState);
-  const getInitBounds = useRecoilCallback(
-    ({ snapshot }) =>
-      () =>
-        snapshot.getLoadable(persistedBoundsState).getValue() || {
-          top: 150,
-          height: Math.max(200, window.innerHeight - 300),
-        },
-    []
-  );
+  const getInitBounds = useRecoilInitialValue(persistedBoundsState, {
+    top: 150,
+    height: Math.max(200, window.innerHeight - 300),
+  });
 
   const [bounds, setBounds] = useState<Partial<Bounds>>(getInitBounds);
   const heightToRestoreRef = useRef(bounds.height);
