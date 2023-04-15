@@ -358,6 +358,16 @@ export function useSelectableCollection(
       if (focusedKey == null && !shouldUseVirtualFocus && ref.current) {
         focusSafely(ref.current);
       }
+
+      ///////////////////////////////////////////////////// MODIFICATION ///////////////////////////////////////////////
+      // Fixing https://github.com/adobe/react-spectrum/issues/4391
+      if (
+        options.selectOnFocus &&
+        (autoFocus === "first" || autoFocus === "last")
+      ) {
+        manager.replaceSelection(focusedKey);
+      }
+      /////////////////////////////////////////////////// END OF MODIFICATION //////////////////////////////////////////
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

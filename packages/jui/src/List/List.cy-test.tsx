@@ -1,6 +1,7 @@
 import { composeStories } from "@storybook/testing-react";
 import * as React from "react";
 import * as stories from "./List.stories";
+import { Item, List } from "@intellij-platform/core";
 
 const { Default, WithConnectedInput } = composeStories(stories);
 
@@ -12,6 +13,19 @@ describe("List", () => {
 
   it.skip("supports keyboard navigation", () => {
     // TODO
+  });
+  it('focuses and selects the first item, when autofocus is "first"', () => {
+    cy.mount(
+      <List autoFocus="first" selectionMode="single">
+        <Item>Item 1</Item>
+        <Item>Item 2</Item>
+        <Item>Item 3</Item>
+      </List>
+    );
+    cy.findAllByRole("listitem")
+      .first()
+      .should("have.focus")
+      .should("be.selected");
   });
 
   it("calls onAction for items on click or Enter", () => {

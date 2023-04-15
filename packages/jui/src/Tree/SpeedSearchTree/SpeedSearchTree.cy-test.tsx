@@ -1,6 +1,7 @@
 import { composeStories } from "@storybook/testing-react";
 import * as React from "react";
 import * as stories from "./SpeedSearchTree.stories";
+import { Item, SpeedSearchTree } from "@intellij-platform/core";
 
 const { Dynamic, HighlightsWithSpace } = composeStories(stories);
 
@@ -55,6 +56,20 @@ describe("SpeedSearchTree", () => {
     cy.contains("Paco de Lucia").type("de");
     // local snapshot is disappointing.
     cy.percySnapshot("SpeedSearchTree-highlights-with-space");
+  });
+
+  it('focuses and selects the first item, when autofocus is "first"', () => {
+    cy.mount(
+      <SpeedSearchTree autoFocus="first" selectionMode="single">
+        <Item>Item 1</Item>
+        <Item>Item 2</Item>
+        <Item>Item 3</Item>
+      </SpeedSearchTree>
+    );
+    cy.findAllByRole("treeitem")
+      .first()
+      .should("have.focus")
+      .should("be.selected");
   });
 });
 
