@@ -22,6 +22,7 @@ export function useShortcuts(
   >([]);
   const secondStrokeResetTimerIdRef = useRef<number | null>(null);
   const onKeyDown: KeyboardEventHandler<HTMLElement> = useEventCallback((e) => {
+    // TODO: repeated key downs can trigger an action repeatedly, in the original impl. Example: expand/shrink selection
     if (isModifierOnly(e.nativeEvent) || e.repeat) {
       return;
     }

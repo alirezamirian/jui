@@ -11,6 +11,8 @@ import { MenuOverlay } from "./MenuOverlay";
 export interface MenuTriggerProps
   extends Omit<AriaMenuTriggerProps, "closeOnSelect"> {
   restoreFocus?: boolean;
+  // TODO: replace render function children with normal children, and utilize PressResponder. Add a story for the
+  //  edge case of custom trigger, using PressResponder
   children: (
     props: HTMLProps<HTMLElement>,
     ref: RefObject<any> // Using a generic didn't seem to work for some reason
