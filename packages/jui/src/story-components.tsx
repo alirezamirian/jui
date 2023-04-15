@@ -48,6 +48,7 @@ export const SpeedSearchTreeSample = ({
   return (
     <SpeedSearchTree
       ref={treeRef}
+      autoFocus
       fillAvailableSpace
       selectionMode="multiple"
       defaultExpandedKeys={["List", "Theme", "BasicList", "Foo"]}

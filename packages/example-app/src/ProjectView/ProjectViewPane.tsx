@@ -66,6 +66,7 @@ export const ProjectViewPane = (): React.ReactElement => {
           editor.openPath(`${path}`);
         }}
         fillAvailableSpace
+        autoFocus
         selectionMode="multiple"
         selectedKeys={selectedKeys}
         onSelectionChange={setSelectedKeys}
