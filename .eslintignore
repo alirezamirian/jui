@@ -4,6 +4,5 @@ dist
 
 _templates
 
- # Can't afford linting tests at the moment
-**/*.cy-test.tsx
+
 cypress
