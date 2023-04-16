@@ -16,6 +16,7 @@ import { useLatest } from "@intellij-platform/core/utils/useLatest";
 import { TreeContextType } from "./TreeContext";
 import { hasAnyModifier } from "@intellij-platform/core/utils/keyboard-utils";
 import { FocusEvents } from "@react-types/shared/src/events";
+import { FocusStrategy } from "@react-types/shared/src/selection";
 
 export interface SelectableTreeProps<T>
   extends DOMProps,
@@ -30,6 +31,8 @@ export interface SelectableTreeProps<T>
   onNodeKeyDown?: (event: KeyboardEvent, node: Node<T>) => void;
 
   allowEmptySelection?: boolean;
+
+  autoFocus?: boolean | FocusStrategy;
 }
 
 /**
@@ -37,7 +40,7 @@ export interface SelectableTreeProps<T>
  * react-aria, it makes sense to refactor this and use that. There will still be something on top of it here.
  */
 export function useSelectableTree<T>(
-  { onAction, onFocus, onBlur, ...props }: SelectableTreeProps<T>,
+  { onAction, onFocus, onBlur, autoFocus, ...props }: SelectableTreeProps<T>,
   state: TreeState<T>,
   ref: RefObject<HTMLElement>
 ) {
@@ -58,6 +61,7 @@ export function useSelectableTree<T>(
     selectionManager: state.selectionManager,
     disallowEmptySelection: !props.allowEmptySelection,
     selectOnFocus: true,
+    autoFocus,
     keyboardDelegate: useMemo(
       () =>
         props.keyboardDelegate ||

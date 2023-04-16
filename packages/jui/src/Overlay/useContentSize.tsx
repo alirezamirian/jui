@@ -1,22 +1,31 @@
 import { RefObject, useEffect, useLayoutEffect, useState } from "react";
 import { useDebouncedCallback } from "@intellij-platform/core/utils/useDebounce";
 
+/**
+ * Clones the element, applies the temporary styles, and calls {@param fn} on the clone.
+ * Previously, we applied the temporary styles on the element itself, run fn, and then revert to previous styles,
+ * but that can mess with the scroll bar in the content. If there is a scrollable part in some nested element,
+ * applying temporary style (in our case width: fit-content, height: fit-content) can cause scroll to jump which is not
+ * restored after the style reversion. Now the approach is changed to apply the temporary styles on a temporary clone
+ * of the element. It's certainly not as efficient and some optimization may be needed.
+ * @param style: temporary styles to apply before fn is invoked, and revert after.
+ * @param fn the function to compute something on the element with temporary styles
+ */
 const withTemporaryStyle =
   <T extends any>(
     style: Partial<CSSStyleDeclaration>,
     fn: (element: HTMLElement) => T
   ) =>
   (element: HTMLElement): T => {
-    const currentStyles = Object.keys(style).reduce((currentStyles, key) => {
-      return {
-        ...currentStyles,
-        [key]: element.style[key as keyof CSSStyleDeclaration],
-      };
-    }, {} as CSSStyleDeclaration);
+    const clone = element.cloneNode(true) as HTMLElement;
+    clone.style.position = "absolute";
+    clone.style.left = "-9999px";
+    document.body.appendChild(clone);
 
-    Object.assign(element.style, style);
-    const returnValue = fn(element);
-    Object.assign(element.style, currentStyles);
+    Object.assign(clone.style, style);
+    const returnValue = fn(clone);
+
+    document.body.removeChild(clone);
     return returnValue;
   };
 
@@ -85,7 +94,6 @@ export const useContentSize = (
         currentSize.height !== lastMeasuredSize.height ||
         currentSize.width !== lastMeasuredSize.width
       ) {
-        console.log("setting measured size!", lastMeasuredSize, currentSize);
         setMeasuredSizes(
           measuredSizes.map((aSize) =>
             aSize === lastMeasuredSize ? currentSize : aSize

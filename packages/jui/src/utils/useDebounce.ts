@@ -20,6 +20,6 @@ export const useDebouncedCallback = (
     if (currentTimeoutId.current !== null) {
       clearTimeout(currentTimeoutId.current);
     }
-    currentTimeoutId.current = window.setTimeout(fn, timeout);
+    currentTimeoutId.current = window.setTimeout(fnRef.current, timeout);
   }, []);
 };

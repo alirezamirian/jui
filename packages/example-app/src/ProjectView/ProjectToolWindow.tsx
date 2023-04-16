@@ -10,9 +10,8 @@ import {
 import { Action } from "@intellij-platform/core/ActionSystem/components";
 
 import {
-  expandToPathCallback,
   projectViewTreeRefState,
-  selectKeyAndFocusCallback,
+  selectPathInProjectViewCallback,
 } from "./ProjectView.state";
 import { ProjectViewPane } from "./ProjectViewPane";
 import { activeEditorTabState } from "../Editor/editor.state";
@@ -50,12 +49,13 @@ function useProjectViewActions(): Record<string, ActionDefinition> {
   // to prevent unnecessary re-rendering. The active tab, could be read from the state snapshot, in the handler callback.
   const activeTab = useRecoilValue(activeEditorTabState);
 
-  const expandToOpenedFile = useRecoilCallback(expandToPathCallback, []);
-  const selectKeyAndFocus = useRecoilCallback(selectKeyAndFocusCallback, []);
+  const selectPathInProjectView = useRecoilCallback(
+    selectPathInProjectViewCallback,
+    []
+  );
   const selectOpenedFile = () => {
     if (activeTab) {
-      expandToOpenedFile(activeTab.filePath);
-      selectKeyAndFocus(activeTab.filePath);
+      selectPathInProjectView(activeTab.filePath);
     }
   };
 

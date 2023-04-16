@@ -1,76 +1,41 @@
-import React, {
-  ForwardedRef,
-  HTMLProps,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import {
-  atom,
-  useRecoilCallback,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-} from "recoil";
-import { mergeProps, useObjectRef } from "@react-aria/utils";
-import { useFocusable } from "@react-aria/focus";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   ActionButton,
   ActionDefinition,
   ActionsProvider,
-  Bounds,
-  Checkbox,
-  CommonActionId,
   FocusScope,
-  getAvailableActionsFor,
   Item,
   Link,
   List,
-  minusculeMatch,
   PlatformIcon,
   Popup,
   Selection,
   SelectionManager,
-  shortcutToString,
   styled,
   StyledTabProps,
   Tabs,
+  Tooltip,
+  TooltipTrigger,
   useCollectionSearchInput,
-  useKeymap,
+  useGetActionShortcut,
 } from "@intellij-platform/core";
-import { ActionItem } from "./ActionItem";
+import { useTips } from "./useTips";
+import { Input } from "./Input";
+import {
+  searchEverywhereState,
+  SearchEveryWhereTab,
+} from "./searchEverywhere.state";
+import { ContentAwarePopup } from "./ContentAwarePopup";
+import {
+  SearchEverywhereContributor,
+  SearchEverywhereContributorResult,
+} from "./SearchEverywhereContributor";
+import { actionsSearchContributor } from "./contributors/action/actionsSearchContributor";
+import { filesSearchContributor } from "./contributors/file/filesSearchContributor";
+import { SearchEverywhereActionIds } from "./SearchEverywhereActionIds";
+import { useRecoilInitialValue } from "../recoil-utils";
 
-type SearchEveryWhereTab =
-  | "All"
-  | "Classes"
-  | "Files"
-  | "Symbols"
-  | "Actions"
-  | "Git";
-
-export const searchEveryWhereState = {
-  isOpen: atom({
-    key: "search.everywhere.isOpen",
-    default: false,
-  }),
-  tab: atom<SearchEveryWhereTab>({
-    key: "search.everywhere.tab",
-    default: "All",
-  }),
-  contextElement: atom<Element>({
-    key: "search.everywhere.contextElement",
-    default: undefined,
-  }),
-  searchQuery: atom<string>({
-    key: "search.everywhere.initialQuery",
-    default: "",
-  }),
-  bounds: atom<Partial<Bounds> | null>({
-    key: "search.everywhere.bounds",
-    default: null,
-  }),
-};
 const StyledHeader = styled.div`
   display: flex;
   width: 100%;
@@ -81,14 +46,20 @@ const StyledHeader = styled.div`
 `;
 const StyledTab = styled.button<StyledTabProps>`
   all: unset;
-  padding: 0.5rem 0.75rem;
   background: ${({ theme, selected }) =>
     selected && theme.color("SearchEverywhere.Tab.selectedBackground")};
   color: ${({ theme }) =>
     theme.color("SearchEverywhere.Tab.selectedForeground")};
   opacity: ${({ disabled }) => disabled && ".5"};
 `;
+const StyledTabContent = styled.span`
+  display: flex;
+  padding: 0 0.75rem;
+  height: 1.8rem;
+  align-items: center;
+`;
 const StyledTabs = styled.div`
+  line-height: normal;
   border-bottom: none;
 `;
 const StyledSearchFieldContainer = styled.div`
@@ -96,7 +67,7 @@ const StyledSearchFieldContainer = styled.div`
   flex-shrink: 0;
   height: 1.85rem;
   align-items: center;
-  padding: 0.125rem 0.75rem 0; // Not sure why, but alignment is off without 2px (0.125rem) padding top
+  padding: 0 0.75rem 0;
   gap: 0.75rem;
 
   input {
@@ -112,6 +83,7 @@ const StyledSearchFieldContainer = styled.div`
 `;
 const StyledSearchResultsContainer = styled.div`
   height: 24rem;
+  flex: 1;
   min-height: 0; // for it to properly fill the remaining height and not to exceed that
 `;
 const StyledDivider = styled.hr`
@@ -126,6 +98,16 @@ const StyledSearchFieldHint = styled.div`
     theme.color("SearchEverywhere.SearchField.infoForeground")};
   white-space: nowrap;
 `;
+
+const StyledLoadMore = styled.div`
+  color: ${({ theme }) =>
+    theme.currentForegroundAware(
+      theme.color("SearchEverywhere.SearchField.infoForeground")
+    )};
+  font-size: 0.7rem;
+  min-height: 1.375rem;
+`;
+
 const StyledPlaceholder = styled.div`
   color: ${({ theme }) => theme.commonColors.inactiveTextColor};
   position: absolute;
@@ -133,132 +115,154 @@ const StyledPlaceholder = styled.div`
   width: 100%;
   top: 50%;
 `;
-const Input = React.forwardRef(function Input(
-  props: HTMLProps<HTMLInputElement>,
-  forwardedRef: ForwardedRef<HTMLInputElement>
-) {
-  const ref = useObjectRef(forwardedRef);
-  // NOTE: it's important not to pass all props to useFocusable (or not to merge returned props with ALL props), as it
-  // results for duplicate event handling, for events like onKeyDown that is handled by useFocusable too.
-  const { focusableProps } = useFocusable({ autoFocus: props.autoFocus }, ref);
-  return <input {...mergeProps(focusableProps, props)} ref={ref} />;
-});
+const SEARCH_RESULT_LIMIT = 30;
 
-const tips = [
-  {
-    actionId: CommonActionId.EXPAND_SELECTION,
-    title: "Press $shortcut to expand selection",
-  },
-  {
-    actionId: CommonActionId.SHRINK_SELECTION,
-    title: "Press $shortcut to shrink selection",
-  },
-];
-const useTips = () => {
-  const keymap = useKeymap();
+const contributors = [actionsSearchContributor, filesSearchContributor];
 
-  const renderedTips = useMemo(
-    () =>
-      tips
-        .map(({ actionId, title }) => ({
-          keyboardShortcut: keymap?.[actionId]?.find(
-            (shortcut) => shortcut.type === "keyboard"
-          ),
-          title,
-        }))
-        .filter(({ keyboardShortcut }) => keyboardShortcut)
-        .map(({ keyboardShortcut, title }) =>
-          title.replace("$shortcut", shortcutToString(keyboardShortcut!))
-        ),
-    [keymap]
-  );
-  const [index, setIndex] = useState(
-    Math.floor(Math.random() * renderedTips.length)
-  );
-  return {
-    current: renderedTips[index],
-    next: () => {
-      const tmpIndex = Math.floor(Math.random() * renderedTips.length - 1);
-      const newIndex = tmpIndex < index ? tmpIndex : tmpIndex + 1; // making sure index will be changed
-      setIndex(newIndex);
-    },
-  };
-};
+const LOAD_MORE_ITEM = {};
+const LOAD_MORE_ITEM_KEY = "LOAD_MORE_ITEM_KEY";
 
 /**
  * TODO: implement history navigation
  */
 export function SearchEverywherePopup() {
-  const setOpen = useSetRecoilState(searchEveryWhereState.isOpen);
-  const [tab, setTab] = useRecoilState(searchEveryWhereState.tab);
-  const contextElement = useRecoilValue(searchEveryWhereState.contextElement);
-  const persistBounds = useSetRecoilState(searchEveryWhereState.bounds);
-  const [showDisabledActions, setShowDisabledActions] = useState(false);
-  const isScopeExplicitlySetRef = useRef(false);
-  const [inputValue, setInputValue] = useRecoilState(
-    searchEveryWhereState.searchQuery
+  const setOpen = useSetRecoilState(searchEverywhereState.isOpen);
+  const [tab, setTab] = useRecoilState(searchEverywhereState.tab);
+  const [everyWhereAutoSet, setEveryWhereAutoSet] = useState(false);
+  const [pattern, setPattern] = useState(
+    useRecoilInitialValue(searchEverywhereState.initialSearchQuery(tab))
   );
+  const persistInitialSearchQuery = useSetRecoilState(
+    searchEverywhereState.initialSearchQuery(tab)
+  );
+
+  const getShortcut = useGetActionShortcut();
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set());
-  const allActions = useMemo(
-    () => (contextElement ? getAvailableActionsFor(contextElement) : []),
-    [contextElement]
-  );
-  const { searchResult, autoEnableMoreResults } = useMemo(() => {
-    const allResults = allActions
-      .map((action) => ({
-        highlights: minusculeMatch(action.title, inputValue),
-        action,
-      }))
-      .filter(
-        ({ action, highlights }) =>
-          highlights || minusculeMatch(action.description || "", inputValue)
-      );
-    const enabledResults = allResults.filter(
-      ({ action: { isDisabled } }) => !isDisabled
-    );
-    // TODO: sort results
-    return {
-      searchResult: showDisabledActions ? allResults : enabledResults,
-      autoEnableMoreResults: enabledResults.length === 0,
+  const idToContributor: Record<
+    string,
+    SearchEverywhereContributorResult<{}> &
+      Omit<SearchEverywhereContributor<{}>, "use">
+  > = {};
+  contributors.forEach((contributor) => {
+    idToContributor[contributor.id] = {
+      ...contributor,
+      ...contributor.use({ everyWhereAutoSet }),
     };
-  }, [inputValue, allActions, showDisabledActions]);
+  });
+
+  const activeContributors = contributors
+    .filter((contributor) => tab === "" || contributor.id === tab)
+    .map(({ id }) => idToContributor[id]);
+
+  const [searchResultLimit, setSearchResultLimit] =
+    useState(SEARCH_RESULT_LIMIT);
+  const { searchResult } = useMemo(() => {
+    // TODO: sort results
+    const searchResult = activeContributors.flatMap((contributor) =>
+      contributor.search(pattern).map((item) => ({
+        key: `${contributor.id}_${contributor.getKey(item)}`,
+        contributor,
+        item,
+      }))
+    );
+    return {
+      searchResult,
+    };
+  }, [
+    pattern,
+    tab,
+    ...activeContributors.flatMap(({ searchDeps }) => searchDeps),
+  ]);
+  const currentTabContributor = idToContributor[tab];
+
+  const visibleSearchResult = useMemo(() => {
+    const visibleSearchResult = searchResult.slice(0, searchResultLimit);
+    const hasMore = searchResult.length > visibleSearchResult.length;
+    if (hasMore) {
+      visibleSearchResult.push({
+        key: LOAD_MORE_ITEM_KEY,
+        item: LOAD_MORE_ITEM,
+        contributor: null!,
+      });
+    }
+    return visibleSearchResult;
+  }, [searchResultLimit, searchResult]);
+
+  const notFoundPatternRef = useRef<string | null>(null);
+
+  const onPatternChanged = (newPattern: string) => {
+    const newPatternContainsPrevious =
+      notFoundPatternRef.current &&
+      newPattern.includes(notFoundPatternRef.current);
+    // TODO: improve isEverywhere support. It should be supported it in "All" tabs too.
+    if (currentTabContributor?.isEverywhere && !newPatternContainsPrevious) {
+      setEveryWhereAutoSet(false);
+    }
+    setPattern(newPattern);
+  };
 
   useEffect(() => {
-    if (!isScopeExplicitlySetRef.current) {
-      setShowDisabledActions(autoEnableMoreResults);
+    if (pattern) {
+      persistInitialSearchQuery(pattern);
     }
-  }, [autoEnableMoreResults]);
+  }, [pattern, tab]);
 
   useEffect(() => {
     if (searchResult[0]) {
-      const key = searchResult[0].action.id;
+      // Currently, list auto selects the first item, only in first render. But not when the collection is changed.
+      // So we make sure the first item is selected, after each search. Perhaps, List should be changed instead to
+      // react to collection changes.
+      const { key } = searchResult[0];
       setSelectedKeys(new Set([key]));
       selectionManagerRef.current?.setFocusedKey(key);
     }
+    setSearchResultLimit(SEARCH_RESULT_LIMIT);
   }, [searchResult]);
 
-  const getInitBounds = useRecoilCallback(
-    ({ snapshot }) =>
-      () =>
-        snapshot.getLoadable(searchEveryWhereState.bounds).getValue() || {
-          top: 150,
-          height: Math.max(200, window.innerHeight - 300),
+  const localActions: { [id: string]: ActionDefinition } = {
+    [SearchEverywhereActionIds.PREVIOUS_TAB]: {
+      title: "Prev tab",
+      description: "Switch to previous tab in Search Everywhere dialog",
+      actionPerformed: () => {
+        const currentContributorIndex = contributors.findIndex(
+          ({ id }) => tab === id
+        );
+
+        setTab(
+          tab === ""
+            ? contributors.slice(-1)[0].id
+            : contributors[currentContributorIndex - 1]?.id || ""
+        );
+      },
+    },
+    [SearchEverywhereActionIds.NEXT_TAB]: {
+      title: "Next tab",
+      description: "Switch to next tab in Search Everywhere dialog",
+      actionPerformed: () => {
+        const currentContributorIndex = contributors.findIndex(
+          ({ id }) => tab === id
+        );
+        setTab(contributors[currentContributorIndex + 1]?.id || "");
+      },
+    },
+  };
+  contributors.forEach(({ id, actionId, title }) => {
+    if (actionId) {
+      localActions[actionId] = {
+        title: `Find ${title}`,
+        description: `Quickly go to ${title} by name`,
+        actionPerformed: () => {
+          if (tab !== id) {
+            setTab(id);
+          } else {
+            currentTabContributor?.toggleEverywhere?.();
+          }
         },
-    []
-  );
+      };
+    }
+  });
+
   const close = () => setOpen(false);
-  const [bounds, setBounds] = useState<Partial<Bounds>>(getInitBounds);
-  const hasInputValue = Boolean(inputValue);
-  const HEADER_AND_SEARCH_HEIGHT = 59;
-  const heightToRestoreRef = useRef(bounds.height);
-  useEffect(() => {
-    setBounds((bounds) => ({
-      ...bounds,
-      height: hasInputValue
-        ? heightToRestoreRef.current
-        : HEADER_AND_SEARCH_HEIGHT,
-    }));
-  }, [hasInputValue]);
 
   const collectionRef = useRef<HTMLUListElement>(null);
   const selectionManagerRef = useRef<SelectionManager>(null);
@@ -266,46 +270,25 @@ export function SearchEverywherePopup() {
     collectionRef,
     selectionManager: selectionManagerRef.current,
   });
-  const onBoundsChange = (bounds: Bounds) => {
-    if (hasInputValue) {
-      heightToRestoreRef.current = bounds.height;
-      persistBounds(bounds);
-    }
-    setBounds(bounds);
-  };
-  const localActions: { [id: string]: ActionDefinition } = {
-    /**
-     * Toggling search everywhere (include disabled actions, in actions tab), on GoToAction. In the original impl,
-     * it's handled in GoToAction itself. It would be easy to do the same here too, by just making the state an atom,
-     * instead of a local state here. But it would require making top level actions (handled in Project component)
-     * available here too, which is also feasible, by passing project level actions to this component somehow, or even
-     * having an option for popups to "inherit" actions from where they are rendered in.
-     */
-    [CommonActionId.GO_TO_ACTION]: {
-      title: "Toggle search everywhere",
-      actionPerformed() {
-        setShowDisabledActions((currentValue) => !currentValue);
-      },
-    },
-    [CommonActionId.SHOW_INTENTION_ACTIONS]: {
-      title: "Assign a shortcut",
-      actionPerformed() {
-        alert("Not implemented!");
-      },
-    },
-  };
 
   const tips = useTips();
+
   return (
-    <Popup
+    <ContentAwarePopup
+      persistedBoundsState={searchEverywhereState.bounds}
+      hasContent={Boolean(pattern)}
+      noContentHeight={59}
       minWidth={670}
-      minHeight={hasInputValue ? 160 : HEADER_AND_SEARCH_HEIGHT}
-      bounds={bounds}
-      onBoundsChange={onBoundsChange}
+      minHeight={160}
       interactions="all"
       onClose={close}
     >
-      <ActionsProvider actions={localActions}>
+      <ActionsProvider
+        actions={{
+          ...currentTabContributor?.actions,
+          ...localActions,
+        }}
+      >
         {({ shortcutHandlerProps }) => (
           <div {...shortcutHandlerProps} style={{ height: "inherit" }}>
             <Popup.Layout
@@ -321,32 +304,39 @@ export function SearchEverywherePopup() {
                           onSelectionChange={(key) =>
                             setTab(key as SearchEveryWhereTab)
                           }
-                          disabledKeys={[
-                            "All",
-                            "Classes",
-                            "Files",
-                            "Symbols",
-                            "Git",
-                          ]}
                         >
-                          <Item key="All">All</Item>
-                          <Item key="Classes">Classes</Item>
-                          <Item key="Files">Files</Item>
-                          <Item key="Symbols">Symbols</Item>
-                          <Item key="Actions">Actions</Item>
-                          <Item key="Git">Git</Item>
+                          <Item key="">
+                            <StyledTabContent>All</StyledTabContent>
+                          </Item>
+                          {
+                            contributors.map((contributor) => {
+                              const shortcut = getShortcut(
+                                contributor.actionId
+                              );
+                              const title = (
+                                <StyledTabContent>
+                                  {contributor.title}
+                                </StyledTabContent>
+                              );
+                              return (
+                                <Item key={contributor.id}>
+                                  {shortcut ? (
+                                    <TooltipTrigger
+                                      tooltip={<Tooltip>{shortcut}</Tooltip>}
+                                    >
+                                      {/* Span needed for tooltip to work, in the current implementation of tooltip */}
+                                      <span>{title}</span>
+                                    </TooltipTrigger>
+                                  ) : (
+                                    title
+                                  )}
+                                </Item>
+                              );
+                            }) as any /*when a static Item is rendered before this array, it wrongly complains about the type*/
+                          }
                         </Tabs>
                       </div>
-                      <Checkbox
-                        preventFocus
-                        isSelected={showDisabledActions}
-                        onChange={(value) => {
-                          setShowDisabledActions(value);
-                          isScopeExplicitlySetRef.current = true;
-                        }}
-                      >
-                        Include disabled actions
-                      </Checkbox>
+                      {currentTabContributor?.headerFilters}
                       <ActionButton style={{ margin: "0 0.5rem" }} isDisabled>
                         <PlatformIcon icon="actions/moveToLeftBottom" />
                       </ActionButton>
@@ -358,12 +348,14 @@ export function SearchEverywherePopup() {
                       <Input
                         {...collectionSearchInputProps}
                         autoFocus
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.currentTarget.value)}
+                        value={pattern}
+                        onChange={(e) =>
+                          onPatternChanged(e.currentTarget.value)
+                        }
                       />
                     </FocusScope>
                     <StyledSearchFieldHint>
-                      Press ⌥⏎ to assign a shortcut
+                      {currentTabContributor?.searchAdvertiser}
                     </StyledSearchFieldHint>
                   </StyledSearchFieldContainer>
                 </>
@@ -371,12 +363,12 @@ export function SearchEverywherePopup() {
               content={
                 <>
                   <StyledDivider />
-                  {inputValue && (
+                  {pattern && (
                     <StyledSearchResultsContainer>
                       <List
                         ref={collectionRef}
                         selectionManagerRef={selectionManagerRef}
-                        items={searchResult}
+                        items={visibleSearchResult}
                         selectionMode="single"
                         alwaysShowAsFocused
                         shouldFocusWrap
@@ -384,29 +376,55 @@ export function SearchEverywherePopup() {
                         selectedKeys={selectedKeys}
                         onSelectionChange={setSelectedKeys}
                         onAction={(key) => {
-                          close();
-                          // Making sure the popup is fully closed before the new action is performed. One edge case that can
-                          // make a difference is actions like FindAction that open the same popup. By performing an action
-                          // async, we make sure the popup is closed and reopened, which is good, because otherwise, the user
-                          // won't get any feedback when choosing such actions.
-                          setTimeout(() => {
-                            allActions
-                              .find((action) => action.id === key)
-                              ?.perform({
-                                event: null,
-                                element: contextElement,
+                          if (key === LOAD_MORE_ITEM_KEY) {
+                            setSearchResultLimit(
+                              (limit) => limit + SEARCH_RESULT_LIMIT
+                            );
+                            const nextItem =
+                              searchResult[visibleSearchResult.length + 1];
+                            if (nextItem) {
+                              // nextItem is expected to always have value
+
+                              // Timeout needed to let the item get rendered first. Could be done in an effect instead,
+                              // if we want to avoid setTimeout
+                              setTimeout(() => {
+                                setSelectedKeys(new Set([nextItem.key]));
+                                selectionManagerRef.current?.setFocusedKey(
+                                  nextItem.key
+                                );
                               });
-                          });
+                            }
+                          } else {
+                            close();
+                            // Making sure the popup is fully closed before the new action is performed. One edge case that can
+                            // make a difference is actions like FindAction that open the same popup. By performing an action
+                            // async, we make sure the popup is closed and reopened, which is good, because otherwise, the user
+                            // won't get any feedback when choosing such actions.
+                            setTimeout(() => {
+                              const itemWrapper = searchResult.find(
+                                (item) => item.key === key
+                              );
+                              itemWrapper?.contributor.processSelectedItem(
+                                itemWrapper.item
+                              );
+                            });
+                          }
                         }}
                       >
-                        {({ action, highlights }) => (
-                          <Item key={action.id}>
-                            <ActionItem
-                              action={action}
-                              highlights={highlights}
-                            />
-                          </Item>
-                        )}
+                        {({ key, item, contributor }) => {
+                          if (key === LOAD_MORE_ITEM_KEY) {
+                            return (
+                              <Item key={LOAD_MORE_ITEM_KEY}>
+                                <StyledLoadMore>...more</StyledLoadMore>
+                              </Item>
+                            );
+                          }
+                          return (
+                            <Item key={key}>
+                              {contributor.renderItem(item)}
+                            </Item>
+                          );
+                        }}
                       </List>
                       {searchResult.length === 0 && (
                         <StyledPlaceholder>
@@ -426,6 +444,6 @@ export function SearchEverywherePopup() {
           </div>
         )}
       </ActionsProvider>
-    </Popup>
+    </ContentAwarePopup>
   );
 }

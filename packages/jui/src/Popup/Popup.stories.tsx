@@ -216,7 +216,7 @@ const StyledTabs = styled.div`
   height: 100%;
   button {
     all: unset;
-    padding: 0 1rem;
+    padding: 0.5rem 1rem;
   }
   .active {
     background: ${({ theme }) =>

@@ -82,6 +82,7 @@ export const ChangeViewTree = ({
         onAction={openChangeInEditor}
         nestedSelection={nestedSelection}
         fillAvailableSpace
+        autoFocus="first"
         {...activePathsProviderProps}
       >
         {(node) => {

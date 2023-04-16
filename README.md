@@ -317,12 +317,6 @@ https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-a
 
 [//]: # "TODO: Contribution: - document code generation commands"
 
-### Intellij platform bugs
+### Links
 
-These bugs are found in the original Intellij Platform UI, which don't exist in JUI:
-
-- in Tree with speed search, when toggling a node changes the matches, the speed search popup is
-  not updated accordingly. Here is an example, in which we have this invalid state, where there
-  is a match but speed search popup is red: ![img.png](packages/jui/bug-1.png)
-
-[commonshortcuts]: https://github.com/JetBrains/intellij-community/blob/e3c7d96daba1d5d84d5650bde6c220aed225bfda/platform/platform-api/src/com/intellij/openapi/actionSystem/CommonShortcuts.java#L56-L56
+- [Discovered issues in Intellij Platform](./intellij-platform-bugs.md)

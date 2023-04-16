@@ -58,9 +58,10 @@ module.exports = {
       },
     },
     {
+      // Only source files
       files: ["packages/jui/src/**"],
       excludedFiles: [
-        "packages/**/*.stories.tsx",
+        "packages/**/*.+(stories|test|spec|cy-test).tsx",
         "packages/jui/src/**/story-helpers.tsx",
       ],
       rules: {
@@ -73,13 +74,27 @@ module.exports = {
       },
     },
     {
+      // Only jest test files
       files: ["packages/**/*.spec.+(ts|tsx)", "packages/**/*.test.+(ts|tsx)"],
-      plugins: ["jest"],
+      plugins: ["jest", "no-only-tests"],
       env: {
         jest: true,
       },
+      rules: {
+        "no-only-tests/no-only-tests": ERROR,
+      },
     },
-    // TODO: add overrides for cypress tests
+    {
+      // Only cypress test files
+      files: ["packages/**/*.cy-test.+(ts|tsx)"],
+      plugins: ["cypress", "no-only-tests"],
+      env: {
+        "cypress/globals": true,
+      },
+      rules: {
+        "no-only-tests/no-only-tests": ERROR,
+      },
+    },
   ],
   env: {
     browser: true,

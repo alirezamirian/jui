@@ -2,6 +2,8 @@ import { composeStories } from "@storybook/testing-react";
 import * as React from "react";
 import * as stories from "./Tree.stories";
 import { isMac } from "@react-aria/utils";
+import { Tree } from "./Tree";
+import { Item } from "../Collections";
 
 const { Static, ScrollAndContainerWidth } = composeStories(stories);
 
@@ -21,6 +23,20 @@ describe("Tree", () => {
       .type("{enter}") // collapse it
       .type("{enter}"); // collapse expand it. Initially expanded children should now be collapsed
     matchImageSnapshot("Tree-children-collapsed-when-parent-collapsed");
+  });
+
+  it('focuses and selects the first item, when autofocus is "first"', () => {
+    cy.mount(
+      <Tree autoFocus="first" selectionMode="single">
+        <Item>Item 1</Item>
+        <Item>Item 2</Item>
+        <Item>Item 3</Item>
+      </Tree>
+    );
+    cy.findAllByRole("treeitem")
+      .first()
+      .should("have.focus")
+      .should("be.selected");
   });
 
   /**
@@ -73,14 +89,14 @@ describe("Tree", () => {
   });
 });
 
-const notBeHorizontallyScrollable = ($el: JQuery) => {
+const notBeHorizontallyScrollable = ($el: Cypress.JQueryWithSelector) => {
   const el = $el.get(0);
   expect(el.scrollWidth).not.to.be.above(
     el.offsetWidth,
     "tree is not scrollable"
   );
 };
-const beHorizontallyScrollable = ($el: JQuery) => {
+const beHorizontallyScrollable = ($el: Cypress.JQueryWithSelector) => {
   const el = $el.get(0);
   expect(el.scrollWidth).to.be.above(el.offsetWidth, "tree is scrollable");
 };

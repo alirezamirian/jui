@@ -179,4 +179,13 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
+  [CommonActionId.GO_TO_FILE]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta", "Shift"],
+        code: "KeyO",
+      },
+    },
+  ],
 };

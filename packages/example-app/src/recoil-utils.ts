@@ -1,6 +1,7 @@
 import {
   RecoilState,
   RecoilValue,
+  useRecoilCallback,
   useRecoilRefresher_UNSTABLE,
   useRecoilValueLoadable,
   useSetRecoilState,
@@ -56,4 +57,21 @@ export function useRefreshRecoilValueOnMount<T>(value: RecoilValue<T>) {
   useEffect(() => {
     refresh();
   }, []);
+}
+
+export function useRecoilInitialValue<T>(recoilState: RecoilState<T>): T;
+export function useRecoilInitialValue<T>(
+  recoilState: RecoilState<T>,
+  defaultValue?: Exclude<T, undefined | null>
+): Exclude<T, undefined | null>;
+export function useRecoilInitialValue<T>(
+  recoilState: RecoilState<T>,
+  defaultValue?: T
+) {
+  return useRecoilCallback(
+    ({ snapshot }) =>
+      () =>
+        snapshot.getLoadable(recoilState).getValue() ?? defaultValue,
+    []
+  );
 }

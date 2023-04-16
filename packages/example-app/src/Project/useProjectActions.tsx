@@ -1,27 +1,38 @@
 import { useRecoilCallback } from "recoil";
-import { ActionContext, ActionDefinition } from "@intellij-platform/core";
-import { searchEveryWhereState } from "../SearchEverywhere/SearchEverywherePopup";
+import {
+  ActionContext,
+  ActionDefinition,
+  CommonActionId,
+} from "@intellij-platform/core";
+
+import { searchEverywhereState } from "../SearchEverywhere/searchEverywhere.state";
 
 export function useProjectActions(): { [key: string]: ActionDefinition } {
-  const openFindAction = useRecoilCallback(
+  const openSearchEverywhere = useRecoilCallback(
     ({ set }) =>
-      ({ element }: ActionContext) => {
+      ({ element }: ActionContext, tab: string) => {
         if (element) {
-          set(searchEveryWhereState.isOpen, true);
-          set(searchEveryWhereState.tab, "Actions");
-          set(searchEveryWhereState.contextElement, element);
+          set(searchEverywhereState.isOpen, true);
+          set(searchEverywhereState.tab, tab);
+          set(searchEverywhereState.contextElement, element);
         }
       },
     []
   );
 
   return {
-    GotoAction: {
+    [CommonActionId.GO_TO_ACTION]: {
       title: "Find Action",
       description: "Quickly navigate to action by name",
       actionPerformed: (event) => {
-        console.log("GotoAction performed");
-        openFindAction(event);
+        openSearchEverywhere(event, "Actions");
+      },
+    },
+    [CommonActionId.GO_TO_FILE]: {
+      title: "Go to file",
+      description: "Quickly navigate to file by name",
+      actionPerformed: (event) => {
+        openSearchEverywhere(event, "Files");
       },
     },
   };

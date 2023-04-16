@@ -2,10 +2,14 @@ import { atom, selector, selectorFamily } from "recoil";
 import { dirContentState, FsItem } from "../fs/fs.state";
 import { filterPath } from "./project-utils";
 import { createFocusBasedSetterHook } from "../recoil-utils";
+import path from "path";
 
 export interface Project {
   name: string;
   path: string;
+}
+export interface ProjectFsItem extends FsItem {
+  relativePath: string;
 }
 
 const sampleRepos = {
@@ -47,10 +51,10 @@ export const projectFilePath = selectorFamily({
 
 export const currentProjectFilesState = selector({
   key: "projectFiles",
-  get: async ({ get }): Promise<FsItem[]> => {
+  get: async ({ get }): Promise<ProjectFsItem[]> => {
     const project = get(currentProjectState);
     const items = get(dirContentState(project.path));
-    const files: FsItem[] = [];
+    const files: ProjectFsItem[] = [];
     const addItem = (item: FsItem) => {
       if (item.type === "dir" && filterPath(item)) {
         const childItems = get(dirContentState(item.path));
@@ -58,7 +62,10 @@ export const currentProjectFilesState = selector({
           childItems.map(addItem);
         }
       } else {
-        files.push(item);
+        files.push({
+          ...item,
+          relativePath: path.relative(project.path, item.path),
+        });
       }
     };
     (items || []).forEach((item) => addItem(item));

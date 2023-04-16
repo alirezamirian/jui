@@ -1,5 +1,6 @@
 import { Keymap } from "@intellij-platform/core";
 import { ChangesViewActionIds } from "./VersionControl/Changes/useChangesViewActions";
+import { SearchEverywhereActionIds } from "./SearchEverywhere/SearchEverywhereActionIds";
 
 export const exampleAppKeymap: Keymap = {
   ActivateProjectWindow: [
@@ -20,7 +21,7 @@ export const exampleAppKeymap: Keymap = {
   [ChangesViewActionIds.ROLLBACK]: [
     {
       type: "keyboard",
-      firstKeyStroke: { code: "KeyZ", modifiers: ["Meta", "Alt"] },
+      firstKeyStroke: { code: "KeyZ", modifiers: ["Alt", "Meta"] },
     },
   ],
   [ChangesViewActionIds.SHOW_DIFF]: [
@@ -39,6 +40,18 @@ export const exampleAppKeymap: Keymap = {
     {
       type: "keyboard",
       firstKeyStroke: { code: "KeyU", modifiers: ["Meta", "Alt"] },
+    },
+  ],
+  [SearchEverywhereActionIds.PREVIOUS_TAB]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: { code: "Tab", modifiers: ["Shift"] },
+    },
+  ],
+  [SearchEverywhereActionIds.NEXT_TAB]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: { code: "Tab" },
     },
   ],
 };
