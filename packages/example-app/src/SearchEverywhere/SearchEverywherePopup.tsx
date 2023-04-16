@@ -407,7 +407,19 @@ export function SearchEverywherePopup() {
                               itemWrapper?.contributor.processSelectedItem(
                                 itemWrapper.item
                               );
-                            });
+                              /**
+                               * The 50ms timeout is a workaround for an issue in FocusScope:
+                               * restoreFocus only works if the previously focused element is in the dom, when the focus
+                               * scope is unmounted. In case of SearchEveryWhere, actions like "Rollback" open a modal
+                               * window, which has a focus scope, when the window is opened, the currently focused
+                               * element (which will be the one to restore focus to), is search everywhere dialog, which
+                               * is immediately closed. So when the modal window is closed, it tries to move focus back
+                               * to search everywhere dialog, which is long gone! It would be nice if FocusScope could
+                               * track a chain of nodes to restore focus to.
+                               * With this 50ms timeout, focus is first restored to where it was, after SearchEveryWhere
+                               * is closed, and then the actions is performed, for focus restoration to work.
+                               */
+                            }, 50);
                           }
                         }}
                       >
