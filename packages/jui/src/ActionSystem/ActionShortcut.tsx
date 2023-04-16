@@ -29,7 +29,7 @@ export const ActionShortcut = ({
 export const useGetActionShortcut = (): ((actionId: string) => string) => {
   const keymap = useKeymap();
   return (actionId: string) => {
-    const keyboardShortcut = keymap?.[actionId].find(
+    const keyboardShortcut = keymap?.[actionId]?.find(
       ({ type }) => type === "keyboard"
     );
     return keyboardShortcut ? shortcutToString(keyboardShortcut) : "";

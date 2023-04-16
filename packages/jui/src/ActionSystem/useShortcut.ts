@@ -100,10 +100,8 @@ export function useShortcuts(
      * in capture or bubbling phase.
      * Another thing to get clarified as action system is more used, is to decide if action handler should stop
      * propagation or not. Or should it be an option?
-     * UPDATE: Switched to capture, to handle conflicts of Cmd+Shift+O in Monaco.
-     * TODO: investigate more if it should be an option or not.
      */
-    onKeyDownCapture: onKeyDown,
+    onKeyDown,
   };
   return { shortcutHandlerProps };
 }
