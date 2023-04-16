@@ -53,6 +53,12 @@ interface ActionsProviderProps {
   children: (args: {
     shortcutHandlerProps: HTMLAttributes<HTMLElement>;
   }) => React.ReactElement;
+
+  /**
+   * Experimental option to determine if event handling should be done on capture phase. Useful for cases where
+   * a descendant element handles events in capture phase, and that conflicts with an action.
+   */
+  useCapture?: boolean;
 }
 
 const ActionsContext = React.createContext<{
@@ -81,7 +87,8 @@ export function ActionsProvider(props: ActionsProviderProps): JSX.Element {
         // it's important to use target and not currentTarget
         element: event.target instanceof Element ? event.target : null,
       });
-    }
+    },
+    { useCapture: props.useCapture }
   );
 
   const actions = mapObjIndexed((value, actionId): Action => {

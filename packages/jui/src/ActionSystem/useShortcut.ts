@@ -15,7 +15,16 @@ export function useShortcuts(
     args: {
       event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>;
     }
-  ) => void | boolean
+  ) => void | boolean,
+  {
+    useCapture = false,
+  }: {
+    /**
+     * Experimental option to determine if event handling should be done on capture phase. Useful for cases where
+     * a descendant element handles events in capture phase, and that conflicts with an action.
+     */
+    useCapture?: boolean;
+  } = {}
 ) {
   const firstKeyActivatedShortcutsRef = useRef<
     Array<{ actionId: string; shortcut: KeyboardShortcut }>
@@ -100,8 +109,15 @@ export function useShortcuts(
      * in capture or bubbling phase.
      * Another thing to get clarified as action system is more used, is to decide if action handler should stop
      * propagation or not. Or should it be an option?
+     * UPDATE: Added an option to determine whether event handling should be done in capture phase. The use case is
+     * "Find in files" action with Cmd+Shift+O shortcut, which overlaps with some action in Monaco editor (only in .ts
+     * files). Monaco uses capture phase, and stops propagation, so unless we use capture phase, useShortcut's event
+     * handler is never called.
+     * An apposite use case is in SpeedSearchTree in tool windows, where we want Escape to be handled by speed search,
+     * and propagation stopped, if speed search is currently active. The second Escape keystroke should move focus to
+     * the editor. That wouldn't work if we unconditionally handle events in capture phase.
      */
-    onKeyDown,
+    [useCapture ? "onKeyDownCapture" : "onKeyDown"]: onKeyDown,
   };
   return { shortcutHandlerProps };
 }

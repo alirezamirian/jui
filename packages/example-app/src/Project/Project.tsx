@@ -43,7 +43,10 @@ export const Project = ({ height }: { height: CSSProperties["height"] }) => {
 
   return (
     <StyledWindowFrame style={{ height }}>
-      <ActionsProvider actions={allActions}>
+      <ActionsProvider
+        actions={allActions}
+        useCapture /* useCapture because of Monaco's aggressive event handling. Specifically, Cmd+Shift+O in .ts files  */
+      >
         {({ shortcutHandlerProps }) => (
           <DefaultToolWindows
             toolWindowsState={state}
