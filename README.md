@@ -12,7 +12,7 @@ JUI is JetBrain's IntelliJ Platform UI implemented as a React.js library. A lot 
 
 If you too love the user experience of the JetBrains products, and the developer experience of creating UI applications with react, you may find this interesting.
 
-https://user-images.githubusercontent.com/3150694/147861936-e82d1394-e9df-4f63-ad80-3e4f640dd726.mp4
+https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8a8a-7cbe9d8d4108.mp4
 
 ## Features:
 

@@ -7,11 +7,12 @@ on:
     branches: [master]
 
 env:
-  IS_PR_WITH_PERCY: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.title, 'no-percy') && !contains(github.event.pull_request.body, 'no-percy') }}
-  IS_PR_JUST_MERGED: ${{ github.ref_name == 'master' && contains(github.event.head_commit.message, 'Merge pull request') && !contains(github.event.head_commit.message, 'no-percy') }}
+  IS_PR_WITH_PERCY: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.title, 'SKIP_PERCY') && !contains(github.event.pull_request.body, 'SKIP_PERCY') }}
+  IS_PR_JUST_MERGED: ${{ github.ref_name == 'master' && contains(github.event.head_commit.message, 'Merge pull request') && !contains(github.event.head_commit.message, 'SKIP_PERCY') }}
 
 jobs:
   build:
+    if: "!contains(github.event.head_commit.message, 'SKIP_CI')"
     runs-on: ubuntu-latest # note: macos doesn't have docker installed!
     container: cypress/browsers:node14.17.0-chrome91-ff89
 
