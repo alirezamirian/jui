@@ -1,5 +1,5 @@
 import React from "react";
-import { useRecoilCallback, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import {
   ActionDefinition,
   CommonActionId,
@@ -11,7 +11,7 @@ import { Action } from "@intellij-platform/core/ActionSystem/components";
 
 import {
   projectViewTreeRefState,
-  selectPathInProjectViewCallback,
+  useSelectPathInProjectView,
 } from "./ProjectView.state";
 import { ProjectViewPane } from "./ProjectViewPane";
 import { activeEditorTabState } from "../Editor/editor.state";
@@ -49,10 +49,7 @@ function useProjectViewActions(): Record<string, ActionDefinition> {
   // to prevent unnecessary re-rendering. The active tab, could be read from the state snapshot, in the handler callback.
   const activeTab = useRecoilValue(activeEditorTabState);
 
-  const selectPathInProjectView = useRecoilCallback(
-    selectPathInProjectViewCallback,
-    []
-  );
+  const selectPathInProjectView = useSelectPathInProjectView();
   const selectOpenedFile = () => {
     if (activeTab) {
       selectPathInProjectView(activeTab.filePath);

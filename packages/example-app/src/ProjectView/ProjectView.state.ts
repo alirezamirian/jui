@@ -1,7 +1,13 @@
 import { Selection } from "@react-types/shared";
 import { TreeRefValue } from "@intellij-platform/core";
 import React, { Key, RefObject } from "react";
-import { atom, CallbackInterface, GetRecoilValue, selector } from "recoil";
+import {
+  atom,
+  CallbackInterface,
+  GetRecoilValue,
+  selector,
+  useRecoilCallback,
+} from "recoil";
 import { currentProjectState, Project } from "../Project/project.state";
 import { dirContentState, FsItem } from "../fs/fs.state";
 import { filterPath } from "../Project/project-utils";
@@ -132,8 +138,11 @@ export const selectKeyAndFocusCallback =
     treeRef?.focus(key);
   };
 
-export const selectPathInProjectViewCallback =
-  (callbackInterface: CallbackInterface) => (path: string) => {
-    expandToPathCallback(callbackInterface)(path);
-    selectKeyAndFocusCallback(callbackInterface)(path);
+export const useSelectPathInProjectView = () => {
+  const expandToOpenedFile = useRecoilCallback(expandToPathCallback, []);
+  const selectKeyAndFocus = useRecoilCallback(selectKeyAndFocusCallback, []);
+  return (path: string) => {
+    expandToOpenedFile(path);
+    selectKeyAndFocus(path);
   };
+};

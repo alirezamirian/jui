@@ -11,7 +11,7 @@ import {
   ProjectFsItem,
 } from "../../../Project/project.state";
 import { useEditorStateManager } from "../../../Editor/editor.state";
-import { selectPathInProjectViewCallback } from "../../../ProjectView/ProjectView.state";
+import { useSelectPathInProjectView } from "../../../ProjectView/ProjectView.state";
 import { FileItem } from "./FileItem";
 
 export const filesSearchContributor: SearchEverywhereContributor<{
@@ -29,10 +29,7 @@ export const filesSearchContributor: SearchEverywhereContributor<{
       []
     );
     const { openPath } = useEditorStateManager();
-    const selectPathInProjectView = useRecoilCallback(
-      selectPathInProjectViewCallback,
-      []
-    );
+    const selectPathInProjectView = useSelectPathInProjectView();
     return {
       search: (query: string) =>
         getProjectFiles()
