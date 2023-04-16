@@ -5,7 +5,7 @@
   },
   "include": ["src"],
   "exclude": [
-    "src/**/*.cy-test.tsx",
+    "src/**/*.cy.tsx",
     "src/**/*.stories.tsx",
     "src/**/*.spec.ts"
   ]
