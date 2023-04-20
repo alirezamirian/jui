@@ -219,8 +219,9 @@ export function SearchEverywherePopup() {
     setSearchResultLimit(SEARCH_RESULT_LIMIT);
   }, [searchResult]);
 
-  const localActions: { [id: string]: ActionDefinition } = {
-    [SearchEverywhereActionIds.PREVIOUS_TAB]: {
+  const localActions: ActionDefinition[] = [
+    {
+      id: SearchEverywhereActionIds.PREVIOUS_TAB,
       title: "Prev tab",
       description: "Switch to previous tab in Search Everywhere dialog",
       actionPerformed: () => {
@@ -235,7 +236,8 @@ export function SearchEverywherePopup() {
         );
       },
     },
-    [SearchEverywhereActionIds.NEXT_TAB]: {
+    {
+      id: SearchEverywhereActionIds.NEXT_TAB,
       title: "Next tab",
       description: "Switch to next tab in Search Everywhere dialog",
       actionPerformed: () => {
@@ -245,21 +247,24 @@ export function SearchEverywherePopup() {
         setTab(contributors[currentContributorIndex + 1]?.id || "");
       },
     },
-  };
-  contributors.forEach(({ id, actionId, title }) => {
-    if (actionId) {
-      localActions[actionId] = {
-        title: `Find ${title}`,
-        description: `Quickly go to ${title} by name`,
-        actionPerformed: () => {
-          if (tab !== id) {
-            setTab(id);
-          } else {
-            currentTabContributor?.toggleEverywhere?.();
-          }
-        },
-      };
-    }
+  ];
+  const contributorActions = contributors.flatMap(({ id, actionId, title }) => {
+    return actionId
+      ? [
+          {
+            id: actionId,
+            title: `Find ${title}`,
+            description: `Quickly go to ${title} by name`,
+            actionPerformed: () => {
+              if (tab !== id) {
+                setTab(id);
+              } else {
+                currentTabContributor?.toggleEverywhere?.();
+              }
+            },
+          },
+        ]
+      : [];
   });
 
   const close = () => setOpen(false);
@@ -284,10 +289,11 @@ export function SearchEverywherePopup() {
       onClose={close}
     >
       <ActionsProvider
-        actions={{
-          ...currentTabContributor?.actions,
+        actions={[
+          ...(currentTabContributor?.actions || []),
+          ...contributorActions,
           ...localActions,
-        }}
+        ]}
       >
         {({ shortcutHandlerProps }) => (
           <div {...shortcutHandlerProps} style={{ height: "inherit" }}>

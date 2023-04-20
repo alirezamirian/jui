@@ -23,7 +23,7 @@ export interface DefaultToolWindowProps extends DOMProps {
   /**
    * Actions to be provided in the tool window, in addition to the default tool window actions.
    */
-  actions?: Record<string, ActionDefinition>;
+  actions?: ActionDefinition[];
   /**
    * The title of main part of the tool windows component. Used in tool window actions.
    * @default "Editor"
@@ -101,10 +101,7 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
   const toolWindowActions = useToolWindowActions({
     mainContentTitle,
   });
-  const allActions = {
-    ...toolWindowActions,
-    ...actions,
-  };
+  const allActions = [...toolWindowActions, ...(actions || [])];
 
   return (
     <ActionsProvider actions={allActions}>

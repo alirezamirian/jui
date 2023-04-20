@@ -1,5 +1,5 @@
 import { useKeymap } from "@intellij-platform/core/ActionSystem/KeymapProvider";
-import { mapObjIndexed, pick, sortBy } from "ramda";
+import { pick, sortBy } from "ramda";
 import React, { HTMLAttributes, useContext, useEffect, useState } from "react";
 import { shortcutToString } from "@intellij-platform/core/ActionSystem/shortcutToString";
 import { useShortcuts } from "@intellij-platform/core/ActionSystem/useShortcut";
@@ -14,6 +14,7 @@ export interface ActionContext {
 }
 
 export interface ActionDefinition {
+  id: string;
   title: string;
   actionPerformed: (
     /**
@@ -25,31 +26,30 @@ export interface ActionDefinition {
   description?: string;
   isDisabled?: boolean;
 }
+
 export interface Action
   extends Pick<
     ActionDefinition,
     "title" | "icon" | "description" | "isDisabled"
   > {
-  id: string;
+  readonly id: string;
   /**
    * shortcuts assigned to this action based on the keymap context
    */
-  shortcuts: readonly Shortcut[] | undefined;
+  readonly shortcuts: readonly Shortcut[] | undefined;
   /**
    * string representation of the shortcuts
    */
-  shortcut: string | undefined;
+  readonly shortcut: string | undefined;
 
   /**
    * Performs the action, if it's enabled.
    */
-  perform: (context?: ActionContext) => void;
+  readonly perform: (context?: ActionContext) => void;
 }
 
 interface ActionsProviderProps {
-  actions: {
-    [actionId: string]: ActionDefinition;
-  };
+  actions: ActionDefinition[];
   children: (args: {
     shortcutHandlerProps: HTMLAttributes<HTMLElement>;
   }) => React.ReactElement;
@@ -61,9 +61,7 @@ interface ActionsProviderProps {
   useCapture?: boolean;
 }
 
-const ActionsContext = React.createContext<{
-  [actionId: string]: Action;
-}>({});
+const ActionsContext = React.createContext<Action[]>([]);
 
 function generateId() {
   return `jui-${Math.floor(Math.random() * 10000000)}`;
@@ -71,42 +69,44 @@ function generateId() {
 
 const ACTION_PROVIDER_ID_ATTRIBUTE = "data-action-provider";
 const ACTION_PROVIDER_ID_DATA_PREFIX = "action_provider_id_";
-const actionProvidersMap = new Map<string, { [id: string]: Action }>();
+const actionProvidersMap = new Map<string, Action[]>();
 export function ActionsProvider(props: ActionsProviderProps): JSX.Element {
   const parentContext = useContext(ActionsContext);
   const keymap = useKeymap();
-  const actionIds = Object.keys(props.actions);
+  const actionIds = props.actions.map((action) => action.id);
   const shortcuts = pick(actionIds, keymap || {});
   const [actionProviderId] = useState(generateId);
 
   const { shortcutHandlerProps } = useShortcuts(
     shortcuts,
     (actionId, { event }) => {
-      props.actions[actionId]?.actionPerformed({
-        event,
-        // it's important to use target and not currentTarget
-        element: event.target instanceof Element ? event.target : null,
-      });
+      props.actions
+        .find((action) => action.id === actionId)
+        ?.actionPerformed({
+          event,
+          // it's important to use target and not currentTarget
+          element: event.target instanceof Element ? event.target : null,
+        });
     },
     { useCapture: props.useCapture }
   );
 
-  const actions = mapObjIndexed((value, actionId): Action => {
-    const shortcuts = keymap?.[actionId];
+  const actions = props.actions.map((action: ActionDefinition): Action => {
+    const shortcuts = keymap?.[action.id];
     const firstShortcut = shortcuts?.[0];
     return {
-      id: actionId,
-      ...value,
+      ...action,
       shortcuts,
       shortcut: firstShortcut ? shortcutToString(firstShortcut) : undefined, // Maybe it should be all shortcuts?
       perform: (context) => {
-        if (!value.isDisabled) {
-          value.actionPerformed(context || { event: null, element: null });
+        if (!action.isDisabled) {
+          action.actionPerformed(context || { event: null, element: null });
         }
       },
     };
-  }, props.actions);
-  const allActions = { ...parentContext, ...actions };
+  });
+  const allActions = [...parentContext, ...actions]; // Maybe warn overrides?
+
   // @ts-expect-error: not sure why data-* attribute is not accepted.
   shortcutHandlerProps[ACTION_PROVIDER_ID_ATTRIBUTE] = actionProviderId;
   // @ts-expect-error: not sure why data-* attribute is not accepted.
@@ -162,10 +162,10 @@ export function getAvailableActionsFor(element: Element): Action[] {
   return [];
 }
 
-export function useActions(): Record<string, Action> {
+export function useActions(): Action[] {
   return useContext(ActionsContext);
 }
 
 export const useAction = (actionId: string): Action | null => {
-  return useActions()[actionId];
+  return useActions().find(({ id }) => id === actionId) ?? null;
 };

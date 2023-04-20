@@ -32,14 +32,15 @@ export const actionsSearchContributor: SearchEverywhereContributor<{
     );
     const shouldIncludeDisabledActions =
       showDisabledActions ?? everyWhereAutoSet;
-    const actions: { [id: string]: ActionDefinition } = {
-      [CommonActionId.SHOW_INTENTION_ACTIONS]: {
+    const actions: ActionDefinition[] = [
+      {
+        id: CommonActionId.SHOW_INTENTION_ACTIONS,
         title: "Assign a shortcut",
         actionPerformed() {
           alert("Not implemented!");
         },
       },
-    };
+    ];
     return {
       search: (query: string) => {
         const allResults = allActions

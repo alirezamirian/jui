@@ -18,7 +18,7 @@ export interface SearchEverywhereContributorResult<R extends {}> {
   renderItem(item: R): ReactNode;
   getKey(item: R): Key;
 
-  actions?: { [id: string]: ActionDefinition };
+  actions?: ActionDefinition[];
   searchDeps: any[]; // FIXME: useMemo issue
   isEverywhere: boolean;
   toggleEverywhere?: () => void;

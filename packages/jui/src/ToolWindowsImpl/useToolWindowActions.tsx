@@ -82,7 +82,7 @@ export function useToolWindowActions({
   mainContentTitle,
 }: {
   mainContentTitle: string;
-}): { [key: string]: ActionDefinition } {
+}): ActionDefinition[] {
   const {
     stretchWidth,
     stretchHeight,
@@ -97,82 +97,90 @@ export function useToolWindowActions({
   if (!state) {
     // FIXME: when window is removed, a last render happens with the new ToolWindowsState, which doesn't have state
     //  for the removed tool window. Need to understand why that happens.
-    return {};
+    return [];
   }
-  const actions: { [key: string]: ActionDefinition } = {
-    [DOCK_PINNED_MODE_ACTION_ID]: {
+  const actions: Array<ActionDefinition> = [
+    {
+      id: DOCK_PINNED_MODE_ACTION_ID,
       title: "Dock Pinned",
       actionPerformed: () => {
         changeViewMode("docked_pinned");
       },
     },
-    [DOCK_UNPINNED_MODE_ACTION_ID]: {
+    {
+      id: DOCK_UNPINNED_MODE_ACTION_ID,
       title: "Dock Unpinned",
       actionPerformed: () => {
         changeViewMode("docked_unpinned");
       },
     },
-    [UNDOCK_MODE_ACTION_ID]: {
+    {
+      id: UNDOCK_MODE_ACTION_ID,
       title: "Undock",
       actionPerformed: () => {
         changeViewMode("undock");
       },
     },
-    [FLOAT_MODE_ACTION_ID]: {
+    {
+      id: FLOAT_MODE_ACTION_ID,
       title: "Float",
       actionPerformed: () => {
         changeViewMode("float");
       },
     },
-    [WINDOW_MODE_ACTION_ID]: {
+    {
+      id: WINDOW_MODE_ACTION_ID,
       title: "Window",
       actionPerformed: () => {
         changeViewMode("window");
       },
     },
-    ...zipObj(
-      MOVE_TO_ACTION_GROUP,
-      anchors.map(
-        (anchor): ActionDefinition => ({
-          title: getAnchorName(anchor),
-          icon: <PlatformIcon icon={`actions/${anchor.id}`} />,
-          isDisabled:
-            state.anchor === anchor.anchor && state.isSplit === anchor.isSplit,
-          actionPerformed: () => {
-            moveToSide(anchor);
-          },
-        })
-      )
+    ...anchors.map(
+      (anchor): ActionDefinition => ({
+        id: `TW.MoveTo.${anchor.id}`,
+        title: getAnchorName(anchor),
+        icon: <PlatformIcon icon={`actions/${anchor.id}`} />,
+        isDisabled:
+          state.anchor === anchor.anchor && state.isSplit === anchor.isSplit,
+        actionPerformed: () => {
+          moveToSide(anchor);
+        },
+      })
     ),
-    [FOCUS_EDITOR_ACTION_ID]: {
+    {
+      id: FOCUS_EDITOR_ACTION_ID,
       title: `Focus ${mainContentTitle}`, // in intellij it says "Focus Editor" but it's not generic enough.
       actionPerformed: () => {
         focusMainContent();
       },
     },
-    [HIDE_ACTIVE_WINDOW_ACTION_ID]: {
+    {
+      id: HIDE_ACTIVE_WINDOW_ACTION_ID,
       title: "Hide",
       icon: <PlatformIcon icon="general/hideToolWindow" />,
       actionPerformed: () => {
         hide();
       },
     },
-    [MAXIMIZE_TOOL_WINDOW_ACTION_ID]: {
+    {
+      id: MAXIMIZE_TOOL_WINDOW_ACTION_ID,
       title: "Maximize Tool Window", // Should be "Restore Tool Window Size if the window is currently maximized
       actionPerformed: () => {
         // TODO(release): either remove the action or implement it
         alert("Not implemented");
       },
     },
-    [REMOVE_TOOL_WINDOW_FROM_SIDEBAR_ACTION_ID]: {
+    {
+      id: REMOVE_TOOL_WINDOW_FROM_SIDEBAR_ACTION_ID,
       title: "Remove from Sidebar",
       actionPerformed: () => {
         remove();
       },
     },
-  };
+  ];
   if (state.viewMode === "float") {
-    actions[DOCK_TOOL_WINDOW_ACTION_ID] = {
+    actions.push({
+      id: DOCK_TOOL_WINDOW_ACTION_ID,
       title: "Dock",
       icon: (
         <PlatformIcon
@@ -187,43 +195,47 @@ export function useToolWindowActions({
       actionPerformed: () => {
         changeViewMode("docked_pinned");
       },
-    };
+    });
   }
   if (state.viewMode !== "float" && state.viewMode !== "window") {
     if (isHorizontalToolWindow(state.anchor)) {
-      actions[RESIZE_TOOL_WINDOW_BOTTOM_ACTION_ID] = {
+      actions.push({
+        id: RESIZE_TOOL_WINDOW_BOTTOM_ACTION_ID,
         title: "Stretch to bottom",
         actionPerformed: () => {
           stretchHeight(
             state.anchor === "bottom" ? -HEIGHT_RESIZE_STEP : HEIGHT_RESIZE_STEP
           );
         },
-      };
-      actions[RESIZE_TOOL_WINDOW_TOP_ACTION_ID] = {
+      });
+      actions.push({
+        id: RESIZE_TOOL_WINDOW_TOP_ACTION_ID,
         title: "Stretch to top",
         actionPerformed: () => {
           stretchHeight(
             state.anchor === "top" ? -HEIGHT_RESIZE_STEP : HEIGHT_RESIZE_STEP
           );
         },
-      };
+      });
     } else {
-      actions[RESIZE_TOOL_WINDOW_LEFT_ACTION_ID] = {
+      actions.push({
+        id: RESIZE_TOOL_WINDOW_LEFT_ACTION_ID,
         title: "Stretch to left",
         actionPerformed: () => {
           stretchWidth(
             state.anchor === "left" ? -WIDTH_RESIZE_STEP : WIDTH_RESIZE_STEP
           );
         },
-      };
-      actions[RESIZE_TOOL_WINDOW_RIGHT_ACTION_ID] = {
+      });
+      actions.push({
+        id: RESIZE_TOOL_WINDOW_RIGHT_ACTION_ID,
         title: "Stretch to right",
         actionPerformed: () => {
           stretchWidth(
             state.anchor === "right" ? -WIDTH_RESIZE_STEP : WIDTH_RESIZE_STEP
           );
         },
-      };
+      });
     }
   }
   return actions;

@@ -14,33 +14,37 @@ export function useTreeActions({
   treeRef,
 }: {
   treeRef: RefObject<TreeRefValue>;
-}): Record<string, ActionDefinition> {
-  return {
-    [CommonActionId.EXPAND_ALL]: {
+}): Array<ActionDefinition> {
+  return [
+    {
+      id: CommonActionId.EXPAND_ALL,
       title: "Expand All",
       icon: <PlatformIcon icon="actions/expandall" />,
       actionPerformed: () => {
         treeRef.current?.expandAll();
       },
     },
-    [CommonActionId.COLLAPSE_ALL]: {
+    {
+      id: CommonActionId.COLLAPSE_ALL,
       title: "Collapse All",
       icon: <PlatformIcon icon="actions/collapseall" />,
       actionPerformed: () => {
         treeRef.current?.collapseAll();
       },
     },
-    [CommonActionId.EXPAND_SELECTION]: {
+    {
+      id: CommonActionId.EXPAND_SELECTION,
       title: "Expand Selection",
       actionPerformed: () => {
         treeRef.current?.expandSelection();
       },
     },
-    [CommonActionId.SHRINK_SELECTION]: {
+    {
+      id: CommonActionId.SHRINK_SELECTION,
       title: "Shrink Selection",
       actionPerformed: () => {
         treeRef.current?.shrinkSelection();
       },
     },
-  };
+  ];
 }

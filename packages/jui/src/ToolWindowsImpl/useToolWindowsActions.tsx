@@ -49,11 +49,11 @@ export function useToolWindowsActions({
   const windowIds = Object.keys(toolWindowsState.windows).map(
     (key) => `${key}`
   );
-  const activateToolWindowActions = zipObj(
-    windowIds.map(getActivateToolWindowActionId),
-    windowIds.map((id: string, index): ActionDefinition => {
+  const activateToolWindowActions = windowIds.map(
+    (id: string, index): ActionDefinition => {
       const { title, icon } = getPresentation?.(id) || {};
       return {
+        id: getActivateToolWindowActionId(id),
         title: title || `${getOrdinal(index)} window`,
         icon,
         description: `Activate ${title || getOrdinal(index)} window`,
@@ -68,11 +68,12 @@ export function useToolWindowsActions({
           }
         },
       };
-    })
+    }
   );
-  const actions: Record<string, ActionDefinition> = {
+  const actions: ActionDefinition[] = [
     ...activateToolWindowActions,
-    [HIDE_ALL_WINDOWS_ACTION_ID]: {
+    {
+      id: HIDE_ALL_WINDOWS_ACTION_ID,
       title: isAnySideWindowWindowOpen(toolWindowsState)
         ? "Hide All Windows"
         : "Restore windows",
@@ -92,14 +93,15 @@ export function useToolWindowsActions({
         });
       },
     },
-    [JUMP_TO_LAST_WINDOW_ACTION_ID]: {
+    {
+      id: JUMP_TO_LAST_WINDOW_ACTION_ID,
       title: "Jump to Last Tool Window",
       isDisabled: toolWindowsState.lastFocusedKey == null,
       actionPerformed: () => {
         toolWindowsRef.current?.focusLastActiveWindow();
       },
     },
-  };
+  ];
   return actions;
 }
 
