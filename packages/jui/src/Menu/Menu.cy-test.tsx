@@ -102,14 +102,14 @@ describe("Menu", () => {
   it("supports mouse", () => {
     cy.mount(<Nested disabledKeys={[]} />);
     cy.get("body").click(); // This is necessary because of some implementation details of react-aria. More info in cypress/NOTES.md
-    cy.get('[role="menuitem"]').contains("View Mode").realHover(); // open first submenu via hover
-    cy.focused().should("have.attr", "role", "menu"); // focus should be on submenu, when opened by hover
-    cy.get('[role="menuitem"]').contains("Docked").realHover(); // open second submenu via hover
-    cy.get('[role="menuitem"]').contains("UnPinned").realHover(); // Move focus to second item via hover
+    cy.findByRole("menuitem", { name: "View Mode" }).realHover(); // open first submenu via hover
+    cy.findByRole("menu", { name: "View Mode" }).should("have.focus"); // focus should be on submenu, when opened by hover
+    cy.findByRole("menuitem", { name: "Docked" }).realHover(); // open second submenu via hover
+    cy.findByRole("menuitem", { name: "UnPinned" }).realHover(); // Move focus to second item via hover
     matchImageSnapshot("menu--mouse-behaviour-1");
-    cy.get('[role="menuitem"]').contains("Float").realHover(); // Close second submenu by hovering another item
+    cy.findByRole("menuitem", { name: "Float" }).realHover(); // Close second submenu by hovering another item
     matchImageSnapshot("menu--mouse-behaviour-2");
-    cy.get('[role="menuitem"]').contains("Group tabs").realHover(); // Close first submenu by hovering another item
+    cy.findByRole("menuitem", { name: "Group tabs" }).realHover(); // Close first submenu by hovering another item
     matchImageSnapshot("menu--mouse-behaviour-3");
   });
 
@@ -252,6 +252,22 @@ describe("Menu", () => {
     cy.findByRole("menuitem", { name: "View Mode" }).should("have.focus");
     cy.realPress("Enter");
     cy.findByRole("menuitem", { name: "Undock" }).should("have.focus");
+  });
+
+  it("focuses the opened submenu, when selectedKeys has value", () => {
+    // a test case to cover a fix for an issue in the current implementation of @react-aria/menu
+    // The issue is whenever selectedKeys is non-empty, the opened submenu is not autofocused,
+    // in an attempt to focus the selected item. But even if that behavior is expected (which is not
+    // the case in the Intellij implementation, at least), the selected keys may belong not to the
+    // opened submenu. We have a workaround for this which autofocuses the menu, if autofocus is not
+    // "first" or "last"
+    cy.mount(<Nested selectedKeys={["Pinned"]} />);
+    cy.findByRole("menuitem", { name: "View Mode" })
+      .focus()
+      .realPress("ArrowRight");
+    cy.findByRole("menu", { name: "View Mode" })
+      .should("be.visible")
+      .should("have.focus");
   });
 
   it("shows the active state for parent menu item of a currently opened submenu, even when not hovered", () => {
@@ -406,12 +422,13 @@ describe("Menu", () => {
       cy.wrap(onClose).should("be.calledOnce");
     });
 
-    it("opens the submenu when right arrow is pressed", () => {
-      cy.mount(<SubmenuWithAction />);
+    it("opens and focuses the submenu when right arrow is pressed", () => {
       cy.mount(<SubmenuWithAction />);
       cy.findByRole("menuitem", { name: "View Mode" }).focus();
       cy.realPress("ArrowRight");
-      cy.findByRole("menuitem", { name: "Docked" }).should("be.visible");
+      cy.findByRole("menu", { name: "View Mode" })
+        .should("be.visible")
+        .should("have.focus");
     });
 
     it("doesn't trigger action when the right chevron arrow is pressed", () => {
@@ -536,7 +553,7 @@ describe("Menu with trigger", () => {
     cy.focused().should("contain.text", "View Mode"); // Focus should now be on the submenu opener item
     matchImageSnapshot(`menu-with-trigger--keyboard-behaviour-2`);
     cy.realPress("ArrowRight"); // open submenu with right arrow
-    cy.focused().should("have.attr", "role", "menu"); // focus should now be on the submenu
+    cy.findByRole("menu", { name: "View Mode" }).should("have.focus"); // focus should now be on the submenu
     cy.realPress("ArrowDown"); // move focus to first submenu item
     matchImageSnapshot(`menu-with-trigger--keyboard-behaviour-3`);
     cy.realPress("Escape"); // close submenu with escape
