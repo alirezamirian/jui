@@ -285,15 +285,37 @@ describe("Menu", () => {
   it("shows the active state for parent menu item of a currently opened submenu, even when not hovered", () => {
     cy.mount(
       <div style={{ paddingTop: 50 }}>
-        <Nested />
+        <Nested aria-label="Top Menu" />
       </div>
     );
     cy.findByRole("menuitem", { name: "View Mode" }).realHover(); // open submenu
+
     matchImageSnapshot("menu-submenu-parent-hovered"); // "View Mode" should be styled active
+    saveBackgroundsAs("backgrounds1");
     cy.findByRole("menuitem", { name: "View Mode" }).realMouseMove(0, -5); // Moving mouse outside the item, but inside the menu
+    saveBackgroundsAs("backgrounds2");
     matchImageSnapshot("menu-submenu-parent-hovered"); // "View Mode" should still be styled active
     cy.findByRole("menuitem", { name: "View Mode" }).realMouseMove(0, -30); // Moving mouse outside the menu
+    saveBackgroundsAs("backgrounds3");
     matchImageSnapshot("menu-submenu-parent-hovered"); // "View Mode" should still be styled active
+
+    cy.get<unknown[]>("@backgrounds1").then((arr1) => {
+      cy.get<unknown[]>("@backgrounds2").then((arr2) => {
+        cy.get<unknown[]>("@backgrounds3").then((arr3) => {
+          console.log(arr1, arr2, arr3);
+          expect(arr1).to.deep.equal(arr2);
+          expect(arr2).to.deep.equal(arr3);
+        });
+      });
+    });
+    function saveBackgroundsAs(alias: string) {
+      cy.findByRole("menu", { name: "Top Menu" })
+        .findAllByRole("menuitem")
+        .then((menuItems) =>
+          menuItems.toArray().map((el) => getComputedStyle(el).backgroundColor)
+        )
+        .as(alias);
+    }
   });
 
   describe("submenuBehavior=toggleOnPress", () => {
@@ -389,11 +411,35 @@ describe("Menu", () => {
     });
 
     it("shows the hovered item as active even if another sibling has submenu open", () => {
-      cy.mount(<ToggleSubmenuOnPress />);
+      cy.mount(<ToggleSubmenuOnPress aria-label="Top Menu" />);
+
       cy.findByRole("menuitem", { name: "View Mode" }).realClick();
+      // NOTE: It's not possible to visually test hover state neither by Percy nor by local snapshot testing.
+      // Read more: https://github.com/dmtrKovalenko/cypress-real-events#1-why-cyrealhover-hovering-state-does-not-show-in-the-visual-regression-services
+      // So we do a low-level not-so-pleasant assertion on background colors.
+      saveBackgroundsAs("backgroundsBefore");
       cy.findByRole("menuitem", { name: "Group tabs" }).realHover(); // Hovering a sibling of the opened submenu's parent
-      matchImageSnapshot("menu-submenu-parent-sibling-hovered"); // Only the sibling "Group tabs" should be styled active
+      saveBackgroundsAs("backgroundsAfter");
+
+      cy.get<unknown[]>("@backgroundsBefore").then((arr1) => {
+        cy.get<unknown[]>("@backgroundsAfter").then((arr2) => {
+          // The active state should be gone from the first one to the second
+          expect(arr1[0]).to.equal(arr2[1]);
+          expect(arr1[1]).to.equal(arr2[0]);
+        });
+      });
       cy.findByRole("menu", { name: "View Mode" }).should("have.focus"); // But the submenu should keep the focus
+
+      function saveBackgroundsAs(alias: string) {
+        cy.findByRole("menu", { name: "Top Menu" })
+          .findAllByRole("menuitem")
+          .then((menuItems) =>
+            menuItems
+              .toArray()
+              .map((el) => getComputedStyle(el).backgroundColor)
+          )
+          .as(alias);
+      }
     });
   });
 
