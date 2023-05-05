@@ -104,6 +104,8 @@ describe("Menu", () => {
     cy.get("body").click(); // This is necessary because of some implementation details of react-aria. More info in cypress/NOTES.md
     cy.findByRole("menuitem", { name: "View Mode" }).realHover(); // open first submenu via hover
     cy.findByRole("menu", { name: "View Mode" }).should("have.focus"); // focus should be on submenu, when opened by hover
+    cy.findByRole("menuitem", { name: "View Mode" }).click(); // clicking the parent menu item, should not move focus back to it.
+    cy.findByRole("menu", { name: "View Mode" }).should("have.focus"); // focus should be on submenu, when opened by hover
     cy.findByRole("menuitem", { name: "Docked" }).realHover(); // open second submenu via hover
     cy.findByRole("menuitem", { name: "UnPinned" }).realHover(); // Move focus to second item via hover
     matchImageSnapshot("menu--mouse-behaviour-1");
@@ -111,6 +113,16 @@ describe("Menu", () => {
     matchImageSnapshot("menu--mouse-behaviour-2");
     cy.findByRole("menuitem", { name: "Group tabs" }).realHover(); // Close first submenu by hovering another item
     matchImageSnapshot("menu--mouse-behaviour-3");
+  });
+
+  it("doesn't steel focus from opened submenu, when hovered", () => {
+    cy.mount(<Nested disabledKeys={[]} />);
+    cy.get("body").click(); // This is necessary because of some implementation details of react-aria. More info in cypress/NOTES.md
+    cy.findByRole("menuitem", { name: "View Mode" }).realHover(); // open first submenu via hover
+    cy.findByRole("menu", { name: "View Mode" }).should("have.focus"); // submenu should be focused
+    cy.findByRole("menuitem", { name: "Undock" }).realHover(); // move focus to some menu item in the submenu
+    cy.findByRole("menuitem", { name: "View Mode" }).realHover(); // hover the parent menu item again
+    cy.findByRole("menuitem", { name: "Undock" }).should("have.focus"); // the focused item in the submenu should still be focused
   });
 
   // in the absence of it.fail():

@@ -111,6 +111,12 @@ function useMenuItem<T extends unknown>(
     delete ariaMenuItemProps.onPointerEnter;
   }
 
+  if (submenuBehavior === "default" && isExpanded) {
+    delete ariaMenuItemProps.onPointerDown;
+    delete ariaMenuItemProps.onMouseEnter;
+    delete ariaMenuItemProps.onPointerEnter;
+  }
+
   return {
     ...result,
     menuItemProps: mergeProps(
