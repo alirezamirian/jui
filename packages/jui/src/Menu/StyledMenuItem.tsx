@@ -55,12 +55,14 @@ export const StyledMenuItem = styled.li<{
   // will be highlighted even though the focus is kept within the opened submenu. This behavior (which may be even a
   // little questionable UX-wise), seemed better implemented by css, because otherwise, we would need MenuItem to know
   // if it's parent menu is hovered or not.
-  // TODO: cover this with tests
+  // NOTE: the css implementation depends on :has() selector which is not well supported currently. It's supported in
+  // Chrome, and the it should be ok in browsers not supporting it, as it's a progressive improvement, not a critical
+  // requirement
 
-  ul[role="menu"]:not(:focus-within):hover & {
+  ul[role="menu"]:not(:focus-within):has(&:hover):hover & {
     ${defaultStyle};
   }
-  ul[role="menu"]:not(:focus-within):hover &:hover {
+  ul[role="menu"]:not(:focus-within):has(&:hover):hover &:hover {
     ${highlightedStyle};
   }
 

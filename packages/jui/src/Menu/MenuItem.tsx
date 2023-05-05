@@ -54,10 +54,9 @@ function useMenuItem<T extends unknown>(
   ref: RefObject<FocusableElement>
 ): MenuItemAria {
   const item = state.collection.getItem(props.key!);
-  const {
-    menuItemProps: { onMouseEnter, onPointerEnter, ...otherMenuItemProps },
-    ...result
-  } = useMenuItemAria(
+  const isDisabled = state.disabledKeys.has(item.key);
+  const isExpanded = state.expandedKeys.has(item.key);
+  const { menuItemProps: ariaMenuItemProps, ...result } = useMenuItemAria(
     {
       key: item.key,
       // hack to prevent react-aria to call onClose when nested items are selected, which is incorrect, and because
@@ -67,17 +66,65 @@ function useMenuItem<T extends unknown>(
     state,
     ref
   );
+
+  const { hoverProps } = useHover({
+    isDisabled: isDisabled || submenuBehavior !== "default" || isExpanded,
+    onHoverStart: () => {
+      state.toggleKey(item.key);
+    },
+  });
+
+  const keyboardProps = {
+    onKeyDown: (e: React.KeyboardEvent) => {
+      if (
+        ((e.key === "Enter" || e.key === " ") &&
+          submenuBehavior !== "actionOnPress") ||
+        "ArrowRight" === e.key
+      ) {
+        state.toggleKey(item.key);
+        e.stopPropagation();
+        return;
+      }
+    },
+  };
+
+  const { pressProps: togglePressProps } = usePress({
+    isDisabled: isDisabled,
+    onPressUp: () => {
+      state.toggleKey(item.key);
+      if (isExpanded) {
+        // submenu was expanded and is closed now. moving focus back to the parent item
+        state.selectionManager.setFocusedKey(item.key);
+      }
+    },
+  });
+
+  if (
+    submenuBehavior !== "default" &&
+    !state.selectionManager.isFocused &&
+    // If nothing is expanded, let top level menu items grab focus as well.
+    // TODO: improve these conditions to a more generic one: if this menu item belongs to the "active" submenu.
+    //  Which would be the last opened submenu, or deepest submenu.
+    !(item.parentKey == null && state.expandedKeys.size === 0)
+  ) {
+    delete ariaMenuItemProps.onMouseEnter;
+    delete ariaMenuItemProps.onPointerEnter;
+  }
+
+  if (submenuBehavior === "default" && isExpanded) {
+    delete ariaMenuItemProps.onPointerDown;
+    delete ariaMenuItemProps.onMouseEnter;
+    delete ariaMenuItemProps.onPointerEnter;
+  }
+
   return {
     ...result,
-    menuItemProps:
-      submenuBehavior === "default" ||
-      state.selectionManager.isFocused ||
-      // If nothing is expanded, let top level menu items grab focus as well.
-      // TODO: improve these conditions to a more generic one: if this menu item belongs to the "active" submenu.
-      //  Which would be the last opened submenu, or deepest submenu.
-      (item.parentKey == null && state.expandedKeys.size === 0)
-        ? { onMouseEnter, onPointerEnter, ...otherMenuItemProps }
-        : otherMenuItemProps,
+    menuItemProps: mergeProps(
+      ariaMenuItemProps,
+      hoverProps,
+      keyboardProps,
+      submenuBehavior === "toggleOnPress" ? togglePressProps : {}
+    ),
   };
 }
 
@@ -116,14 +163,6 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
       ref
     );
 
-  const { hoverProps } = useHover({
-    isDisabled: isDisabled || submenuBehavior !== "default",
-    onHoverStart: () => {
-      if (!isExpanded) {
-        state.toggleKey(item.key);
-      }
-    },
-  });
   const { pressProps: togglePressProps } = usePress({
     isDisabled: isDisabled,
     onPressUp: () => {
@@ -134,20 +173,6 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
       }
     },
   });
-
-  const keyboardProps = {
-    onKeyDown: (e: React.KeyboardEvent) => {
-      if (
-        ((e.key === "Enter" || e.key === " ") &&
-          submenuBehavior !== "actionOnPress") ||
-        "ArrowRight" === e.key
-      ) {
-        state.toggleKey(item.key);
-        e.stopPropagation();
-        return;
-      }
-    },
-  };
 
   let { overlayProps: positionProps } = useOverlayPosition({
     targetRef: ref,
@@ -174,12 +199,7 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
   return (
     <>
       <StyledMenuItem
-        {...mergeProps(
-          menuItemProps,
-          hoverProps,
-          keyboardProps,
-          submenuBehavior === "toggleOnPress" ? togglePressProps : {}
-        )}
+        {...menuItemProps}
         isDisabled={isDisabled}
         isActive={state.selectionManager.isFocused ? isFocused : isExpanded}
         ref={ref}

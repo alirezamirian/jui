@@ -16,8 +16,11 @@ export function useSubmenu<T>(
   {
     rootKey,
     parentState,
-    ...props
-  }: { rootKey: React.Key; parentState: TreeState<T> } & AriaMenuOptions<T>,
+    keyboardDelegate,
+  }: { rootKey: React.Key; parentState: TreeState<T> } & Pick<
+    AriaMenuOptions<T>,
+    "keyboardDelegate"
+  >,
   state: TreeState<T>,
   ref: React.RefObject<HTMLElement>
 ) {
@@ -35,7 +38,7 @@ export function useSubmenu<T>(
       onClose,
       selectedKeys: state.selectionManager.selectedKeys,
       keyboardDelegate:
-        props.keyboardDelegate ||
+        keyboardDelegate ||
         new MenuKeyboardDelegate(
           rootKey,
           state.collection,
@@ -68,7 +71,8 @@ export function useSubmenu<T>(
     setTimeout(() => {
       // we need this hack until the nested menu is properly supported. That's because when the element is hovered
       // it sets the focus key, which will move focus to that item.
-      if (props.autoFocus === true) {
+      // noinspection PointlessBooleanExpressionJS seems to be false positive. autoFocus can be "first" or "last"
+      if (autoFocus === true) {
         ref.current?.focus();
       }
     });

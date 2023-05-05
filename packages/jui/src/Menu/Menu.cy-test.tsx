@@ -102,15 +102,27 @@ describe("Menu", () => {
   it("supports mouse", () => {
     cy.mount(<Nested disabledKeys={[]} />);
     cy.get("body").click(); // This is necessary because of some implementation details of react-aria. More info in cypress/NOTES.md
-    cy.get('[role="menuitem"]').contains("View Mode").realHover(); // open first submenu via hover
-    cy.focused().should("have.attr", "role", "menu"); // focus should be on submenu, when opened by hover
-    cy.get('[role="menuitem"]').contains("Docked").realHover(); // open second submenu via hover
-    cy.get('[role="menuitem"]').contains("UnPinned").realHover(); // Move focus to second item via hover
+    cy.findByRole("menuitem", { name: "View Mode" }).realHover(); // open first submenu via hover
+    cy.findByRole("menu", { name: "View Mode" }).should("have.focus"); // focus should be on submenu, when opened by hover
+    cy.findByRole("menuitem", { name: "View Mode" }).click(); // clicking the parent menu item, should not move focus back to it.
+    cy.findByRole("menu", { name: "View Mode" }).should("have.focus"); // focus should be on submenu, when opened by hover
+    cy.findByRole("menuitem", { name: "Docked" }).realHover(); // open second submenu via hover
+    cy.findByRole("menuitem", { name: "UnPinned" }).realHover(); // Move focus to second item via hover
     matchImageSnapshot("menu--mouse-behaviour-1");
-    cy.get('[role="menuitem"]').contains("Float").realHover(); // Close second submenu by hovering another item
+    cy.findByRole("menuitem", { name: "Float" }).realHover(); // Close second submenu by hovering another item
     matchImageSnapshot("menu--mouse-behaviour-2");
-    cy.get('[role="menuitem"]').contains("Group tabs").realHover(); // Close first submenu by hovering another item
+    cy.findByRole("menuitem", { name: "Group tabs" }).realHover(); // Close first submenu by hovering another item
     matchImageSnapshot("menu--mouse-behaviour-3");
+  });
+
+  it("doesn't steel focus from opened submenu, when hovered", () => {
+    cy.mount(<Nested disabledKeys={[]} />);
+    cy.get("body").click(); // This is necessary because of some implementation details of react-aria. More info in cypress/NOTES.md
+    cy.findByRole("menuitem", { name: "View Mode" }).realHover(); // open first submenu via hover
+    cy.findByRole("menu", { name: "View Mode" }).should("have.focus"); // submenu should be focused
+    cy.findByRole("menuitem", { name: "Undock" }).realHover(); // move focus to some menu item in the submenu
+    cy.findByRole("menuitem", { name: "View Mode" }).realHover(); // hover the parent menu item again
+    cy.findByRole("menuitem", { name: "Undock" }).should("have.focus"); // the focused item in the submenu should still be focused
   });
 
   // in the absence of it.fail():
@@ -254,6 +266,58 @@ describe("Menu", () => {
     cy.findByRole("menuitem", { name: "Undock" }).should("have.focus");
   });
 
+  it("focuses the opened submenu, when selectedKeys has value", () => {
+    // a test case to cover a fix for an issue in the current implementation of @react-aria/menu
+    // The issue is whenever selectedKeys is non-empty, the opened submenu is not autofocused,
+    // in an attempt to focus the selected item. But even if that behavior is expected (which is not
+    // the case in the Intellij implementation, at least), the selected keys may belong not to the
+    // opened submenu. We have a workaround for this which autofocuses the menu, if autofocus is not
+    // "first" or "last"
+    cy.mount(<Nested selectedKeys={["Pinned"]} />);
+    cy.findByRole("menuitem", { name: "View Mode" })
+      .focus()
+      .realPress("ArrowRight");
+    cy.findByRole("menu", { name: "View Mode" })
+      .should("be.visible")
+      .should("have.focus");
+  });
+
+  it("shows the active state for parent menu item of a currently opened submenu, even when not hovered", () => {
+    cy.mount(
+      <div style={{ paddingTop: 50 }}>
+        <Nested aria-label="Top Menu" />
+      </div>
+    );
+    cy.findByRole("menuitem", { name: "View Mode" }).realHover(); // open submenu
+
+    matchImageSnapshot("menu-submenu-parent-hovered"); // "View Mode" should be styled active
+    saveBackgroundsAs("backgrounds1");
+    cy.findByRole("menuitem", { name: "View Mode" }).realMouseMove(0, -5); // Moving mouse outside the item, but inside the menu
+    saveBackgroundsAs("backgrounds2");
+    matchImageSnapshot("menu-submenu-parent-hovered"); // "View Mode" should still be styled active
+    cy.findByRole("menuitem", { name: "View Mode" }).realMouseMove(0, -30); // Moving mouse outside the menu
+    saveBackgroundsAs("backgrounds3");
+    matchImageSnapshot("menu-submenu-parent-hovered"); // "View Mode" should still be styled active
+
+    cy.get<unknown[]>("@backgrounds1").then((arr1) => {
+      cy.get<unknown[]>("@backgrounds2").then((arr2) => {
+        cy.get<unknown[]>("@backgrounds3").then((arr3) => {
+          console.log(arr1, arr2, arr3);
+          expect(arr1).to.deep.equal(arr2);
+          expect(arr2).to.deep.equal(arr3);
+        });
+      });
+    });
+    function saveBackgroundsAs(alias: string) {
+      cy.findByRole("menu", { name: "Top Menu" })
+        .findAllByRole("menuitem")
+        .then((menuItems) =>
+          menuItems.toArray().map((el) => getComputedStyle(el).backgroundColor)
+        )
+        .as(alias);
+    }
+  });
+
   describe("submenuBehavior=toggleOnPress", () => {
     it("doesn't open the submenu on hover, when submenuBehavior is toggleOnPress", () => {
       cy.mount(<ToggleSubmenuOnPress />);
@@ -345,6 +409,38 @@ describe("Menu", () => {
         .realHover()
         .should("have.focus");
     });
+
+    it("shows the hovered item as active even if another sibling has submenu open", () => {
+      cy.mount(<ToggleSubmenuOnPress aria-label="Top Menu" />);
+
+      cy.findByRole("menuitem", { name: "View Mode" }).realClick();
+      // NOTE: It's not possible to visually test hover state neither by Percy nor by local snapshot testing.
+      // Read more: https://github.com/dmtrKovalenko/cypress-real-events#1-why-cyrealhover-hovering-state-does-not-show-in-the-visual-regression-services
+      // So we do a low-level not-so-pleasant assertion on background colors.
+      saveBackgroundsAs("backgroundsBefore");
+      cy.findByRole("menuitem", { name: "Group tabs" }).realHover(); // Hovering a sibling of the opened submenu's parent
+      saveBackgroundsAs("backgroundsAfter");
+
+      cy.get<unknown[]>("@backgroundsBefore").then((arr1) => {
+        cy.get<unknown[]>("@backgroundsAfter").then((arr2) => {
+          // The active state should be gone from the first one to the second
+          expect(arr1[0]).to.equal(arr2[1]);
+          expect(arr1[1]).to.equal(arr2[0]);
+        });
+      });
+      cy.findByRole("menu", { name: "View Mode" }).should("have.focus"); // But the submenu should keep the focus
+
+      function saveBackgroundsAs(alias: string) {
+        cy.findByRole("menu", { name: "Top Menu" })
+          .findAllByRole("menuitem")
+          .then((menuItems) =>
+            menuItems
+              .toArray()
+              .map((el) => getComputedStyle(el).backgroundColor)
+          )
+          .as(alias);
+      }
+    });
   });
 
   describe("submenuBehavior=actionOnPress", () => {
@@ -384,12 +480,13 @@ describe("Menu", () => {
       cy.wrap(onClose).should("be.calledOnce");
     });
 
-    it("opens the submenu when right arrow is pressed", () => {
-      cy.mount(<SubmenuWithAction />);
+    it("opens and focuses the submenu when right arrow is pressed", () => {
       cy.mount(<SubmenuWithAction />);
       cy.findByRole("menuitem", { name: "View Mode" }).focus();
       cy.realPress("ArrowRight");
-      cy.findByRole("menuitem", { name: "Docked" }).should("be.visible");
+      cy.findByRole("menu", { name: "View Mode" })
+        .should("be.visible")
+        .should("have.focus");
     });
 
     it("doesn't trigger action when the right chevron arrow is pressed", () => {
@@ -514,7 +611,7 @@ describe("Menu with trigger", () => {
     cy.focused().should("contain.text", "View Mode"); // Focus should now be on the submenu opener item
     matchImageSnapshot(`menu-with-trigger--keyboard-behaviour-2`);
     cy.realPress("ArrowRight"); // open submenu with right arrow
-    cy.focused().should("have.attr", "role", "menu"); // focus should now be on the submenu
+    cy.findByRole("menu", { name: "View Mode" }).should("have.focus"); // focus should now be on the submenu
     cy.realPress("ArrowDown"); // move focus to first submenu item
     matchImageSnapshot(`menu-with-trigger--keyboard-behaviour-3`);
     cy.realPress("Escape"); // close submenu with escape
