@@ -345,6 +345,14 @@ describe("Menu", () => {
         .realHover()
         .should("have.focus");
     });
+
+    it("shows the hovered item as active even if another sibling has submenu open", () => {
+      cy.mount(<ToggleSubmenuOnPress />);
+      cy.findByRole("menuitem", { name: "View Mode" }).realClick();
+      cy.findByRole("menuitem", { name: "Group tabs" }).realHover(); // Hovering a sibling of the opened submenu's parent
+      matchImageSnapshot("menu-submenu-parent-sibling-hovered"); // Only the sibling "Group tabs" should be styled active
+      cy.findByRole("menu", { name: "View Mode" }).should("have.focus"); // But the submenu should keep the focus
+    });
   });
 
   describe("submenuBehavior=actionOnPress", () => {
