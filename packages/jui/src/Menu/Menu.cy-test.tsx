@@ -254,6 +254,20 @@ describe("Menu", () => {
     cy.findByRole("menuitem", { name: "Undock" }).should("have.focus");
   });
 
+  it("shows the active state for parent menu item of a currently opened submenu, even when not hovered", () => {
+    cy.mount(
+      <div style={{ paddingTop: 50 }}>
+        <Nested />
+      </div>
+    );
+    cy.findByRole("menuitem", { name: "View Mode" }).realHover(); // open submenu
+    matchImageSnapshot("menu-submenu-parent-hovered"); // "View Mode" should be styled active
+    cy.findByRole("menuitem", { name: "View Mode" }).realMouseMove(0, -5); // Moving mouse outside the item, but inside the menu
+    matchImageSnapshot("menu-submenu-parent-hovered"); // "View Mode" should still be styled active
+    cy.findByRole("menuitem", { name: "View Mode" }).realMouseMove(0, -30); // Moving mouse outside the menu
+    matchImageSnapshot("menu-submenu-parent-hovered"); // "View Mode" should still be styled active
+  });
+
   describe("submenuBehavior=toggleOnPress", () => {
     it("doesn't open the submenu on hover, when submenuBehavior is toggleOnPress", () => {
       cy.mount(<ToggleSubmenuOnPress />);
