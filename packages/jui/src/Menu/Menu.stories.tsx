@@ -34,6 +34,7 @@ export default {
   },
   args: {
     items: exampleMenuItems,
+    "aria-label": "Menu",
     children: renderItem,
     onAction: (key) => {
       alert(`action: ${key}`);
