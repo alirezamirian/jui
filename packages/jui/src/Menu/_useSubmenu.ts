@@ -73,7 +73,6 @@ export function useSubmenu<T>(
       if (e.key === "ArrowLeft" && state.expandedKeys.has(root.key)) {
         state.toggleKey(root.key);
         state.selectionManager.setFocused(true);
-        state.selectionManager.setFocusedKey(root.key);
         return;
       }
       e.continuePropagation();

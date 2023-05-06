@@ -49,29 +49,6 @@ export const StyledMenuItem = styled.li<{
   ${({ isActive }) => isActive && highlightedStyle};
   ${({ isDisabled }) => isDisabled && disabledStyle};
 
-  // With default submenu behavior, items get focused on hover, and highlighting the active (focused) item is fine.
-  // With other submenu behaviors, in the reference implementation, the hover item takes precedence over focused key.
-  // i.e., submenus can be open while mouse is on sibling of submenu's parent item. In that case, the hovered item
-  // will be highlighted even though the focus is kept within the opened submenu. This behavior (which may be even a
-  // little questionable UX-wise), seemed better implemented by css, because otherwise, we would need MenuItem to know
-  // if it's parent menu is hovered or not.
-  // NOTE: the css implementation depends on :has() selector which is not well supported currently. It's supported in
-  // Chrome, and the it should be ok in browsers not supporting it, as it's a progressive improvement, not a critical
-  // requirement
-
-  ul[role="menu"]:not(:focus-within):has(&:hover):hover & {
-    ${defaultStyle};
-  }
-  ul[role="menu"]:not(:focus-within):has(&:hover):hover &:hover {
-    ${highlightedStyle};
-  }
-
-  // would be nice to have a visual clue for focus visible state, but it's not like that in intellij platform
-  //border-left: 3px solid transparent;
-  //&:focus-visible {
-  //  border-left: 3px solid rgba(255, 255, 255, 0.1);
-  //}
-
   padding-right: 1.25rem;
   line-height: 1.5; // to make the item have the right height
   display: flex;

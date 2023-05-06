@@ -1,5 +1,5 @@
 import React, { HTMLAttributes, RefObject, useContext } from "react";
-import { useHover, usePress } from "@react-aria/interactions";
+import { isFocusVisible, useHover, usePress } from "@react-aria/interactions";
 import {
   AriaMenuItemProps,
   MenuItemAria,
@@ -68,9 +68,14 @@ function useMenuItem<T extends unknown>(
   );
 
   const { hoverProps } = useHover({
-    isDisabled: isDisabled || submenuBehavior !== "default" || isExpanded,
+    isDisabled: isDisabled,
     onHoverStart: () => {
-      state.toggleKey(item.key);
+      if (!isFocusVisible()) {
+        state.selectionManager.setFocusedKey(item.key);
+      }
+      if (submenuBehavior === "default" && !isExpanded) {
+        state.toggleKey(item.key);
+      }
     },
   });
 
@@ -201,7 +206,7 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
       <StyledMenuItem
         {...menuItemProps}
         isDisabled={isDisabled}
-        isActive={state.selectionManager.isFocused ? isFocused : isExpanded}
+        isActive={isFocused}
         ref={ref}
       >
         {isSelected && (
