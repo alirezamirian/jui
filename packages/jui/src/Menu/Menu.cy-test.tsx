@@ -109,9 +109,14 @@ describe("Menu", () => {
     cy.findByRole("menuitem", { name: "Docked" }).realHover(); // open second submenu via hover
     cy.findByRole("menuitem", { name: "UnPinned" }).realHover(); // Move focus to second item via hover
     matchImageSnapshot("menu--mouse-behaviour-1");
-    cy.findByRole("menuitem", { name: "Float" }).realHover(); // Close second submenu by hovering another item
+    cy.findByRole("menuitem", { name: "Float" })
+      .realHover() // Close second submenu by hovering another item
+      .should("have.focus"); // The new hovered item should now be focused
     matchImageSnapshot("menu--mouse-behaviour-2");
-    cy.findByRole("menuitem", { name: "Group tabs" }).realHover(); // Close first submenu by hovering another item
+    cy.findByRole("menuitem", { name: "Group tabs" })
+      .realHover() // Close first submenu by hovering another item
+      .should("have.focus"); // The new hovered item should now be focused
+
     matchImageSnapshot("menu--mouse-behaviour-3");
   });
 
@@ -396,10 +401,18 @@ describe("Menu", () => {
       cy.findByRole("menuitem", { name: "Group tabs" }).should("have.focus");
     });
 
-    it("focuses top level items on hover, when there is no submenu opened, even if the menu is not focused", () => {
+    it("focuses the last opened (sub-)menu on hover, even if the menu is not focused", () => {
       cy.mount(<ToggleSubmenuOnPress autoFocus={false} />);
+      // Testing on top level menu
       cy.findByRole("menu").should("not.have.focus");
       cy.findByRole("menuitem", { name: "Group tabs" })
+        .realHover()
+        .should("have.focus");
+
+      // Testing on a submenu
+      cy.findByRole("menuitem", { name: "View Mode" }).click(); // let the submenu open
+      cy.get("body").click("bottomRight"); // let the menu lose the focus
+      cy.findByRole("menuitem", { name: "Float" })
         .realHover()
         .should("have.focus");
     });
