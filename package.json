@@ -6,6 +6,7 @@
   "scripts": {
     "type-check": "yarn workspaces foreach run type-check",
     "test": "yarn workspaces foreach run test",
+    "test:cypress": "yarn workspaces foreach run test:cypress",
     "lint": "yarn run lint:lib",
     "lint:lib": "yarn eslint packages/jui",
     "format:check": "prettier packages/jui packages/website .github --check",
