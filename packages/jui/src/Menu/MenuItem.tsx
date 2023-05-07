@@ -1,5 +1,5 @@
 import React, { HTMLAttributes, RefObject, useContext } from "react";
-import { useHover, usePress } from "@react-aria/interactions";
+import { isFocusVisible, useHover, usePress } from "@react-aria/interactions";
 import {
   AriaMenuItemProps,
   MenuItemAria,
@@ -67,10 +67,37 @@ function useMenuItem<T extends unknown>(
     ref
   );
 
+  // useMenuItem in react aria utilizes useHover to focus item on hover. The logic there conflicts with nested menus
+  // requirements (at least based on how nested menu is implemented here currently). Also, submenuBehavior requires
+  // some more customization. So we delete the handlers set by useHover in useMenuItem, and add a custom useHover.
+  delete ariaMenuItemProps.onMouseEnter;
+  delete ariaMenuItemProps.onPointerEnter;
+
+  if (submenuBehavior === "default" && isExpanded) {
+    // When menu item has its submenu opened, clicking it should not move focus or do anything.
+    delete ariaMenuItemProps.onPointerDown;
+  }
+
   const { hoverProps } = useHover({
-    isDisabled: isDisabled || submenuBehavior !== "default" || isExpanded,
+    isDisabled: isDisabled,
     onHoverStart: () => {
-      state.toggleKey(item.key);
+      const isAnySubmenuOpen = [...state.expandedKeys].some(
+        (expandedKey) =>
+          state.collection.getItem(expandedKey)?.parentKey === item.parentKey
+      );
+
+      if (submenuBehavior === "default" && !isExpanded) {
+        state.toggleKey(item.key);
+      }
+
+      if (!isFocusVisible()) {
+        const shouldFocus =
+          submenuBehavior === "default" ? !isExpanded : !isAnySubmenuOpen;
+        if (shouldFocus) {
+          state.selectionManager.setFocused(true);
+        }
+        state.selectionManager.setFocusedKey(item.key);
+      }
     },
   });
 
@@ -98,24 +125,6 @@ function useMenuItem<T extends unknown>(
       }
     },
   });
-
-  if (
-    submenuBehavior !== "default" &&
-    !state.selectionManager.isFocused &&
-    // If nothing is expanded, let top level menu items grab focus as well.
-    // TODO: improve these conditions to a more generic one: if this menu item belongs to the "active" submenu.
-    //  Which would be the last opened submenu, or deepest submenu.
-    !(item.parentKey == null && state.expandedKeys.size === 0)
-  ) {
-    delete ariaMenuItemProps.onMouseEnter;
-    delete ariaMenuItemProps.onPointerEnter;
-  }
-
-  if (submenuBehavior === "default" && isExpanded) {
-    delete ariaMenuItemProps.onPointerDown;
-    delete ariaMenuItemProps.onMouseEnter;
-    delete ariaMenuItemProps.onPointerEnter;
-  }
 
   return {
     ...result,
@@ -201,7 +210,7 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
       <StyledMenuItem
         {...menuItemProps}
         isDisabled={isDisabled}
-        isActive={state.selectionManager.isFocused ? isFocused : isExpanded}
+        isActive={isFocused}
         ref={ref}
       >
         {isSelected && (
