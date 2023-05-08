@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2.3.1
+        uses: actions/checkout@v3
 
       - uses: actions/setup-node@v3
         with:
@@ -36,7 +36,7 @@ jobs:
           echo "This job is now running on a ${{ runner.os }} server hosted by GitHub!"
 
       - name: Checkout 🛎️
-        uses: actions/checkout@v2.3.1
+        uses: actions/checkout@v3
 
       - uses: actions/setup-node@v3
         with:
@@ -85,7 +85,7 @@ jobs:
           echo "This job is now running on a ${{ runner.os }} server hosted by GitHub!"
 
       - name: Checkout 🛎️
-        uses: actions/checkout@v2.3.1
+        uses: actions/checkout@v3
 
       - uses: actions/setup-node@v3
         with:
@@ -120,9 +120,17 @@ jobs:
 
   # just because there is no way to add a required status check based on a matrix job. In order to avoid adding
   # individual status check for each parallel job. Based on this suggestion:
-  # https://github.com/orgs/community/discussions/26822#discussioncomment-3253533
+  # https://github.com/orgs/community/discussions/26822#discussioncomment-5122101
   succeeded:
+    name: Succeeded
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     needs: [build_and_test, cypress_tests]
     steps:
-      - run: echo Done!
+      - run: exit 1
+        # see https://stackoverflow.com/a/67532120/4907315
+        if: >-
+          ${{
+               contains(needs.*.result, 'failure')
+            || contains(needs.*.result, 'cancelled')
+          }}
