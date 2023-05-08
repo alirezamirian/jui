@@ -14,7 +14,6 @@ jobs:
   build_and_test:
     if: "!contains(github.event.head_commit.message, 'SKIP_CI')"
     runs-on: ubuntu-latest # note: macos doesn't have docker installed!
-    container: cypress/browsers:node14.17.0-chrome91-ff89
 
     steps:
       - name: Log Interesting Info ℹ️
@@ -24,6 +23,11 @@ jobs:
 
       - name: Checkout 🛎️
         uses: actions/checkout@v2.3.1
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14.17.0
+          cache: yarn
 
       - name: Install Dependencies 🔧
         run: yarn
@@ -59,7 +63,11 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@v2.3.1
 
-      # TODO: add a separate job to install and cache dependencies. Add cache restore step to all build/test jobs
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14.17.0
+          cache: yarn
+
       - name: Install Dependencies 🔧
         run: yarn
 
