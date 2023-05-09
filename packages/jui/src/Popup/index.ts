@@ -6,3 +6,8 @@ export {
 } from "./Popup";
 export { type PopupOnTriggerProps, PopupOnTrigger } from "./PopupOnTrigger";
 export { PopupLayout } from "./PopupLayout";
+export {
+  type PopupManagerProps,
+  PopupManager,
+  usePopupManager,
+} from "./PopupManager";
