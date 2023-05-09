@@ -329,37 +329,34 @@ fine-tuned for specific use cases:
 
 A drop-in replacement for Menu, which lets user filter items.
 
-```tsx live
-<MenuTrigger
-  renderMenu={({ menuProps }) => (
-    <SpeedSearchMenu
-      {...menuProps}
-      onAction={(key) => {
-        console.log(key);
-      }}
-    >
-      <Item textValue="Cut">
-        <MenuItemLayout
-          icon={<PlatformIcon icon={"actions/menu-cut"} />}
-          content="Cut"
-          shortcut={"⌘X"}
-        />
-      </Item>
-      <Item textValue="Copy">
-        <MenuItemLayout
-          icon={<PlatformIcon icon={"actions/copy"} />}
-          content="Copy"
-          shortcut={"⌘C"}
-        />
-      </Item>
-      <Item textValue="Paste">
-        <MenuItemLayout
-          icon={<PlatformIcon icon={"actions/menu-paste"} />}
-          content="Paste"
-          shortcut={"⌘V"}
-        />
-      </Item>
-    </SpeedSearchMenu>
-  )}
+```tsx live themed
+<SpeedSearchMenu
+  onAction={(key) => {
+    console.log(key);
+  }}
 >
+  <Section title="Local Branches">
+    <Item title="master">
+      <Item>Update</Item>
+      <Item>Push</Item>
+      <Divider />
+      <Item>Delete</Item>
+    </Item>
+    <Item title="feat/speed-search-menu">
+      <Item>Update</Item>
+      <Item>Push</Item>
+      <Divider />
+      <Item>Delete</Item>
+    </Item>
+  </Section>
+  <Section title="Remove Branches">
+    <Item title="origin/master">
+      <Item>Checkout</Item>
+      <Item>New Branch from 'origin/master'...</Item>
+      <Divider />
+      <Item>Delete</Item>
+    </Item>
+    <Item>origin/feat/speed-search-menu</Item>
+  </Section>
+</SpeedSearchMenu>
 ```
