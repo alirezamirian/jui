@@ -1,6 +1,6 @@
 import { Key } from "react";
 
-type TreeFn<T> = (root: T | null) => null | readonly T[];
+type TreeNodeFn<T> = (root: T) => null | readonly T[];
 
 export const getExpandAllKeys = <T>(
   /**
@@ -8,13 +8,13 @@ export const getExpandAllKeys = <T>(
    * leaf. Note that even an empty array will make the node to be considered a non-leaf node and the key is included.
    * if null is passed, the root(s) node(s) should be returned.
    */
-  getChildren: TreeFn<T>,
+  getChildren: TreeNodeFn<T>,
   /**
    * a function that converts each node into a key
    */
-  getKey: (t: T) => Key
+  getKey: (t: T) => Key,
+  roots: T[]
 ) => {
-  const roots = getChildren(null) || [];
   const keys: Key[] = roots.map(getKey);
   const processItem = (node: T | null) => {
     const children = node ? getChildren(node) : null;
@@ -29,14 +29,14 @@ export const getExpandAllKeys = <T>(
 };
 
 export const dfsVisit = <T, R>(
-  getChildren: TreeFn<T>,
-  visit: (node: T, childrenValues: null | R[]) => R
+  getChildren: TreeNodeFn<T>,
+  visit: (node: T, childrenValues: null | R[]) => R,
+  roots: T[]
 ) => {
-  const nodes = getChildren(null) || [];
   const dfs = (node: T): R => {
     const children = getChildren(node);
     const values = children?.map(dfs) ?? null;
     return visit(node, values);
   };
-  nodes.forEach(dfs);
+  roots.forEach(dfs);
 };
