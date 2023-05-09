@@ -29,7 +29,7 @@ Components used for rendering a [Balloon notification](https://jetbrains.github.
 
 Renders a single [Balloon notification](https://jetbrains.github.io/ui/controls/balloon/). Different parts of the
 balloon are passed as props. Timeout for hiding the balloon is not supported at this level. See
-[useBalloons](#useBalloons) for that.
+[useBalloonManager](#useballoonmanager) for that.
 
 ### BalloonActionLink
 
@@ -37,8 +37,8 @@ A tiny wrapper around [Link](./Link) component, to be used for actions in Balloo
 
 :::info Note
 How balloon notifications are stacked and positioned in bottom right, and an imperative API for triggering notifications
-is outside the scope of what this component is about. Use [BalloonProvider](#balloonprovider) and
-[useBalloons](#useballoons) for that.
+is outside the scope of what this component is about. Use [BalloonManager](#baloonmanager) and
+[useBalloonManager](#useballoonmanager) for that.
 :::
 
 ### Live example
@@ -86,29 +86,29 @@ Body becomes expandable only if the content doesn't fit within the allowed numbe
 
 ## Imperative API
 
-### BalloonProvider
+### BalloonManager
 
-`BalloonProvider` renders the necessary context for using [useBalloons](#useballoons), as well as the stack of the
+`BalloonManager` renders the necessary context for using [useBalloonManager](#useballoonmanager), as well as the stack of the
 notifications. By default it renders the notifications stack as a portal appended to body. This can be disabled by
 setting `disablePortal` to `true`. Either way, the notifications stack is an overlay placed at the bottom right of
 where it's rendered. If portal is disabled, position will be `absolute`, otherwise `fixed`.
 
-### useBalloons
+### useBalloonManager
 
-`useBalloons` gives access to the imperative API for showing balloon notifications.
+`useBalloonManager` gives access to the imperative API for showing balloon notifications.
 
 ```jsx
-const { show, showSticky } = useBalloons();
+const { show, showSticky } = useBalloonManager();
 ```
 
 ```jsx live noInline themed
 const App = () => (
-  <BalloonsProvider>
+  <BalloonManager>
     <SomeComponent />
-  </BalloonsProvider>
+  </BalloonManager>
 );
 const SomeComponent = () => {
-  const { show } = useBalloons();
+  const { show } = useBalloonManager();
   const showNotification = () => {
     show({
       title: "Maven projects need to be imported",

@@ -15,7 +15,7 @@ type ShowProps = Pick<
   "title" | "icon" | "body" | "actions" | "headerActions"
 >;
 
-interface BalloonsAPI {
+interface BalloonManagerAPI {
   /**
    * Shows a Balloon notification on the bottom left of the screen.
    * @param props: Props to pass to the Balloon component
@@ -27,25 +27,26 @@ interface BalloonsAPI {
 }
 
 const NotImplementedFn = () => {
-  throw new Error("You must render a BalloonsProvider...");
+  throw new Error("You must render a BalloonManager...");
 };
 
-const BalloonsContext = React.createContext<BalloonsAPI>({
+const BalloonsContext = React.createContext<BalloonManagerAPI>({
   show: NotImplementedFn,
   showSticky: NotImplementedFn,
 });
 
-export const useBalloons = (): BalloonsAPI => useContext(BalloonsContext);
+export const useBalloonManager = (): BalloonManagerAPI =>
+  useContext(BalloonsContext);
 
 type BalloonElement = ReactElement<BalloonProps, typeof Balloon>;
 
-export interface BalloonsProviderProps {
+export interface BalloonManagerProps {
   disablePortal?: boolean;
   BalloonsContainer?: React.ElementType;
 }
 
 /**
- * Enables imperative API (via {@link useBalloons}) for showing Balloon notifications on the bottom right of the screen.
+ * Enables imperative API (via {@link useBalloonManager}) for showing Balloon notifications on the bottom right of the screen.
  * It renders notifications in a portal appended to `body`, unless `disablePortal` is `true`.
  *
  * @param disablePortal: if `true`, the container for notifications will not be rendered in a portal
@@ -57,7 +58,7 @@ export interface BalloonsProviderProps {
  * TODO: Support for maximum number of notifications and showing "x more notification(s)" button if the limit exceeds
  */
 
-export const BalloonsProvider: React.FC<BalloonsProviderProps> = ({
+export const BalloonManager: React.FC<BalloonManagerProps> = ({
   children,
   disablePortal,
   BalloonsContainer = StyledBalloonsStack,
@@ -66,8 +67,8 @@ export const BalloonsProvider: React.FC<BalloonsProviderProps> = ({
   const timeoutIdsRef = useRef<number[]>([]);
   const lastIdRef = useRef<number>(0);
 
-  const api = useMemo<BalloonsAPI>(() => {
-    const show: BalloonsAPI["show"] = (props, timeout = 10_000) => {
+  const api = useMemo<BalloonManagerAPI>(() => {
+    const show: BalloonManagerAPI["show"] = (props, timeout = 10_000) => {
       lastIdRef.current++;
       const onClose = () => {
         setBalloons((balloons) =>

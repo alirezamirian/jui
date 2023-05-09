@@ -1,5 +1,5 @@
 import { atom, useSetRecoilState } from "recoil";
-import { BalloonActionLink, useBalloons } from "@intellij-platform/core";
+import { BalloonActionLink, useBalloonManager } from "@intellij-platform/core";
 import React, { useEffect } from "react";
 // @ts-expect-error caf doesn't have typing :/
 import { CAF } from "caf";
@@ -31,7 +31,7 @@ export const switchToPersistentFsProcess = atom<ProcessState | null>({
 });
 
 export function usePersistenceFsNotification() {
-  const balloons = useBalloons();
+  const balloons = useBalloonManager();
   const setProcessState = useSetRecoilState(switchToPersistentFsProcess);
 
   useEffect(() => {
@@ -39,8 +39,7 @@ export function usePersistenceFsNotification() {
       if (persistentFsPreference.get() == undefined) {
         balloons.showSticky({
           title: "Switch to IndexedDB filesystem",
-          body:
-            "By default an in-memory filesystem is used to have a faster git clone. But it means all changes will be lost upon refresh. You can switch in the background to a persistence fs implementation which uses IndexedDB to store files.",
+          body: "By default an in-memory filesystem is used to have a faster git clone. But it means all changes will be lost upon refresh. You can switch in the background to a persistence fs implementation which uses IndexedDB to store files.",
           actions: (
             <>
               <BalloonActionLink

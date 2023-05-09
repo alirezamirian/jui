@@ -1,3 +1,3 @@
 export * from "./Balloon";
-export * from "./BalloonsProvider";
+export * from "./BalloonManager";
 export { StyledBalloonsStack } from "@intellij-platform/core/Balloon/StyledBalloonsStack";

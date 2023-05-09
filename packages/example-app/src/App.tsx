@@ -1,7 +1,11 @@
 import React, { CSSProperties } from "react";
 import { RecoilRoot } from "recoil";
 import git from "isomorphic-git";
-import { BalloonsProvider, KeymapProvider } from "@intellij-platform/core";
+import {
+  BalloonManager,
+  KeymapProvider,
+  PopupManager,
+} from "@intellij-platform/core";
 import { DefaultSuspense } from "./DefaultSuspense";
 import { Project } from "./Project/Project";
 import { SampleRepoInitializer } from "./SampleRepoInitializer";
@@ -23,10 +27,12 @@ export const App = ({ height }: { height?: CSSProperties["height"] }) => {
         <SampleRepoInitializer>
           <KeymapProvider keymap={exampleAppKeymap}>
             <RecoilRoot>
-              <BalloonsProvider disablePortal>
-                {/* disablePortal to make example app more portable*/}
-                <Project height={height} />
-              </BalloonsProvider>
+              <PopupManager>
+                <BalloonManager disablePortal>
+                  {/* disablePortal to make example app more portable*/}
+                  <Project height={height} />
+                </BalloonManager>
+              </PopupManager>
             </RecoilRoot>
           </KeymapProvider>
         </SampleRepoInitializer>

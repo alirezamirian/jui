@@ -1,9 +1,9 @@
 import React from "react";
 import { composeStories } from "@storybook/testing-react";
-import * as stories from "./BalloonProvider.stories";
+import * as stories from "./BalloonManager.stories";
 import { createGlobalStyle } from "styled-components";
 
-const { BalloonsProviderStory } = composeStories(stories);
+const { BalloonManagerStory } = composeStories(stories);
 
 const GlobalStyles = createGlobalStyle`
 body{
@@ -21,17 +21,17 @@ describe("Balloon", () => {
   it("works", () => {
     cy.mount(
       <WithGlobalPadding>
-        <BalloonsProviderStory />
+        <BalloonManagerStory />
       </WithGlobalPadding>
     );
     cy.contains("show sticky balloon notification").click();
-    matchImageSnapshot("BalloonProvider-one-balloon");
+    matchImageSnapshot("BalloonManager-one-balloon");
     cy.contains("show sticky balloon notification").click();
-    matchImageSnapshot("BalloonProvider-two-balloons");
+    matchImageSnapshot("BalloonManager-two-balloons");
     cy.get('[data-testid="close-btn"]')
       .first()
       .click({ force: true /* close button appears only on hover*/ });
-    matchImageSnapshot("BalloonProvider-one-of-two-closed");
+    matchImageSnapshot("BalloonManager-one-of-two-closed");
 
     cy.clock(); // should be called before setTimeout is being called. More info: https://github.com/cypress-io/cypress/issues/5305#issuecomment-539484208
     cy.contains("show auto-hide balloon notification").click();
