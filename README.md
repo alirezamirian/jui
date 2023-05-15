@@ -1,4 +1,4 @@
-## :warning: WARNING :warning:
+## :warning: Work in progress 
 
 This library is a work in progress. It's not published on npm just yet, and documentation is incomplete. But you can checkout these:
 
@@ -26,7 +26,7 @@ https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8
     </thead>
     <tbody>
         <tr>
-            <td rowspan="11"><a href="https://jetbrains.github.io/ui/controls/list/">List</a></td> 
+            <td rowspan="8"><a href="https://jetbrains.github.io/ui/controls/list/">List</a></td> 
         </tr>
         <tr>
             <td colspan="2"><a href="https://jetbrains.github.io/ui/principles/speed_search/">Speed Search</a></td>
@@ -41,14 +41,6 @@ https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8
             <td>✅</td>
         </tr>
         <tr>
-            <td colspan="2">Nested list (e.g git branches) <sup>1</sup></td>
-            <td>❌</td>
-        </tr>
-        <tr>
-            <td colspan="2">Select on hover (e.g git branches)</td>
-            <td>❌</td>
-        </tr>
-        <tr>
             <td colspan="2">Virtualization</td>
             <td>❌</td>
         </tr>
@@ -59,10 +51,6 @@ https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8
         <tr>
             <td colspan="2">Access to state in items (selected, focused, disabled)</td>
             <td>✅</td>
-        </tr>
-        <tr>
-            <td colspan="2">re-order with Alt+arrows</td>
-            <td>❌</td>
         </tr>
         <tr>
             <td colspan="2">Showing item overflow on hover</td>
@@ -120,7 +108,7 @@ https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8
         </tr>
         <tr>
             <td colspan="3"><a href="https://jetbrains.github.io/ui/controls/checkbox/">Checkbox</a></td>
-            <td>❌</td>
+            <td>✅</td>
         </tr>
         <tr>
             <td colspan="3"><a href="https://jetbrains.github.io/ui/controls/button/">Button</a></td>
@@ -149,8 +137,8 @@ https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8
             <td colspan="2">Basic</td>
             <td>✅</td></tr>
         <tr>
-            <td colspan="2">Speed search (with input)</td>
-            <td>❌</td>
+            <td colspan="2">Speed search</td>
+            <td>✅</td>
         </tr>
         <tr>
             <td rowspan="4"><a href="https://jetbrains.github.io/ui/controls/balloon/">Balloon Notification</a></td>
