@@ -1,7 +1,14 @@
-import React, { ForwardedRef, RefObject, useState } from "react";
+import React, {
+  FocusEventHandler,
+  ForwardedRef,
+  RefObject,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { DOMProps } from "@react-types/shared";
 import { useFocusWithin, useInteractOutside } from "@react-aria/interactions";
-import { useFocusable } from "@react-aria/focus";
+import { FocusManager, useFocusable, useFocusManager } from "@react-aria/focus";
 import { Overlay, useOverlay, usePreventScroll } from "@react-aria/overlays";
 import { filterDOMProps, useObjectRef } from "@react-aria/utils";
 import { pipe } from "ramda";
@@ -23,6 +30,7 @@ import { PopupHeader } from "./PopupHeader";
 import { PopupContext } from "./PopupContext";
 import { PopupLayout } from "./PopupLayout";
 import { StyledPopupHint } from "./StyledPopupHint";
+import { useFocusForwarder } from "@intellij-platform/core/utils/useFocusForwarder";
 
 const StyledPopupContainer = styled.div`
   position: fixed;
@@ -151,6 +159,7 @@ export const _Popup = (
     },
     ref
   );
+  const { focusForwarderProps } = useFocusForwarder();
 
   const { dialogProps, titleProps } = useDialog(props, ref);
 
@@ -173,6 +182,7 @@ export const _Popup = (
           {...mergeNonNullProps(
             focusWithinProps,
             focusableProps,
+            focusForwarderProps,
             overlayProps,
             dialogProps,
             filterDOMProps(props)
