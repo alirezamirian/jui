@@ -1,5 +1,4 @@
 import React from "react";
-import { zipObj } from "ramda";
 import {
   Anchor,
   isHorizontalToolWindow,
@@ -24,6 +23,8 @@ import {
   UNDOCK_MODE_ACTION_ID,
   WINDOW_MODE_ACTION_ID,
 } from "./ToolWindowActionIds";
+import { ActionGroupDefinition } from "@intellij-platform/core/ActionSystem/ActionGroup";
+import { useCreateDefaultActionGroup } from "@intellij-platform/core/ActionSystem/components";
 
 // Resize steps in Intellij Platform is calculated based on the size of a "W" character and some
 // configuration (ide.windowSystem.hScrollChars). Although it's technically feasible, it seems not necessary
@@ -70,19 +71,15 @@ export const ViewModeToActionId: Record<ViewMode, string> = {
   window: WINDOW_MODE_ACTION_ID,
 };
 
-export const VIEW_MODE_ACTION_IDS = Object.values(ViewModeToActionId).filter(
-  (id) => id !== WINDOW_MODE_ACTION_ID
-);
-
-export const MOVE_TO_ACTION_GROUP = anchors.map(
-  (anchor) => `TW.MoveTo.${anchor.id}`
-);
+export const VIEW_MODE_ACTION_GROUP_ID = "TW.ViewModeGroup";
+export const MOVE_TO_ACTION_GROUP_ID = "TW.MoveToGroup";
+export const TOOL_WINDOW_RESIZE_ACTION_GROUP_ID = "ResizeToolWindowGroup";
 
 export function useToolWindowActions({
   mainContentTitle,
 }: {
   mainContentTitle: string;
-}): ActionDefinition[] {
+}): ActionGroupDefinition {
   const {
     stretchWidth,
     stretchHeight,
@@ -93,49 +90,64 @@ export function useToolWindowActions({
     remove,
     state,
   } = useToolWindowState();
+  const createDefaultActionGroup = useCreateDefaultActionGroup();
 
+  const actions: ActionDefinition[] = [];
+  const activeToolWindowActionGroup = createDefaultActionGroup({
+    id: "ActiveToolwindowGroup",
+    title: "Active Tool Window",
+    children: actions,
+  });
   if (!state) {
     // FIXME: when window is removed, a last render happens with the new ToolWindowsState, which doesn't have state
     //  for the removed tool window. Need to understand why that happens.
-    return [];
+    return activeToolWindowActionGroup;
   }
-  const actions: Array<ActionDefinition> = [
-    {
-      id: DOCK_PINNED_MODE_ACTION_ID,
-      title: "Dock Pinned",
-      actionPerformed: () => {
-        changeViewMode("docked_pinned");
+  const viewModeActionGroup = createDefaultActionGroup({
+    id: VIEW_MODE_ACTION_GROUP_ID,
+    title: "View Mode",
+    children: [
+      {
+        id: DOCK_PINNED_MODE_ACTION_ID,
+        title: "Dock Pinned",
+        actionPerformed: () => {
+          changeViewMode("docked_pinned");
+        },
       },
-    },
-    {
-      id: DOCK_UNPINNED_MODE_ACTION_ID,
-      title: "Dock Unpinned",
-      actionPerformed: () => {
-        changeViewMode("docked_unpinned");
+      {
+        id: DOCK_UNPINNED_MODE_ACTION_ID,
+        title: "Dock Unpinned",
+        actionPerformed: () => {
+          changeViewMode("docked_unpinned");
+        },
       },
-    },
-    {
-      id: UNDOCK_MODE_ACTION_ID,
-      title: "Undock",
-      actionPerformed: () => {
-        changeViewMode("undock");
+      {
+        id: UNDOCK_MODE_ACTION_ID,
+        title: "Undock",
+        actionPerformed: () => {
+          changeViewMode("undock");
+        },
       },
-    },
-    {
-      id: FLOAT_MODE_ACTION_ID,
-      title: "Float",
-      actionPerformed: () => {
-        changeViewMode("float");
+      {
+        id: FLOAT_MODE_ACTION_ID,
+        title: "Float",
+        actionPerformed: () => {
+          changeViewMode("float");
+        },
       },
-    },
-    {
-      id: WINDOW_MODE_ACTION_ID,
-      title: "Window",
-      actionPerformed: () => {
-        changeViewMode("window");
+      {
+        id: WINDOW_MODE_ACTION_ID,
+        title: "Window",
+        actionPerformed: () => {
+          changeViewMode("window");
+        },
       },
-    },
-    ...anchors.map(
+    ],
+  });
+  const moveToActionGroup = createDefaultActionGroup({
+    id: MOVE_TO_ACTION_GROUP_ID,
+    title: "Move to",
+    children: anchors.map(
       (anchor): ActionDefinition => ({
         id: `TW.MoveTo.${anchor.id}`,
         title: getAnchorName(anchor),
@@ -147,6 +159,8 @@ export function useToolWindowActions({
         },
       })
     ),
+  });
+  actions.push(
     {
       id: FOCUS_EDITOR_ACTION_ID,
       title: `Focus ${mainContentTitle}`, // in intellij it says "Focus Editor" but it's not generic enough.
@@ -177,7 +191,9 @@ export function useToolWindowActions({
         remove();
       },
     },
-  ];
+    viewModeActionGroup,
+    moveToActionGroup
+  );
   if (state.viewMode === "float") {
     actions.push({
       id: DOCK_TOOL_WINDOW_ACTION_ID,
@@ -198,8 +214,13 @@ export function useToolWindowActions({
     });
   }
   if (state.viewMode !== "float" && state.viewMode !== "window") {
+    const resizeGroup = createDefaultActionGroup({
+      id: TOOL_WINDOW_RESIZE_ACTION_GROUP_ID,
+      title: "Resize",
+      children: [],
+    });
     if (isHorizontalToolWindow(state.anchor)) {
-      actions.push({
+      resizeGroup.children.push({
         id: RESIZE_TOOL_WINDOW_BOTTOM_ACTION_ID,
         title: "Stretch to bottom",
         actionPerformed: () => {
@@ -208,7 +229,7 @@ export function useToolWindowActions({
           );
         },
       });
-      actions.push({
+      resizeGroup.children.push({
         id: RESIZE_TOOL_WINDOW_TOP_ACTION_ID,
         title: "Stretch to top",
         actionPerformed: () => {
@@ -218,7 +239,7 @@ export function useToolWindowActions({
         },
       });
     } else {
-      actions.push({
+      resizeGroup.children.push({
         id: RESIZE_TOOL_WINDOW_LEFT_ACTION_ID,
         title: "Stretch to left",
         actionPerformed: () => {
@@ -227,7 +248,7 @@ export function useToolWindowActions({
           );
         },
       });
-      actions.push({
+      resizeGroup.children.push({
         id: RESIZE_TOOL_WINDOW_RIGHT_ACTION_ID,
         title: "Stretch to right",
         actionPerformed: () => {
@@ -237,6 +258,7 @@ export function useToolWindowActions({
         },
       });
     }
+    actions.push(resizeGroup);
   }
-  return actions;
+  return activeToolWindowActionGroup;
 }

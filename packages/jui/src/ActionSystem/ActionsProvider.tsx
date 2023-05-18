@@ -1,9 +1,21 @@
-import { useKeymap } from "@intellij-platform/core/ActionSystem/KeymapProvider";
+import {
+  Keymap,
+  useKeymap,
+} from "@intellij-platform/core/ActionSystem/KeymapProvider";
 import { pick, sortBy } from "ramda";
 import React, { HTMLAttributes, useContext, useEffect, useState } from "react";
 import { shortcutToString } from "@intellij-platform/core/ActionSystem/shortcutToString";
 import { useShortcuts } from "@intellij-platform/core/ActionSystem/useShortcut";
 import { Shortcut } from "@intellij-platform/core/ActionSystem/Shortcut";
+import {
+  ActionGroup,
+  ActionInResolvedGroup,
+  isActionGroup,
+  isActionGroupDefinition,
+  MutableActionGroup,
+} from "./ActionGroup";
+import { useEventCallback } from "@intellij-platform/core/utils/useEventCallback";
+import { dfsVisit } from "@intellij-platform/core/utils/tree-utils";
 
 export interface ActionContext {
   element: Element | null;
@@ -27,26 +39,27 @@ export interface ActionDefinition {
   isDisabled?: boolean;
 }
 
-export interface Action
+export interface MutableAction
   extends Pick<
     ActionDefinition,
     "title" | "icon" | "description" | "isDisabled"
   > {
-  readonly id: string;
+  id: string;
   /**
    * shortcuts assigned to this action based on the keymap context
    */
-  readonly shortcuts: readonly Shortcut[] | undefined;
+  shortcuts: readonly Shortcut[] | undefined;
   /**
    * string representation of the shortcuts
    */
-  readonly shortcut: string | undefined;
+  shortcut: string | undefined;
 
   /**
    * Performs the action, if it's enabled.
    */
-  readonly perform: (context?: ActionContext) => void;
+  perform: (context?: ActionContext) => void;
 }
+export type Action = Readonly<MutableAction>;
 
 interface ActionsProviderProps {
   actions: ActionDefinition[];
@@ -73,16 +86,24 @@ const actionProvidersMap = new Map<string, Action[]>();
 export function ActionsProvider(props: ActionsProviderProps): JSX.Element {
   const parentContext = useContext(ActionsContext);
   const keymap = useKeymap();
-  const actionIds = props.actions.map((action) => action.id);
+  const actions: Action[] = [];
+  dfsVisit(
+    (action: Action | null) =>
+      action && isActionGroup(action) ? action.children : null,
+    (action) => actions.push(action),
+    recursivelyCreateActions(keymap, props.actions)
+  );
+
+  const actionIds = actions.map((action) => action.id);
   const shortcuts = pick(actionIds, keymap || {});
   const [actionProviderId] = useState(generateId);
 
   const { shortcutHandlerProps } = useShortcuts(
     shortcuts,
     (actionId, { event }) => {
-      props.actions
+      actions
         .find((action) => action.id === actionId)
-        ?.actionPerformed({
+        ?.perform({
           event,
           // it's important to use target and not currentTarget
           element: event.target instanceof Element ? event.target : null,
@@ -91,20 +112,6 @@ export function ActionsProvider(props: ActionsProviderProps): JSX.Element {
     { useCapture: props.useCapture }
   );
 
-  const actions = props.actions.map((action: ActionDefinition): Action => {
-    const shortcuts = keymap?.[action.id];
-    const firstShortcut = shortcuts?.[0];
-    return {
-      ...action,
-      shortcuts,
-      shortcut: firstShortcut ? shortcutToString(firstShortcut) : undefined, // Maybe it should be all shortcuts?
-      perform: (context) => {
-        if (!action.isDisabled) {
-          action.actionPerformed(context || { event: null, element: null });
-        }
-      },
-    };
-  });
   const allActions = [...parentContext, ...actions]; // Maybe warn overrides?
 
   // @ts-expect-error: not sure why data-* attribute is not accepted.
@@ -127,6 +134,56 @@ export function ActionsProvider(props: ActionsProviderProps): JSX.Element {
       {props.children({ shortcutHandlerProps })}
     </ActionsContext.Provider>
   );
+}
+
+function isMutableActionGroup(
+  action: MutableAction
+): action is MutableActionGroup {
+  return "children" in action; // probably better to use a discriminator field like `type`
+}
+
+function recursivelyCreateActions(
+  keymap: Keymap | null,
+  actionDefinitions: ActionDefinition[],
+  parent: ActionGroup
+): Array<ActionInResolvedGroup>;
+function recursivelyCreateActions(
+  keymap: Keymap | null,
+  actionDefinitions: ActionDefinition[]
+): Array<Action | ActionGroup>;
+function recursivelyCreateActions(
+  keymap: Keymap | null,
+  actionDefinitions: ActionDefinition[],
+  parent?: ActionGroup
+): Array<Action | ActionInResolvedGroup | ActionGroup> {
+  return actionDefinitions.map((actionDefinition: ActionDefinition): Action => {
+    const shortcuts = keymap?.[actionDefinition.id];
+    const firstShortcut = shortcuts?.[0];
+    const action: MutableAction | ActionInResolvedGroup = {
+      ...actionDefinition,
+      ...(parent ? { parent } : {}),
+      shortcuts,
+      shortcut: firstShortcut ? shortcutToString(firstShortcut) : undefined, // Maybe it should be all shortcuts?
+      perform: (context) => {
+        if (!action.isDisabled) {
+          actionDefinition.actionPerformed(
+            context || { event: null, element: null }
+          );
+        }
+      },
+    };
+    if (
+      isMutableActionGroup(action) &&
+      isActionGroupDefinition(actionDefinition)
+    ) {
+      action.children = recursivelyCreateActions(
+        keymap,
+        actionDefinition.children,
+        action
+      );
+    }
+    return action;
+  });
 }
 
 /**
@@ -168,4 +225,21 @@ export function useActions(): Action[] {
 
 export const useAction = (actionId: string): Action | null => {
   return useActions().find(({ id }) => id === actionId) ?? null;
+};
+
+export const usePerformAction = (): ((
+  actionId: string,
+  context?: ActionContext
+) => void) => {
+  const actions = useActions();
+  return useEventCallback((actionId: string, context?: ActionContext) => {
+    const action = actions.find(({ id }) => id === actionId);
+    if (action) {
+      action.perform(context);
+    } else {
+      console.error(
+        `An attempt to perform action with id ${actionId} failed because action was not found`
+      );
+    }
+  });
 };

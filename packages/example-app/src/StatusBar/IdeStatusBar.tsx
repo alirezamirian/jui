@@ -4,7 +4,6 @@ import {
   Item,
   Menu,
   MenuItemLayout,
-  MenuOverlayContext,
   MenuTrigger,
   PlatformIcon,
   PopupOnTrigger,

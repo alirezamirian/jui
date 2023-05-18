@@ -7,6 +7,8 @@ export const StyledIconWrapper = styled.span`
 `;
 export const StyledItemLayout = styled(ItemLayout)`
   min-height: 1.375rem;
+  width: 100%;
+  padding: 0;
 `;
 export const StyledTitleWrapper = styled.span<{ isDisabled?: boolean }>`
   color: ${({ theme, isDisabled }) =>

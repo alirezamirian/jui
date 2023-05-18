@@ -98,10 +98,10 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
     }),
     [contentHasFocus]
   );
-  const toolWindowActions = useToolWindowActions({
+  const activeToolWindowActionGroup = useToolWindowActions({
     mainContentTitle,
   });
-  const allActions = [...toolWindowActions, ...(actions || [])];
+  const allActions = [activeToolWindowActionGroup, ...(actions || [])];
 
   return (
     <ActionsProvider actions={allActions}>

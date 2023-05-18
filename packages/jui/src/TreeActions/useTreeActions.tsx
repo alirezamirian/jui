@@ -42,6 +42,8 @@ export function useTreeActions({
     {
       id: CommonActionId.SHRINK_SELECTION,
       title: "Shrink Selection",
+      // TODO: disable if selection is only one item. Would need more data from treeRef. Maybe after treeRef is refactored
+      //  to implement/extend CollectionRef
       actionPerformed: () => {
         treeRef.current?.shrinkSelection();
       },

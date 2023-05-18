@@ -46,8 +46,8 @@ export const renderItem = (item: ExampleMenuItem) => {
   }
   if (item.section) {
     return (
-      <Section key={item.title} title={item.title}>
-        {item.subItems?.map(renderItem) as any}
+      <Section key={item.title} title={item.title} items={item.subItems}>
+        {renderItem}
       </Section>
     );
   }
