@@ -4,9 +4,5 @@
     "types": ["webpack-env"]
   },
   "include": ["src"],
-  "exclude": [
-    "src/**/*.cy.tsx",
-    "src/**/*.stories.tsx",
-    "src/**/*.spec.ts"
-  ]
+  "exclude": ["src/**/*.cy.tsx", "src/**/*.stories.tsx", "src/**/*.spec.ts"]
 }
