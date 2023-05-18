@@ -19,6 +19,7 @@ import { toolWindowsState } from "./toolWindows.state";
 import { SearchEverywherePopup } from "../SearchEverywhere/SearchEverywherePopup";
 import { useProjectActions } from "./useProjectActions";
 import { searchEverywhereState } from "../SearchEverywhere/searchEverywhere.state";
+import { useVcsActions } from "../VersionControl/useVcsActions";
 
 const StyledWindowFrame = styled.div`
   display: flex;
@@ -39,6 +40,7 @@ export const Project = ({ height }: { height: CSSProperties["height"] }) => {
   const allActions: ActionDefinition[] = [
     ...useChangesViewActions(),
     ...useProjectActions(),
+    ...useVcsActions(),
   ];
 
   return (
