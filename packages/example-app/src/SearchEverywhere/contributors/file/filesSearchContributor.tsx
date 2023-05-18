@@ -60,6 +60,9 @@ export const filesSearchContributor: SearchEverywhereContributor<{
       }) {
         return <FileItem file={file} matches={matches} />;
       },
+      getItemText({ file: { relativePath } }: { file: ProjectFsItem }): string {
+        return relativePath;
+      },
     };
   },
 };

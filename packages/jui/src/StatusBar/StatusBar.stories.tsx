@@ -100,7 +100,7 @@ export default {
       <>
         <PlatformIcon icon="general/tbHidden.svg" />
         <StyledLastMessage>
-          Workspace associated with branch 'feat/balloons-provider' has been
+          Workspace associated with branch 'feat/balloon-provider' has been
           restored // Rollback Configure...
         </StyledLastMessage>
       </>

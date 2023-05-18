@@ -12,7 +12,7 @@ export const ChangesViewActionIds = {
   SHOW_DIFF: "Diff.ShowDiff", // Maybe doesn't belong here?
 };
 
-export const useChangesViewActions = (): Record<string, ActionDefinition> => {
+export const useChangesViewActions = (): ActionDefinition[] => {
   const openRollbackWindow = useRecoilCallback(
     // FIXME: selection should be used to pre-include changes based on "active path" context, which can come from editor
     //  projects pane, changes view, etc.
@@ -21,28 +21,32 @@ export const useChangesViewActions = (): Record<string, ActionDefinition> => {
   );
   const { refresh } = useChangeListManager();
 
-  return {
-    [ChangesViewActionIds.ROLLBACK]: {
+  return [
+    {
+      id: ChangesViewActionIds.ROLLBACK,
       title: "Rollback...",
       icon: <PlatformIcon icon="actions/rollback.svg" />,
       actionPerformed: (event) => {
         openRollbackWindow(Boolean(event));
       },
     },
-    [ChangesViewActionIds.REFRESH]: {
+    {
+      id: ChangesViewActionIds.REFRESH,
       title: "Refresh",
       icon: <PlatformIcon icon="actions/refresh.svg" />,
       actionPerformed: refresh,
     },
-    [ChangesViewActionIds.SHOW_DIFF]: {
+    {
+      id: ChangesViewActionIds.SHOW_DIFF,
       title: "Show Diff",
       icon: <PlatformIcon icon="actions/diff.svg" />,
       actionPerformed: () => alert("Not implemented"),
     },
-    [ChangesViewActionIds.SHELVE_SILENTLY]: {
+    {
+      id: ChangesViewActionIds.SHELVE_SILENTLY,
       title: "Shelve Silently",
       icon: <PlatformIcon icon="vcs/shelveSilent.svg" />,
       actionPerformed: () => alert("Not implemented"),
     },
-  };
+  ];
 };

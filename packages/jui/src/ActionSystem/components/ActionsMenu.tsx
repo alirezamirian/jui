@@ -6,24 +6,28 @@ import {
   DividerItem,
   Item,
 } from "@intellij-platform/core/Collections";
-import { Action, ActionDefinition } from "../ActionsProvider";
+import {
+  Action,
+  ActionGroup,
+  isActionGroup,
+} from "@intellij-platform/core/ActionSystem";
+import { Section } from "@react-stately/collections";
 
-interface ActionGroup
-  extends Pick<ActionDefinition, "icon" | "title" | "isDisabled"> {
-  id: string;
-  actions: Action[];
-}
-export type ActionItem = ActionGroup | Action | DividerItem;
+type ActionGroupAsMenuItem = Pick<
+  ActionGroup,
+  "id" | "icon" | "title" | "isDisabled" | "children" | "isPopup"
+>;
+export type ActionItem = ActionGroupAsMenuItem | Action | DividerItem;
 
 function isAction(item: ActionItem): item is Action {
   return "actionPerformed" in item;
 }
-function isGroup(item: ActionItem): item is ActionGroup {
-  return "actions" in item;
-}
-function isActionOrGroup(item: ActionItem): item is Action | ActionGroup {
-  return isAction(item) || isGroup(item);
-}
+
+export type ActionMenuProps = {
+  selectedKeys: string[];
+  menuProps: React.HTMLAttributes<HTMLElement>;
+  actions: Array<ActionItem>;
+};
 
 /**
  * Given a nested list of resolved actions, renders a menu corresponding to them.
@@ -32,12 +36,8 @@ export function ActionsMenu({
   actions,
   selectedKeys,
   menuProps,
-}: {
-  actions: Array<ActionItem>;
-  selectedKeys: string[];
-  menuProps: React.HTMLAttributes<HTMLElement>;
-}) {
-  const allActions = getAllActionsRecursive(actions);
+}: ActionMenuProps) {
+  const allActions = getAllActions(actions);
   const disabledKeys = allActions
     .filter(({ isDisabled }) => isDisabled)
     .map(({ id }) => id);
@@ -48,7 +48,7 @@ export function ActionsMenu({
       onAction={(key) => {
         const action = allActions.find(({ id }) => id === key);
         if (action && isAction(action)) {
-          action.perform();
+          action.perform(); // TODO: pass context, containing the menu item as `element`
         }
       }}
       selectedKeys={selectedKeys} // FIXME: keep isSelected on actions (toggle action)?
@@ -60,28 +60,44 @@ export function ActionsMenu({
         if (action instanceof DividerItem) {
           return <Divider />;
         }
-        return (
-          <Item
-            key={action.id}
-            textValue={action.title}
-            childItems={isGroup(action) ? action.actions : undefined}
-          >
-            <MenuItemLayout
-              content={action.title}
-              icon={action.icon}
-              shortcut={isAction(action) ? action.shortcut : undefined}
-            />
-          </Item>
-        );
+        return renderActionAsMenuItem(action);
       }}
     </Menu>
   );
 }
 
-function getAllActionsRecursive(items: ActionItem[]): Action[] {
+type ActionAsMenuItem = Omit<Action, "perform" | "shortcuts">;
+
+export function renderActionAsMenuItem(
+  action: ActionAsMenuItem | ActionGroupAsMenuItem
+) {
+  const isGroup = "children" in action;
+  if (isGroup && !action.isPopup) {
+    return (
+      <Section key={action.id} title={action.title} items={action.children}>
+        {renderActionAsMenuItem}
+      </Section>
+    );
+  }
+  return (
+    <Item
+      key={action.id}
+      textValue={action.title}
+      childItems={isGroup ? action.children : undefined}
+    >
+      <MenuItemLayout
+        content={action.title}
+        icon={action.icon}
+        shortcut={"shortcut" in action ? action.shortcut : undefined}
+      />
+    </Item>
+  );
+}
+
+function getAllActions(items: ActionItem[]): Action[] {
   return flatten(
     items
-      .filter(isActionOrGroup)
-      .map((item) => (isGroup(item) ? item.actions : item))
+      .filter(isAction)
+      .map((item) => (isActionGroup(item) ? item.children : item))
   );
 }

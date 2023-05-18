@@ -1,20 +1,18 @@
-import { useKeymap } from "./KeymapProvider";
-import { shortcutToString } from "./shortcutToString";
-import { Action, useActions } from "./ActionsProvider";
+import { useAction } from "./ActionsProvider";
+import {
+  isResolvedActionGroup,
+  ResolvedActionGroup,
+} from "@intellij-platform/core/ActionSystem/ActionGroup";
 
-// TODO: support multi-level grouping
-export const useActionGroup = (actionIds: string[]): Action[] => {
-  const actionContext = useActions();
-  const keymap = useKeymap();
-  return actionIds
-    .filter((actionId) => actionContext[actionId])
-    .map((actionId) => {
-      const action = actionContext[actionId];
-      const shortcut = keymap?.[actionId]?.[0];
-      return {
-        ...action,
-        id: actionId,
-        shortcut: shortcut ? shortcutToString(shortcut) : undefined,
-      };
-    });
+export const useActionGroup = (
+  actionGroupId: string
+): ResolvedActionGroup | null => {
+  const action = useAction(actionGroupId);
+  if (action) {
+    if (isResolvedActionGroup(action)) {
+      return action;
+    }
+    throw new Error(`Action with id ${actionGroupId} is not a group`);
+  }
+  return null;
 };

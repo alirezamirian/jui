@@ -17,7 +17,7 @@ const window = (id: string) => ({
   title: id,
   icon: null,
   content: (
-    <DefaultToolWindow data-testid={`${id}`}>
+    <DefaultToolWindow data-testid={`${id}`} headerContent={id}>
       <input />
       <input />
     </DefaultToolWindow>
@@ -134,6 +134,7 @@ describe("DefaultToolWindowActions", () => {
       cy.realPress(["F12"]);
       cy.findByTestId("First window").should("exist");
     });
+
     it("adds removed from sidebar tool window back", () => {
       cy.mount(
         <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
@@ -158,6 +159,35 @@ describe("DefaultToolWindowActions", () => {
       cy.findByTestId("Second window").should("exist");
       cy.findByTestId("Second window").find("input").eq(0).should("have.focus");
     });
+
+    it("opens and focuses tool window (in the same anchor) if currently closed", () => {
+      cy.mount(
+        <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
+          <WithActivateToolWindowKeymap
+            initialState={{
+              "First window": toolWindowState({ anchor: "left" }),
+              "Second window": toolWindowState({
+                anchor: "left",
+                isSplit: true,
+                isVisible: true,
+              }),
+            }}
+          />
+        </ThemeProvider>
+      );
+      cy.realPress(["Meta", "1"]);
+      cy.findByTestId("First window").should("exist");
+      /**
+       * Known issue: https://github.com/alirezamirian/jui/issues/42
+       * Inverted assertion, in the absence of it.fail(). Just to make sure it will not be overlooked when the issue
+       * is resolved. The assertion should be `.should("have.focus")`.
+       */
+      cy.findByTestId("First window")
+        .find("input")
+        .eq(0)
+        .should("not.have.focus");
+    });
+
     it("closes tool window if currently focused", () => {
       cy.mount(
         <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
@@ -168,6 +198,7 @@ describe("DefaultToolWindowActions", () => {
       cy.realPress(["Meta", "2"]);
       cy.findByTestId("Second window").should("not.exist");
     });
+
     it("focuses tool window if open but not focused", () => {
       cy.mount(
         <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
@@ -178,6 +209,7 @@ describe("DefaultToolWindowActions", () => {
       cy.realPress(["Meta", "1"]);
       cy.findByTestId("First window").find("input").eq(0).should("have.focus");
     });
+
     it("moves focus to the main window when window is toggled closed", () => {
       cy.mount(
         <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
@@ -193,7 +225,11 @@ describe("DefaultToolWindowActions", () => {
   });
 });
 
-function WithActivateToolWindowKeymap() {
+function WithActivateToolWindowKeymap({
+  initialState,
+}: {
+  initialState?: { [id: string]: ToolWindowState };
+}) {
   return (
     <KeymapProvider
       keymap={{
@@ -217,7 +253,7 @@ function WithActivateToolWindowKeymap() {
         ],
       }}
     >
-      <SimpleToolWindows />
+      <SimpleToolWindows initialState={initialState} />
     </KeymapProvider>
   );
 }

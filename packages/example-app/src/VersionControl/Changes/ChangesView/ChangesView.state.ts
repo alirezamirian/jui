@@ -17,7 +17,7 @@ import {
 } from "../change-lists.state";
 import { groupings } from "./changesGroupings";
 import { VcsDirectoryMapping } from "../../file-status";
-import { dfsVisit } from "../../../TreeUtils/tree-utils";
+import { dfsVisit } from "@intellij-platform/core/utils/tree-utils";
 import {
   createSetInterface,
   NestedSelection,
@@ -318,7 +318,7 @@ export const changesTreeNodesState = selector<{
       );
     };
     dfsVisit<AnyNode, number>(
-      (root) => (root === null ? rootNodes : getChildren(root)),
+      getChildren,
       (node, childrenFileCount) => {
         byKey.set(node.key, node);
         if (!childrenFileCount) {
@@ -330,7 +330,8 @@ export const changesTreeNodesState = selector<{
         );
         fileCountsMap.set(node.key, fileCount);
         return fileCount;
-      }
+      },
+      rootNodes
     );
     return { rootNodes, fileCountsMap, byKey };
   },

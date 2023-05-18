@@ -3,19 +3,13 @@ import React, { RefObject } from "react";
 import {
   ActionsProvider,
   Button,
-  CommonActionId,
   TreeRefValue,
-  useActionGroup,
+  useActions,
   useTreeActions,
 } from "@intellij-platform/core";
 
 function TreeActionButtons() {
-  const actions = useActionGroup([
-    CommonActionId.EXPAND_ALL,
-    CommonActionId.COLLAPSE_ALL,
-    CommonActionId.EXPAND_SELECTION,
-    CommonActionId.SHRINK_SELECTION,
-  ]);
+  const actions = useActions();
 
   return (
     <>

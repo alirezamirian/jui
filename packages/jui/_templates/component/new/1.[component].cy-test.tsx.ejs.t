@@ -1,5 +1,5 @@
 ---
-to: src/<%= componentName %>/<%= componentName %>.cy-test.tsx
+to: src/<%= componentName %>/<%= componentName %>.cy.tsx
 ---
 import React from "react";
 import { composeStories } from "@storybook/testing-react";

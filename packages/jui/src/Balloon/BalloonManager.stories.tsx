@@ -3,18 +3,18 @@ import React from "react";
 import { BalloonActionLink } from "./Balloon";
 import {
   AutoHoverPlatformIcon,
-  BalloonsProvider,
-  BalloonsProviderProps,
-  useBalloons,
+  BalloonManager,
+  BalloonManagerProps,
+  useBalloonManager,
 } from "@intellij-platform/core";
 
 export default {
-  title: "Components/BalloonProvider",
-  component: BalloonsProvider,
+  title: "Components/BalloonManager",
+  component: BalloonManager,
 } as Meta;
 
 const ShowBalloonButton = () => {
-  const { show } = useBalloons();
+  const { show } = useBalloonManager();
   const showNotification = (timeout = 0) =>
     show(
       {
@@ -46,10 +46,10 @@ const ShowBalloonButton = () => {
   );
 };
 
-export const BalloonsProviderStory: Story<BalloonsProviderProps> = (props) => (
-  <BalloonsProvider {...props}>
+export const BalloonManagerStory: Story<BalloonManagerProps> = (props) => (
+  <BalloonManager {...props}>
     <ShowBalloonButton />
-  </BalloonsProvider>
+  </BalloonManager>
 );
 
-BalloonsProviderStory.storyName = "Balloons Provider";
+BalloonManagerStory.storyName = "Balloon Manager";

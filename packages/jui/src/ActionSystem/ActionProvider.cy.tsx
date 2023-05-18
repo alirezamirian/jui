@@ -18,21 +18,22 @@ function TestKeymap({ children }: { children: React.ReactNode }) {
     </KeymapProvider>
   );
 }
-const actions = {
-  action1: {
-    title: "Test action",
-    actionPerformed: () => {},
-  },
+
+const action1 = {
+  id: "action1",
+  title: "Test action",
+  actionPerformed: () => {},
 };
-const actions2 = {
-  action2: {
-    title: "Test action 2",
-    actionPerformed: () => {},
-  },
+const actions = [action1];
+const action2 = {
+  id: "action2",
+  title: "Test action 2",
+  actionPerformed: () => {},
 };
+const actions2 = [action2];
 describe("ActionProvider", () => {
   it("works in simple cases", () => {
-    const action1 = cy.spy(actions.action1, "actionPerformed");
+    const action1Performed = cy.spy(action1, "actionPerformed");
     cy.mount(
       <TestKeymap>
         <ActionsProvider actions={actions}>
@@ -49,7 +50,7 @@ describe("ActionProvider", () => {
       .type("A")
       // whether the default action (filling input) should be prevented or not is not quite clear at the moment
       .should("be.empty");
-    cy.wrap(action1).should("have.been.calledOnce");
+    cy.wrap(action1Performed).should("have.been.calledOnce");
   });
 });
 

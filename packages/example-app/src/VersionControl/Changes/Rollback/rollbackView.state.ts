@@ -7,7 +7,10 @@ import {
   isGroupNode,
 } from "../ChangesView/ChangesView.state";
 import { Key } from "react";
-import { dfsVisit, getExpandAllKeys } from "../../../TreeUtils/tree-utils";
+import {
+  dfsVisit,
+  getExpandAllKeys,
+} from "@intellij-platform/core/utils/tree-utils";
 import { Bounds } from "@intellij-platform/core/Overlay";
 
 const isOpen = atom<boolean>({
@@ -41,7 +44,7 @@ const initiallyExpandedKeys = selector({
     const nodes = get(rootNodes);
     const expandedKeys: Key[] = [];
     dfsVisit<AnyNode, boolean>(
-      (node) => (node ? (isGroupNode(node) ? node.children : null) : nodes),
+      (node) => (isGroupNode(node) ? node.children : null),
       (node, childValues) => {
         const isExpanded: boolean =
           childValues?.some((childValue) => childValue) ||
@@ -50,15 +53,16 @@ const initiallyExpandedKeys = selector({
           expandedKeys.push(node.key);
         }
         return isExpanded;
-      }
+      },
+      nodes
     );
     return new Set(
       expandedKeys.length
         ? expandedKeys
         : getExpandAllKeys<AnyNode>(
-            (node) =>
-              node == null ? nodes : isGroupNode(node) ? node.children : null,
-            (node) => node.key
+            (node) => (isGroupNode(node) ? node.children : null),
+            (node) => node.key,
+            nodes
           )
     );
   },

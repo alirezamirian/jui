@@ -151,7 +151,7 @@ https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8
             <td>✅ (without dropdown)</td>
         </tr>
         <tr>
-            <td colspan="2">BalloonsProvider, and useBalloons to imperatively show balloon notifications</td>
+            <td colspan="2">BalloonManager, and useBalloonManager to imperatively show balloon notifications</td>
             <td>✅</td>
         </tr>
         <tr>

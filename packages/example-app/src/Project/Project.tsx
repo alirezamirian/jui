@@ -36,10 +36,10 @@ export const Project = ({ height }: { height: CSSProperties["height"] }) => {
   useInitializeChanges();
   usePersistenceFsNotification();
 
-  const allActions: Record<string, ActionDefinition> = {
+  const allActions: ActionDefinition[] = [
     ...useChangesViewActions(),
     ...useProjectActions(),
-  };
+  ];
 
   return (
     <StyledWindowFrame style={{ height }}>

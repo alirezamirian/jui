@@ -30,7 +30,7 @@ export function ProjectToolWindow() {
   return (
     <DefaultToolWindow
       headerContent="Project"
-      actions={{ ...actions, ...projectViewActions }}
+      actions={[...actions, ...projectViewActions]}
       additionalActions={
         <>
           <Action.Button actionId={SELECT_IN_PROJECT_VIEW} />
@@ -44,7 +44,7 @@ export function ProjectToolWindow() {
   );
 }
 
-function useProjectViewActions(): Record<string, ActionDefinition> {
+function useProjectViewActions(): Array<ActionDefinition> {
   // improvement: for rendering, we only depend on whether activeTab is null or not. A selector can be defined for that
   // to prevent unnecessary re-rendering. The active tab, could be read from the state snapshot, in the handler callback.
   const activeTab = useRecoilValue(activeEditorTabState);
@@ -56,13 +56,14 @@ function useProjectViewActions(): Record<string, ActionDefinition> {
     }
   };
 
-  return {
-    [SELECT_IN_PROJECT_VIEW]: {
+  return [
+    {
+      id: SELECT_IN_PROJECT_VIEW,
       title: "Select Opened File",
       icon: <PlatformIcon icon="general/locate" />,
       actionPerformed: selectOpenedFile,
       isDisabled: !activeTab,
       description: "Selects a context file in the Project View",
     },
-  };
+  ];
 }

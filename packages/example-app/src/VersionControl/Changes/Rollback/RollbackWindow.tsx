@@ -19,7 +19,7 @@ import {
   styled,
   TreeNodeCheckbox,
   TreeRefValue,
-  useBalloons,
+  useBalloonManager,
   useNestedSelectionState,
   useTreeActions,
   WindowLayout,
@@ -93,7 +93,7 @@ export function RollbackWindow() {
     includedChangeKeys.has(getNodeKeyForChange(change))
   );
   const changeListManager = useChangeListManager();
-  const balloons = useBalloons();
+  const balloons = useBalloonManager();
   const setOpen = useSetRecoilState(rollbackViewState.isOpen);
   const close = () => setOpen(false);
 

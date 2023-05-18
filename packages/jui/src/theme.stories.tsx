@@ -543,7 +543,7 @@ export const Theme: Story = () => {
           <>
             <PlatformIcon icon="general/tbHidden.svg" />
             <span style={{ marginLeft: "0.75rem" }}>
-              Workspace associated with branch 'feat/balloons-provider' has been
+              Workspace associated with branch 'feat/balloon-provider' has been
               restored // Rollback Configure...
             </span>
           </>

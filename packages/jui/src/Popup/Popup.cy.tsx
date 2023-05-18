@@ -2,6 +2,7 @@ import React from "react";
 import { composeStories } from "@storybook/testing-react";
 
 import * as stories from "./Popup.stories";
+import { Popup } from "./Popup";
 
 const { Default, DefaultPosition, DefaultSize, MenuContent, ListContent } =
   composeStories(stories);
@@ -29,6 +30,34 @@ describe("Popup", () => {
     it("takes default size into account, while placing the popup centered", () => {
       cy.mount(<DefaultSize />);
       matchImageSnapshot("Popup-default-position");
+    });
+  });
+
+  describe("PopupLayout", () => {
+    it("wraps plain text header and footer into default header and footer components", () => {
+      const footer = "Popup Hint";
+      const title = "Popup Title";
+      cy.mount(
+        <Popup>
+          <Popup.Layout
+            content="Popup Content"
+            header={<Popup.Header>{title}</Popup.Header>}
+            footer={<Popup.Hint>{footer}</Popup.Hint>}
+          />
+        </Popup>
+      );
+      matchImageSnapshot("Popup-layout-plain-text-values");
+      cy.mount(
+        <Popup>
+          <Popup.Layout
+            content="Popup Content"
+            header={title}
+            footer={footer}
+          />
+        </Popup>
+      );
+      matchImageSnapshot("Popup-layout-plain-text-values");
+      cy.findByRole("dialog", { name: title });
     });
   });
 

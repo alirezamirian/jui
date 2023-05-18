@@ -61,7 +61,7 @@ module.exports = {
       // Only source files
       files: ["packages/jui/src/**"],
       excludedFiles: [
-        "packages/**/*.+(stories|test|spec|cy-test).tsx",
+        "packages/**/*.+(stories|test|spec|cy).tsx",
         "packages/jui/src/**/story-helpers.tsx",
       ],
       rules: {
@@ -86,7 +86,7 @@ module.exports = {
     },
     {
       // Only cypress test files
-      files: ["packages/**/*.cy-test.+(ts|tsx)"],
+      files: ["packages/**/*.cy.+(ts|tsx)"],
       plugins: ["cypress", "no-only-tests"],
       env: {
         "cypress/globals": true,

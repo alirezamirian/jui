@@ -7,7 +7,7 @@ import {
 
 import { searchEverywhereState } from "../SearchEverywhere/searchEverywhere.state";
 
-export function useProjectActions(): { [key: string]: ActionDefinition } {
+export function useProjectActions(): ActionDefinition[] {
   const openSearchEverywhere = useRecoilCallback(
     ({ set }) =>
       ({ element }: ActionContext, tab: string) => {
@@ -20,20 +20,22 @@ export function useProjectActions(): { [key: string]: ActionDefinition } {
     []
   );
 
-  return {
-    [CommonActionId.GO_TO_ACTION]: {
+  return [
+    {
+      id: CommonActionId.GO_TO_ACTION,
       title: "Find Action",
       description: "Quickly navigate to action by name",
       actionPerformed: (event) => {
         openSearchEverywhere(event, "Actions");
       },
     },
-    [CommonActionId.GO_TO_FILE]: {
+    {
+      id: CommonActionId.GO_TO_FILE,
       title: "Go to file",
       description: "Quickly navigate to file by name",
       actionPerformed: (event) => {
         openSearchEverywhere(event, "Files");
       },
     },
-  };
+  ];
 }

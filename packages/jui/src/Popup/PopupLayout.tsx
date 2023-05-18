@@ -1,5 +1,8 @@
 import React from "react";
 import { styled } from "@intellij-platform/core/styled";
+import { Popup } from "./Popup";
+import { PopupHeader } from "./PopupHeader";
+import { StyledPopupHint } from "@intellij-platform/core/Popup/StyledPopupHint";
 
 const StyledPopupLayout = styled.div`
   display: flex;
@@ -45,9 +48,25 @@ export function PopupLayout({
 }) {
   return (
     <StyledPopupLayout>
-      {header && <StyledPopupLayoutHeader>{header}</StyledPopupLayoutHeader>}
+      {header && (
+        <StyledPopupLayoutHeader>
+          {typeof header === "string" ? (
+            <PopupHeader>{header}</PopupHeader>
+          ) : (
+            header
+          )}
+        </StyledPopupLayoutHeader>
+      )}
       <StyledPopupLayoutContent>{content}</StyledPopupLayoutContent>
-      {footer && <StyledPopupLayoutFooter>{footer}</StyledPopupLayoutFooter>}
+      {footer && (
+        <StyledPopupLayoutFooter>
+          {typeof footer === "string" ? (
+            <StyledPopupHint>{footer}</StyledPopupHint>
+          ) : (
+            footer
+          )}
+        </StyledPopupLayoutFooter>
+      )}
     </StyledPopupLayout>
   );
 }

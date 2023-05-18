@@ -96,3 +96,103 @@ Use `Popup.Hint` to render a hint (aka Advertiser) in Popup's footer.
 ## Sizing and positioning
 
 TODO
+
+## Imperative API
+
+### PopupManager
+
+`PopupManager` allows for imperatively showing popups, via [usePopupManager](#usepopupmanager). It holds the state of
+the stack of opened popups, and renders those popups. Although it's technically not required, only a single
+`PopupManager` is usually rendered as a wrapper, in an application.
+
+### usePopupManager
+
+Returns `PopupManagerAPI`, which has a `show` method to imperatively open a popup. Requires
+[PopupManager](#popupmanager) to be rendered above in the component hierarchy.
+
+```jsx
+const { show } = usePopupManager();
+
+show(
+  <Popup.Layout>...</Popup.Layout>, // The content of the popup. Typically a PopupLayout element,
+  { interactions: "all" } // Other popup props
+);
+
+// More flexible interface which gets access to a `close` function to be called when needed.
+show(({ close }) => <Popup.Layout>...</Popup.Layout>, { interactions: "all" });
+```
+
+```jsx live noInline themed
+const App = () => (
+  <PopupManager>
+    <SomeComponent />
+  </PopupManager>
+);
+const SomeComponent = () => {
+  const { show } = usePopupManager();
+  const showPopup = () => {
+    show(
+      ({ close }) => (
+        <Popup.Layout
+          header={<Popup.Header>Title</Popup.Header>}
+          content={
+            <SpeedSearchMenu
+              onClose={close}
+              autoFocus="first"
+              fillAvailableSpace
+            >
+              <Item textValue="File">
+                <MenuItemLayout
+                  icon={<PlatformIcon icon={"fileTypes/text"} />}
+                  content="File"
+                />
+              </Item>
+              <Item textValue="Directory">
+                <MenuItemLayout
+                  icon={<PlatformIcon icon={"nodes/folder"} />}
+                  content="Directory"
+                />
+              </Item>
+              <Divider />
+              <Item textValue="HTML File">
+                <MenuItemLayout
+                  icon={<PlatformIcon icon={"fileTypes/html"} />}
+                  content="HTML File"
+                />
+              </Item>
+              <Item textValue="Stylesheet">
+                <MenuItemLayout
+                  icon={<PlatformIcon icon={"fileTypes/css"} />}
+                  content="Stylesheet"
+                />
+              </Item>
+              <Item textValue="Javascript">
+                <MenuItemLayout
+                  icon={<PlatformIcon icon={"fileTypes/javaScript"} />}
+                  content="Javascript"
+                />
+              </Item>
+              <Item
+                title={
+                  <MenuItemLayout
+                    content=".ignore File"
+                    icon={<PlatformIcon icon={"fileTypes/text"} />}
+                  />
+                }
+              >
+                <Item>.gitignore File (Git)</Item>
+                <Item>.bzrignore File (Bazaar)</Item>
+                <Item>.npmignore File (Npm)</Item>
+              </Item>
+            </SpeedSearchMenu>
+          }
+        />
+      ),
+      { interactions: "all", allowScroll: false }
+    );
+  };
+  return <Button onPress={showPopup}>Show popup</Button>;
+};
+
+render(<App />);
+```
