@@ -26,6 +26,7 @@ import React, { useContext, useImperativeHandle, useRef } from "react";
 import { ChangeViewTree } from "./ChangeViewTree";
 import { ChangesViewToolbar } from "./ChangesViewToolbar";
 import { ChangesSummary } from "../ChangesSummary";
+import { notImplemented } from "../../../Project/notImplemented";
 
 const StyledContainer = styled.div`
   display: flex;
@@ -172,14 +173,14 @@ function CommitActionsRow() {
       <TooltipTrigger
         tooltip={<ActionTooltip actionName="Show Commit Options" />}
       >
-        <ActionButton onPress={() => alert("Not implemented")}>
+        <ActionButton onPress={notImplemented}>
           <PlatformIcon icon="general/gear.svg" />
         </ActionButton>
       </TooltipTrigger>
       <TooltipTrigger
         tooltip={<ActionTooltip actionName="Commit Message History" />}
       >
-        <ActionButton isDisabled onPress={() => alert("Not implemented")}>
+        <ActionButton isDisabled onPress={notImplemented}>
           <PlatformIcon icon="vcs/historyInline.svg" />
         </ActionButton>
       </TooltipTrigger>
@@ -225,11 +226,11 @@ function CommitMessageEditorAndButtons({
         <Button
           preventFocusOnPress
           variant={hasFocus ? "default" : undefined}
-          onPress={() => {}}
+          onPress={notImplemented}
         >
           Commit
         </Button>
-        <Button preventFocusOnPress onPress={() => alert("Not implemented")}>
+        <Button preventFocusOnPress onPress={notImplemented}>
           Commit and Push...
         </Button>
       </StyledCommitActionsRow>

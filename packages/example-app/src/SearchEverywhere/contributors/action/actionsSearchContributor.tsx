@@ -13,6 +13,7 @@ import { searchEverywhereState } from "../../searchEverywhere.state";
 import React, { useMemo, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { ActionItem } from "./ActionItem";
+import { notImplemented } from "../../../Project/notImplemented";
 
 export const actionsSearchContributor: SearchEverywhereContributor<{
   action: Action;
@@ -36,9 +37,7 @@ export const actionsSearchContributor: SearchEverywhereContributor<{
       {
         id: CommonActionId.SHOW_INTENTION_ACTIONS,
         title: "Assign a shortcut",
-        actionPerformed() {
-          alert("Not implemented!");
-        },
+        actionPerformed: notImplemented,
       },
     ];
     return {

@@ -5,6 +5,7 @@ import {
   PlatformIcon,
 } from "@intellij-platform/core";
 import React from "react";
+import { notImplemented } from "../../../Project/notImplemented";
 
 export const RollbackTreeContextMenu = () => {
   const disabledKeys = ["showDiff"];
@@ -13,9 +14,7 @@ export const RollbackTreeContextMenu = () => {
     <Menu
       disabledKeys={disabledKeys}
       aria-label="Context menu"
-      onAction={() => {
-        alert("Not implemented");
-      }}
+      onAction={notImplemented}
     >
       <Item key="showDiff" textValue="Show Diff">
         <MenuItemLayout

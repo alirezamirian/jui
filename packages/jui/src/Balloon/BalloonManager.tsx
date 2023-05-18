@@ -15,7 +15,7 @@ type ShowProps = Pick<
   "title" | "icon" | "body" | "actions" | "headerActions"
 >;
 
-interface BalloonManagerAPI {
+export interface BalloonManagerAPI {
   /**
    * Shows a Balloon notification on the bottom left of the screen.
    * @param props: Props to pass to the Balloon component

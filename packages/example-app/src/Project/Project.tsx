@@ -5,6 +5,7 @@ import {
   ActionsProvider,
   DefaultToolWindows,
   styled,
+  useBalloonManager,
 } from "@intellij-platform/core";
 import { FileEditor } from "../Editor/FileEditor";
 import { useInitializeVcs } from "../VersionControl/file-status.state";
@@ -20,6 +21,7 @@ import { SearchEverywherePopup } from "../SearchEverywhere/SearchEverywherePopup
 import { useProjectActions } from "./useProjectActions";
 import { searchEverywhereState } from "../SearchEverywhere/searchEverywhere.state";
 import { useVcsActions } from "../VersionControl/useVcsActions";
+import { _balloonManagerRef } from "./notImplemented";
 
 const StyledWindowFrame = styled.div`
   display: flex;
@@ -36,6 +38,7 @@ export const Project = ({ height }: { height: CSSProperties["height"] }) => {
   useInitializeVcs();
   useInitializeChanges();
   usePersistenceFsNotification();
+  _balloonManagerRef.value = useBalloonManager();
 
   const allActions: ActionDefinition[] = [
     ...useChangesViewActions(),

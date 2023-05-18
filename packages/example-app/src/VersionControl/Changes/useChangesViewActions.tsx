@@ -3,6 +3,7 @@ import React from "react";
 import { useRecoilCallback } from "recoil";
 import { openRollbackWindowForSelectionCallback } from "./ChangesView/ChangesView.state";
 import { useChangeListManager } from "./change-lists.state";
+import { notImplemented } from "../../Project/notImplemented";
 
 export const ChangesViewActionIds = {
   ROLLBACK: "ChangesView.Revert",
@@ -40,13 +41,13 @@ export const useChangesViewActions = (): ActionDefinition[] => {
       id: ChangesViewActionIds.SHOW_DIFF,
       title: "Show Diff",
       icon: <PlatformIcon icon="actions/diff.svg" />,
-      actionPerformed: () => alert("Not implemented"),
+      actionPerformed: notImplemented,
     },
     {
       id: ChangesViewActionIds.SHELVE_SILENTLY,
       title: "Shelve Silently",
       icon: <PlatformIcon icon="vcs/shelveSilent.svg" />,
-      actionPerformed: () => alert("Not implemented"),
+      actionPerformed: notImplemented,
     },
   ];
 };

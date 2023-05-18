@@ -6,6 +6,7 @@ import {
   MenuItemLayout,
   PlatformIcon,
 } from "@intellij-platform/core";
+import { notImplemented } from "../../../../Project/notImplemented";
 
 export const ChangeListsActionButton = (): React.ReactElement => {
   // Grouping is extensible in Intellij platform, but we only support grouping by directory here.
@@ -13,12 +14,7 @@ export const ChangeListsActionButton = (): React.ReactElement => {
   return (
     <ActionButtonWithMenu
       renderMenu={({ menuProps }) => (
-        <Menu
-          {...menuProps}
-          onAction={(key) => {
-            alert("Not implemented");
-          }}
-        >
+        <Menu {...menuProps} onAction={notImplemented}>
           <Item key="new">
             <MenuItemLayout
               content="New Changelist..."

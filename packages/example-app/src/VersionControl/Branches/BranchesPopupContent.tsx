@@ -18,6 +18,7 @@ import {
   // useRefreshRecoilValueOnMount,
 } from "../../recoil-utils";
 import { allBranchesState } from "../branches.state";
+import { notImplemented } from "../../Project/notImplemented";
 
 export function BranchesPopupContent({ onClose }: { onClose: () => void }) {
   const repoBranches = useLatestRecoilValue(allBranchesState);
@@ -46,7 +47,7 @@ export function BranchesPopupContent({ onClose }: { onClose: () => void }) {
               .filter(({ trackingBranch }) => !trackingBranch)
               .map(({ name }) => `${repoRoot}/pull-${name}`)
           )}
-          onAction={() => alert("Not implemented")}
+          onAction={notImplemented}
           onClose={onClose}
         >
           <Item key="new_branch" textValue="New Branch">

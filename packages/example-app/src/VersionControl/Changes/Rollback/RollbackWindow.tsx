@@ -38,6 +38,7 @@ import { allChangesState, useChangeListManager } from "../change-lists.state";
 import { ChangesSummary } from "../ChangesSummary";
 import { groupings } from "../ChangesView/changesGroupings";
 import { RollbackTreeContextMenu } from "./RollbackTreeContextMenu";
+import { notImplemented } from "../../../Project/notImplemented";
 
 const StyledContainer = styled.div`
   box-sizing: border-box;
@@ -165,10 +166,8 @@ export function RollbackWindow() {
                     <Menu
                       {...menuProps}
                       selectedKeys={[] /* FIXME */}
-                      onAction={(key) => {
-                        // FIXME
-                        alert("not implemented");
-                      }}
+                      // FIXME
+                      onAction={notImplemented}
                     >
                       <Section title="Group By">
                         {
