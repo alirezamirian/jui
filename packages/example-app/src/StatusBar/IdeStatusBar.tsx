@@ -159,12 +159,7 @@ export const IdeStatusBar = () => {
               </TooltipTrigger>
             }
           >
-            {/* TODO: Menu in Popover should be easier out of the box */}
-            <MenuOverlayContext.Provider
-              value={{ close: () => setBranchesPopupOpen(false) }}
-            >
-              <BranchesPopupContent />
-            </MenuOverlayContext.Provider>
+            <BranchesPopupContent onClose={() => setBranchesPopupOpen(false)} />{" "}
           </PopupOnTrigger>
           <StatusBarWidget icon={<PlatformIcon icon="ide/readwrite.svg" />} />
           <StatusBarWidget icon={<PlatformIcon icon="ide/fatalError.svg" />} />

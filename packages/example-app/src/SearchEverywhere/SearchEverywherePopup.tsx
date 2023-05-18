@@ -354,6 +354,9 @@ export function SearchEverywherePopup() {
                       <Input
                         {...collectionSearchInputProps}
                         autoFocus
+                        onFocus={(event) => {
+                          event.target.select();
+                        }}
                         value={pattern}
                         onChange={(e) =>
                           onPatternChanged(e.currentTarget.value)
@@ -438,7 +441,10 @@ export function SearchEverywherePopup() {
                             );
                           }
                           return (
-                            <Item key={key}>
+                            <Item
+                              key={key}
+                              textValue={contributor.getItemText(item)}
+                            >
                               {contributor.renderItem(item)}
                             </Item>
                           );

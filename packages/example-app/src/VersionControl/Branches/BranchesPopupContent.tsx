@@ -19,7 +19,7 @@ import {
 } from "../../recoil-utils";
 import { allBranchesState } from "../branches.state";
 
-export function BranchesPopupContent() {
+export function BranchesPopupContent({ onClose }: { onClose: () => void }) {
   const repoBranches = useLatestRecoilValue(allBranchesState);
   // useRefreshRecoilValueOnMount(allBranchesState);
 
@@ -47,6 +47,7 @@ export function BranchesPopupContent() {
               .map(({ name }) => `${repoRoot}/pull-${name}`)
           )}
           onAction={() => alert("Not implemented")}
+          onClose={onClose}
         >
           <Item key="new_branch" textValue="New Branch">
             <MenuItemLayout

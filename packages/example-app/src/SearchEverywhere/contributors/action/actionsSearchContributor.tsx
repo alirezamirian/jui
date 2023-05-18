@@ -86,6 +86,9 @@ export const actionsSearchContributor: SearchEverywhereContributor<{
         });
       },
       getKey: ({ action }) => action.id,
+      getItemText({ action: { title } }: { action: Action }): string {
+        return title;
+      },
       renderItem({
         action,
         highlights,

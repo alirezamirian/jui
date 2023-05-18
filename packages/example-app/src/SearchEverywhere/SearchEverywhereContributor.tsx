@@ -16,6 +16,7 @@ export interface SearchEverywhereContributorResult<R extends {}> {
   processSelectedItem(item: R): void;
 
   renderItem(item: R): ReactNode;
+  getItemText(item: R): string;
   getKey(item: R): Key;
 
   actions?: ActionDefinition[];
