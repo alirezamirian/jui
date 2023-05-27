@@ -48,7 +48,7 @@ export function useFocusForwarder({
     } else {
       (
         getFocusableTreeWalker(event.currentTarget).firstChild() as HTMLElement
-      ).focus();
+      )?.focus();
     }
   };
   return { focusForwarderProps: { onFocus } };
