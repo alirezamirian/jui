@@ -22,7 +22,7 @@ import {
   commitMessageState,
   includedChangesState,
 } from "./ChangesView.state";
-import React, { useContext, useImperativeHandle, useRef } from "react";
+import React, { useImperativeHandle, useRef } from "react";
 import { ChangeViewTree } from "./ChangeViewTree";
 import { ChangesViewToolbar } from "./ChangesViewToolbar";
 import { ChangesSummary } from "../ChangesSummary";

@@ -1,4 +1,4 @@
-import React, { CSSProperties, RefObject, useRef } from "react";
+import React, { CSSProperties, RefObject } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   ActionDefinition,

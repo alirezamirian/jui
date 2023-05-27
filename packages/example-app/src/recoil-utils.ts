@@ -7,7 +7,7 @@ import {
   useSetRecoilState,
 } from "recoil";
 import { FocusEvent, useEffect, useRef, useState } from "react";
-import { and, equals } from "ramda";
+import { equals } from "ramda";
 
 export const createFocusBasedSetterHook =
   <T extends unknown, N extends T = T>(state: RecoilState<T>, nullValue: N) =>
