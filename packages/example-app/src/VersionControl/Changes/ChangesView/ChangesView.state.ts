@@ -31,6 +31,7 @@ import { rollbackViewState } from "../Rollback/rollbackView.state";
 import { activePathsState } from "../../../Project/project.state";
 import { branchForFile } from "../../file-status.state";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
+import { sortBy } from "ramda";
 
 export interface ChangeBrowserNode<T extends string> {
   type: T;
@@ -381,8 +382,8 @@ export const changesTreeNodesState = selector<{
     const groupChanges = (changes: readonly ChangeNode[]) =>
       recursiveGrouping(groupFns, changes);
 
-    const rootNodes = changeLists.map((changeList) =>
-      changeListNode(changeList, groupChanges)
+    const rootNodes = sortBy(({ active }) => !active, changeLists).map(
+      (changeList) => changeListNode(changeList, groupChanges)
     );
     const fileCountsMap = new Map();
     const byKey = new Map();

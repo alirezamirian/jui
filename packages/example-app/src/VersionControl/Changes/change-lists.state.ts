@@ -111,20 +111,6 @@ const refreshChanges =
     );
   };
 
-export interface ChangeListManager {
-  addChangeList(name: string, comment: string): void;
-  removeChangeList(id: string): void;
-  editChangeList(
-    id: string,
-    edits: { name?: string; comment?: string; active?: boolean }
-  ): void;
-  setActiveChangeList(id: string): void;
-  mergeChangeLists(sourceId: string, targetId: string): void;
-  moveChange(change: Change, toChangeListId: string): void;
-  refresh(): Promise<void>;
-  rollback(changes: readonly Change[]): Promise<void>;
-}
-
 /**
  * react hook that returns a rollback function which accepts a list of changes to rollback.
  */
@@ -187,55 +173,33 @@ export const useRollbackChanges = () => {
   );
 };
 
-/**
- * Exposes actions related to managing change lists, such as CRUD on change lists or refreshing the list of changes, etc.
- * NOTE: ChangeListManager is not used to get the list of changes or change lists, etc. that is to prevent unnecessary
- * re-renders when a component only needs to perform actions related to change lists, without caring about the state
- * of change lists. to get the list of change lists or active change list or list of all changes, there are several
- * other recoil values that can be used simply by `useRecoilValue` hook. of course setting those recoil values
- * is not expected to be done directly via recoil API, and can be prevented by not exposing the atoms/selectors
- * directly, and exposing small hooks that would simply call useRecoilValue.
- */
-export const useChangeListManager = (): ChangeListManager => {
-  const refresh = useRecoilCallback(refreshChanges, []);
-  const rollback = useRollbackChanges();
+export const useRefreshChanges = () => useRecoilCallback(refreshChanges, []);
 
-  const addChangeList = (name: string, comment: string) => {
-    throw new Error("Not implemented");
-  };
-  const editChangeList = (
-    id: string,
-    edits: { name?: string; comment?: string; active?: boolean }
-  ) => {
-    throw new Error("Not implemented");
-  };
-  const mergeChangeLists = (sourceId: string, targetId: string) => {
-    throw new Error("Not implemented");
-  };
-  const moveChange = (change: Change, toChangeListId: string) => {
-    throw new Error("Not implemented");
-  };
-  const removeChangeList = (id: string) => {
-    throw new Error("Not implemented");
-  };
-  const setActiveChangeList = (id: string) => {
-    throw new Error("Not implemented");
-  };
-  return {
-    addChangeList,
-    editChangeList,
-    mergeChangeLists,
-    moveChange,
-    removeChangeList,
-    setActiveChangeList,
-    refresh,
-    rollback,
-  };
-};
+export const useSetActiveChangeList = () =>
+  useRecoilCallback(
+    ({ set, snapshot }) =>
+      (changeListId) => {
+        const changeLists = snapshot.getLoadable(changeListsState).getValue();
+        const targetChangeList = changeLists.find(
+          ({ id }) => id === changeListId
+        );
+        if (targetChangeList) {
+          set(
+            changeListsState,
+            changeLists.map((changeList) => ({
+              ...changeList,
+              active: changeList === targetChangeList,
+            }))
+          );
+        }
+        // TODO: check if deactivated changelist is empty, and open a confirmation modal window to remove it if confirmed.
+      },
+    []
+  );
 
 // temporary, perhaps
 export const useInitializeChanges = () => {
-  const { refresh } = useChangeListManager();
+  const refresh = useRefreshChanges();
   useEffect(() => {
     refresh().catch((e) => console.error("could not initialize changes", e));
   }, [refresh]);

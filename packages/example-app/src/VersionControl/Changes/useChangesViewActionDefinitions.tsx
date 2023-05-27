@@ -13,7 +13,11 @@ import {
   openRollbackWindowForSelectionCallback,
   queueCheckInCallback,
 } from "./ChangesView/ChangesView.state";
-import { allChangesState, useChangeListManager } from "./change-lists.state";
+import {
+  allChangesState,
+  useRefreshChanges,
+  useSetActiveChangeList,
+} from "./change-lists.state";
 import { COMMIT_TOOLWINDOW_ID } from "../CommitToolWindow";
 import { VcsActionIds } from "../VcsActionIds";
 import { useToolWindowManager } from "../../Project/useToolWindowManager";
@@ -31,7 +35,7 @@ export const useChangesViewActionDefinitions = (): ActionDefinition[] => {
     openRollbackWindowForSelectionCallback,
     []
   );
-  const { refresh } = useChangeListManager();
+  const refresh = useRefreshChanges();
 
   return [
     useCheckInActionDefinition(),
@@ -154,6 +158,7 @@ const deleteChangeListMsg = new IntlMessageFormat(
 function useChangeListActionDefinitions(): ActionDefinition[] {
   const selectedChangeLists = useRecoilValue(changeListsUnderSelection);
   const selectedChanges = useRecoilValue(changesUnderSelectedKeys);
+  const setActiveChangeList = useSetActiveChangeList();
   const nonActiveSelectedChangeLists = [...selectedChangeLists].filter(
     (list) => !list.active
   );
@@ -189,13 +194,15 @@ function useChangeListActionDefinitions(): ActionDefinition[] {
       actionPerformed: notImplemented,
     });
   }
-  if (nonActiveSelectedChangeLists.length > 0) {
+  if (nonActiveSelectedChangeLists.length === 1) {
     actions.push({
       title: "Set Active Changelist",
       description: "Set changelist to which new changes are placed by default",
       id: VcsActionIds.SET_DEFAULT_CHANGELIST,
       icon: <PlatformIcon icon="actions/selectall.svg" />,
-      actionPerformed: notImplemented,
+      actionPerformed: () => {
+        setActiveChangeList(nonActiveSelectedChangeLists[0].id);
+      },
     });
   }
   if (selectedChanges.size > 0) {

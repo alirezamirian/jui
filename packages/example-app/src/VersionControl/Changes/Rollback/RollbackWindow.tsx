@@ -34,7 +34,7 @@ import {
 } from "../ChangesView/ChangesView.state";
 import { getChangeListTreeItemProps } from "../ChangesView/changesTreeNodeRenderers";
 import { rollbackViewState } from "./rollbackView.state";
-import { allChangesState, useChangeListManager } from "../change-lists.state";
+import { allChangesState, useRollbackChanges } from "../change-lists.state";
 import { ChangesSummary } from "../ChangesSummary";
 import { groupings } from "../ChangesView/changesGroupings";
 import { RollbackTreeContextMenu } from "./RollbackTreeContextMenu";
@@ -93,7 +93,7 @@ export function RollbackWindow() {
   const includedChanges = allChanges.filter((change) =>
     includedChangeKeys.has(getNodeKeyForChange(change))
   );
-  const changeListManager = useChangeListManager();
+  const rollbackChanges = useRollbackChanges();
   const balloons = useBalloonManager();
   const setOpen = useSetRecoilState(rollbackViewState.isOpen);
   const close = () => setOpen(false);
@@ -132,8 +132,7 @@ export function RollbackWindow() {
                 <Button
                   variant="default"
                   onPress={() => {
-                    changeListManager
-                      .rollback(includedChanges)
+                    rollbackChanges(includedChanges)
                       .catch((e) => {
                         balloons.show({
                           title: "Reverting changes failed",
