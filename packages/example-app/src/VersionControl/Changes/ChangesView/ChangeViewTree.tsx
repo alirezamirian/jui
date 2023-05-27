@@ -8,15 +8,30 @@ import {
   TreeRefValue,
 } from "@intellij-platform/core";
 import {
+  AnyNode,
   changesTreeNodesState,
   expandedKeysState,
   includedChangesNestedSelection,
+  isGroupNode,
   selectedKeysState,
 } from "./ChangesView.state";
 import { ChangesViewTreeContextMenu } from "./ChangesViewTreeContextMenu";
 import { getChangeListTreeItemProps } from "./changesTreeNodeRenderers";
 import { useActivePathsProvider } from "../../../Project/project.state";
 import { useEditorStateManager } from "../../../Editor/editor.state";
+
+function findPathsUnderNode(node: AnyNode): string[] {
+  if (node?.type === "directory") {
+    return [node.dirPath];
+  }
+  if (node?.type === "change") {
+    return [node.change.after.path];
+  }
+  if (isGroupNode(node)) {
+    return node.children.flatMap(findPathsUnderNode);
+  }
+  return [];
+}
 
 /**
  * TODO: unversioned files
@@ -49,21 +64,13 @@ export const ChangeViewTree = ({
     []
   );
 
-  const { activePathsProviderProps } = useActivePathsProvider(
+  const activePathsProviderProps = useActivePathsProvider(
     selectedKeys === "all"
       ? [] // FIXME
-      : [...selectedKeys]
-          .map((key) => {
-            const node = byKey.get(key);
-            if (node?.type === "directory") {
-              return node.dirPath;
-            }
-            if (node?.type === "change") {
-              return node.change.after.path;
-            }
-            return null;
-          })
-          .filter((i): i is string => i != null)
+      : [...selectedKeys].flatMap((key) => {
+          const node = byKey.get(key);
+          return node ? findPathsUnderNode(node) : [];
+        })
   );
 
   return (

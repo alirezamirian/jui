@@ -91,7 +91,7 @@ export const FileEditor = () => {
     }
   }, [activeTab?.filePath]);
 
-  const { activePathsProviderProps } = useActivePathsProvider(
+  const activePathsProviderProps = useActivePathsProvider(
     activeTab ? [activeTab.filePath] : []
   );
 

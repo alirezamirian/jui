@@ -1,16 +1,18 @@
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, useRef } from "react";
 import { RecoilRoot } from "recoil";
 import git from "isomorphic-git";
 import {
   BalloonManager,
   KeymapProvider,
   PopupManager,
+  ToolWindowRefValue,
 } from "@intellij-platform/core";
 import { DefaultSuspense } from "./DefaultSuspense";
 import { Project } from "./Project/Project";
 import { SampleRepoInitializer } from "./SampleRepoInitializer";
 import { fs, WaitForFs } from "./fs/fs";
 import { exampleAppKeymap } from "./exampleAppKeymap";
+import { ToolWindowsRefContext } from "./Project/useToolWindowManager";
 
 // useful globals for debugging purposes
 (window as any).git = git;
@@ -20,6 +22,7 @@ import { exampleAppKeymap } from "./exampleAppKeymap";
  * Example app root component. It expects ThemeProvider to be provided based on where it's rendered.
  */
 export const App = ({ height }: { height?: CSSProperties["height"] }) => {
+  const toolWindowRef = useRef<ToolWindowRefValue>(null);
   return (
     // TODO: add an error boundary
     <DefaultSuspense>
@@ -28,9 +31,11 @@ export const App = ({ height }: { height?: CSSProperties["height"] }) => {
           <KeymapProvider keymap={exampleAppKeymap}>
             <RecoilRoot>
               <PopupManager>
+                {/* disablePortal to make example app more portable*/}
                 <BalloonManager disablePortal>
-                  {/* disablePortal to make example app more portable*/}
-                  <Project height={height} />
+                  <ToolWindowsRefContext.Provider value={toolWindowRef}>
+                    <Project height={height} toolWindowRef={toolWindowRef} />
+                  </ToolWindowsRefContext.Provider>
                 </BalloonManager>
               </PopupManager>
             </RecoilRoot>

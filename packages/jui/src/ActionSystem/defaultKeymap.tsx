@@ -188,4 +188,19 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
+  [CommonActionId.EDIT_SOURCE]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        code: "ArrowDown",
+      },
+    },
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        code: "F4",
+      },
+    },
+  ],
 };

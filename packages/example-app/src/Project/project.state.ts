@@ -46,7 +46,7 @@ export const projectFilePath = selectorFamily({
   get:
     (projectRelativePath: string) =>
     ({ get }) =>
-      `${get(currentProjectState).path}/${projectRelativePath}`,
+      path.join(get(currentProjectState).path, projectRelativePath),
 });
 
 export const currentProjectFilesState = selector({

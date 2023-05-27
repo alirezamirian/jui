@@ -1,6 +1,6 @@
 import { Keymap } from "@intellij-platform/core";
-import { ChangesViewActionIds } from "./VersionControl/Changes/useChangesViewActions";
 import { SearchEverywhereActionIds } from "./SearchEverywhere/SearchEverywhereActionIds";
+import { VcsActionIds } from "./VersionControl/VcsActionIds";
 
 export const exampleAppKeymap: Keymap = {
   ActivateProjectWindow: [
@@ -18,25 +18,25 @@ export const exampleAppKeymap: Keymap = {
   ActivateTerminalWindow: [
     { type: "keyboard", firstKeyStroke: { code: "F12", modifiers: ["Alt"] } },
   ],
-  [ChangesViewActionIds.ROLLBACK]: [
+  [VcsActionIds.ROLLBACK]: [
     {
       type: "keyboard",
       firstKeyStroke: { code: "KeyZ", modifiers: ["Alt", "Meta"] },
     },
   ],
-  [ChangesViewActionIds.SHOW_DIFF]: [
+  [VcsActionIds.SHOW_DIFF]: [
     {
       type: "keyboard",
       firstKeyStroke: { code: "KeyD", modifiers: ["Meta"] },
     },
   ],
-  [ChangesViewActionIds.SHELVE_SILENTLY]: [
+  [VcsActionIds.SHELVE_SILENTLY]: [
     {
       type: "keyboard",
       firstKeyStroke: { code: "KeyH", modifiers: ["Meta", "Shift"] },
     },
   ],
-  [ChangesViewActionIds.UNSHELVE_SILENTLY]: [
+  [VcsActionIds.UNSHELVE_SILENTLY]: [
     {
       type: "keyboard",
       firstKeyStroke: { code: "KeyU", modifiers: ["Meta", "Alt"] },
@@ -52,6 +52,32 @@ export const exampleAppKeymap: Keymap = {
     {
       type: "keyboard",
       firstKeyStroke: { code: "Tab" },
+    },
+  ],
+  [VcsActionIds.RENAME_CHANGELIST]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: { code: "F2" },
+    },
+  ],
+  [VcsActionIds.MOVE_TO_ANOTHER_CHANGELIST]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: { modifiers: ["Meta", "Shift"], code: "KeyM" },
+    },
+  ],
+  [VcsActionIds.SET_DEFAULT_CHANGELIST]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: { modifiers: ["Control"], code: "Space" },
+    },
+  ],
+  [VcsActionIds.REMOVE_CHANGELIST]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        code: "Backspace" /* TODO: in intellij, it's DELETE. Check if it's a special key which matches both backspace and Delete*/,
+      },
     },
   ],
 };

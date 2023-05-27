@@ -87,11 +87,9 @@ const StyledChangesSummaryContainer = styled.span`
   z-index: 1;
 `;
 
-const ChangeViewContext = React.createContext({
-  focusCommitMessage: () => {},
-});
-
-export const useChangeViewContext = () => useContext(ChangeViewContext);
+// Not so ideal solution for allowing imperatively focusing commit message. Should be ok, since there will
+// be at most only one instance of change view rendered.
+export let focusCommitMessage = () => {};
 
 export const ChangesViewSplitter = () => {
   const {
@@ -106,37 +104,32 @@ export const ChangesViewSplitter = () => {
   const treeActions = useTreeActions({ treeRef });
   // TODO(lib-candidate): ToolWindowAwareSplitter. A wrapper around ThreeViewSplitter which sets orientation based
   //  on anchor orientation from useToolWindowState.
+  focusCommitMessage = () => {
+    setTimeout(() => {
+      editorRef.current?.focus();
+    });
+  };
   return (
-    <ChangeViewContext.Provider
-      value={{
-        focusCommitMessage: () => {
-          setTimeout(() => {
-            editorRef.current?.focus();
-          });
-        },
-      }}
-    >
-      <ThreeViewSplitter
-        orientation={orientation}
-        innerView={
-          <ActionsProvider actions={treeActions}>
-            {({ shortcutHandlerProps }) => (
-              <StyledContainer {...shortcutHandlerProps}>
-                <ChangesViewToolbar />
-                <StyledTreeViewWrapper>
-                  <ChangeViewTree treeRef={treeRef} />
-                </StyledTreeViewWrapper>
-                <CommitActionsRow />
-              </StyledContainer>
-            )}
-          </ActionsProvider>
-        }
-        innerViewMinSize={50}
-        lastView={<CommitMessageEditorAndButtons editorRef={editorRef} />}
-        lastSize={commitMessageSize}
-        onLastResize={setCommitMessageSize}
-      />
-    </ChangeViewContext.Provider>
+    <ThreeViewSplitter
+      orientation={orientation}
+      innerView={
+        <ActionsProvider actions={treeActions}>
+          {({ shortcutHandlerProps }) => (
+            <StyledContainer {...shortcutHandlerProps}>
+              <ChangesViewToolbar />
+              <StyledTreeViewWrapper>
+                <ChangeViewTree treeRef={treeRef} />
+              </StyledTreeViewWrapper>
+              <CommitActionsRow />
+            </StyledContainer>
+          )}
+        </ActionsProvider>
+      }
+      innerViewMinSize={50}
+      lastView={<CommitMessageEditorAndButtons editorRef={editorRef} />}
+      lastSize={commitMessageSize}
+      onLastResize={setCommitMessageSize}
+    />
   );
 };
 

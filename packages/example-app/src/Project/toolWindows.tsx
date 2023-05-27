@@ -1,15 +1,16 @@
 import React from "react";
 import {
   DefaultToolWindow,
-  MultiViewToolWindow,
   PlatformIcon,
   ToolWindowState,
   toolWindowState,
 } from "@intellij-platform/core";
 import { Terminal } from "../Terminal";
-import { ChangesViewPane } from "../VersionControl/Changes/ChangesView/ChangesViewPane";
-import { CurrentBranchName } from "../VersionControl/CurrentBranchName";
 import { ProjectToolWindow } from "../ProjectView/ProjectToolWindow";
+import {
+  COMMIT_TOOLWINDOW_ID,
+  CommitToolWindow,
+} from "../VersionControl/CommitToolWindow";
 
 export type ToolWindowDescriptor = {
   id: string;
@@ -38,23 +39,10 @@ export const toolWindows: ToolWindowDescriptor[] = [
     initialState: toolWindowState({ anchor: "bottom" }),
   },
   {
-    id: "Commit",
+    id: COMMIT_TOOLWINDOW_ID,
     title: "Commit",
     icon: <PlatformIcon icon="toolwindows/toolWindowCommit" />,
-    content: (
-      <MultiViewToolWindow>
-        <MultiViewToolWindow.View
-          tabContent={
-            <>
-              Commit to <CurrentBranchName />
-            </>
-          }
-          key="commit"
-        >
-          <ChangesViewPane />
-        </MultiViewToolWindow.View>
-      </MultiViewToolWindow>
-    ),
+    content: <CommitToolWindow />,
     initialState: toolWindowState({ anchor: "left", isVisible: false }),
   },
 ];

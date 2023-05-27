@@ -28,6 +28,39 @@ export const getExpandAllKeys = <T>(
   return keys;
 };
 
+export const getExpandedToNodesKeys = <T>(
+  /**
+   * represents a tree as a function. Given a node, it should return the array of children or null, if the node is a
+   * leaf. Note that even an empty array will make the node to be considered a non-leaf node and the key is included.
+   * if null is passed, the root(s) node(s) should be returned.
+   */
+  getChildren: TreeNodeFn<T>,
+  /**
+   * a function that converts each node into a key
+   */
+  getKey: (t: T) => Key,
+  roots: T[],
+  targetNodeKeys: Iterable<Key>
+) => {
+  const targetNodeKeySet = new Set(targetNodeKeys);
+  const expandedKeys: Key[] = [];
+  dfsVisit<T, boolean>(
+    getChildren,
+    (node, childValues) => {
+      const key = getKey(node);
+      const isExpanded: boolean =
+        childValues?.some((childValue) => childValue) ||
+        targetNodeKeySet.has(key);
+      if (isExpanded) {
+        expandedKeys.push(key);
+      }
+      return isExpanded;
+    },
+    roots
+  );
+  return expandedKeys;
+};
+
 export const dfsVisit = <T, R>(
   getChildren: TreeNodeFn<T>,
   visit: (node: T, childrenValues: null | R[]) => R,
@@ -39,4 +72,18 @@ export const dfsVisit = <T, R>(
     return visit(node, values);
   };
   roots.forEach(dfs);
+};
+
+export const bfsVisit = <T, R>(
+  getChildren: TreeNodeFn<T>,
+  visit: (node: T, parentValue: R | null) => R,
+  roots: T[]
+) => {
+  const bfs: typeof visit = (node, parentValue) => {
+    const result = visit(node, parentValue);
+    const children = getChildren(node);
+    children?.map((childNode) => bfs(childNode, result));
+    return result;
+  };
+  return roots.map((root) => bfs(root, null));
 };

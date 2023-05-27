@@ -10,18 +10,19 @@ import { GroupByActionButton } from "./ActionButtons/GroupByActionButton";
 import { ViewOptionsActionButton } from "./ActionButtons/ViewOptionsActionButton";
 import React from "react";
 import { Action } from "@intellij-platform/core/ActionSystem/components";
-import { ChangesViewActionIds } from "../useChangesViewActions";
+
+import { VcsActionIds } from "../../VcsActionIds";
 
 export function ChangesViewToolbar() {
   return (
     <ActionToolbar hasBorder>
-      <Action.Button actionId={ChangesViewActionIds.REFRESH} />
-      <Action.Button actionId={ChangesViewActionIds.ROLLBACK} />
-      <Action.Button actionId={ChangesViewActionIds.SHOW_DIFF} />
+      <Action.Button actionId={VcsActionIds.REFRESH} />
+      <Action.Button actionId={VcsActionIds.ROLLBACK} />
+      <Action.Button actionId={VcsActionIds.SHOW_DIFF} />
       <TooltipTrigger tooltip={<ActionTooltip actionName="Changelists" />}>
         <ChangeListsActionButton />
       </TooltipTrigger>
-      <Action.Button actionId={ChangesViewActionIds.SHELVE_SILENTLY} />
+      <Action.Button actionId={VcsActionIds.SHELVE_SILENTLY} />
       <ActionToolbarSeparator />
       <TooltipTrigger tooltip={<ActionTooltip actionName="Group By" />}>
         <GroupByActionButton />
