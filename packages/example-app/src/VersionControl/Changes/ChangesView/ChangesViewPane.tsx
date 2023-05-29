@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import { ChangesViewSplitter } from "./ChangesViewSplitter";
-import { useChangeListManager } from "../change-lists.state";
+import { useRefreshChanges } from "../change-lists.state";
 
 const StyledContainer = styled.div`
   display: flex;
@@ -10,7 +10,7 @@ const StyledContainer = styled.div`
 `;
 
 export const ChangesViewPane = () => {
-  const { refresh } = useChangeListManager();
+  const refresh = useRefreshChanges();
   useEffect(() => {
     refresh();
   }, []);

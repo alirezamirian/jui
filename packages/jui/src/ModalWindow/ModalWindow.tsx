@@ -1,11 +1,11 @@
-import React, { HTMLAttributes } from "react";
+import React, { FocusEventHandler, HTMLAttributes, useRef } from "react";
 import {
   OverlayContainer,
   useModal,
   useOverlay,
   usePreventScroll,
 } from "@react-aria/overlays";
-import { FocusScope } from "@react-aria/focus";
+import { focusSafely, FocusScope } from "@react-aria/focus";
 import { useDialog } from "@react-aria/dialog";
 import { AriaDialogProps } from "@react-types/dialog"; // temporary phantom dependency
 import { styled } from "@intellij-platform/core/styled";
@@ -115,12 +115,20 @@ export const ModalWindowInner = ({
     </StyledWindowTitle>
   );
 
+  const { focusContainmentFixProps } = useFocusContainmentFix();
+
   return (
     <StyledWindowUnderlay {...underlayProps}>
       <OverlayInteractionHandler {...overlayInteractionHandlerProps}>
         <FocusScope contain restoreFocus autoFocus>
           <StyledWindowContainer
-            {...mergeProps(overlayProps, dialogProps, modalProps, { style })}
+            {...mergeProps(
+              overlayProps,
+              dialogProps,
+              modalProps,
+              focusContainmentFixProps,
+              { style }
+            )}
             ref={ref}
           >
             <StyledWindowInnerContainer>
@@ -169,3 +177,34 @@ export const ModalWindow = (props: ModalWindowProps) => (
     <ModalWindowInner {...props} />
   </OverlayContainer>
 );
+
+/**
+ * The way FocusScope is implemented at the moment, it's possible for another focus scope to steal the focus,
+ * right after the modal window is opened. The issue is not tracked down to the root cause. But with this hook,
+ * we make sure there is no way for focus to go out of the modal window, when it's mounted.
+ */
+function useFocusContainmentFix<T extends HTMLElement>() {
+  const lastFocusedElementRef = useRef<HTMLElement | null>(null);
+  const onFocus: FocusEventHandler<T> = (e) => {
+    lastFocusedElementRef.current = e.target;
+  };
+  const onBlur: FocusEventHandler = (e) => {
+    const probablyFocusedElement = e.relatedTarget;
+    if (
+      !probablyFocusedElement ||
+      (probablyFocusedElement instanceof Element &&
+        !e.currentTarget.contains(probablyFocusedElement))
+    ) {
+      const elementToFocus = lastFocusedElementRef.current;
+      if (elementToFocus) {
+        focusSafely(elementToFocus);
+      }
+    }
+  };
+  return {
+    focusContainmentFixProps: {
+      onFocus,
+      onBlur,
+    },
+  };
+}

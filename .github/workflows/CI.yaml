@@ -99,6 +99,10 @@ jobs:
         if: ${{ env.IS_PR_JUST_MERGED == 'true' || env.IS_PR_WITH_PERCY == 'true' }}
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          # Without this, we would need to "finalize" percy build explicitly. More info: https://docs.percy.io/docs/parallel-test-suites
+          PERCY_PARALLEL_TOTAL: 10
+          # Percy's nonce is supposed to be set to run id by default, but it's not. Plus, appending run_number makes it more reliable in case of rerunning
+          PERCY_PARALLEL_NONCE: ${{ github.run_id }}-${{ github.run_number }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         run: yarn run test:cypress --parallel
 

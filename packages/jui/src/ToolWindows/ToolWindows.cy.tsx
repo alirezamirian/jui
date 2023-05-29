@@ -61,7 +61,8 @@ describe("ToolWindows", () => {
       cy.contains("First window").click();
       cy.findByTestId("First window focusable 1").should("have.focus");
     });
-    it("keeps focused element focused, when a non-focusable area within the tool window is clicked", () => {
+
+    it("Focuses the first focusable element, when a non-focusable area within the tool window is clicked", () => {
       cy.mount(
         <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
           <SimpleToolWindows />
@@ -75,6 +76,7 @@ describe("ToolWindows", () => {
       // not the case due to how FocusScope is implemented. FIXME: improve the behaviour and adjust the test
       cy.findByTestId("First window focusable 1").should("have.focus");
     });
+
     it("keeps focused element focused, when a non-focusable area within in the main area is clicked", () => {
       cy.mount(
         <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
@@ -87,6 +89,9 @@ describe("ToolWindows", () => {
       cy.focused().should("exist");
       cy.findByTestId("First window focusable 2").should("have.focus");
     });
+
+    // NOTE: even when focus is within the tool window, focusing the tool window container (by pressing header,
+    // or any other means), will move focus to the first focusable element, in the reference implementation.
     it("focuses the first focusable element in a tool window, when the header is clicked", () => {
       cy.mount(
         <ThemeProvider theme={new Theme(darculaThemeJson as any)}>

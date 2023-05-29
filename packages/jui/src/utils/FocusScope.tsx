@@ -18,6 +18,7 @@ type BetterFocusScopeProps = FocusScopeProps & {
    */
   forceRestoreFocus?: boolean;
 };
+export type FocusScopeRef = { focus: (forceFocusFirst?: boolean) => void };
 /**
  * A version of FocusScope which also allows for imperatively moving focus to the scope.
  * and has tiny patches/improvements
@@ -25,7 +26,7 @@ type BetterFocusScopeProps = FocusScopeProps & {
  */
 export const FocusScope = React.forwardRef(function BetterFocusScope(
   { children, forceRestoreFocus, ...otherProps }: BetterFocusScopeProps,
-  ref: ForwardedRef<{ focus: (forceFocusFirst?: boolean) => void }>
+  ref: ForwardedRef<FocusScopeRef>
 ) {
   const directChildRef = useRef<HTMLSpanElement>(null);
   const focusManagerRef = useRef<FocusManager>(null);

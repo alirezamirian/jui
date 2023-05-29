@@ -21,6 +21,7 @@ import { editorCursorPositionState } from "../Editor/editor.state";
 import { switchToPersistentFsProcess } from "../usePersistenceFsNotification";
 import { BranchesPopupContent } from "../VersionControl/Branches/BranchesPopupContent";
 import { activeFileCurrentBranch } from "../VersionControl/active-file.state";
+import { notImplemented } from "../Project/notImplemented";
 
 const StyledLastMessage = styled.div`
   margin-left: 0.75rem;
@@ -70,7 +71,7 @@ export const IdeStatusBar = () => {
           <PlatformIcon
             icon="general/tbHidden.svg"
             role="button"
-            onClick={() => alert("Not implemented")}
+            onClick={notImplemented}
           />
           <StyledLastMessage>
             Tooltip content or last message will show up here.
@@ -80,23 +81,15 @@ export const IdeStatusBar = () => {
       right={
         <>
           {<StatusBarProcess />}
+          <StatusBarWidget onPress={notImplemented} label="LF" />
           <StatusBarWidget
-            onPress={() => alert("Not implemented")}
-            label="LF"
-          />
-          <StatusBarWidget
-            onPress={() => alert("Not implemented")}
+            onPress={notImplemented}
             label={`${cursorPosition.lineNumber},${cursorPosition.column}`}
           />
           <StatusBarWidget label="UTF-8" />
           <MenuTrigger
             renderMenu={({ menuProps }) => (
-              <Menu
-                {...menuProps}
-                onAction={() => {
-                  alert("Not implemented");
-                }}
-              >
+              <Menu {...menuProps} onAction={notImplemented}>
                 <Item>Configure Indents for Typescript</Item>
                 <Item>Disable Indents Detection for Project</Item>
               </Menu>
@@ -108,12 +101,7 @@ export const IdeStatusBar = () => {
           </MenuTrigger>
           <MenuTrigger
             renderMenu={({ menuProps }) => (
-              <Menu
-                {...menuProps}
-                onAction={() => {
-                  alert("Not implemented");
-                }}
-              >
+              <Menu {...menuProps} onAction={notImplemented}>
                 <Item title="Compile">
                   <Item>packages/jui/tsconfig.json</Item>
                   <Item>packages/jui/src/StatusBar/StatusBar.stories.tsx</Item>

@@ -29,6 +29,7 @@ const defaultKeyToStr: {
   Quote: "'",
   Minus: "-",
   Equal: "+",
+  Backspace: "⌫",
   // lowercase to uppercase map
   ...fromPairs(
     Array.from(Array(26))

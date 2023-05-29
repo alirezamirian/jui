@@ -24,8 +24,8 @@ function isAction(item: ActionItem): item is Action {
 }
 
 export type ActionMenuProps = {
-  selectedKeys: string[];
-  menuProps: React.HTMLAttributes<HTMLElement>;
+  selectedKeys?: string[];
+  menuProps?: React.HTMLAttributes<HTMLElement>;
   actions: Array<ActionItem>;
 };
 

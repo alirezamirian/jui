@@ -38,6 +38,7 @@ import { FileStatusColor } from "../VersionControl/FileStatusColor";
 import { useAction } from "@intellij-platform/core";
 import { mergeProps } from "@react-aria/utils";
 import { useActivePathsProvider } from "../Project/project.state";
+import { notImplemented } from "../Project/notImplemented";
 
 /**
  * Used as main content in the main ToolWindows. Shows currently opened files tabs and the editor.
@@ -90,7 +91,7 @@ export const FileEditor = () => {
     }
   }, [activeTab?.filePath]);
 
-  const { activePathsProviderProps } = useActivePathsProvider(
+  const activePathsProviderProps = useActivePathsProvider(
     activeTab ? [activeTab.filePath] : []
   );
 
@@ -111,13 +112,11 @@ export const FileEditor = () => {
         <ContextMenuContainer
           renderMenu={() => (
             <Menu
-              onAction={() => {
-                // TODO: detect which tab was triggering context menu and handle the action accordingly
-                //  One idea is to use use the data-key attribute, from the closes parent that has one. Maybe a
-                //  CollectionContextMenuContainer component which implements that, while ContextMenuContainer is
-                //  modified to pass the MouseEvent object, in renderMenu.
-                alert("not implemented!");
-              }}
+              // TODO: detect which tab was triggering context menu and handle the action accordingly
+              //  One idea is to use use the data-key attribute, from the closes parent that has one. Maybe a
+              //  CollectionContextMenuContainer component which implements that, while ContextMenuContainer is
+              //  modified to pass the MouseEvent object, in renderMenu.
+              onAction={notImplemented}
             >
               <Item key="close">Close</Item>
               <Item key="closeOthers">Close Other tabs</Item>

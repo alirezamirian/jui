@@ -2,7 +2,10 @@ import React, { useContext, useMemo, useRef } from "react";
 import { filterDOMProps, mergeProps } from "@react-aria/utils";
 import { DOMProps } from "@react-types/shared";
 import { styled } from "@intellij-platform/core/styled";
-import { FocusScope } from "@intellij-platform/core/utils/FocusScope";
+import {
+  FocusScope,
+  FocusScopeRef,
+} from "@intellij-platform/core/utils/FocusScope";
 import {
   ActionDefinition,
   ActionsProvider,
@@ -77,7 +80,7 @@ export const DefaultToolWindow: React.FC<DefaultToolWindowProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const focusableContentRef = useRef<{ focus: () => void }>(null);
+  const focusableContentRef = useRef<FocusScopeRef>(null);
   const {
     // NOTE: we might as well use :focus-within and target StyledToolWindowHeader to set the background, but it's not
     // a clear improvement.

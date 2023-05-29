@@ -19,9 +19,10 @@ export const GroupByActionButton = (): React.ReactElement => {
   const availableGroupings = useRecoilValue(availableGroupingsState);
 
   const toggleGroup = useRecoilCallback(
-    ({ set }) => (id: GroupingIds) => {
-      set(changesGroupingState(id), (value) => !value);
-    },
+    ({ set }) =>
+      (id: GroupingIds) => {
+        set(changesGroupingState(id), (value) => !value);
+      },
     []
   );
 

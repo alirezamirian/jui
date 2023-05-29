@@ -53,8 +53,7 @@ export const ProjectViewPane = (): React.ReactElement => {
     selectedKeys === "all"
       ? [] // FIXME
       : [...selectedKeys].filter((i): i is string => typeof i === "string");
-  const { activePathsProviderProps } =
-    useActivePathsProvider(selectedKeysArray);
+  const activePathsProviderProps = useActivePathsProvider(selectedKeysArray);
 
   return (
     <DefaultSuspense>

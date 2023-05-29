@@ -6,10 +6,9 @@ import {
   getNodeKeyForChange,
   isGroupNode,
 } from "../ChangesView/ChangesView.state";
-import { Key } from "react";
 import {
-  dfsVisit,
   getExpandAllKeys,
+  getExpandedToNodesKeys,
 } from "@intellij-platform/core/utils/tree-utils";
 import { Bounds } from "@intellij-platform/core/Overlay";
 
@@ -42,19 +41,11 @@ const initiallyExpandedKeys = selector({
   get: ({ get }) => {
     const includedChanges = get(initiallyIncludedChanges);
     const nodes = get(rootNodes);
-    const expandedKeys: Key[] = [];
-    dfsVisit<AnyNode, boolean>(
+    const expandedKeys = getExpandedToNodesKeys<AnyNode>(
       (node) => (isGroupNode(node) ? node.children : null),
-      (node, childValues) => {
-        const isExpanded: boolean =
-          childValues?.some((childValue) => childValue) ||
-          includedChanges.map(getNodeKeyForChange).includes(node.key);
-        if (isExpanded && isGroupNode(node)) {
-          expandedKeys.push(node.key);
-        }
-        return isExpanded;
-      },
-      nodes
+      (node) => node.key,
+      nodes,
+      includedChanges.map(getNodeKeyForChange)
     );
     return new Set(
       expandedKeys.length

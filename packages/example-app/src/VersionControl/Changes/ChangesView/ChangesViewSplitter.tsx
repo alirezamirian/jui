@@ -22,10 +22,11 @@ import {
   commitMessageState,
   includedChangesState,
 } from "./ChangesView.state";
-import React, { useContext, useImperativeHandle, useRef } from "react";
+import React, { useImperativeHandle, useRef } from "react";
 import { ChangeViewTree } from "./ChangeViewTree";
 import { ChangesViewToolbar } from "./ChangesViewToolbar";
 import { ChangesSummary } from "../ChangesSummary";
+import { notImplemented } from "../../../Project/notImplemented";
 
 const StyledContainer = styled.div`
   display: flex;
@@ -86,11 +87,9 @@ const StyledChangesSummaryContainer = styled.span`
   z-index: 1;
 `;
 
-const ChangeViewContext = React.createContext({
-  focusCommitMessage: () => {},
-});
-
-export const useChangeViewContext = () => useContext(ChangeViewContext);
+// Not so ideal solution for allowing imperatively focusing commit message. Should be ok, since there will
+// be at most only one instance of change view rendered.
+export let focusCommitMessage = () => {};
 
 export const ChangesViewSplitter = () => {
   const {
@@ -105,37 +104,32 @@ export const ChangesViewSplitter = () => {
   const treeActions = useTreeActions({ treeRef });
   // TODO(lib-candidate): ToolWindowAwareSplitter. A wrapper around ThreeViewSplitter which sets orientation based
   //  on anchor orientation from useToolWindowState.
+  focusCommitMessage = () => {
+    setTimeout(() => {
+      editorRef.current?.focus();
+    });
+  };
   return (
-    <ChangeViewContext.Provider
-      value={{
-        focusCommitMessage: () => {
-          setTimeout(() => {
-            editorRef.current?.focus();
-          });
-        },
-      }}
-    >
-      <ThreeViewSplitter
-        orientation={orientation}
-        innerView={
-          <ActionsProvider actions={treeActions}>
-            {({ shortcutHandlerProps }) => (
-              <StyledContainer {...shortcutHandlerProps}>
-                <ChangesViewToolbar />
-                <StyledTreeViewWrapper>
-                  <ChangeViewTree treeRef={treeRef} />
-                </StyledTreeViewWrapper>
-                <CommitActionsRow />
-              </StyledContainer>
-            )}
-          </ActionsProvider>
-        }
-        innerViewMinSize={50}
-        lastView={<CommitMessageEditorAndButtons editorRef={editorRef} />}
-        lastSize={commitMessageSize}
-        onLastResize={setCommitMessageSize}
-      />
-    </ChangeViewContext.Provider>
+    <ThreeViewSplitter
+      orientation={orientation}
+      innerView={
+        <ActionsProvider actions={treeActions}>
+          {({ shortcutHandlerProps }) => (
+            <StyledContainer {...shortcutHandlerProps}>
+              <ChangesViewToolbar />
+              <StyledTreeViewWrapper>
+                <ChangeViewTree treeRef={treeRef} />
+              </StyledTreeViewWrapper>
+              <CommitActionsRow />
+            </StyledContainer>
+          )}
+        </ActionsProvider>
+      }
+      innerViewMinSize={50}
+      lastView={<CommitMessageEditorAndButtons editorRef={editorRef} />}
+      lastSize={commitMessageSize}
+      onLastResize={setCommitMessageSize}
+    />
   );
 };
 
@@ -172,14 +166,14 @@ function CommitActionsRow() {
       <TooltipTrigger
         tooltip={<ActionTooltip actionName="Show Commit Options" />}
       >
-        <ActionButton onPress={() => alert("Not implemented")}>
+        <ActionButton onPress={notImplemented}>
           <PlatformIcon icon="general/gear.svg" />
         </ActionButton>
       </TooltipTrigger>
       <TooltipTrigger
         tooltip={<ActionTooltip actionName="Commit Message History" />}
       >
-        <ActionButton isDisabled onPress={() => alert("Not implemented")}>
+        <ActionButton isDisabled onPress={notImplemented}>
           <PlatformIcon icon="vcs/historyInline.svg" />
         </ActionButton>
       </TooltipTrigger>
@@ -225,11 +219,11 @@ function CommitMessageEditorAndButtons({
         <Button
           preventFocusOnPress
           variant={hasFocus ? "default" : undefined}
-          onPress={() => {}}
+          onPress={notImplemented}
         >
           Commit
         </Button>
-        <Button preventFocusOnPress onPress={() => alert("Not implemented")}>
+        <Button preventFocusOnPress onPress={notImplemented}>
           Commit and Push...
         </Button>
       </StyledCommitActionsRow>

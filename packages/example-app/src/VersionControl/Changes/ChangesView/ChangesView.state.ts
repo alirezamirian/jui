@@ -17,7 +17,11 @@ import {
 } from "../change-lists.state";
 import { groupings } from "./changesGroupings";
 import { VcsDirectoryMapping } from "../../file-status";
-import { dfsVisit } from "@intellij-platform/core/utils/tree-utils";
+import {
+  bfsVisit,
+  dfsVisit,
+  getExpandedToNodesKeys,
+} from "@intellij-platform/core/utils/tree-utils";
 import {
   createSetInterface,
   NestedSelection,
@@ -26,6 +30,8 @@ import {
 import { rollbackViewState } from "../Rollback/rollbackView.state";
 import { activePathsState } from "../../../Project/project.state";
 import { branchForFile } from "../../file-status.state";
+import { notNull } from "@intellij-platform/core/utils/array-utils";
+import { sortBy } from "ramda";
 
 export interface ChangeBrowserNode<T extends string> {
   type: T;
@@ -102,28 +108,99 @@ export const selectedKeysState = atom<Selection>({
   default: new Set<Key>([]),
 });
 
-export const changesUnderSelectedKeys = selector<ReadonlyArray<Change>>({
+/**
+ * Same as {@link selectedKeysState}, but always a set of key. i.e. "all" is resolved to keys.
+ */
+export const resolvedSelectedKeysState = selector<Set<Key>>({
+  key: "changesView.resolvedSelectedKeys",
+  get: ({ get }) => {
+    const selection = get(selectedKeysState);
+    if (selection === "all") {
+      const { rootNodes } = get(changesTreeNodesState);
+      return new Set(
+        bfsVisit<AnyNode, AnyNode[]>(
+          (node) => (isGroupNode(node) ? node.children : []),
+          (node, parentValue) => {
+            const nodes = parentValue ?? [];
+            nodes.push(node);
+            return nodes;
+          },
+          rootNodes
+        )
+          .flat()
+          .map((node) => node.key)
+      );
+    }
+    return selection;
+  },
+});
+
+/**
+ * The List of currently selected nodes in Changes tree. Based on {@link selectedKeysState}
+ */
+const selectedNodesState = selector<ReadonlySet<AnyNode>>({
+  key: "changesView.selectedNodes",
+  get: ({ get }) => {
+    const selectedKeys = get(resolvedSelectedKeysState);
+    const { byKey } = get(changesTreeNodesState);
+    return new Set(
+      [...selectedKeys].map((key) => byKey.get(key)).filter(notNull)
+    );
+  },
+});
+
+export const changesUnderSelectedKeys = selector<ReadonlySet<Change>>({
   key: "changesView.selectedKeys.changes",
   get: ({ get }) => {
-    const selectedKeys = get(selectedKeysState);
-    const { byKey } = get(changesTreeNodesState);
-    if (selectedKeys === "all") {
-      return get(allChangesState);
-    }
-    const allChanges: Change[] = [];
+    const selectedNodes = get(selectedNodesState);
+    const allChanges: Set<Change> = new Set();
     const processNode = (node: AnyNode | undefined) => {
       if (!node) {
         return;
       }
       if (node.type === "change") {
-        allChanges.push(node.change);
+        allChanges.add(node.change);
       }
       if (isGroupNode(node)) {
         node.children.forEach(processNode);
       }
     };
-    [...selectedKeys].map((key) => byKey.get(key)).forEach(processNode);
+    selectedNodes.forEach(processNode);
     return allChanges;
+  },
+});
+
+/**
+ * The changelists from which at least one change is selected in the Changes tree view.
+ */
+export const changeListsUnderSelection = selector<ReadonlySet<ChangeListObj>>({
+  key: "changesView.selectedChangeLists",
+  get: ({ get }) => {
+    const selectedNodes = get(selectedNodesState);
+    const allChangeLists = get(changeListsState);
+
+    const selectedChangeLists: Set<ChangeListObj> = new Set();
+    const processNode = (node: AnyNode | undefined) => {
+      if (!node) {
+        return;
+      }
+      if (node.type === "changelist") {
+        selectedChangeLists.add(node.changeList);
+      }
+      if (node.type === "change") {
+        const changeList = allChangeLists.find((changeList) =>
+          changeList.changes.includes(node.change)
+        );
+        if (changeList) {
+          selectedChangeLists.add(changeList);
+        }
+      }
+      if (isGroupNode(node)) {
+        node.children.forEach(processNode);
+      }
+    };
+    selectedNodes.forEach(processNode);
+    return selectedChangeLists;
   },
 });
 
@@ -305,8 +382,8 @@ export const changesTreeNodesState = selector<{
     const groupChanges = (changes: readonly ChangeNode[]) =>
       recursiveGrouping(groupFns, changes);
 
-    const rootNodes = changeLists.map((changeList) =>
-      changeListNode(changeList, groupChanges)
+    const rootNodes = sortBy(({ active }) => !active, changeLists).map(
+      (changeList) => changeListNode(changeList, groupChanges)
     );
     const fileCountsMap = new Map();
     const byKey = new Map();
@@ -365,6 +442,56 @@ export const commitMessageState = atom({
   default: "",
 });
 
+export const changesFromActivePaths = selector({
+  key: "changesView/changesFromActivePaths",
+  get: ({ get }) => {
+    const activePaths = get(activePathsState);
+    return get(allChangesState).filter((change) =>
+      activePaths.some((activePath) => change.after.path.startsWith(activePath))
+    );
+  },
+});
+
+/**
+ * Recoil callback for queuing (staging) and marking changes as included based on a list of paths.
+ * TODO: handle staging too. For now, we just mark changes as included, if they exist in a changelist already.
+ */
+export const queueCheckInCallback = ({ set, snapshot }: CallbackInterface) => {
+  /**
+   * @param paths: paths to filter changes based on. If not provided, activePaths is used.
+   */
+  return (paths?: string[]) => {
+    const changes = paths
+      ? snapshot
+          .getLoadable(allChangesState)
+          .getValue()
+          .filter((change) =>
+            paths.some((activePath) => change.after.path.startsWith(activePath))
+          )
+      : snapshot.getLoadable(changesFromActivePaths).getValue();
+
+    const includedChangeKeys = changes.map(getNodeKeyForChange);
+    set(includedChangeKeysState, new Set(includedChangeKeys));
+    if (includedChangeKeys.length > 0) {
+      const expandedKeys = getExpandedToNodesKeys<AnyNode>(
+        (node) => (isGroupNode(node) ? node.children : null),
+        (node) => node.key,
+        snapshot.getLoadable(changesTreeNodesState).getValue().rootNodes,
+        includedChangeKeys
+      );
+      set(expandedKeysState, (currentExpandedKeys) => {
+        return new Set([
+          ...(currentExpandedKeys !== "all"
+            ? currentExpandedKeys
+            : new Set<Key>()),
+          ...expandedKeys,
+        ]);
+      });
+      set(selectedKeysState, new Set([includedChangeKeys[0]]));
+    }
+  };
+};
+
 export const openRollbackWindowForSelectionCallback = ({
   set,
   snapshot,
@@ -379,18 +506,11 @@ export const openRollbackWindowForSelectionCallback = ({
       .getValue();
     const changesBasedOnActivePaths =
       contextual && activePaths.length > 0
-        ? snapshot
-            .getLoadable(allChangesState)
-            .getValue()
-            .filter((change) =>
-              activePaths.some((activePath) =>
-                change.after.path.startsWith(activePath)
-              )
-            )
+        ? snapshot.getLoadable(changesFromActivePaths).getValue()
         : null;
     set(
       rollbackViewState.initiallyIncludedChanges,
-      changesBasedOnActivePaths ?? changesUnderSelection
+      changesBasedOnActivePaths ?? [...changesUnderSelection]
     );
     set(rollbackViewState.isOpen, true);
   };
