@@ -290,6 +290,10 @@ https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8
             <td rowspan="1" colspan="3"><a href="https://jetbrains.github.io/ui/components/dialog_window/">ModalWindow</a></td>
             <td>✅</td>
         </tr>
+        <tr>
+            <td rowspan="1" colspan="3"><a href="https://jetbrains.github.io/ui/controls/input_field/">InputField</a></td>
+            <td><a href="https://github.com/alirezamirian/jui/issues/46">🚧</a></td>
+        </tr>
     </tbody>
 
 </table>
