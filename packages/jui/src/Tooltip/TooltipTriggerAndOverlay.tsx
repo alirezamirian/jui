@@ -125,7 +125,9 @@ const useTooltipTrigger: typeof useAriaTooltipTrigger = (props, state, ref) => {
   // like in tab or tool window stripe button. We replace onPointerDown handler with a similar handler that closes
   // the tooltip.
   triggerProps.onPointerDown = () => {
-    state.close(true);
+    if (!(ref.current instanceof HTMLInputElement)) {
+      state.close(true);
+    }
   };
   /**
    * onMouseDown is preventDefault-ed which interferes with functionality of the tooltip trigger, in use cases like

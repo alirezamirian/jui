@@ -33,6 +33,11 @@ const Template: Story<TooltipTriggerProps> = (props) => (
   <TooltipTrigger {...props} />
 );
 export const Default = Template.bind(null);
+export const OnInput = Template.bind(null);
+
+OnInput.args = {
+  children: <input />,
+};
 
 export const Interactive = Template.bind(null);
 

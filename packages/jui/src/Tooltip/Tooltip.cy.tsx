@@ -5,7 +5,8 @@ import * as helpTooltipStories from "./HelpTooltip.stories";
 import * as actionHelpTooltipStories from "./ActionHelpTooltip.stories";
 import * as actionTooltipStories from "./ActionTooltip.stories";
 
-const { All, Interactive, Disabled } = composeStories(stories);
+const { Default, OnInput, All, Interactive, Disabled } =
+  composeStories(stories);
 const HelpTooltipStories = composeStories(helpTooltipStories);
 const ActionHelpTooltipStories = composeStories(actionHelpTooltipStories);
 const ActionTooltipStories = composeStories(actionTooltipStories);
@@ -40,6 +41,24 @@ describe("TooltipTrigger", () => {
     cy.get("button").first().realHover();
 
     cy.wait(100).get("[role=tooltip]").should("not.exist");
+  });
+
+  it("closes the tooltip when trigger is clicked", () => {
+    cy.mount(<Default />);
+    workaroundHoverIssue();
+    cy.get("button").first().realHover();
+    cy.get("[role=tooltip]"); // waiting for tooltip to appear
+    cy.get("button").click();
+    cy.get("[role=tooltip]").should("not.exist"); // tooltip should not be closed
+  });
+
+  it("doesn't close the tooltip on click, if the trigger is an input", () => {
+    cy.mount(<OnInput />);
+    workaroundHoverIssue();
+    cy.get("input").first().realHover();
+    cy.get("[role=tooltip]"); // waiting for tooltip to appear
+    cy.get("input").click();
+    cy.get("[role=tooltip]"); // tooltip should not be closed
   });
 });
 
