@@ -5,7 +5,7 @@ import * as helpTooltipStories from "./HelpTooltip.stories";
 import * as actionHelpTooltipStories from "./ActionHelpTooltip.stories";
 import * as actionTooltipStories from "./ActionTooltip.stories";
 
-const { Default, Interactive } = composeStories(stories);
+const { All, Interactive, Disabled } = composeStories(stories);
 const HelpTooltipStories = composeStories(helpTooltipStories);
 const ActionHelpTooltipStories = composeStories(actionHelpTooltipStories);
 const ActionTooltipStories = composeStories(actionTooltipStories);
@@ -14,7 +14,7 @@ describe("TooltipTrigger", () => {
   it("opens the tooltip on hover, and closes it when trigger area is left", () => {
     // https://jetbrains.github.io/ui/controls/tooltip/#17
     // https://jetbrains.github.io/ui/controls/tooltip/#18
-    cy.mount(<Default />);
+    cy.mount(<All />);
     workaroundHoverIssue();
     cy.get("button").first().realHover();
 
@@ -32,6 +32,14 @@ describe("TooltipTrigger", () => {
     cy.get("[role=tooltip]") // waiting for tooltip to appear
       .realMouseMove(10, 10); // moving mouse out of the trigger and onto the tooltip.
     cy.get("[role=tooltip]"); //tooltip should not be closed
+  });
+
+  it("doesn't show the tooltip if tooltip is disabled", () => {
+    cy.mount(<Disabled delay={0} />);
+    workaroundHoverIssue();
+    cy.get("button").first().realHover();
+
+    cy.wait(100).get("[role=tooltip]").should("not.exist");
   });
 });
 
