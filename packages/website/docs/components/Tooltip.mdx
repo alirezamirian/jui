@@ -47,5 +47,16 @@
   >
     <Button>Help</Button>
   </TooltipTrigger>
+
+  <TooltipTrigger
+    tooltip={
+      <ValidationTooltip>
+        Branch name foo already exists. <br />
+        Change the name or overwrite existing branch
+      </ValidationTooltip>
+    }
+  >
+    <Button>ValidationTooltip</Button>
+  </TooltipTrigger>
 </div>
 ```

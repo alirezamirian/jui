@@ -9,6 +9,7 @@ import { TooltipContext } from "./TooltipContext";
 export interface TooltipProps extends Omit<AriaTooltipProps, "isOpen"> {
   children: React.ReactNode;
   multiline?: boolean;
+  className?: string;
 }
 
 const StyledTooltip = styled.div<{ multiline?: boolean }>`
@@ -126,7 +127,12 @@ const Tooltip = React.forwardRef(function Tooltip(
   );
 
   return (
-    <StyledTooltip multiline={multiline} {...tooltipProps} ref={ref}>
+    <StyledTooltip
+      multiline={multiline}
+      {...tooltipProps}
+      className={props.className}
+      ref={ref}
+    >
       {children}
     </StyledTooltip>
   );
