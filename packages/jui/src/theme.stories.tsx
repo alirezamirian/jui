@@ -4,13 +4,18 @@ import { indexBy, map } from "ramda";
 import { Meta, Story } from "@storybook/react";
 import {
   ActionButton,
+  ActionHelpTooltip,
+  ActionTooltip,
   AutoHoverPlatformIcon,
   Balloon,
   BalloonActionLink,
   Checkbox,
   DefaultToolWindow,
   Divider,
+  HelpTooltip,
   HighlightedTextValue,
+  Input,
+  InputField,
   Item,
   ItemLayout,
   Menu,
@@ -33,6 +38,7 @@ import {
   ToolWindowsState,
   toolWindowState,
   ToolWindowTabContent,
+  ValidationTooltip,
 } from "@intellij-platform/core";
 import {
   FakeExecutionToolbar,
@@ -534,8 +540,30 @@ export const Theme: Story = () => {
                 }
               />
             </div>
+            <VerticalFlexContainer style={{ gap: "0.5rem" }}>
+              <ValidationTooltip>Error validation tooltip</ValidationTooltip>
+              <ValidationTooltip type="warning">
+                Warning validation tooltip
+              </ValidationTooltip>
+              <ActionTooltip actionName="Action tooltip" shortcut="⌘K" />
+              <HelpTooltip helpText="Help tooltip" />
+              <ActionHelpTooltip
+                actionName="Action help tooltip"
+                helpText="Help text"
+              />
+            </VerticalFlexContainer>
           </div>
           {/* Not rendering indeterminate because of it's animation*/}
+        </div>
+        <div style={{ display: "flex", gap: "1rem" }}>
+          <InputField label="InputField" placeholder="Placeholder" />
+          <InputField
+            label="InputField (invalid)"
+            placeholder="Placeholder"
+            validationState="invalid"
+          />
+          <Input placeholder="Input" />
+          <Input placeholder="Input (invalid)" validationState="invalid" />
         </div>
       </ToolWindows>
       <StatusBar

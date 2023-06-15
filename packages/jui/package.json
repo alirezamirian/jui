@@ -47,6 +47,7 @@
     "@react-aria/focus": "^3.5.2",
     "@react-aria/i18n": "^3.3.7",
     "@react-aria/interactions": "^3.8.1",
+    "@react-aria/label": "^3.5.2",
     "@react-aria/link": "^3.2.2",
     "@react-aria/listbox": "^3.4.2",
     "@react-aria/menu": "^3.7.1",
