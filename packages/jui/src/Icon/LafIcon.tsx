@@ -41,10 +41,15 @@ function findIconPath(
     ["Editable", "Selected", "Pressed", "Focused", "Disabled"] as Array<
       keyof typeof modifiers
     >
-  ).reduce(
-    (soFar, modifier) => soFar + (modifiers[modifier] ? modifier : ""),
-    ""
-  );
+  )
+    .filter((modifier) =>
+      // Focused or Pressed can't coexist with Disabled
+      modifiers.Disabled ? !["Focused", "Pressed"].includes(modifier) : true
+    )
+    .reduce(
+      (soFar, modifier) => soFar + (modifiers[modifier] ? modifier : ""),
+      ""
+    );
   return `${basePath}${name}${suffix}.svg`;
 }
 
