@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { composeStories } from "@storybook/testing-react";
 import * as stories from "./TooltipTrigger.stories";
 import * as helpTooltipStories from "./HelpTooltip.stories";
 import * as actionHelpTooltipStories from "./ActionHelpTooltip.stories";
 import * as actionTooltipStories from "./ActionTooltip.stories";
+import {
+  PositionedTooltipTrigger,
+  ValidationTooltip,
+} from "@intellij-platform/core";
 
 const { Default, OnInput, All, Interactive, Disabled } =
   composeStories(stories);
@@ -43,6 +47,24 @@ describe("TooltipTrigger", () => {
     cy.wait(100).get("[role=tooltip]").should("not.exist");
   });
 
+  it("closes the tooltip when the tooltip is disabled while being open", () => {
+    const Component = () => {
+      const [isDisabled, setIsDisabled] = useState(false);
+      useEffect(() => {
+        setTimeout(() => {
+          setIsDisabled(true);
+        }, 100);
+      }, []);
+      return <Default isDisabled={isDisabled} delay={0} />;
+    };
+    cy.mount(<Component />);
+    workaroundHoverIssue();
+    cy.get("button").first().realHover();
+
+    cy.get("[role=tooltip]").should("exist");
+    cy.get("[role=tooltip]").should("not.exist");
+  });
+
   it("closes the tooltip when trigger is clicked", () => {
     cy.mount(<Default />);
     workaroundHoverIssue();
@@ -59,6 +81,50 @@ describe("TooltipTrigger", () => {
     cy.get("[role=tooltip]"); // waiting for tooltip to appear
     cy.get("input").click();
     cy.get("[role=tooltip]"); // tooltip should not be closed
+  });
+});
+
+describe("PositionedTooltipTrigger", () => {
+  it("shows/hides the tooltip on focus/blur if showOnFocus is true", () => {
+    cy.mount(
+      <PositionedTooltipTrigger
+        tooltip={<ValidationTooltip>tooltip</ValidationTooltip>}
+        showOnFocus
+        delay={0}
+      >
+        <input />
+      </PositionedTooltipTrigger>
+    );
+    cy.get("input").first().focus();
+    cy.get("[role=tooltip]").should("exist");
+    cy.get("input").first().blur();
+    cy.get("[role=tooltip]").should("not.exist");
+  });
+
+  it("closes the tooltip when the tooltip is disabled after it's opened via focus", () => {
+    const Component = () => {
+      const [isDisabled, setIsDisabled] = useState(false);
+      useEffect(() => {
+        setTimeout(() => {
+          setIsDisabled(true);
+        }, 100);
+      }, []);
+      return (
+        <PositionedTooltipTrigger
+          tooltip={<ValidationTooltip>tooltip</ValidationTooltip>}
+          showOnFocus
+          isDisabled={isDisabled}
+          delay={0}
+        >
+          <input />
+        </PositionedTooltipTrigger>
+      );
+    };
+    cy.mount(<Component />);
+    cy.get("input").first().focus();
+
+    cy.get("[role=tooltip]").should("exist");
+    cy.get("[role=tooltip]").should("not.exist");
   });
 });
 

@@ -79,7 +79,7 @@ export const TooltipTriggerAndOverlay = ({
   return (
     <>
       {normalizeChildren(trigger, { ...triggerProps, ref: triggerRef })}
-      {state.isOpen && (
+      {state.isOpen && !props.isDisabled && (
         <OverlayContainer>
           <TooltipContext.Provider value={{ state, isInteractive }}>
             <div
