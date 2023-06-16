@@ -33,6 +33,15 @@ describe("Popup", () => {
     });
   });
 
+  it("labels the popup with header, even when not movable", () => {
+    cy.mount(
+      <Popup interactions="none">
+        <Popup.Layout content="Popup Content" header="Popup Header" />
+      </Popup>
+    );
+    cy.findByRole("dialog", { name: "Popup Header" });
+  });
+
   describe("PopupLayout", () => {
     it("wraps plain text header and footer into default header and footer components", () => {
       const footer = "Popup Hint";

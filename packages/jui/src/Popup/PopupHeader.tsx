@@ -1,4 +1,6 @@
-import React, { useContext } from "react";
+import React, { HTMLAttributes, useContext } from "react";
+import { mergeProps } from "@react-aria/utils";
+
 import { styled } from "@intellij-platform/core/styled";
 import { UnknownThemeProp } from "@intellij-platform/core/Theme";
 import { OverlayMoveHandle } from "@intellij-platform/core/Overlay";
@@ -53,20 +55,20 @@ export const PopupHeader = ({
   hasControls?: boolean;
 }) => {
   const { isActive, movable, titleProps } = useContext(PopupContext);
+  const renderHeader = (otherProps: HTMLAttributes<HTMLElement> = {}) => (
+    <StyledPopupHeader
+      active={isActive}
+      hasControls={hasControls}
+      {...mergeProps(titleProps, otherProps)}
+    >
+      {children}
+    </StyledPopupHeader>
+  );
   return movable ? (
     <OverlayMoveHandle>
-      {({ moveHandleProps }) => (
-        <StyledPopupHeader
-          active={isActive}
-          hasControls={hasControls}
-          {...titleProps} // probably don't need to merge props
-          {...moveHandleProps}
-        >
-          {children}
-        </StyledPopupHeader>
-      )}
+      {({ moveHandleProps }) => renderHeader(moveHandleProps)}
     </OverlayMoveHandle>
   ) : (
-    <StyledPopupHeader active={isActive}>{children}</StyledPopupHeader>
+    renderHeader()
   );
 };

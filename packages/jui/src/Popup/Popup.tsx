@@ -1,14 +1,7 @@
-import React, {
-  FocusEventHandler,
-  ForwardedRef,
-  RefObject,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
+import React, { ForwardedRef, RefObject, useState } from "react";
 import { DOMProps } from "@react-types/shared";
 import { useFocusWithin, useInteractOutside } from "@react-aria/interactions";
-import { FocusManager, useFocusable, useFocusManager } from "@react-aria/focus";
+import { useFocusable } from "@react-aria/focus";
 import { Overlay, useOverlay, usePreventScroll } from "@react-aria/overlays";
 import { filterDOMProps, useObjectRef } from "@react-aria/utils";
 import { pipe } from "ramda";
