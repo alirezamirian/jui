@@ -18,6 +18,7 @@ import {
   useResizableMovableOverlay,
 } from "@intellij-platform/core/Overlay";
 import { WindowContext } from "@intellij-platform/core/ModalWindow/WindowContext";
+import { UNSAFE_React17SuspenseFix } from "@intellij-platform/core/Overlay/UNSAFE_React17SuspenseFix";
 
 export interface ModalWindowProps
   extends AriaDialogProps,
@@ -80,8 +81,11 @@ export const ModalWindowInner = ({
 
   const { dialogProps, titleProps } = useDialog(props, ref);
 
-  const { bounds: style, overlayInteractionHandlerProps } =
-    useResizableMovableOverlay(ref, { ...props, minHeight, minWidth });
+  const {
+    bounds: style,
+    overlayInteractionHandlerProps,
+    UNSAFE_measureContentSize,
+  } = useResizableMovableOverlay(ref, { ...props, minHeight, minWidth });
 
   const { focusContainmentFixProps } = useFocusContainmentFix();
 
@@ -107,7 +111,11 @@ export const ModalWindowInner = ({
                   movable: interactions !== "none",
                 }}
               >
-                {children}
+                <UNSAFE_React17SuspenseFix
+                  measureContentSize={UNSAFE_measureContentSize}
+                >
+                  {children}
+                </UNSAFE_React17SuspenseFix>
               </WindowContext.Provider>
             </StyledWindowInnerContainer>
             {interactions === "all" && <OverlayResizeHandles />}

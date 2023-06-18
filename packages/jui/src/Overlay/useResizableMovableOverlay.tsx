@@ -118,6 +118,12 @@ export function useResizableMovableOverlay(
    * Props to be passed to {@link OverlayInteractionHandler}
    */
   overlayInteractionHandlerProps: OverlayInteractionHandlerProps;
+
+  /**
+   * Allow for remeasuring content size imperatively, when needed. Currently only used to work around
+   * an issue related to Suspense in React 17.
+   */
+  UNSAFE_measureContentSize: () => void;
 } {
   const [bounds, setBounds] = useControlledState<Partial<Bounds> | undefined>(
     inputBounds!,
@@ -128,7 +134,7 @@ export function useResizableMovableOverlay(
       reason: "resize" | "move"
     ) => void
   );
-  const [contentSize] = useContentSize(overlayRef, {
+  const [contentSize, measureContentSize] = useContentSize(overlayRef, {
     observe: observeContentResize,
   });
   // local state of bounds for when the overlay is in a UI interaction, like movement or resize with mouse.
@@ -208,6 +214,7 @@ export function useResizableMovableOverlay(
       ...centeredContentBounds,
       ...partialBounds,
     }),
+    UNSAFE_measureContentSize: measureContentSize,
     overlayInteractionHandlerProps,
   };
 }

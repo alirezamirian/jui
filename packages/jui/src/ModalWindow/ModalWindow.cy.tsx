@@ -86,6 +86,30 @@ describe("ModalWindow", () => {
   it("supports intercepting in-interaction bound changes", () => {
     // TODO
   });
+
+  it("measures window size correctly, when window content suspends rendering", () => {
+    let resolved = false;
+    const promise = new Promise<void>((resolve) => {
+      setTimeout(() => {
+        resolved = true;
+        resolve();
+      }, 30);
+    });
+    function ContentThatSuspends() {
+      if (resolved) {
+        return <div style={{ width: 200, height: 150 }}>Content</div>;
+      }
+      throw promise;
+    }
+    cy.mount(
+      <React.Suspense fallback={null}>
+        <ModalWindow id="window">
+          <WindowLayout header="header" content={<ContentThatSuspends />} />
+        </ModalWindow>
+      </React.Suspense>
+    );
+    cy.get("#window").invoke("width").should("eq", 200);
+  });
 });
 
 function drag(from: { x: number; y: number }, to: { x: number; y: number }) {
