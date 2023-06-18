@@ -1,51 +1,55 @@
 import { styled } from "@intellij-platform/core/styled";
 import React from "react";
+import { WindowHeader } from "./WindowHeader";
+import { WindowFooter } from "@intellij-platform/core/ModalWindow/WindowFooter";
 
-const StyledFooter = styled.div<{ hasBorder?: boolean }>`
-  padding: 0.625rem 0.875rem;
-  display: flex;
-  gap: 0.5rem;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 1px solid transparent;
-  border-color: ${({ hasBorder, theme }) =>
-    hasBorder && theme.commonColors.contrastBorder};
+const StyledWindowFooter = styled.div`
+  min-height: min-content;
 `;
-const StyledFooterSide = styled.div`
-  display: flex;
-  gap: 0.625rem;
+
+const StyledWindowContentWrapper = styled.div`
+  overflow: auto;
+  flex: 1;
 `;
 
 /**
- * Implements the common layout for window footer, to be used in {@link ModalWindowProps#footer}.
- * Footer has a left and a right side. There is a standard gap between the children of each side.
+ * Window content layout, supporting fixed `header` and `footer` sections, and a scrollable `content` area.
  */
-function Footer({
-  left,
-  right,
-  hasBorder,
+export function WindowLayout({
+  header,
+  footer,
+  content,
 }: {
   /**
-   * The content to go to the left side the footer. A help icon button is very common on the left side.
+   * Fixed position header of the window at the top. Use {@link WindowLayout.Header} for the default window header,
+   * which also acts as a move handle for the window. If a string is passed, it will be wrapped by
+   * {@link WindowLayout.Header} automatically.
    */
-  left?: React.ReactNode;
+  header: React.ReactNode;
   /**
-   * The content to go to the right side the footer. {@link Button}s are usually used inside the right content
+   * Scrollable content of the window.
    */
-  right?: React.ReactNode;
+  content: React.ReactNode;
   /**
-   * Whether to show top border for footer or not
+   * An area at the bottom of the window which is not scrolled as opposed to `content`. Use {@link WindowLayout.Footer}
+   * for rendering the common layout of a window footer.
    */
-  hasBorder?: boolean;
+  footer?: React.ReactNode;
 }) {
   return (
-    <StyledFooter hasBorder={hasBorder}>
-      <StyledFooterSide>{left}</StyledFooterSide>
-      <StyledFooterSide>{right}</StyledFooterSide>
-    </StyledFooter>
+    <>
+      {header &&
+        (typeof header === "string" ? (
+          <WindowHeader>{header}</WindowHeader>
+        ) : (
+          header
+        ))}
+      <StyledWindowContentWrapper>{content}</StyledWindowContentWrapper>
+      {footer && <StyledWindowFooter>{footer}</StyledWindowFooter>}
+    </>
   );
 }
 
-export const WindowLayout = {
-  Footer,
-};
+// Just for improved discoverability. Might as well export WindowFooter and WindowHeader instead.
+WindowLayout.Footer = WindowFooter;
+WindowLayout.Header = WindowHeader;

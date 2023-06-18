@@ -22,32 +22,34 @@ function ModalWindowExample() {
       <Button onPress={() => setOpen(true)}>Open</Button>
       {open && (
         <ModalWindow
-          title="Window title"
           interactions="all" // try "none" or "move"
           onClose={close}
-          footer={
-            <WindowLayout.Footer
-              hasBorder
-              left={
-                <>
-                  <Button variant="icon">?</Button>
-                  <Checkbox>Some settings</Checkbox>
-                </>
-              }
-              right={
-                <>
-                  <Button autoFocus onPress={close}>
-                    Cancel
-                  </Button>
-                  <Button variant="default" onPress={close}>
-                    OK
-                  </Button>
-                </>
-              }
-            />
-          }
         >
-          <div style={{ padding: "1rem" }}>Window content</div>
+          <WindowLayout
+            header="Window title"
+            content={<div style={{ padding: "1rem" }}>Window content</div>}
+            footer={
+              <WindowLayout.Footer
+                hasBorder
+                left={
+                  <>
+                    <Button variant="icon">?</Button>
+                    <Checkbox>Some settings</Checkbox>
+                  </>
+                }
+                right={
+                  <>
+                    <Button autoFocus onPress={close}>
+                      Cancel
+                    </Button>
+                    <Button variant="default" onPress={close}>
+                      OK
+                    </Button>
+                  </>
+                }
+              />
+            }
+          />
         </ModalWindow>
       )}
     </>

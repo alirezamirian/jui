@@ -1,4 +1,4 @@
-import React, { FocusEventHandler, HTMLAttributes, useRef } from "react";
+import React, { FocusEventHandler, useRef } from "react";
 import {
   OverlayContainer,
   useModal,
@@ -13,34 +13,18 @@ import { WINDOW_SHADOW } from "@intellij-platform/core/style-constants";
 import { mergeProps } from "@react-aria/utils";
 import {
   OverlayInteractionHandler,
-  OverlayMoveHandle,
   OverlayResizeHandles,
   ResizableMovableOverlayOptions,
   useResizableMovableOverlay,
 } from "@intellij-platform/core/Overlay";
+import { WindowContext } from "@intellij-platform/core/ModalWindow/WindowContext";
 
 export interface ModalWindowProps
   extends AriaDialogProps,
     ResizableMovableOverlayOptions {
   children: React.ReactNode;
-  title: React.ReactNode; // Maybe string here since it's a special case in the original impl, where title is OS-handled and can only be a string
-  /**
-   * An area at the bottom of the window which is not scrolled as opposed to `children`. Use {@link WindowLayout.Footer}
-   * for rendering the common layout of a window footer.
-   */
-  footer?: React.ReactNode;
   onClose?: () => void;
 }
-
-const StyledWindowTitle = styled.h1`
-  margin: 0;
-  text-align: center;
-  font-size: 13px; // not rem! intentional
-  line-height: 20px;
-  cursor: default;
-  user-select: none;
-  padding: 0 8px;
-`;
 
 const StyledWindowUnderlay = styled.div`
   position: fixed;
@@ -69,26 +53,16 @@ const StyledWindowInnerContainer = styled.div`
   flex-direction: column;
 `;
 
-const StyledWindowContentWrapper = styled.div`
-  overflow: auto;
-  flex: 1;
-`;
-
-const StyledWindowFooter = styled.div`
-  min-height: min-content;
-`;
-
 export const DEFAULT_WINDOW_MIN_WIDTH = 50;
 export const DEFAULT_WINDOW_MIN_HEIGHT = 24;
 
 export const ModalWindowInner = ({
   interactions = "all",
-  footer,
   minWidth = DEFAULT_WINDOW_MIN_WIDTH,
   minHeight = DEFAULT_WINDOW_MIN_HEIGHT,
   ...props
 }: ModalWindowProps): React.ReactElement => {
-  const { title, children } = props;
+  const { children } = props;
 
   const ref = React.useRef<HTMLDivElement>(null);
   const { overlayProps, underlayProps } = useOverlay(
@@ -109,12 +83,6 @@ export const ModalWindowInner = ({
   const { bounds: style, overlayInteractionHandlerProps } =
     useResizableMovableOverlay(ref, { ...props, minHeight, minWidth });
 
-  const renderTitle = (otherProps: HTMLAttributes<HTMLElement> = {}) => (
-    <StyledWindowTitle {...mergeProps(titleProps, otherProps)}>
-      {title || <>&nbsp;</>}
-    </StyledWindowTitle>
-  );
-
   const { focusContainmentFixProps } = useFocusContainmentFix();
 
   return (
@@ -132,17 +100,15 @@ export const ModalWindowInner = ({
             ref={ref}
           >
             <StyledWindowInnerContainer>
-              {interactions !== "none" ? (
-                <OverlayMoveHandle>
-                  {({ moveHandleProps }) => renderTitle(moveHandleProps)}
-                </OverlayMoveHandle>
-              ) : (
-                renderTitle()
-              )}
-              <StyledWindowContentWrapper>
+              <WindowContext.Provider
+                value={{
+                  isActive: true, // because it's modal. WindowContext would be used for non-modal windows too, in future
+                  titleProps,
+                  movable: interactions !== "none",
+                }}
+              >
                 {children}
-              </StyledWindowContentWrapper>
-              {footer && <StyledWindowFooter>{footer}</StyledWindowFooter>}
+              </WindowContext.Provider>
             </StyledWindowInnerContainer>
             {interactions === "all" && <OverlayResizeHandles />}
           </StyledWindowContainer>
