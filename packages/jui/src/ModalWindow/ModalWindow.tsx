@@ -135,7 +135,6 @@ export const ModalWindowInner = ({
  * dialogs, like "Branches", or "Search Everywhere".
  *
  * TODO: show close button (maybe os-aware styles?)
- * TODO: imperative API for opening a stack of windows (it may be not needed)
  *
  */
 export const ModalWindow = (props: ModalWindowProps) => (
