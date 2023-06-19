@@ -56,12 +56,13 @@ function useMenuItem<T extends unknown>(
   const item = state.collection.getItem(props.key!);
   const isDisabled = state.disabledKeys.has(item.key);
   const isExpanded = state.expandedKeys.has(item.key);
+  const hasSubmenu = item.hasChildNodes;
   const { menuItemProps: ariaMenuItemProps, ...result } = useMenuItemAria(
     {
       key: item.key,
       // hack to prevent react-aria to call onClose when nested items are selected, which is incorrect, and because
       // react-aria doesn't officially support nested menus at the moment
-      onClose: item.hasChildNodes ? () => {} : undefined,
+      onClose: hasSubmenu ? () => {} : undefined,
     },
     state,
     ref
@@ -129,6 +130,12 @@ function useMenuItem<T extends unknown>(
   return {
     ...result,
     menuItemProps: mergeProps(
+      hasSubmenu
+        ? {
+            "aria-expanded": isExpanded,
+            "aria-haspopup": "menu",
+          }
+        : {},
       ariaMenuItemProps,
       hoverProps,
       keyboardProps,

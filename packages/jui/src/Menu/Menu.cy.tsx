@@ -73,6 +73,15 @@ describe("Menu", () => {
     matchImageSnapshot("menu--text-alignment--no-icon");
   });
 
+  it("sets the expected aria attributes on menu items with nested menu", () => {
+    cy.mount(<Nested />);
+    cy.findByRole("menuitem", { name: "View Mode", expanded: false }).should(
+      "have.attr",
+      "aria-haspopup",
+      "menu"
+    );
+  });
+
   it("supports keyboard", () => {
     cy.mount(<Nested autoFocus />);
     cy.get('[role="menu"]').focused(); // make sure the menu is auto-focused
