@@ -1,10 +1,5 @@
 import React, { FocusEventHandler, useRef } from "react";
-import {
-  OverlayContainer,
-  useModal,
-  useOverlay,
-  usePreventScroll,
-} from "@react-aria/overlays";
+import { useModal, useOverlay, usePreventScroll } from "@react-aria/overlays";
 import { focusSafely, FocusScope } from "@react-aria/focus";
 import { useDialog } from "@react-aria/dialog";
 import { AriaDialogProps } from "@react-types/dialog"; // temporary phantom dependency
@@ -57,7 +52,26 @@ const StyledWindowInnerContainer = styled.div`
 export const DEFAULT_WINDOW_MIN_WIDTH = 50;
 export const DEFAULT_WINDOW_MIN_HEIGHT = 24;
 
-export const ModalWindowInner = ({
+/**
+ * A movable/resizable modal window. The window header which holds the title, can be used to drag the window around.
+ * In the reference impl, modal windows are os-native, and contain os-level buttons for minimize/close/maximise, which
+ * are not relevant here since they wouldn't be os-native windows. A close button is still relevant (and kind of
+ * necessary) and will be added in next iterations.
+ *
+ * The content container doesn't come with any padding. Other related components should be used for common layouts in
+ * modal windows.
+ * Example use cases: Window for git operations such as push, update, revert, new branch, etc.
+ *
+ * ![img.png](https://user-images.githubusercontent.com/3150694/181095858-968c5c66-2ae7-4e40-84e3-e6df43cd4aa4.png)
+ *
+ * NOTE: The part regarding rendering OverlayInteractionHandler, and rendering as a dialog with a focus scope, in an
+ * overlay container could be extracted into a component which is then used to create custom resizable/movable overlay
+ * dialogs, like "Branches", or "Search Everywhere".
+ *
+ * TODO: show close button (maybe os-aware styles?)
+ *
+ */
+export const ModalWindow = ({
   interactions = "all",
   minWidth = DEFAULT_WINDOW_MIN_WIDTH,
   minHeight = DEFAULT_WINDOW_MIN_HEIGHT,
@@ -125,31 +139,6 @@ export const ModalWindowInner = ({
     </StyledWindowUnderlay>
   );
 };
-
-/**
- * A movable/resizable modal window. The window header which holds the title, can be used to drag the window around.
- * In the reference impl, modal windows are os-native, and contain os-level buttons for minimize/close/maximise, which
- * are not relevant here since they wouldn't be os-native windows. A close button is still relevant (and kind of
- * necessary) and will be added in next iterations.
- *
- * The content container doesn't come with any padding. Other related components should be used for common layouts in
- * modal windows.
- * Example use cases: Window for git operations such as push, update, revert, new branch, etc.
- *
- * ![img.png](https://user-images.githubusercontent.com/3150694/181095858-968c5c66-2ae7-4e40-84e3-e6df43cd4aa4.png)
- *
- * NOTE: The part regarding rendering OverlayInteractionHandler, and rendering as a dialog with a focus scope, in an
- * overlay container could be extracted into a component which is then used to create custom resizable/movable overlay
- * dialogs, like "Branches", or "Search Everywhere".
- *
- * TODO: show close button (maybe os-aware styles?)
- *
- */
-export const ModalWindow = (props: ModalWindowProps) => (
-  <OverlayContainer>
-    <ModalWindowInner {...props} />
-  </OverlayContainer>
-);
 
 /**
  * The way FocusScope is implemented at the moment, it's possible for another focus scope to steal the focus,

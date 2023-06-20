@@ -1,6 +1,5 @@
 import React, { HTMLProps } from "react";
 import { MenuTriggerState } from "@react-stately/menu";
-import { OverlayContainer } from "@react-aria/overlays";
 import { FocusScope } from "@intellij-platform/core/utils/FocusScope";
 import { MenuOverlayContext } from "@intellij-platform/core/Menu/Menu";
 
@@ -26,18 +25,16 @@ export function MenuOverlay({
     return null;
   }
   return (
-    <OverlayContainer>
-      <FocusScope
-        restoreFocus={restoreFocus}
-        forceRestoreFocus={restoreFocus}
-        autoFocus
-      >
-        <MenuOverlayContext.Provider value={state}>
-          <div {...overlayProps} ref={overlayRef}>
-            {children}
-          </div>
-        </MenuOverlayContext.Provider>
-      </FocusScope>
-    </OverlayContainer>
+    <FocusScope
+      restoreFocus={restoreFocus}
+      forceRestoreFocus={restoreFocus}
+      autoFocus
+    >
+      <MenuOverlayContext.Provider value={state}>
+        <div {...overlayProps} ref={overlayRef}>
+          {children}
+        </div>
+      </MenuOverlayContext.Provider>
+    </FocusScope>
   );
 }

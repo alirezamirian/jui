@@ -1,6 +1,8 @@
-import { createGlobalStyle, css, ThemeContext } from "styled-components";
-import { Theme } from "./Theme";
 import React, { CSSProperties, ReactNode } from "react";
+import { ModalProvider } from "@react-aria/overlays";
+import { createGlobalStyle, css, ThemeContext } from "styled-components";
+
+import { Theme } from "./Theme";
 
 interface ThemeProviderProps {
   theme: Theme;
@@ -65,9 +67,11 @@ export const ThemeProvider = ({
   globalStyles = {},
 }: ThemeProviderProps) => {
   return (
-    <ThemeContext.Provider value={theme}>
-      {globalStyles !== false && <GlobalStyles {...globalStyles} />}
-      {children}
-    </ThemeContext.Provider>
+    <ModalProvider>
+      <ThemeContext.Provider value={theme}>
+        {globalStyles !== false && <GlobalStyles {...globalStyles} />}
+        {children}
+      </ThemeContext.Provider>
+    </ModalProvider>
   );
 };

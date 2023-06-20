@@ -8,7 +8,7 @@ import React, {
 import { useTooltipTrigger as useAriaTooltipTrigger } from "@react-aria/tooltip";
 import { TooltipTriggerState } from "@react-stately/tooltip";
 import { FocusableProvider } from "@react-aria/focus";
-import { OverlayContainer } from "@react-aria/overlays";
+import { Overlay } from "@react-aria/overlays";
 import { mergeProps, useLayoutEffect } from "@react-aria/utils";
 import { TooltipContext } from "@intellij-platform/core/Tooltip/TooltipContext";
 
@@ -80,7 +80,7 @@ export const TooltipTriggerAndOverlay = ({
     <>
       {normalizeChildren(trigger, { ...triggerProps, ref: triggerRef })}
       {state.isOpen && !props.isDisabled && (
-        <OverlayContainer>
+        <Overlay>
           <TooltipContext.Provider value={{ state, isInteractive }}>
             <div
               {...mergeProps(
@@ -93,7 +93,7 @@ export const TooltipTriggerAndOverlay = ({
               {tooltip}
             </div>
           </TooltipContext.Provider>
-        </OverlayContainer>
+        </Overlay>
       )}
     </>
   );
