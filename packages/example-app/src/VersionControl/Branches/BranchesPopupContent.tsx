@@ -2,6 +2,7 @@ import path from "path";
 import React from "react";
 import {
   AutoHoverPlatformIcon,
+  BalloonActionLink,
   Divider,
   Item,
   ItemLayout,
@@ -11,17 +12,24 @@ import {
   PopupLayout,
   Section,
   SpeedSearchMenu,
+  useAction,
+  useBalloonManager,
 } from "@intellij-platform/core";
 
 import {
   useLatestRecoilValue,
   // useRefreshRecoilValueOnMount,
 } from "../../recoil-utils";
-import { allBranchesState } from "../branches.state";
+import { allBranchesState, useDeleteBranch } from "./branches.state";
 import { notImplemented } from "../../Project/notImplemented";
+import { VcsActionIds } from "../VcsActionIds";
 
 export function BranchesPopupContent({ onClose }: { onClose: () => void }) {
   const repoBranches = useLatestRecoilValue(allBranchesState);
+
+  const newBranchAction = useAction(VcsActionIds.GIT_CREATE_NEW_BRANCH);
+  const deleteBranch = useDeleteBranch();
+  const balloonManager = useBalloonManager();
   // useRefreshRecoilValueOnMount(allBranchesState);
 
   const isFavoriteBranch = (branch: string) => branch === "master"; // TODO;
@@ -47,15 +55,47 @@ export function BranchesPopupContent({ onClose }: { onClose: () => void }) {
               .filter(({ trackingBranch }) => !trackingBranch)
               .map(({ name }) => `${repoRoot}/pull-${name}`)
           )}
-          onAction={notImplemented}
+          onAction={(key) => {
+            const [repo, branch, operation] = `${key}`.split("//");
+
+            switch (key) {
+              case newBranchAction?.id:
+                return newBranchAction?.perform();
+              default:
+                if (operation === "delete") {
+                  return deleteBranch(branch, repo).then(
+                    () => {
+                      balloonManager.show({
+                        title: `Deleted branch: ${branch}`,
+                        icon: "Info",
+                        actions: (
+                          <BalloonActionLink onPress={notImplemented}>
+                            Restore
+                          </BalloonActionLink>
+                        ),
+                      });
+                    },
+                    () => {
+                      balloonManager.show({
+                        title: `Could not deleted branch: ${branch}`,
+                        icon: "Error",
+                      });
+                    }
+                  );
+                }
+                return notImplemented();
+            }
+          }}
           onClose={onClose}
         >
-          <Item key="new_branch" textValue="New Branch">
-            <MenuItemLayout
-              icon={<PlatformIcon icon="general/add.svg" />}
-              content="New Branch"
-            />
-          </Item>
+          {newBranchAction && (
+            <Item key={newBranchAction.id} textValue={newBranchAction.title}>
+              <MenuItemLayout
+                icon={newBranchAction.icon}
+                content={newBranchAction.title}
+              />
+            </Item>
+          )}
           <Item key="checkout_revision">Checkout Tag or Revision...</Item>
           {
             repoBranches.flatMap(
@@ -73,11 +113,11 @@ export function BranchesPopupContent({ onClose }: { onClose: () => void }) {
                 ) => [
                   !isCurrent && (
                     <Item
-                      key={`${repoRoot}/compare-with-branch-${branchName}`}
+                      key={`${repoRoot}//${branchName}//compare-with-branch`}
                     >{`Compare with '${branchName}'`}</Item>
                   ),
                   <Item
-                    key={`${repoRoot}/show-diff-with-working-tree-${branchName}`}
+                    key={`${repoRoot}//${branchName}//show-diff-with-working-tree`}
                   >
                     Show Diff with Working Tree
                   </Item>,
@@ -88,16 +128,16 @@ export function BranchesPopupContent({ onClose }: { onClose: () => void }) {
                   isCurrent: boolean
                 ) => [
                   !isCurrent && (
-                    <Item key={`${repoRoot}/checkout-${branchName}`}>
+                    <Item key={`${repoRoot}//${branchName}//checkout`}>
                       Checkout
                     </Item>
                   ),
                   <Item
-                    key={`${repoRoot}/new-branch-from-${branchName}`}
+                    key={`${repoRoot}//${branchName}//new-branch-from`}
                   >{`New Branch from '${branchName}'...`}</Item>,
                   !isCurrent && (
                     <Item
-                      key={`${repoRoot}/checkout-and-rebase-onto-${branchName}`}
+                      key={`${repoRoot}//${branchName}//checkout-and-rebase-onto`}
                     >{`Checkout and rebase onto '${branchName}'`}</Item>
                   ),
                   <Divider />,
@@ -109,10 +149,10 @@ export function BranchesPopupContent({ onClose }: { onClose: () => void }) {
                   currentBranch &&
                   branchName !== currentBranch && [
                     <Item
-                      key={`${repoRoot}/rebase-current-onto-${branchName}`}
+                      key={`${repoRoot}//${branchName}//rebase-current-onto`}
                     >{`Rebase '${currentBranch}' onto '${branchName}'`}</Item>,
                     <Item
-                      key={`${repoRoot}/merge-into-current-${branchName}`}
+                      key={`${repoRoot}//${branchName}//merge-into-current`}
                     >{`Merge '${branchName}' onto '${currentBranch}'`}</Item>,
                     <Divider />,
                   ];
@@ -123,7 +163,7 @@ export function BranchesPopupContent({ onClose }: { onClose: () => void }) {
                       ({ name, trackingBranch, isCurrent }) => {
                         return (
                           <Item
-                            key={`${repoRoot}/branch-${name}`}
+                            key={`${repoRoot}//${name}`}
                             textValue={name}
                             title={
                               <MenuItemLayout
@@ -152,16 +192,18 @@ export function BranchesPopupContent({ onClose }: { onClose: () => void }) {
                             {newBranchActions(name, isCurrent)}
                             {compareActions(name, isCurrent)}
                             {mergeActions(name, currentBranch)}
-                            <Item key={`${repoRoot}/pull-${name}`}>Update</Item>
-                            <Item key={`${repoRoot}/push-${name}`}>
+                            <Item key={`${repoRoot}//${name}//pull`}>
+                              Update
+                            </Item>
+                            <Item key={`${repoRoot}//${name}//push`}>
                               Push...
                             </Item>
                             <Divider />
-                            <Item key={`${repoRoot}/rename-${name}`}>
+                            <Item key={`${repoRoot}//${name}//rename`}>
                               Rename...
                             </Item>
                             {!isCurrent && (
-                              <Item key={`${repoRoot}/delete-${name}`}>
+                              <Item key={`${repoRoot}//${name}//delete`}>
                                 Delete
                               </Item>
                             )}
@@ -173,7 +215,7 @@ export function BranchesPopupContent({ onClose }: { onClose: () => void }) {
                   <Section title={getSectionLabel("Remote Branches")}>
                     {remoteBranches.map((branchName) => (
                       <Item
-                        key={`${repoRoot}/branch-${branchName}`}
+                        key={`${repoRoot}//${branchName}`}
                         textValue={branchName}
                         title={
                           <MenuItemLayout
@@ -196,13 +238,13 @@ export function BranchesPopupContent({ onClose }: { onClose: () => void }) {
                         {compareActions(branchName, false)}
                         {mergeActions(branchName, currentBranch)}
                         <Item
-                          key={`${repoRoot}/pull-into-using-merge-${branchName}`}
+                          key={`${repoRoot}//${branchName}//pull-into-using-merge`}
                         >{`Pull into '${branchName}' Using Merge`}</Item>
                         <Item
-                          key={`${repoRoot}/pull-into-using-rebase-${branchName}`}
+                          key={`${repoRoot}//${branchName}//pull-into-using-rebase`}
                         >{`Pull into '${branchName}' Using Rebase`}</Item>
                         <Divider />
-                        <Item key={`${repoRoot}/delete-${branchName}`}>
+                        <Item key={`${repoRoot}//${branchName}//delete`}>
                           Delete
                         </Item>
                       </Item>

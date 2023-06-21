@@ -58,24 +58,26 @@ export const Project = ({
         useCapture /* useCapture because of Monaco's aggressive event handling. Specifically, Cmd+Shift+O in .ts files  */
       >
         {({ shortcutHandlerProps }) => (
-          <DefaultToolWindows
-            ref={toolWindowRef}
-            toolWindowsState={state}
-            onToolWindowStateChange={(newState) => {
-              setState(newState);
-            }}
-            windows={toolWindows}
-            containerProps={shortcutHandlerProps}
-            // To make it not annoying when the whole app is a part of a bigger page. It's fine to disable focus trap,
-            // because the focusable element, the editor, fills the whole main content.
-            allowBlurOnInteractionOutside
-          >
-            <FileEditor />
-          </DefaultToolWindows>
+          <>
+            <DefaultToolWindows
+              ref={toolWindowRef}
+              toolWindowsState={state}
+              onToolWindowStateChange={(newState) => {
+                setState(newState);
+              }}
+              windows={toolWindows}
+              containerProps={shortcutHandlerProps}
+              // To make it not annoying when the whole app is a part of a bigger page. It's fine to disable focus trap,
+              // because the focusable element, the editor, fills the whole main content.
+              allowBlurOnInteractionOutside
+            >
+              <FileEditor />
+            </DefaultToolWindows>
+            <IdeStatusBar />
+          </>
         )}
       </ActionsProvider>
 
-      <IdeStatusBar />
       {isSearchEveryWhereOpen && <SearchEverywherePopup />}
       {isRollbackWindowOpen && <RollbackWindow />}
     </StyledWindowFrame>
