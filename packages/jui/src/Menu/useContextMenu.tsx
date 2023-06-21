@@ -3,6 +3,7 @@ import { MenuTriggerState } from "@react-stately/menu";
 import { useOverlay } from "@react-aria/overlays";
 import { mergeProps } from "@react-aria/utils";
 import { useMouseEventOverlayPosition } from "@intellij-platform/core/utils/useMouseEventOverlayPosition";
+import { areInNestedOverlays } from "@intellij-platform/core/Overlay";
 
 /**
  * Functionality and accessibility of context menu.
@@ -56,8 +57,7 @@ export const useContextMenu = (
       isKeyboardDismissDisabled: false,
       isDismissable: true,
       shouldCloseOnInteractOutside: (element) => {
-        // FIXME: this is kind of hacky and should be removed when nested menu is properly supported
-        return !element.matches("[role=menu] *");
+        return !areInNestedOverlays(overlayRef.current, element);
       },
     },
     overlayRef

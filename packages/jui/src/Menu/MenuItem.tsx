@@ -5,11 +5,12 @@ import {
   MenuItemAria,
   useMenuItem as useMenuItemAria,
 } from "@react-aria/menu";
-import { Overlay, useOverlayPosition } from "@react-aria/overlays";
+import { useOverlayPosition } from "@react-aria/overlays";
 import { mergeProps } from "@react-aria/utils";
 import { TreeState } from "@react-stately/tree";
 import { FocusableElement, Node } from "@react-types/shared";
 import { ItemStateContext } from "@intellij-platform/core/Collections/ItemStateContext";
+import { Overlay } from "@intellij-platform/core/Overlay";
 
 import { LafIcon, PlatformIcon } from "../Icon";
 import { styled } from "../styled";

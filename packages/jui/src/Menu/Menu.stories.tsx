@@ -232,7 +232,10 @@ const StyledContainer = styled.div`
   height: 100vh;
 `;
 
-export const ContextMenu: Story<{ children?: ReactNode }> = ({ children }) => {
+export const ContextMenu: Story<{
+  children?: ReactNode;
+  menuProps?: Partial<MenuProps<object>>;
+}> = ({ children, menuProps = {} }) => {
   return (
     <>
       <div
@@ -244,7 +247,7 @@ export const ContextMenu: Story<{ children?: ReactNode }> = ({ children }) => {
       <ContextMenuContainer
         id="context-menu-container"
         renderMenu={() => (
-          <Menu aria-label="Editor Context Menu">
+          <Menu aria-label="Editor Context Menu" {...menuProps}>
             <Item textValue="Column Selection Mode">
               <MenuItemLayout content="Column Selection Mode" shortcut="⇧⌘8" />
             </Item>

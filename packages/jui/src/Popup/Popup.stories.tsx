@@ -10,7 +10,7 @@ import {
 
 import {
   listPopupContent,
-  menuPopupContent,
+  MenuPopupContent,
   treePopupContent,
 } from "./story-helpers";
 import { Popup, PopupProps } from "./Popup";
@@ -302,5 +302,5 @@ TreeContent.args = {
 
 export const MenuContent = Template.bind(null);
 MenuContent.args = {
-  children: menuPopupContent,
+  children: <MenuPopupContent />,
 };

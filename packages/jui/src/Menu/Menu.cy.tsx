@@ -781,6 +781,17 @@ describe("ContextMenu", () => {
     cy.realPress("{esc}");
     cy.contains("button").should("have.focus");
   });
+
+  it("lets user select nested menu items by mouse", () => {
+    const onAction = cy.stub();
+    cy.mount(<ContextMenu menuProps={{ onAction }} />);
+    cy.get("#context-menu-container").rightclick("top", {
+      scrollBehavior: false,
+    });
+    cy.findByRole("menuitem", { name: "Local History" }).click();
+    cy.findByRole("menuitem", { name: "Show History" }).click();
+    cy.wrap(onAction).should("be.calledOnce");
+  });
 });
 
 function matchImageSnapshot(snapshotsName: string) {

@@ -13,3 +13,4 @@ export * from "./useResizableMovableOverlay";
 export * from "./OverlayMoveHandle";
 export * from "./OverlayResizeHandles";
 export * from "./bounds-helpers";
+export * from "./Overlay";

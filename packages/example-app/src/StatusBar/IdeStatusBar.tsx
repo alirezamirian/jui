@@ -147,7 +147,7 @@ export const IdeStatusBar = () => {
               </TooltipTrigger>
             }
           >
-            <BranchesPopupContent onClose={() => setBranchesPopupOpen(false)} />{" "}
+            {({ close }) => <BranchesPopupContent onClose={close} />}
           </PopupOnTrigger>
           <StatusBarWidget icon={<PlatformIcon icon="ide/readwrite.svg" />} />
           <StatusBarWidget icon={<PlatformIcon icon="ide/fatalError.svg" />} />
