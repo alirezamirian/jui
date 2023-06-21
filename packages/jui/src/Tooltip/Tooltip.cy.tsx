@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { composeStories } from "@storybook/testing-react";
 import * as stories from "./TooltipTrigger.stories";
 import * as helpTooltipStories from "./HelpTooltip.stories";
@@ -47,24 +47,6 @@ describe("TooltipTrigger", () => {
     cy.wait(100).get("[role=tooltip]").should("not.exist");
   });
 
-  it("closes the tooltip when the tooltip is disabled while being open", () => {
-    const Component = () => {
-      const [isDisabled, setIsDisabled] = useState(false);
-      useEffect(() => {
-        setTimeout(() => {
-          setIsDisabled(true);
-        }, 100);
-      }, []);
-      return <Default isDisabled={isDisabled} delay={0} />;
-    };
-    cy.mount(<Component />);
-    workaroundHoverIssue();
-    cy.get("button").first().realHover();
-
-    cy.get("[role=tooltip]").should("exist");
-    cy.get("[role=tooltip]").should("not.exist");
-  });
-
   it("closes the tooltip when trigger is clicked", () => {
     cy.mount(<Default />);
     workaroundHoverIssue();
@@ -101,29 +83,27 @@ describe("PositionedTooltipTrigger", () => {
     cy.get("[role=tooltip]").should("not.exist");
   });
 
-  it("closes the tooltip when the tooltip is disabled after it's opened via focus", () => {
-    const Component = () => {
+  it("closes the tooltip when the tooltip is disabled while being open", () => {
+    const Example = () => {
       const [isDisabled, setIsDisabled] = useState(false);
-      useEffect(() => {
-        setTimeout(() => {
-          setIsDisabled(true);
-        }, 100);
-      }, []);
       return (
         <PositionedTooltipTrigger
-          tooltip={<ValidationTooltip>tooltip</ValidationTooltip>}
+          tooltip={<ValidationTooltip>Error message</ValidationTooltip>}
           showOnFocus
           isDisabled={isDisabled}
-          delay={0}
         >
-          <input />
+          <input
+            autoFocus
+            onChange={() => {
+              setIsDisabled(true);
+            }}
+          />
         </PositionedTooltipTrigger>
       );
     };
-    cy.mount(<Component />);
-    cy.get("input").first().focus();
-
+    cy.mount(<Example />);
     cy.get("[role=tooltip]").should("exist");
+    cy.realType("a");
     cy.get("[role=tooltip]").should("not.exist");
   });
 });
