@@ -88,6 +88,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
  * Bare input, themed, and with a few extra features:
  * - Support for "invalid" state ({@param validationState}
  * - Support for autoSelect.
+ * - Disables spell check by default. It can be overwritten.
  * - TODO: support for addons within the input box, before and after the input area.
  * Use {@link InputField} for more features like an associated label, error message and context help.
  */
@@ -116,6 +117,7 @@ export const Input = React.forwardRef(function Input(
 
   return (
     <StyledInputBox
+      spellCheck={false}
       {...mergeProps(focusWithinProps)}
       focused={isFocused}
       validationState={validationState}
