@@ -58,6 +58,10 @@ export interface InputFieldProps
     HTMLProps<HTMLInputElement>,
     "as" | "ref" | "disabled" //isDisabled should be used
   >;
+  /**
+   * Whether to auto select the value initially
+   */
+  autoSelect?: boolean;
 }
 
 const StyledInputContainer = styled.div<{ labelPlacement?: LabelPlacement }>`
@@ -121,6 +125,7 @@ export const InputField = React.forwardRef(function InputField(
             placeholder={props.placeholder}
             disabled={props.isDisabled}
             validationState={props.validationState}
+            autoSelect={props.autoSelect}
             {...mergeProps(fieldProps, inputProps, {
               value: props.value,
               defaultValue: props.defaultValue,

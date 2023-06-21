@@ -1,8 +1,8 @@
 import React, {
-  ChangeEvent,
   ForwardedRef,
   HTMLProps,
   InputHTMLAttributes,
+  useEffect,
   useState,
 } from "react";
 import { mergeProps, useObjectRef } from "@react-aria/utils";
@@ -75,16 +75,23 @@ const StyledInput = styled.input<{ disabled?: boolean }>`
   }
 `;
 
+export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+  validationState?: ValidationState;
+  /**
+   * Whether to auto select the value initially
+   */
+  autoSelect?: boolean;
+}
+
 /**
  * Bare input, themed, and with a few extra features:
  * - Support for "invalid" state ({@param validationState}
+ * - Support for autoSelect.
  * - TODO: support for addons within the input box, before and after the input area.
  * Use {@link InputField} for more features like an associated label, error message and context help.
  */
 export const Input = React.forwardRef(function Input(
-  props: InputHTMLAttributes<HTMLInputElement> & {
-    validationState?: ValidationState;
-  },
+  { validationState, autoSelect, ...props }: InputProps,
   forwardedRef: ForwardedRef<HTMLInputElement>
 ) {
   const ref = useObjectRef(forwardedRef);
@@ -99,11 +106,18 @@ export const Input = React.forwardRef(function Input(
   const { focusWithinProps } = useFocusWithin({
     onFocusWithinChange: setIsFocused,
   });
+
+  useEffect(() => {
+    if (autoSelect) {
+      ref.current.select();
+    }
+  }, [autoSelect]);
+
   return (
     <StyledInputBox
       {...mergeProps(focusWithinProps)}
       focused={isFocused}
-      validationState={props.validationState}
+      validationState={validationState}
       disabled={props.disabled}
     >
       <StyledInput ref={ref} {...mergeProps(props, focusableProps)} />
