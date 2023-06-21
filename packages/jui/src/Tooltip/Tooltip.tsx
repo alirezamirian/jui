@@ -12,6 +12,13 @@ export interface TooltipProps extends Omit<AriaTooltipProps, "isOpen"> {
   className?: string;
 }
 
+// Providing default value for paddings, based on intellijlaf theme. In Intellij Platform, themes extend either
+// intellijlaf or darcula. Which means some properties can be omitted in the custom theme, relying on the values
+// in the base theme. This is not how theming works here, at the moment, and there are other similar issues, but
+// this is just a mitigation for one case, spacing in tooltip.
+const DEFAULT_TEXT_BORDER_INSETS = "0.5rem 0.8125rem 0.625rem 0.625rem";
+const DEFAULT_SMALL_TEXT_BORDER_INSETS = "0.375rem 0.75rem 0.4375rem 0.625rem";
+
 const StyledTooltip = styled.div<{ multiline?: boolean }>`
   box-sizing: content-box;
   max-width: ${
@@ -45,8 +52,10 @@ const StyledTooltip = styled.div<{ multiline?: boolean }>`
     theme.color("ToolTip.foreground", !theme.dark ? "#000" : "#bfbfbf")};
   padding: ${({ theme, multiline }) =>
     multiline
-      ? theme.inset("HelpTooltip.defaultTextBorderInsets")
-      : theme.inset("HelpTooltip.smallTextBorderInsets")};
+      ? theme.inset("HelpTooltip.defaultTextBorderInsets") ||
+        DEFAULT_TEXT_BORDER_INSETS
+      : theme.inset("HelpTooltip.smallTextBorderInsets") ||
+        DEFAULT_SMALL_TEXT_BORDER_INSETS};
   line-height: 1.2;
   border-style: solid;
   border-width: ${({ theme }) =>
