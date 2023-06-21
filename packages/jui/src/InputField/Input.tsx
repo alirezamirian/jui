@@ -45,6 +45,7 @@ const StyledInputBox = styled.div<{
 const StyledInput = styled.input<{ disabled?: boolean }>`
   all: unset;
   padding: 0.1875rem 0.375rem;
+  flex: 1; // fill in the available space within the input box
   line-height: 1rem;
   color: ${({ theme }) =>
     theme.color(
