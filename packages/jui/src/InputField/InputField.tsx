@@ -1,4 +1,9 @@
-import React, { ChangeEvent, ForwardedRef, HTMLProps } from "react";
+import React, {
+  ChangeEvent,
+  CSSProperties,
+  ForwardedRef,
+  HTMLProps,
+} from "react";
 import { styled } from "@intellij-platform/core/styled";
 import { AriaFieldProps, useField } from "@react-aria/label";
 import { mergeProps, useObjectRef } from "@react-aria/utils";
@@ -15,6 +20,14 @@ type LabelPlacement = "above" | "before";
 export interface InputFieldProps
   extends Omit<AriaFieldProps, "labelElementType">,
     FocusableProps {
+  /**
+   * className applied on the field's wrapper div.
+   */
+  className?: string;
+  /**
+   * style applied on the field's wrapper div.
+   */
+  style?: CSSProperties;
   /**
    * Label to be associated with the input.
    */
@@ -82,6 +95,7 @@ const StyledContextHelp = styled.div`
 
 const StyledBoxAndContextHelpWrapper = styled.div`
   display: flex;
+  width: 100%;
   flex-direction: column;
   gap: 0.25rem; /* Not checked with the reference impl */
 `;
@@ -91,6 +105,8 @@ const StyledBoxAndContextHelpWrapper = styled.div`
  */
 export const InputField = React.forwardRef(function InputField(
   {
+    className,
+    style,
     labelPlacement = "before",
     contextHelp,
     inputProps = {},
@@ -103,7 +119,11 @@ export const InputField = React.forwardRef(function InputField(
     useField(props);
 
   return (
-    <StyledInputContainer labelPlacement={labelPlacement}>
+    <StyledInputContainer
+      labelPlacement={labelPlacement}
+      className={className}
+      style={style}
+    >
       <StyledLabel {...labelProps} disabled={props.isDisabled}>
         {props.label}
       </StyledLabel>

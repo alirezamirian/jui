@@ -1,6 +1,5 @@
 import { Meta, Story } from "@storybook/react";
 import React from "react";
-import { Input } from "./Input";
 import { InputField, InputFieldProps } from "./InputField";
 
 export default {
