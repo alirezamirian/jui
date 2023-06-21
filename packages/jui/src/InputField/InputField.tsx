@@ -146,6 +146,7 @@ export const InputField = React.forwardRef(function InputField(
             disabled={props.isDisabled}
             validationState={props.validationState}
             autoSelect={props.autoSelect}
+            autoFocus={props.autoFocus}
             {...mergeProps(fieldProps, inputProps, {
               value: props.value,
               defaultValue: props.defaultValue,

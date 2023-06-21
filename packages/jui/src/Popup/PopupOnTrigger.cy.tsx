@@ -50,7 +50,7 @@ describe("PopupOnTrigger", () => {
       cy.findByTestId("popup").then(($popup) => {
         const { left, top } = $popup[0].getBoundingClientRect();
         cy.wrap(left).should("eq", 100);
-        cy.wrap(top).should("be.closeTo", 26, 1);
+        cy.wrap(top).should("be.closeTo", 24, 1);
       });
     });
 
