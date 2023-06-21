@@ -5,6 +5,7 @@ import {
   Theme,
   ThemeProvider,
   Tree,
+  WindowLayout,
 } from "@intellij-platform/core";
 import darculaThemeJson from "../themes/darcula.theme.json";
 import { Item } from "@react-stately/collections";
@@ -14,8 +15,8 @@ describe("integration of modal window with Tree components", () => {
     const onClose = cy.stub().as("onClose");
     cy.mount(
       <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
-        <ModalWindow title="title" onClose={onClose}>
-          <SpeedSearchTreeSample />
+        <ModalWindow onClose={onClose}>
+          <WindowLayout header="title" content={<SpeedSearchTreeSample />} />
         </ModalWindow>
       </ThemeProvider>
     );
@@ -30,29 +31,34 @@ describe("integration of modal window with Tree components", () => {
     const onClose = cy.stub().as("onClose");
     cy.mount(
       <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
-        <ModalWindow title="title" onClose={onClose}>
-          <Tree
-            selectionMode="multiple"
-            defaultSelectedKeys={["List"]}
-            defaultExpandedKeys={["List", "Theme", "BasicList", "Foo"]}
-          >
-            <Item key="index.ts">index.ts</Item>
-            <Item title="List" key="List">
-              <Item title="BasicList" key="BasicList">
-                <Item>BasicList.stories.tsx</Item>
-                <Item>BasicList.tsx</Item>
-                <Item>BasicListItem.tsx</Item>
-                <Item>useBasicList.ts</Item>
-              </Item>
+        <ModalWindow onClose={onClose}>
+          <WindowLayout
+            header="title"
+            content={
+              <Tree
+                selectionMode="multiple"
+                defaultSelectedKeys={["List"]}
+                defaultExpandedKeys={["List", "Theme", "BasicList", "Foo"]}
+              >
+                <Item key="index.ts">index.ts</Item>
+                <Item title="List" key="List">
+                  <Item title="BasicList" key="BasicList">
+                    <Item>BasicList.stories.tsx</Item>
+                    <Item>BasicList.tsx</Item>
+                    <Item>BasicListItem.tsx</Item>
+                    <Item>useBasicList.ts</Item>
+                  </Item>
 
-              <Item title="SpeedSearchList" key="SpeedSearchList">
-                <Item>SpeedSearchList.stories.tsx</Item>
-                <Item key="SpeedSearchList.tsx">SpeedSearchList.tsx</Item>
-                <Item>SpeedSearchListItem.tsx</Item>
-                <Item>useSpeedSearchList.ts</Item>
-              </Item>
-            </Item>
-          </Tree>
+                  <Item title="SpeedSearchList" key="SpeedSearchList">
+                    <Item>SpeedSearchList.stories.tsx</Item>
+                    <Item key="SpeedSearchList.tsx">SpeedSearchList.tsx</Item>
+                    <Item>SpeedSearchListItem.tsx</Item>
+                    <Item>useSpeedSearchList.ts</Item>
+                  </Item>
+                </Item>
+              </Tree>
+            }
+          />
         </ModalWindow>
       </ThemeProvider>
     );

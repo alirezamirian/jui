@@ -1,7 +1,6 @@
 import { Meta, Story } from "@storybook/react";
 import React from "react";
 import { Tooltip } from "./Tooltip";
-import { TooltipTriggerProps } from "@react-aria/tooltip";
 import {
   ActionButton,
   ActionHelpTooltip,
@@ -11,16 +10,55 @@ import {
   Link,
   PlatformIcon,
   TooltipTrigger,
+  TooltipTriggerProps,
 } from "@intellij-platform/core";
 
 export default {
   title: "Components/Tooltip/Trigger",
   component: TooltipTrigger,
-  args: {},
+  args: {
+    tooltip: (
+      <ActionHelpTooltip
+        actionName="Switch Task"
+        helpText="Tasks are stored locally only. Connect your issue tracker to link your commits with the corresponding issues."
+        shortcut="⌥⇧T"
+      />
+    ),
+    children: <Button>button</Button>,
+  },
   argTypes: {},
-} as Meta<{}>;
+} as Meta<TooltipTriggerProps>;
 
-export const Default: Story<TooltipTriggerProps> = () => {
+const Template: Story<TooltipTriggerProps> = (props) => (
+  <TooltipTrigger {...props} />
+);
+export const Default = Template.bind(null);
+export const OnInput = Template.bind(null);
+
+OnInput.args = {
+  children: <input />,
+};
+
+export const Interactive = Template.bind(null);
+
+Interactive.args = {
+  tooltip: (
+    <ActionHelpTooltip
+      actionName="Switch Task"
+      helpText="Tasks are stored locally only. Connect your issue tracker to link your commits with the corresponding issues."
+      shortcut="⌥⇧T"
+      link={<Link>Managing tasks</Link>}
+    />
+  ),
+};
+
+export const Disabled = Template.bind(null);
+
+Disabled.args = {
+  isDisabled: true,
+};
+
+export const All: Story<TooltipTriggerProps> = () => {
   return (
     <div
       style={{
@@ -83,22 +121,5 @@ export const Default: Story<TooltipTriggerProps> = () => {
         </TooltipTrigger>
       </ActionToolbar>
     </div>
-  );
-};
-
-export const Interactive: Story<TooltipTriggerProps> = () => {
-  return (
-    <TooltipTrigger
-      tooltip={
-        <ActionHelpTooltip
-          actionName="Switch Task"
-          helpText="Tasks are stored locally only. Connect your issue tracker to link your commits with the corresponding issues."
-          shortcut="⌥⇧T"
-          link={<Link>Managing tasks</Link>}
-        />
-      }
-    >
-      <Button>button</Button>
-    </TooltipTrigger>
   );
 };

@@ -5,6 +5,7 @@ import {
   List,
   Menu,
   MenuItemLayout,
+  MenuProps,
   PlatformIcon,
   Section,
 } from "@intellij-platform/core";
@@ -12,11 +13,15 @@ import { SpeedSearchTreeSample } from "@intellij-platform/core/story-components"
 
 import { Popup } from ".";
 
-export const menuPopupContent = (
+export const MenuPopupContent = <T extends object>({
+  menuProps = {},
+}: {
+  menuProps?: Partial<MenuProps<T>>;
+}) => (
   <Popup.Layout
     header={<Popup.Header>Title</Popup.Header>}
     content={
-      <Menu autoFocus fillAvailableSpace>
+      <Menu autoFocus fillAvailableSpace {...menuProps}>
         <Item textValue="File">
           <MenuItemLayout
             icon={<PlatformIcon icon={"fileTypes/text"} />}
@@ -56,6 +61,7 @@ export const menuPopupContent = (
           />
         </Item>
         <Item
+          aria-label="Nested menu item"
           title={
             <MenuItemLayout
               content=".ignore File"

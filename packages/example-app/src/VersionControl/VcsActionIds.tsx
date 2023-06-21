@@ -16,4 +16,7 @@ export const VcsActionIds = {
   JUMP_TO_SOURCE: CommonActionId.EDIT_SOURCE,
 
   GROUP_CHANGES_VIEW_POPUP_MENU: "ChangesViewPopupMenu", // Not used yet
+
+  GIT_CREATE_NEW_BRANCH: "Git.CreateNewBranch",
+  GIT_BRANCHES: "Git.Branches",
 };

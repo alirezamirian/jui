@@ -1,9 +1,15 @@
-import { selector, selectorFamily } from "recoil";
-import git from "isomorphic-git";
-import { fs } from "../fs/fs";
-import { repoCurrentBranch, vcsRootsState } from "./file-status.state";
+import { selector, selectorFamily, useRecoilCallback } from "recoil";
+import git, { branch, deleteBranch } from "isomorphic-git";
+import { fs } from "../../fs/fs";
+import { repoCurrentBranch, vcsRootsState } from "../file-status.state";
 
-const repoLocalBranchesState = selectorFamily({
+export type LocalBranch = {
+  name: string;
+  isCurrent: boolean;
+  trackingBranch: string | null;
+};
+
+const repoLocalBranchesState = selectorFamily<LocalBranch[], string>({
   key: "vcs/repoLocalBranches",
   get:
     (repoRoot: string) =>
@@ -44,7 +50,13 @@ const repoRemoteBranchesState = selectorFamily({
   },
 });
 
-export const allBranchesState = selector({
+export type RepoBranches = {
+  repoRoot: string;
+  localBranches: LocalBranch[];
+  remoteBranches: string[];
+};
+
+export const allBranchesState = selector<RepoBranches[]>({
   key: "vcs/allBranches",
   get: ({ get }) => {
     const repoRoots = get(vcsRootsState);
@@ -76,4 +88,30 @@ async function getTrackingBranch({
   return mergeRef && remote
     ? `${remote}/${mergeRef.replace(/^refs\/heads\//, "")}`
     : null;
+}
+
+export function useCreateBranch() {
+  return useRecoilCallback(
+    ({ refresh }) =>
+      (branchName: string, repoRoot: string, checkout: boolean = true) => {
+        return branch({ fs, dir: repoRoot, checkout, ref: branchName }).then(
+          () => {
+            refresh(allBranchesState);
+          }
+        );
+      },
+    []
+  );
+}
+
+export function useDeleteBranch() {
+  return useRecoilCallback(
+    ({ refresh }) =>
+      (branchName: string, repoRoot: string) => {
+        return deleteBranch({ fs, dir: repoRoot, ref: branchName }).then(() => {
+          refresh(allBranchesState);
+        });
+      },
+    []
+  );
 }

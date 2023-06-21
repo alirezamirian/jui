@@ -1,4 +1,4 @@
-import React, { ForwardedRef } from "react";
+import React, { ButtonHTMLAttributes, ForwardedRef } from "react";
 import { useButton } from "@react-aria/button";
 import { AriaButtonProps } from "@react-types/button";
 import { filterDOMProps, mergeProps, useObjectRef } from "@react-aria/utils";
@@ -14,6 +14,8 @@ export interface ButtonProps extends AriaButtonProps {
   // NOTE: there is a chance of unchecked breaking change here, since this is not explicitly mentioned as public API
   // of useButton, but it is passed to the underlying usePress.
   preventFocusOnPress?: boolean; // Should this be become true by default?
+
+  form?: ButtonHTMLAttributes<HTMLButtonElement>["form"];
 }
 
 const variants: { [key in ButtonVariant]: typeof StyledButton } = {
@@ -52,11 +54,14 @@ export const Button: React.FC<ButtonProps> = React.forwardRef(function Button(
   const ref = useObjectRef(forwardedRef);
   const { buttonProps } = useButton(props, ref);
   const domProps = filterDOMProps(props);
-  const { autoFocus } = props;
+  const { autoFocus, form } = props;
 
   const Component = (variant && variants[variant]) || StyledButton;
   return (
-    <Component {...mergeProps(domProps, buttonProps, { autoFocus })} ref={ref}>
+    <Component
+      {...mergeProps(domProps, buttonProps, { autoFocus, form })}
+      ref={ref}
+    >
       {props.children}
     </Component>
   );

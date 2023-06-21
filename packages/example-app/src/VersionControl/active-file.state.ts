@@ -5,11 +5,12 @@ import {
   vcsRootForFile,
   vcsRootsState,
 } from "./file-status.state";
+import { allBranchesState, RepoBranches } from "./Branches/branches.state";
 
 /**
  * Repo root of the file opened in the active editor tab.
  */
-export const activeFileRepoRoot = selector({
+export const activeFileRepoRootState = selector({
   key: "vcs/activeFileRepo",
   get: ({ get }) => {
     const activeFile = get(activeEditorTabState)?.filePath;
@@ -17,10 +18,28 @@ export const activeFileRepoRoot = selector({
     return activeFileRepo ?? get(vcsRootsState)[0]?.dir;
   },
 });
+
+/**
+ * Branches of the repository of the file opened in the active editor tab.
+ */
+export const activeFileRepoBranchesState = selector<RepoBranches>({
+  key: "vcs/activeFileRepoBranches",
+  get: ({ get }) => {
+    const activeFileRepoRoot = get(activeFileRepoRootState);
+    const allBranches = get(allBranchesState);
+    return (
+      allBranches.find(({ repoRoot }) => activeFileRepoRoot === repoRoot) ?? {
+        repoRoot: activeFileRepoRoot,
+        localBranches: [],
+        remoteBranches: [],
+      }
+    );
+  },
+});
 /**
  * Current branch of the file opened in the active editor tab.
  */
-export const activeFileCurrentBranch = selector({
+export const activeFileCurrentBranchState = selector({
   key: "vcs/activeFileCurrentBranch",
-  get: ({ get }) => branchForFile(get(activeFileRepoRoot)),
+  get: ({ get }) => branchForFile(get(activeFileRepoRootState)),
 });

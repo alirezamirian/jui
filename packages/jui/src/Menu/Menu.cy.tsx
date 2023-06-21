@@ -73,6 +73,15 @@ describe("Menu", () => {
     matchImageSnapshot("menu--text-alignment--no-icon");
   });
 
+  it("sets the expected aria attributes on menu items with nested menu", () => {
+    cy.mount(<Nested />);
+    cy.findByRole("menuitem", { name: "View Mode", expanded: false }).should(
+      "have.attr",
+      "aria-haspopup",
+      "menu"
+    );
+  });
+
   it("supports keyboard", () => {
     cy.mount(<Nested autoFocus />);
     cy.get('[role="menu"]').focused(); // make sure the menu is auto-focused
@@ -395,10 +404,14 @@ describe("Menu", () => {
 
     it("keeps the focused item of the parent menu, when submenu is closed", () => {
       cy.mount(<ToggleSubmenuOnPress />);
-      cy.findByRole("menuitem", { name: "View Mode" }).click();
-      cy.findByRole("menuitem", { name: "Group tabs" }).realHover();
-      cy.realPress("ArrowLeft");
-      cy.findByRole("menuitem", { name: "Group tabs" }).should("have.focus");
+      const performTest = () => {
+        cy.findByRole("menuitem", { name: "View Mode" }).realClick();
+        cy.findByRole("menuitem", { name: "Group tabs" }).realHover();
+        cy.realPress("ArrowLeft");
+        cy.findByRole("menuitem", { name: "Group tabs" }).should("have.focus");
+      };
+      performTest();
+      performTest(); // performing test twice, to avoid some false positives in local development environment.
     });
 
     it("focuses the last opened (sub-)menu on hover, even if the menu is not focused", () => {
@@ -771,6 +784,17 @@ describe("ContextMenu", () => {
     });
     cy.realPress("{esc}");
     cy.contains("button").should("have.focus");
+  });
+
+  it("lets user select nested menu items by mouse", () => {
+    const onAction = cy.stub();
+    cy.mount(<ContextMenu menuProps={{ onAction }} />);
+    cy.get("#context-menu-container").rightclick("top", {
+      scrollBehavior: false,
+    });
+    cy.findByRole("menuitem", { name: "Local History" }).click();
+    cy.findByRole("menuitem", { name: "Show History" }).click();
+    cy.wrap(onAction).should("be.calledOnce");
   });
 });
 

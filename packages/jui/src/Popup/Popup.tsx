@@ -1,15 +1,8 @@
-import React, {
-  FocusEventHandler,
-  ForwardedRef,
-  RefObject,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
+import React, { ForwardedRef, RefObject, useState } from "react";
 import { DOMProps } from "@react-types/shared";
 import { useFocusWithin, useInteractOutside } from "@react-aria/interactions";
-import { FocusManager, useFocusable, useFocusManager } from "@react-aria/focus";
-import { Overlay, useOverlay, usePreventScroll } from "@react-aria/overlays";
+import { useFocusable } from "@react-aria/focus";
+import { useOverlay, usePreventScroll } from "@react-aria/overlays";
 import { filterDOMProps, useObjectRef } from "@react-aria/utils";
 import { pipe } from "ramda";
 
@@ -23,14 +16,15 @@ import {
 } from "@intellij-platform/core/Overlay";
 import { styled } from "@intellij-platform/core/styled";
 import { WINDOW_SHADOW } from "@intellij-platform/core/style-constants";
+import { areInNestedOverlays, Overlay } from "@intellij-platform/core/Overlay";
 import { mergeNonNullProps } from "@intellij-platform/core/utils/mergeNonNullProps";
+import { useFocusForwarder } from "@intellij-platform/core/utils/useFocusForwarder";
 
 import { useDialog } from "./_useDialog";
 import { PopupHeader } from "./PopupHeader";
 import { PopupContext } from "./PopupContext";
 import { PopupLayout } from "./PopupLayout";
 import { StyledPopupHint } from "./StyledPopupHint";
-import { useFocusForwarder } from "@intellij-platform/core/utils/useFocusForwarder";
 
 const StyledPopupContainer = styled.div`
   position: fixed;
@@ -97,7 +91,10 @@ export const _Popup = (
 ): JSX.Element => {
   const ref = useObjectRef<HTMLDivElement>(forwardedRef);
   const shouldCloseOnInteractOutside = (element: Element) => {
-    return !positioning?.targetRef.current?.contains(element);
+    return (
+      !positioning?.targetRef.current?.contains(element) &&
+      !areInNestedOverlays(ref.current, element)
+    );
   };
   const { overlayProps } = useOverlay(
     {

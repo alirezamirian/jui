@@ -45,13 +45,17 @@ export default {
   component: ModalWindow,
   args: {
     children: (
-      <StyledContainer>
-        <StyledFrame>
-          <SpeedSearchTreeSample />
-        </StyledFrame>
-      </StyledContainer>
+      <WindowLayout
+        header="Window title"
+        content={
+          <StyledContainer>
+            <StyledFrame>
+              <SpeedSearchTreeSample />
+            </StyledFrame>
+          </StyledContainer>
+        }
+      />
     ),
-    title: "Dialog title",
   },
   parameters: {
     // Excluding onBoundsChanging for story performance only
@@ -59,36 +63,6 @@ export default {
   },
   // argTypes: {},
 } as Meta<ModalWindowProps>;
-
-const rollbackWindowContent = (
-  <>
-    <StyledContainer style={{ paddingBottom: 0 }}>
-      <div style={{ display: "flex" }}>
-        <ActionToolbar>
-          <ActionButton>
-            <PlatformIcon icon="actions/diff" />
-          </ActionButton>
-          <ActionButton>
-            <PlatformIcon icon="actions/groupBy" />
-          </ActionButton>
-        </ActionToolbar>
-        <span style={{ flex: 1 }} />
-        <ActionToolbar>
-          <ActionButton>
-            <PlatformIcon icon="actions/expandall" />
-          </ActionButton>
-          <ActionButton>
-            <PlatformIcon icon="actions/collapseall" />
-          </ActionButton>
-        </ActionToolbar>
-      </div>
-
-      <StyledFrame>
-        <SpeedSearchTreeSample />
-      </StyledFrame>
-    </StyledContainer>
-  </>
-);
 
 const Template: Story<ModalWindowProps> = (props) => <ModalWindow {...props} />;
 
@@ -101,10 +75,15 @@ export const ControlledBounds: Story<ModalWindowProps> = (props) => {
   });
   return (
     <ModalWindow {...props} bounds={bounds} onBoundsChange={setBounds}>
-      <div style={{ padding: 16 }}>
-        bounds: {JSON.stringify(bounds, null, 2)}
-        <RenderCount />
-      </div>
+      <WindowLayout
+        header="Window title"
+        content={
+          <div style={{ padding: 16 }}>
+            bounds: {JSON.stringify(bounds, null, 2)}
+            <RenderCount />
+          </div>
+        }
+      />
     </ModalWindow>
   );
 };
@@ -143,12 +122,17 @@ export const LimitedMovement: Story<
       {...props}
       onBoundsChanging={containedWithin(containerBounds)}
     />
-    <div
-      style={{
-        position: "fixed",
-        boxShadow: "0 0 0 2px rgb(255 0 0 / 50%)",
-        ...containerBounds,
-      }}
+    <WindowLayout
+      header="Window title"
+      content={
+        <div
+          style={{
+            position: "fixed",
+            boxShadow: "0 0 0 2px rgb(255 0 0 / 50%)",
+            ...containerBounds,
+          }}
+        />
+      }
     />
   </>
 );
@@ -169,28 +153,29 @@ const NestedWindowExample = () => {
     <div style={{ padding: "1rem" }}>
       <Button onPress={() => setOpen(true)}>Open another window</Button>
       {open && (
-        <ModalWindow
-          title="Nested window"
-          minWidth="content"
-          onClose={close}
-          footer={
-            <WindowLayout.Footer
-              right={
-                <>
-                  <Button autoFocus onPress={close}>
-                    Cancel
-                  </Button>
-                  <Button variant="default" onPress={close}>
-                    OK
-                  </Button>
-                </>
-              }
-            />
-          }
-        >
-          <StyledContainer>
-            Press Escape or any button to close this window.
-          </StyledContainer>
+        <ModalWindow minWidth="content" onClose={close}>
+          <WindowLayout
+            header="Nested window"
+            content={
+              <StyledContainer>
+                Press Escape or any button to close this window.
+              </StyledContainer>
+            }
+            footer={
+              <WindowLayout.Footer
+                right={
+                  <>
+                    <Button autoFocus onPress={close}>
+                      Cancel
+                    </Button>
+                    <Button variant="default" onPress={close}>
+                      OK
+                    </Button>
+                  </>
+                }
+              />
+            }
+          />
         </ModalWindow>
       )}
     </div>
@@ -233,48 +218,90 @@ export const WithTallFooter = Template.bind({});
 WithTallFooter.args = {
   minHeight: 200,
   minWidth: 275,
-  title: "Rollback Changes",
-  children: rollbackWindowContent,
-  footer: (
-    <>
-      <div
-        style={{
-          padding: "0 .75rem",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <StyledLine>1 added</StyledLine>
-        <Checkbox>Delete local copies of the added files</Checkbox>
-      </div>
-      <WindowLayout.Footer
-        right={
-          <>
-            <Button autoFocus>Cancel</Button>
-            <Button variant="default">Rollback</Button>
-          </>
-        }
-      />
-    </>
+  children: (
+    <WindowLayout
+      header="Rollback Changes"
+      content={
+        <StyledContainer style={{ paddingBottom: 0 }}>
+          <div style={{ display: "flex" }}>
+            <ActionToolbar>
+              <ActionButton>
+                <PlatformIcon icon="actions/diff" />
+              </ActionButton>
+              <ActionButton>
+                <PlatformIcon icon="actions/groupBy" />
+              </ActionButton>
+            </ActionToolbar>
+            <span style={{ flex: 1 }} />
+            <ActionToolbar>
+              <ActionButton>
+                <PlatformIcon icon="actions/expandall" />
+              </ActionButton>
+              <ActionButton>
+                <PlatformIcon icon="actions/collapseall" />
+              </ActionButton>
+            </ActionToolbar>
+          </div>
+
+          <StyledFrame>
+            <SpeedSearchTreeSample />
+          </StyledFrame>
+        </StyledContainer>
+      }
+      footer={
+        <>
+          <div
+            style={{
+              padding: "0 .75rem",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <StyledLine>1 added</StyledLine>
+            <Checkbox>Delete local copies of the added files</Checkbox>
+          </div>
+          <WindowLayout.Footer
+            right={
+              <>
+                <Button autoFocus>Cancel</Button>
+                <Button variant="default">Rollback</Button>
+              </>
+            }
+          />
+        </>
+      }
+    />
   ),
 };
 
 export const WithFooter = Template.bind({});
 
 WithFooter.args = {
-  footer: (
-    <WindowLayout.Footer
-      left={
-        <>
-          <Button variant="icon">?</Button>
-          <Checkbox>Open in editor</Checkbox>
-        </>
+  children: (
+    <WindowLayout
+      header="Dialog title"
+      content={
+        <StyledContainer>
+          <StyledFrame>
+            <SpeedSearchTreeSample />
+          </StyledFrame>
+        </StyledContainer>
       }
-      right={
-        <>
-          <Button autoFocus>Cancel</Button>
-          <Button variant="default">OK</Button>
-        </>
+      footer={
+        <WindowLayout.Footer
+          left={
+            <>
+              <Button variant="icon">?</Button>
+              <Checkbox>Open in editor</Checkbox>
+            </>
+          }
+          right={
+            <>
+              <Button autoFocus>Cancel</Button>
+              <Button variant="default">OK</Button>
+            </>
+          }
+        />
       }
     />
   ),

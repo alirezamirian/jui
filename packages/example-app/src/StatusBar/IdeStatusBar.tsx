@@ -20,7 +20,7 @@ import { useRecoilValue } from "recoil";
 import { editorCursorPositionState } from "../Editor/editor.state";
 import { switchToPersistentFsProcess } from "../usePersistenceFsNotification";
 import { BranchesPopupContent } from "../VersionControl/Branches/BranchesPopupContent";
-import { activeFileCurrentBranch } from "../VersionControl/active-file.state";
+import { activeFileCurrentBranchState } from "../VersionControl/active-file.state";
 import { notImplemented } from "../Project/notImplemented";
 
 const StyledLastMessage = styled.div`
@@ -61,7 +61,7 @@ const StatusBarProcess = () => {
 
 export const IdeStatusBar = () => {
   const cursorPosition = useRecoilValue(editorCursorPositionState);
-  const currentBranch = useRecoilValue(activeFileCurrentBranch);
+  const currentBranch = useRecoilValue(activeFileCurrentBranchState);
   const [isBranchesPopupOpen, setBranchesPopupOpen] = useState(false);
 
   return (
@@ -147,7 +147,7 @@ export const IdeStatusBar = () => {
               </TooltipTrigger>
             }
           >
-            <BranchesPopupContent onClose={() => setBranchesPopupOpen(false)} />{" "}
+            {({ close }) => <BranchesPopupContent onClose={close} />}
           </PopupOnTrigger>
           <StatusBarWidget icon={<PlatformIcon icon="ide/readwrite.svg" />} />
           <StatusBarWidget icon={<PlatformIcon icon="ide/fatalError.svg" />} />

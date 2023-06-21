@@ -103,133 +103,137 @@ export function RollbackWindow() {
 
   return (
     <ModalWindow
-      title="Rollback changes"
       onClose={close}
       bounds={windowBounds}
       onBoundsChange={setWindowBounds}
       minHeight={200}
       minWidth={275}
-      footer={
-        <>
-          <div
-            style={{
-              padding: "0 .75rem",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <StyledLine>
-              <ChangesSummary changes={includedChanges} />
-            </StyledLine>
-            <Checkbox isDisabled>
-              Delete local copies of the added files
-            </Checkbox>
-          </div>
-          <WindowLayout.Footer
-            right={
-              <>
-                <Button onPress={close}>Cancel</Button>
-                <Button
-                  variant="default"
-                  onPress={() => {
-                    rollbackChanges(includedChanges)
-                      .catch((e) => {
-                        balloons.show({
-                          title: "Reverting changes failed",
-                          icon: "Error",
-                          body: "Could not revert selected changes. See console for more info",
-                        });
-                        console.error("Git revert error:", e);
-                      })
-                      .finally(close);
-                  }}
-                >
-                  Rollback
-                </Button>
-              </>
-            }
-          />
-        </>
-      }
     >
-      <ActionsProvider actions={treeActions}>
-        {({ shortcutHandlerProps }) => (
-          <StyledContainer {...shortcutHandlerProps}>
-            <div style={{ display: "flex" }}>
-              <ActionToolbar>
-                <ActionButton isDisabled>
-                  <PlatformIcon icon="actions/diff" />
-                </ActionButton>
-                <ActionButtonWithMenu
-                  renderMenu={({ menuProps }) => (
-                    <Menu
-                      {...menuProps}
-                      selectedKeys={[] /* FIXME */}
-                      // FIXME
-                      onAction={notImplemented}
-                    >
-                      <Section title="Group By">
-                        {
+      <WindowLayout
+        header="Rollback changes"
+        content={
+          <ActionsProvider actions={treeActions}>
+            {({ shortcutHandlerProps }) => (
+              <StyledContainer {...shortcutHandlerProps}>
+                <div style={{ display: "flex" }}>
+                  <ActionToolbar>
+                    <ActionButton isDisabled>
+                      <PlatformIcon icon="actions/diff" />
+                    </ActionButton>
+                    <ActionButtonWithMenu
+                      renderMenu={({ menuProps }) => (
+                        <Menu
+                          {...menuProps}
+                          selectedKeys={[] /* FIXME */}
                           // FIXME
-                          groupings.map((grouping) => (
-                            <Item key={grouping.id}>{grouping.title}</Item>
-                          ))
-                        }
-                      </Section>
-                    </Menu>
-                  )}
-                >
-                  <PlatformIcon icon="actions/groupBy.svg" />
-                </ActionButtonWithMenu>
-              </ActionToolbar>
-              <span style={{ flex: 1 }} />
-              <ActionToolbar>
-                <Action.Button actionId={CommonActionId.EXPAND_ALL} />
-                <Action.Button actionId={CommonActionId.COLLAPSE_ALL} />
-              </ActionToolbar>
-            </div>
+                          onAction={notImplemented}
+                        >
+                          <Section title="Group By">
+                            {
+                              // FIXME
+                              groupings.map((grouping) => (
+                                <Item key={grouping.id}>{grouping.title}</Item>
+                              ))
+                            }
+                          </Section>
+                        </Menu>
+                      )}
+                    >
+                      <PlatformIcon icon="actions/groupBy.svg" />
+                    </ActionButtonWithMenu>
+                  </ActionToolbar>
+                  <span style={{ flex: 1 }} />
+                  <ActionToolbar>
+                    <Action.Button actionId={CommonActionId.EXPAND_ALL} />
+                    <Action.Button actionId={CommonActionId.COLLAPSE_ALL} />
+                  </ActionToolbar>
+                </div>
 
-            <StyledFrame>
-              <ContextMenuContainer
-                renderMenu={() => <RollbackTreeContextMenu />}
-                style={{ height: "100%" }}
-              >
-                <SpeedSearchTreeWithCheckboxes
-                  ref={treeRef}
-                  items={rootNodes}
-                  selectionMode="multiple"
-                  selectedKeys={selectedKeys}
-                  onSelectionChange={setSelectedKeys}
-                  expandedKeys={expandedKeys}
-                  onExpandedChange={setExpandedKeys}
-                  nestedSelection={nestedSelection}
-                  fillAvailableSpace
-                >
-                  {(node) => {
-                    const props = getChangeListTreeItemProps({
-                      node,
-                      fileCountsMap,
-                    });
-                    return (
-                      <Item {...props}>
-                        {node.children?.length !== 0 && (
-                          <TreeNodeCheckbox
-                            selectionState={nestedSelection.getSelectionState(
-                              node
+                <StyledFrame>
+                  <ContextMenuContainer
+                    renderMenu={() => <RollbackTreeContextMenu />}
+                    style={{ height: "100%" }}
+                  >
+                    <SpeedSearchTreeWithCheckboxes
+                      ref={treeRef}
+                      items={rootNodes}
+                      selectionMode="multiple"
+                      selectedKeys={selectedKeys}
+                      onSelectionChange={setSelectedKeys}
+                      expandedKeys={expandedKeys}
+                      onExpandedChange={setExpandedKeys}
+                      nestedSelection={nestedSelection}
+                      fillAvailableSpace
+                    >
+                      {(node) => {
+                        const props = getChangeListTreeItemProps({
+                          node,
+                          fileCountsMap,
+                        });
+                        return (
+                          <Item {...props}>
+                            {node.children?.length !== 0 && (
+                              <TreeNodeCheckbox
+                                selectionState={nestedSelection.getSelectionState(
+                                  node
+                                )}
+                                onToggle={() => nestedSelection.toggle(node)}
+                              />
                             )}
-                            onToggle={() => nestedSelection.toggle(node)}
-                          />
-                        )}
-                        {props.children}
-                      </Item>
-                    );
-                  }}
-                </SpeedSearchTreeWithCheckboxes>
-              </ContextMenuContainer>
-            </StyledFrame>
-          </StyledContainer>
-        )}
-      </ActionsProvider>
+                            {props.children}
+                          </Item>
+                        );
+                      }}
+                    </SpeedSearchTreeWithCheckboxes>
+                  </ContextMenuContainer>
+                </StyledFrame>
+              </StyledContainer>
+            )}
+          </ActionsProvider>
+        }
+        footer={
+          <>
+            <div
+              style={{
+                padding: "0 .75rem",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <StyledLine>
+                <ChangesSummary changes={includedChanges} />
+              </StyledLine>
+              <Checkbox isDisabled>
+                Delete local copies of the added files
+              </Checkbox>
+            </div>
+            <WindowLayout.Footer
+              right={
+                <>
+                  <Button onPress={close}>Cancel</Button>
+                  <Button
+                    variant="default"
+                    onPress={() => {
+                      rollbackChanges(includedChanges)
+                        .catch((e) => {
+                          balloons.show({
+                            title: "Reverting changes failed",
+                            icon: "Error",
+                            body: "Could not revert selected changes. See console for more info",
+                          });
+                          console.error("Git revert error:", e);
+                        })
+                        .finally(close);
+                    }}
+                  >
+                    Rollback
+                  </Button>
+                </>
+              }
+            />
+          </>
+        }
+      />
     </ModalWindow>
   );
 }

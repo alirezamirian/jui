@@ -275,10 +275,82 @@ export class Theme<P extends string = string> {
         theme.color(
           "Panel.background" as UnknownThemeProp<"Panel.background">
         ) || "#fff",
+      /**
+       // TODO: remove focusBorderColor. It's only used in Link
+       * @deprecated
+       */
       focusBorderColor: theme.color(
         "Component.focusedBorderColor",
         !theme.dark ? "#87AFDA" : "#466D94"
       ),
+      border: ({
+        focused,
+        disabled,
+        invalid,
+      }: {
+        focused?: boolean;
+        disabled?: boolean;
+        invalid?: boolean;
+      } = {}) => {
+        if (disabled) {
+          return (
+            theme.color("Component.disabledBorderColor") ||
+            theme.color(
+              ("Outline.disabledColor" as UnknownThemeProp<"Outline.disabledColor">) ||
+                "#cfcfcf"
+            )
+          );
+        }
+        if (invalid) {
+          return this.commonColors.focusRing({ invalid: true, focused });
+        }
+        return focused
+          ? theme.color("Component.focusedBorderColor") ||
+              theme.color(
+                ("Outline.focusedColor" as UnknownThemeProp<"Outline.focusedColor">) ||
+                  "#87afda"
+              )
+          : theme.color("Component.borderColor") ||
+              theme.color(
+                "Outline.color" as UnknownThemeProp<"Outline.color">
+              ) ||
+              "#bfbfbf";
+      },
+
+      // corresponding to JBUI.CurrentTheme.Focus https://github.com/JetBrains/intellij-community/blob/4a3c219eb390b90229bdde75e4abf11bc04e5e2a/platform/util/ui/src/com/intellij/util/ui/JBUI.java#LL1414C3-L1414C3
+      focusRing: ({
+        invalid,
+        focused,
+      }: {
+        invalid?: boolean;
+        focused?: boolean;
+      } = {}) => {
+        if (invalid) {
+          if (focused) {
+            return (
+              theme.color("Component.errorFocusColor") ||
+              theme.color(
+                "Focus.activeErrorBorderColor" as UnknownThemeProp<"Focus.activeErrorBorderColor">
+              ) ||
+              "#e53e4d"
+            );
+          }
+          return (
+            theme.color("Component.inactiveErrorFocusColor") ||
+            theme.color(
+              "Focus.inactiveErrorBorderColor" as UnknownThemeProp<"Focus.inactiveErrorBorderColor">
+            ) ||
+            "#ebbcbc"
+          );
+        }
+        return focused
+          ? theme.color("Component.focusColor") ||
+              theme.color(
+                "Focus.borderColor" as UnknownThemeProp<"Focus.borderColor">
+              ) ||
+              "#8ab2eb"
+          : "transparent";
+      },
       red: theme.dark ? "rgb(255,100,100)" : "rgb(255,0,0)",
       blue: theme.dark ? "#589df6" : "rgb(0,0,255)",
       green: theme.dark ? "rgb(98, 150, 85)" : "rgb(0,255,0)",
@@ -291,11 +363,35 @@ export class Theme<P extends string = string> {
         "Borders.ContrastBorderColor",
         theme.dark ? "#323232" : "#c9c9c9"
       ),
+      label: ({
+        disabled,
+        selected,
+      }: {
+        disabled?: boolean;
+        selected?: boolean;
+      } = {}) => {
+        if (disabled) {
+          return theme.color("Label.disabledForeground", "rgb(128, 128, 128)");
+        }
+        if (selected) {
+          return theme.color("Label.selectedForeground", "#fff");
+        }
+        return theme.color("Label.foreground", theme.dark ? "#bbb" : "#000");
+      },
+      /**
+       * @deprecated: use theme.commonColors.label()
+       */
       labelForeground: theme.color(
         "Label.foreground",
         theme.dark ? "#bbb" : "#000"
       ),
+      /**
+       * @deprecated: use theme.commonColors.label({selected: true})
+       */
       labelSelectedForeground: theme.color("Label.selectedForeground", "#fff"),
+      /**
+       * @deprecated: use theme.commonColors.label({disabled: true})
+       */
       labelDisabledForeground: theme.color(
         "Label.disabledForeground",
         "rgb(128, 128, 128)"

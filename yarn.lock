@@ -2621,6 +2621,7 @@ __metadata:
     "@react-aria/focus": ^3.5.2
     "@react-aria/i18n": ^3.3.7
     "@react-aria/interactions": ^3.8.1
+    "@react-aria/label": ^3.5.2
     "@react-aria/link": ^3.2.2
     "@react-aria/listbox": ^3.4.2
     "@react-aria/menu": ^3.7.1
@@ -4931,6 +4932,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-aria/label@npm:^3.5.2":
+  version: 3.5.2
+  resolution: "@react-aria/label@npm:3.5.2"
+  dependencies:
+    "@react-aria/utils": ^3.17.0
+    "@react-types/label": ^3.7.4
+    "@react-types/shared": ^3.18.1
+    "@swc/helpers": ^0.4.14
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 68f268f0ecf0aa07f895bdfaee00bf902fbdfb6ef81f5da26aad5261e9239bf24d612137308cb19ae56ccdbbcfdbae2d70886250d7058bdab06fa82dbe6f9eb9
+  languageName: node
+  linkType: hard
+
 "@react-aria/link@npm:^3.2.2":
   version: 3.2.2
   resolution: "@react-aria/link@npm:3.2.2"
@@ -5070,6 +5085,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-aria/ssr@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "@react-aria/ssr@npm:3.6.0"
+  dependencies:
+    "@swc/helpers": ^0.4.14
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: fab5cf0efb6eea28ae27a74a1ae1724536731f6ea556f7e22f1100e809af5a27c7bfcf6898a0b4d880b374e4b11b782aeadb19b34e26ec10e4e75beb820293e1
+  languageName: node
+  linkType: hard
+
 "@react-aria/tabs@npm:^3.1.2":
   version: 3.1.2
   resolution: "@react-aria/tabs@npm:3.1.2"
@@ -5137,6 +5163,21 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
   checksum: db3f59ace7463268d9214d51368fdd86fa7587d62eaabef23f806d85aa50d98fc9b785a858e9b8208cea10e9a9e92b11f95166fcd2795d0d98c74649a1327768
+  languageName: node
+  linkType: hard
+
+"@react-aria/utils@npm:^3.17.0":
+  version: 3.17.0
+  resolution: "@react-aria/utils@npm:3.17.0"
+  dependencies:
+    "@react-aria/ssr": ^3.6.0
+    "@react-stately/utils": ^3.6.0
+    "@react-types/shared": ^3.18.1
+    "@swc/helpers": ^0.4.14
+    clsx: ^1.1.1
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: a7c9824441a9879ad650acac434c53ff903f2584bd67952f9002d35671497332e8c0a09e521085b60d91f95035fd2f99191dc52a08aea8a47136715f0fdf1c66
   languageName: node
   linkType: hard
 
@@ -5364,6 +5405,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-stately/utils@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "@react-stately/utils@npm:3.6.0"
+  dependencies:
+    "@swc/helpers": ^0.4.14
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: d2ff4cfed5555b112ad71b9bc1837abd777d8fa225043c476b7c9417f8b21a0bcddad0d7127e0acdbf4d85dc9a260c9ae97722b4e9507e6243b412c2724c5f54
+  languageName: node
+  linkType: hard
+
 "@react-stately/virtualizer@npm:^3.1.7":
   version: 3.1.7
   resolution: "@react-stately/virtualizer@npm:3.1.7"
@@ -5430,6 +5482,17 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1
   checksum: 4063f2b71f2560e94e43bd6338f1595a8f4c22c382fb6a7367251aaa8f71955f6f7538988ab0ec6b8cab523b657c3d46daec248807277f9f6f81ca28e28619c1
+  languageName: node
+  linkType: hard
+
+"@react-types/label@npm:^3.7.4":
+  version: 3.7.4
+  resolution: "@react-types/label@npm:3.7.4"
+  dependencies:
+    "@react-types/shared": ^3.18.1
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 30b6a031b4a0991d9952054bf014c54ae17e4753a552c6cc2cd4dc39cace83fda8cccc5ddb97873e3af0a5ecf0b1538aa699e13e0e61eba7d744294dceab2ee4
   languageName: node
   linkType: hard
 
@@ -5507,6 +5570,15 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
   checksum: 3bb3aa77f4938fcd7788c5c5abf24f8f3d3c034d555962e44202d09673844cbb31d7b280edc9ac432bdd06847bc253527f8946f2604b9c88d5fcb96fdc56fbd1
+  languageName: node
+  linkType: hard
+
+"@react-types/shared@npm:^3.18.1":
+  version: 3.18.1
+  resolution: "@react-types/shared@npm:3.18.1"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 298822d1cca26b5da1bdf53a57d26d5619f3af816db3fdecdc8b99a3a305ca8ee352347ca43f426a5d79045b08cf32c00c6b083ad4a1002abf673de9dd4a9bb5
   languageName: node
   linkType: hard
 

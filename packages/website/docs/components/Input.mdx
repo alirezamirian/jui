@@ -1,0 +1,34 @@
+---
+---
+
+import { ApiDescription } from "@site/src/components/ApiDescription";
+import { Input } from "@intellij-platform/core";
+
+# Input
+
+A themed [input](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input), with a few extra features.
+See [InputField](./InputField.mdx), for a [labeled](https://jetbrains.github.io/ui/controls/input_field/#label)
+input with support for [context help](https://jetbrains.github.io/ui/principles/context_help/#07) and
+[error message](https://jetbrains.github.io/ui/controls/input_field/#27).
+
+### Features
+
+- Support for "invalid" state (red outline). [See spec](https://jetbrains.github.io/ui/controls/input_field/#27).
+- Support for auto selecting the text when the input is focused.
+- Disables spell check by default. It can be overwritten.
+
+#### Remaining
+
+- [ ] 🚧 Support for add-ons, (aka built-in buttons, aka decorators), within the input box, before and after the
+      input area.
+
+### Live example
+
+```jsx live themed
+<>
+  <Input placeholder="Simple example" />
+  <br />
+  <br />
+  <Input placeholder="Invalid" validationState="invalid" />
+</>
+```

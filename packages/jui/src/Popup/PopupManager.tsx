@@ -26,7 +26,7 @@ interface PopupManagerAPI {
 
 const NotImplementedFn = () => {
   throw new Error(
-    "PopupsProvider not found. Wrap your application with PopupsProvider to be able to open popups imperatively"
+    "PopupManager not found. Wrap your application with PopupManager to be able to open popups imperatively"
   );
 };
 
@@ -36,7 +36,6 @@ const PopupsContext = React.createContext<PopupManagerAPI>({
 
 /**
  * Returns imperative API for showing popups.
- *
  */
 export const usePopupManager = (): PopupManagerAPI => useContext(PopupsContext);
 
@@ -49,9 +48,7 @@ export interface PopupManagerProps {
 /**
  * Enables imperative API (via {@link usePopupManager}) for showing Popups.
  * It renders popups in a portal appended to `body`, unless `disablePortal` is `true`.
- *
  */
-
 export const PopupManager: React.FC<PopupManagerProps> = ({ children }) => {
   const [popups, setPopups] = useState<Array<PopupElement>>([]);
   const newKeyRef = useRef<number>(0);

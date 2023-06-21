@@ -7,6 +7,7 @@ import {
   MenuTrigger,
   ModalWindow,
   PlatformIcon,
+  WindowLayout,
 } from "@intellij-platform/core";
 
 it("moves focus to the modal window, when opened by a menu item action", () => {
@@ -36,10 +37,15 @@ const ModalOnMenuItem = () => {
           )}
         </MenuTrigger>
         {isOpen && (
-          <ModalWindow title={"Modal window"} onClose={() => setOpen(false)}>
-            <div style={{ padding: "1rem" }}>
-              <input />
-            </div>
+          <ModalWindow onClose={() => setOpen(false)}>
+            <WindowLayout
+              header="Modal window"
+              content={
+                <div style={{ padding: "1rem" }}>
+                  <input />
+                </div>
+              }
+            />
           </ModalWindow>
         )}
       </FocusScope>

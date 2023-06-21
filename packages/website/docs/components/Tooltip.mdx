@@ -47,5 +47,103 @@
   >
     <Button>Help</Button>
   </TooltipTrigger>
+
+  <TooltipTrigger
+    tooltip={
+      <ValidationTooltip>
+        Branch name foo already exists. <br />
+        Change the name or overwrite existing branch
+      </ValidationTooltip>
+    }
+  >
+    <Button>ValidationTooltip</Button>
+  </TooltipTrigger>
 </div>
+```
+
+## PositionedTooltipTrigger
+
+By default tooltip is positioned based on cursor position. `PositionedTooltipTrigger` can be used to position tooltip
+relative to the trigger element. It also offers more options, which are not available in the default `TooltipTrigger`.
+
+### Controlled open state
+
+Use `isOpen` and `onOpenChange` to control open state. Use `defaultOpen` to have the tooltip open initially, without
+controlling the isOpen state.
+
+### Positioning options
+
+Use `placement`, `offset`, `crossOffset`, and `shouldFlip` to control how the tooltip should be positioned relative to
+the trigger.
+
+### `showOnFocus`
+
+Following the reference implementation, by default tooltip is opened only on hover. Use `showOnFocus` to have it shown
+when the trigger gets focused, for better accessiblity.
+
+```jsx live themed
+function PositionedTooltipTriggerDemo() {
+  const [placement, setPlacement] = React.useState("");
+  const [offset, setOffset] = React.useState(null);
+  const [crossOffset, setCrossOffset] = React.useState(null);
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <select
+        value={placement}
+        onChange={(e) => setPlacement(e.target.value)}
+        placeholder="placement"
+      >
+        <option value="">Placement</option>
+        {[
+          "bottom",
+          "bottom left",
+          "bottom right",
+          "bottom start",
+          "bottom end",
+          "top",
+          "top left",
+          "top right",
+          "top start",
+          "top end",
+          "left",
+          "left top",
+          "left bottom",
+          "start",
+          "start top",
+          "start bottom",
+          "right",
+          "right top",
+          "right bottom",
+          "end",
+          "end top",
+          "end bottom",
+        ].map((position) => (
+          <option value={position} key={position}>
+            {position}
+          </option>
+        ))}
+      </select>
+      <input
+        type="number"
+        placeholder="offset"
+        value={offset}
+        onChange={(e) => setOffset(e.target.valueAsNumber)}
+      />
+      <input
+        type="number"
+        placeholder="crossOffset"
+        value={crossOffset}
+        onChange={(e) => setCrossOffset(e.target.valueAsNumber)}
+      />
+      <PositionedTooltipTrigger
+        tooltip={<ActionTooltip actionName="Action Name" shortcut="F1" />}
+        placement={placement || undefined}
+        offset={offset || undefined}
+        crossOffset={crossOffset || undefined}
+      >
+        <Button>Action</Button>
+      </PositionedTooltipTrigger>
+    </div>
+  );
+}
 ```

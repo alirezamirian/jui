@@ -1,11 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { composeStories } from "@storybook/testing-react";
 import * as stories from "./TooltipTrigger.stories";
 import * as helpTooltipStories from "./HelpTooltip.stories";
 import * as actionHelpTooltipStories from "./ActionHelpTooltip.stories";
 import * as actionTooltipStories from "./ActionTooltip.stories";
+import {
+  PositionedTooltipTrigger,
+  ValidationTooltip,
+} from "@intellij-platform/core";
 
-const { Default, Interactive } = composeStories(stories);
+const { Default, OnInput, All, Interactive, Disabled } =
+  composeStories(stories);
 const HelpTooltipStories = composeStories(helpTooltipStories);
 const ActionHelpTooltipStories = composeStories(actionHelpTooltipStories);
 const ActionTooltipStories = composeStories(actionTooltipStories);
@@ -14,7 +19,7 @@ describe("TooltipTrigger", () => {
   it("opens the tooltip on hover, and closes it when trigger area is left", () => {
     // https://jetbrains.github.io/ui/controls/tooltip/#17
     // https://jetbrains.github.io/ui/controls/tooltip/#18
-    cy.mount(<Default />);
+    cy.mount(<All />);
     workaroundHoverIssue();
     cy.get("button").first().realHover();
 
@@ -32,6 +37,74 @@ describe("TooltipTrigger", () => {
     cy.get("[role=tooltip]") // waiting for tooltip to appear
       .realMouseMove(10, 10); // moving mouse out of the trigger and onto the tooltip.
     cy.get("[role=tooltip]"); //tooltip should not be closed
+  });
+
+  it("doesn't show the tooltip if tooltip is disabled", () => {
+    cy.mount(<Disabled delay={0} />);
+    workaroundHoverIssue();
+    cy.get("button").first().realHover();
+
+    cy.wait(100).get("[role=tooltip]").should("not.exist");
+  });
+
+  it("closes the tooltip when trigger is clicked", () => {
+    cy.mount(<Default />);
+    workaroundHoverIssue();
+    cy.get("button").first().realHover();
+    cy.get("[role=tooltip]"); // waiting for tooltip to appear
+    cy.get("button").click();
+    cy.get("[role=tooltip]").should("not.exist"); // tooltip should not be closed
+  });
+
+  it("doesn't close the tooltip on click, if the trigger is an input", () => {
+    cy.mount(<OnInput />);
+    workaroundHoverIssue();
+    cy.get("input").first().realHover();
+    cy.get("[role=tooltip]"); // waiting for tooltip to appear
+    cy.get("input").click();
+    cy.get("[role=tooltip]"); // tooltip should not be closed
+  });
+});
+
+describe("PositionedTooltipTrigger", () => {
+  it("shows/hides the tooltip on focus/blur if showOnFocus is true", () => {
+    cy.mount(
+      <PositionedTooltipTrigger
+        tooltip={<ValidationTooltip>tooltip</ValidationTooltip>}
+        showOnFocus
+        delay={0}
+      >
+        <input />
+      </PositionedTooltipTrigger>
+    );
+    cy.get("input").first().focus();
+    cy.get("[role=tooltip]").should("exist");
+    cy.get("input").first().blur();
+    cy.get("[role=tooltip]").should("not.exist");
+  });
+
+  it("closes the tooltip when the tooltip is disabled while being open", () => {
+    const Example = () => {
+      const [isDisabled, setIsDisabled] = useState(false);
+      return (
+        <PositionedTooltipTrigger
+          tooltip={<ValidationTooltip>Error message</ValidationTooltip>}
+          showOnFocus
+          isDisabled={isDisabled}
+        >
+          <input
+            autoFocus
+            onChange={() => {
+              setIsDisabled(true);
+            }}
+          />
+        </PositionedTooltipTrigger>
+      );
+    };
+    cy.mount(<Example />);
+    cy.get("[role=tooltip]").should("exist");
+    cy.realType("a");
+    cy.get("[role=tooltip]").should("not.exist");
   });
 });
 

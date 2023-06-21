@@ -1,10 +1,5 @@
-import React, { FocusEventHandler, HTMLAttributes, useRef } from "react";
-import {
-  OverlayContainer,
-  useModal,
-  useOverlay,
-  usePreventScroll,
-} from "@react-aria/overlays";
+import React, { FocusEventHandler, useRef } from "react";
+import { useModal, useOverlay, usePreventScroll } from "@react-aria/overlays";
 import { focusSafely, FocusScope } from "@react-aria/focus";
 import { useDialog } from "@react-aria/dialog";
 import { AriaDialogProps } from "@react-types/dialog"; // temporary phantom dependency
@@ -13,34 +8,19 @@ import { WINDOW_SHADOW } from "@intellij-platform/core/style-constants";
 import { mergeProps } from "@react-aria/utils";
 import {
   OverlayInteractionHandler,
-  OverlayMoveHandle,
   OverlayResizeHandles,
   ResizableMovableOverlayOptions,
   useResizableMovableOverlay,
 } from "@intellij-platform/core/Overlay";
+import { WindowContext } from "@intellij-platform/core/ModalWindow/WindowContext";
+import { UNSAFE_React17SuspenseFix } from "@intellij-platform/core/Overlay/UNSAFE_React17SuspenseFix";
 
 export interface ModalWindowProps
   extends AriaDialogProps,
     ResizableMovableOverlayOptions {
   children: React.ReactNode;
-  title: React.ReactNode; // Maybe string here since it's a special case in the original impl, where title is OS-handled and can only be a string
-  /**
-   * An area at the bottom of the window which is not scrolled as opposed to `children`. Use {@link WindowLayout.Footer}
-   * for rendering the common layout of a window footer.
-   */
-  footer?: React.ReactNode;
   onClose?: () => void;
 }
-
-const StyledWindowTitle = styled.h1`
-  margin: 0;
-  text-align: center;
-  font-size: 13px; // not rem! intentional
-  line-height: 20px;
-  cursor: default;
-  user-select: none;
-  padding: 0 8px;
-`;
 
 const StyledWindowUnderlay = styled.div`
   position: fixed;
@@ -69,88 +49,8 @@ const StyledWindowInnerContainer = styled.div`
   flex-direction: column;
 `;
 
-const StyledWindowContentWrapper = styled.div`
-  overflow: auto;
-  flex: 1;
-`;
-
-const StyledWindowFooter = styled.div`
-  min-height: min-content;
-`;
-
 export const DEFAULT_WINDOW_MIN_WIDTH = 50;
 export const DEFAULT_WINDOW_MIN_HEIGHT = 24;
-
-export const ModalWindowInner = ({
-  interactions = "all",
-  footer,
-  minWidth = DEFAULT_WINDOW_MIN_WIDTH,
-  minHeight = DEFAULT_WINDOW_MIN_HEIGHT,
-  ...props
-}: ModalWindowProps): React.ReactElement => {
-  const { title, children } = props;
-
-  const ref = React.useRef<HTMLDivElement>(null);
-  const { overlayProps, underlayProps } = useOverlay(
-    {
-      isOpen: true, // maybe allow rendering closed window? :-?
-      onClose: props.onClose,
-      isDismissable: false,
-      isKeyboardDismissDisabled: false,
-      shouldCloseOnBlur: false,
-    },
-    ref
-  );
-  usePreventScroll();
-  const { modalProps } = useModal();
-
-  const { dialogProps, titleProps } = useDialog(props, ref);
-
-  const { bounds: style, overlayInteractionHandlerProps } =
-    useResizableMovableOverlay(ref, { ...props, minHeight, minWidth });
-
-  const renderTitle = (otherProps: HTMLAttributes<HTMLElement> = {}) => (
-    <StyledWindowTitle {...mergeProps(titleProps, otherProps)}>
-      {title || <>&nbsp;</>}
-    </StyledWindowTitle>
-  );
-
-  const { focusContainmentFixProps } = useFocusContainmentFix();
-
-  return (
-    <StyledWindowUnderlay {...underlayProps}>
-      <OverlayInteractionHandler {...overlayInteractionHandlerProps}>
-        <FocusScope contain restoreFocus autoFocus>
-          <StyledWindowContainer
-            {...mergeProps(
-              overlayProps,
-              dialogProps,
-              modalProps,
-              focusContainmentFixProps,
-              { style }
-            )}
-            ref={ref}
-          >
-            <StyledWindowInnerContainer>
-              {interactions !== "none" ? (
-                <OverlayMoveHandle>
-                  {({ moveHandleProps }) => renderTitle(moveHandleProps)}
-                </OverlayMoveHandle>
-              ) : (
-                renderTitle()
-              )}
-              <StyledWindowContentWrapper>
-                {children}
-              </StyledWindowContentWrapper>
-              {footer && <StyledWindowFooter>{footer}</StyledWindowFooter>}
-            </StyledWindowInnerContainer>
-            {interactions === "all" && <OverlayResizeHandles />}
-          </StyledWindowContainer>
-        </FocusScope>
-      </OverlayInteractionHandler>
-    </StyledWindowUnderlay>
-  );
-};
 
 /**
  * A movable/resizable modal window. The window header which holds the title, can be used to drag the window around.
@@ -169,14 +69,76 @@ export const ModalWindowInner = ({
  * dialogs, like "Branches", or "Search Everywhere".
  *
  * TODO: show close button (maybe os-aware styles?)
- * TODO: imperative API for opening a stack of windows (it may be not needed)
  *
  */
-export const ModalWindow = (props: ModalWindowProps) => (
-  <OverlayContainer>
-    <ModalWindowInner {...props} />
-  </OverlayContainer>
-);
+export const ModalWindow = ({
+  interactions = "all",
+  minWidth = DEFAULT_WINDOW_MIN_WIDTH,
+  minHeight = DEFAULT_WINDOW_MIN_HEIGHT,
+  ...props
+}: ModalWindowProps): React.ReactElement => {
+  const { children } = props;
+
+  const ref = React.useRef<HTMLDivElement>(null);
+  const { overlayProps, underlayProps } = useOverlay(
+    {
+      isOpen: true, // maybe allow rendering closed window? :-?
+      onClose: props.onClose,
+      isDismissable: false,
+      isKeyboardDismissDisabled: false,
+      shouldCloseOnBlur: false,
+    },
+    ref
+  );
+  usePreventScroll();
+  const { modalProps } = useModal();
+
+  const { dialogProps, titleProps } = useDialog(props, ref);
+
+  const {
+    bounds: style,
+    overlayInteractionHandlerProps,
+    UNSAFE_measureContentSize,
+  } = useResizableMovableOverlay(ref, { ...props, minHeight, minWidth });
+
+  const { focusContainmentFixProps } = useFocusContainmentFix();
+
+  return (
+    <StyledWindowUnderlay {...underlayProps}>
+      <OverlayInteractionHandler {...overlayInteractionHandlerProps}>
+        <FocusScope contain restoreFocus autoFocus>
+          <StyledWindowContainer
+            {...mergeProps(
+              overlayProps,
+              dialogProps,
+              modalProps,
+              focusContainmentFixProps,
+              { style }
+            )}
+            ref={ref}
+          >
+            <StyledWindowInnerContainer>
+              <WindowContext.Provider
+                value={{
+                  isActive: true, // because it's modal. WindowContext would be used for non-modal windows too, in future
+                  titleProps,
+                  movable: interactions !== "none",
+                }}
+              >
+                <UNSAFE_React17SuspenseFix
+                  measureContentSize={UNSAFE_measureContentSize}
+                >
+                  {children}
+                </UNSAFE_React17SuspenseFix>
+              </WindowContext.Provider>
+            </StyledWindowInnerContainer>
+            {interactions === "all" && <OverlayResizeHandles />}
+          </StyledWindowContainer>
+        </FocusScope>
+      </OverlayInteractionHandler>
+    </StyledWindowUnderlay>
+  );
+};
 
 /**
  * The way FocusScope is implemented at the moment, it's possible for another focus scope to steal the focus,

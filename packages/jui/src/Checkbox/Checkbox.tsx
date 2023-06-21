@@ -1,6 +1,5 @@
 import React, { HTMLProps, ReactNode } from "react";
 import { useToggleState } from "@react-stately/toggle";
-import { VisuallyHidden } from "@react-aria/visually-hidden";
 import { useCheckbox } from "@react-aria/checkbox";
 import {
   AriaLabelingProps,
@@ -13,7 +12,6 @@ import { mergeProps } from "@react-aria/utils";
 import { styled } from "@intellij-platform/core/styled";
 
 import { CheckboxIcon } from "./CheckboxIcon";
-import { usePress } from "@react-aria/interactions";
 import { UnknownThemeProp } from "@intellij-platform/core/Theme";
 
 export interface CheckboxProps
@@ -78,6 +76,7 @@ export interface CheckboxProps
 }
 
 const StyledWrapperLabel = styled.label`
+  position: relative;
   display: inline-flex;
   align-items: center;
 `;
@@ -95,6 +94,17 @@ const StyledCheckboxLabelText = styled.span<{
           CheckBox.disabledForeground is not a good option, because it's something other than #808080 for darcula */
         )
       : theme.color("*.foreground")};
+`;
+
+const StyledInput = styled.input`
+  opacity: 0.0001;
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  cursor: default;
+  &:disabled {
+    cursor: default;
+  }
 `;
 
 /**
@@ -117,7 +127,6 @@ export const Checkbox = ({
   const { isFocusVisible, isFocused, focusProps } = useFocusRing({
     autoFocus: props.autoFocus,
   });
-  const { pressProps: wrapperPressProps, isPressed } = usePress({});
 
   const focusDisabledProps: Pick<
     HTMLProps<HTMLInputElement>,
@@ -138,20 +147,14 @@ export const Checkbox = ({
     : {};
 
   return (
-    <StyledWrapperLabel {...mergeProps(wrapperPressProps, { className })}>
-      <VisuallyHidden>
-        <input
-          {...mergeProps(inputProps, focusProps, focusDisabledProps)}
-          ref={ref}
-        />
-      </VisuallyHidden>
+    <StyledWrapperLabel className={className}>
+      <StyledInput
+        {...mergeProps(inputProps, focusProps, focusDisabledProps)}
+        ref={ref}
+      />
       <CheckboxIcon
         isIndeterminate={props.isIndeterminate}
-        isFocused={
-          disableFocusAlwaysVisible
-            ? isFocusVisible
-            : (!preventFocus && isPressed) || isFocused
-        }
+        isFocused={disableFocusAlwaysVisible ? isFocusVisible : isFocused}
         isSelected={props.isIndeterminate || state.isSelected}
         isDisabled={props.isDisabled}
         aria-hidden="true"

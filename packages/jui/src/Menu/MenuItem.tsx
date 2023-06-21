@@ -1,16 +1,17 @@
-import React, { HTMLAttributes, RefObject, useContext } from "react";
+import React, { HTMLAttributes, ReactNode, RefObject, useContext } from "react";
+import ReactDOM from "react-dom";
 import { isFocusVisible, useHover, usePress } from "@react-aria/interactions";
 import {
   AriaMenuItemProps,
   MenuItemAria,
   useMenuItem as useMenuItemAria,
 } from "@react-aria/menu";
-import { OverlayContainer, useOverlayPosition } from "@react-aria/overlays";
+import { useOverlayPosition } from "@react-aria/overlays";
 import { mergeProps } from "@react-aria/utils";
 import { TreeState } from "@react-stately/tree";
 import { FocusableElement, Node } from "@react-types/shared";
-import { FocusScope } from "@intellij-platform/core/utils/FocusScope";
 import { ItemStateContext } from "@intellij-platform/core/Collections/ItemStateContext";
+import { Overlay } from "@intellij-platform/core/Overlay";
 
 import { LafIcon, PlatformIcon } from "../Icon";
 import { styled } from "../styled";
@@ -56,12 +57,13 @@ function useMenuItem<T extends unknown>(
   const item = state.collection.getItem(props.key!);
   const isDisabled = state.disabledKeys.has(item.key);
   const isExpanded = state.expandedKeys.has(item.key);
+  const hasSubmenu = item.hasChildNodes;
   const { menuItemProps: ariaMenuItemProps, ...result } = useMenuItemAria(
     {
       key: item.key,
       // hack to prevent react-aria to call onClose when nested items are selected, which is incorrect, and because
       // react-aria doesn't officially support nested menus at the moment
-      onClose: item.hasChildNodes ? () => {} : undefined,
+      onClose: hasSubmenu ? () => {} : undefined,
     },
     state,
     ref
@@ -129,6 +131,12 @@ function useMenuItem<T extends unknown>(
   return {
     ...result,
     menuItemProps: mergeProps(
+      hasSubmenu
+        ? {
+            "aria-expanded": isExpanded,
+            "aria-haspopup": "menu",
+          }
+        : {},
       ariaMenuItemProps,
       hoverProps,
       keyboardProps,
@@ -254,32 +262,42 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
       </StyledMenuItem>
       {isExpanded && (
         /**
-         * A note about using OverlayContainer and FocusScope here:
+         * A note about using Overlay:
          * If sub-menu is not rendered in a portal, useOverlayPosition doesn't work properly and the submenu may
          * be rendered offscreen. Worse, it may introduce scroll in body (or some scrollable ancestor), which will
          * trigger a scroll event which closes the menu if the menu is rendered in an overlay (like in MenuTrigger),
          * which is almost always the case.
-         * So we need to render in a portal and that's done by OverlayContainer. We also need to render a FocusScope,
-         * because now that we are rendering in a portal, we are dom-wise outside the focus scope of the menu in
-         * MenuTrigger (or any other implementation that renders menu in an overlay with a focus scope), and therefore
-         * the autofocus behaviour for the nested menu doesn't work. That's because FocusScope works based on dom
-         * tree, not react tree. Although it's not clear why this problem persists while `contain` is not set on the
-         * FocusScope in MenuTrigger.
-         * So we need focus scope. Rendering a FocusScope here messes with the `restoreFocus` behaviour of the one
-         * in MenuTrigger, and that's why `forceRestoreFocus` is introduced in the locally implemented FocusScope.
-         * In a nutshell:
-         * Positioning -> need for OverlayContainer
-         * using OverlayContainer -> need for FocusScope
-         * FocusScope -> problem in focus restoration in MenuTrigger -> forceRestoreFocus as a patchy solution.
+         *
          */
-        <OverlayContainer>
-          <FocusScope>
-            <div ref={nestedMenuRef} {...positionProps}>
-              {renderSubmenu({ parentState: state, rootKey: item.key })}
-            </div>
-          </FocusScope>
-        </OverlayContainer>
+        <Overlay
+          OverlayComponent={
+            /**
+             *  The FocusScope included in the default Overlay, messes with a particular expected behavior. So we use
+             *  SimpleOverlay, which just renders its children as a portal. There may be a better solution for that
+             *  problem, which would eliminate the need for the funky `OverlayComponent` prop on our `Overlay`
+             *  component. Something to look into in the future.
+             */
+            SimpleOverlay
+          }
+        >
+          <div ref={nestedMenuRef} {...positionProps}>
+            {renderSubmenu({ parentState: state, rootKey: item.key })}
+          </div>
+        </Overlay>
       )}
     </>
   );
+}
+
+/**
+ * A replacement for react-aria Overlay, which doesn't render FocusScope
+ */
+function SimpleOverlay({
+  children,
+  portalContainer = document.body,
+}: {
+  children: ReactNode;
+  portalContainer?: Element | undefined;
+}) {
+  return ReactDOM.createPortal(children, portalContainer);
 }

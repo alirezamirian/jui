@@ -1,12 +1,17 @@
 import React from "react";
 import { composeStories } from "@storybook/testing-react";
 import * as stories from "./ModalWindow.stories";
+import { ModalWindow, WindowLayout } from "@intellij-platform/core";
 
 const { Default } = composeStories(stories);
 
 describe("ModalWindow", () => {
   it("works!", () => {
-    cy.mount(<Default>Content</Default>);
+    cy.mount(
+      <Default>
+        <WindowLayout header="Dialog title" content="Content" />
+      </Default>
+    );
     matchImageSnapshot("ModalWindow-default");
   });
   it("supports resize", () => {
@@ -16,7 +21,7 @@ describe("ModalWindow", () => {
         defaultBounds={{ left: 100, top: 100, width: 200, height: 150 }}
         onBoundsChange={onBoundsChange}
       >
-        {""}
+        <WindowLayout header="Window title" content=" " />
       </Default>
     );
     // Resize from left to 50px more width
@@ -62,10 +67,9 @@ describe("ModalWindow", () => {
     cy.mount(
       <Default
         defaultBounds={{ left: 100, top: 100, width: 200, height: 150 }}
-        title="title"
         onBoundsChange={onBoundsChange}
       >
-        {" "}
+        <WindowLayout header="title" content=" " />
       </Default>
     );
     cy.contains("title").realMouseDown({ position: { x: 10, y: 10 } });
@@ -81,6 +85,30 @@ describe("ModalWindow", () => {
 
   it("supports intercepting in-interaction bound changes", () => {
     // TODO
+  });
+
+  it("measures window size correctly, when window content suspends rendering", () => {
+    let resolved = false;
+    const promise = new Promise<void>((resolve) => {
+      setTimeout(() => {
+        resolved = true;
+        resolve();
+      }, 30);
+    });
+    function ContentThatSuspends() {
+      if (resolved) {
+        return <div style={{ width: 200, height: 150 }}>Content</div>;
+      }
+      throw promise;
+    }
+    cy.mount(
+      <React.Suspense fallback={null}>
+        <ModalWindow id="window">
+          <WindowLayout header="header" content={<ContentThatSuspends />} />
+        </ModalWindow>
+      </React.Suspense>
+    );
+    cy.get("#window").invoke("width").should("eq", 200);
   });
 });
 

@@ -11,7 +11,7 @@ import {
 import { PopupOnTrigger, PopupOnTriggerProps } from "./PopupOnTrigger";
 import {
   listPopupContent,
-  menuPopupContent,
+  MenuPopupContent,
   treePopupContent,
 } from "./story-helpers";
 
@@ -147,7 +147,9 @@ TreeContent.args = {
 
 export const MenuContent = Template.bind(null);
 MenuContent.args = {
-  children: menuPopupContent,
+  children: ({ close }) => (
+    <MenuPopupContent menuProps={{ onClose: close, onAction: alert }} />
+  ),
 };
 
 export const OnCustomTrigger = Template.bind(null);

@@ -11,10 +11,13 @@ import { Popup, PopupProps } from "./Popup";
 
 export interface PopupOnTriggerProps
   extends Partial<OverlayTriggerProps>,
-    Omit<PopupProps, "positioning" | "onClose" | "id">,
+    Omit<PopupProps, "positioning" | "onClose" | "children" | "id">,
     OverlayTriggerStateProps {
   trigger: React.ReactElement;
   placement?: Required<PopupProps>["positioning"]["placement"];
+  children:
+    | (({ close }: { close: () => void }) => React.ReactNode)
+    | React.ReactNode;
 }
 
 /**
@@ -23,7 +26,7 @@ export interface PopupOnTriggerProps
  * of Popup.
  */
 export const PopupOnTrigger = React.forwardRef(function PopupOnTrigger(
-  { trigger, placement, ...props }: PopupOnTriggerProps,
+  { trigger, placement, children, ...props }: PopupOnTriggerProps,
   forwardedRef: ForwardedRef<HTMLButtonElement>
 ) {
   const state = useOverlayTriggerState(props);
@@ -43,7 +46,11 @@ export const PopupOnTrigger = React.forwardRef(function PopupOnTrigger(
           {...mergeProps(props, overlayProps)}
           positioning={{ targetRef: triggerRef, placement }}
           onClose={state.close}
-        />
+        >
+          {typeof children === "function"
+            ? children({ close: state.close })
+            : children}
+        </Popup>
       )}
     </>
   );

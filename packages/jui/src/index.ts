@@ -35,6 +35,7 @@ export * from "./ModalWindow";
 
 export * from "./Tooltip";
 export * from "./Popup";
+export * from "./InputField";
 
 export { Bounds } from "./Overlay";
 export { TextRange } from "./TextRange";
