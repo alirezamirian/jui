@@ -6,11 +6,7 @@ import {
   DividerItem,
   Item,
 } from "@intellij-platform/core/Collections";
-import {
-  Action,
-  ActionGroup,
-  isActionGroup,
-} from "@intellij-platform/core/ActionSystem";
+import { Action, ActionGroup } from "@intellij-platform/core/ActionSystem";
 import { Section } from "@react-stately/collections";
 
 type ActionGroupAsMenuItem = Pick<
@@ -96,8 +92,6 @@ export function renderActionAsMenuItem(
 
 function getAllActions(items: ActionItem[]): Action[] {
   return flatten(
-    items
-      .filter(isAction)
-      .map((item) => (isActionGroup(item) ? item.children : item))
-  );
+    items.map((item) => ("children" in item ? item.children : item))
+  ).filter(isAction);
 }
