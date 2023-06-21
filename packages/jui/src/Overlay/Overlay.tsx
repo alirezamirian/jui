@@ -1,5 +1,5 @@
-import React, { useContext, useImperativeHandle, useRef } from "react";
-import { Overlay as AriaOverlay } from "@react-aria/overlays";
+import React, { useContext, useRef } from "react";
+import { Overlay as AriaOverlay, OverlayProps } from "@react-aria/overlays";
 
 const ParentOverlayContext = React.createContext<HTMLElement | null>(null);
 
@@ -9,20 +9,28 @@ const ParentOverlayContext = React.createContext<HTMLElement | null>(null);
  * "outside clicks" when overlays are nested. The most common example would be nested menu in popup.
  *
  */
-export function Overlay({ children }: { children: React.ReactNode }) {
+export function Overlay({
+  children,
+  OverlayComponent = AriaOverlay,
+}: {
+  children: React.ReactNode;
+  OverlayComponent?: React.ComponentType<OverlayProps>;
+}) {
   const root = useContext(ParentOverlayContext);
   const containerRef = useRef<HTMLDivElement>(null);
 
   if (root) {
-    return <AriaOverlay portalContainer={root}>{children}</AriaOverlay>;
+    return (
+      <OverlayComponent portalContainer={root}>{children}</OverlayComponent>
+    );
   }
   return (
     <ParentOverlayContext.Provider value={containerRef.current}>
-      <AriaOverlay>
+      <OverlayComponent>
         <div ref={containerRef} data-overlay-root="">
           {children}
         </div>
-      </AriaOverlay>
+      </OverlayComponent>
     </ParentOverlayContext.Provider>
   );
 }

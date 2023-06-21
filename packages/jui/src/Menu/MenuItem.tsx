@@ -1,4 +1,5 @@
-import React, { HTMLAttributes, RefObject, useContext } from "react";
+import React, { HTMLAttributes, ReactNode, RefObject, useContext } from "react";
+import ReactDOM from "react-dom";
 import { isFocusVisible, useHover, usePress } from "@react-aria/interactions";
 import {
   AriaMenuItemProps,
@@ -266,8 +267,19 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
          * be rendered offscreen. Worse, it may introduce scroll in body (or some scrollable ancestor), which will
          * trigger a scroll event which closes the menu if the menu is rendered in an overlay (like in MenuTrigger),
          * which is almost always the case.
+         *
          */
-        <Overlay>
+        <Overlay
+          OverlayComponent={
+            /**
+             *  The FocusScope included in the default Overlay, messes with a particular expected behavior. So we use
+             *  SimpleOverlay, which just renders its children as a portal. There may be a better solution for that
+             *  problem, which would eliminate the need for the funky `OverlayComponent` prop on our `Overlay`
+             *  component. Something to look into in the future.
+             */
+            SimpleOverlay
+          }
+        >
           <div ref={nestedMenuRef} {...positionProps}>
             {renderSubmenu({ parentState: state, rootKey: item.key })}
           </div>
@@ -275,4 +287,17 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
       )}
     </>
   );
+}
+
+/**
+ * A replacement for react-aria Overlay, which doesn't render FocusScope
+ */
+function SimpleOverlay({
+  children,
+  portalContainer = document.body,
+}: {
+  children: ReactNode;
+  portalContainer?: Element | undefined;
+}) {
+  return ReactDOM.createPortal(children, portalContainer);
 }

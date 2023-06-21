@@ -404,10 +404,14 @@ describe("Menu", () => {
 
     it("keeps the focused item of the parent menu, when submenu is closed", () => {
       cy.mount(<ToggleSubmenuOnPress />);
-      cy.findByRole("menuitem", { name: "View Mode" }).click();
-      cy.findByRole("menuitem", { name: "Group tabs" }).realHover();
-      cy.realPress("ArrowLeft");
-      cy.findByRole("menuitem", { name: "Group tabs" }).should("have.focus");
+      const performTest = () => {
+        cy.findByRole("menuitem", { name: "View Mode" }).realClick();
+        cy.findByRole("menuitem", { name: "Group tabs" }).realHover();
+        cy.realPress("ArrowLeft");
+        cy.findByRole("menuitem", { name: "Group tabs" }).should("have.focus");
+      };
+      performTest();
+      performTest(); // performing test twice, to avoid some false positives in local development environment.
     });
 
     it("focuses the last opened (sub-)menu on hover, even if the menu is not focused", () => {
