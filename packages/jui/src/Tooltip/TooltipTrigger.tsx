@@ -1,4 +1,10 @@
-import React, { HTMLAttributes, ReactElement, RefObject, useRef } from "react";
+import React, {
+  HTMLAttributes,
+  ReactElement,
+  RefObject,
+  useEffect,
+  useRef,
+} from "react";
 import { TooltipTriggerProps as AriaTooltipTriggerProps } from "@react-aria/tooltip";
 import { useTooltipTriggerState } from "@react-stately/tooltip";
 import { useMouseEventOverlayPosition } from "@intellij-platform/core/utils/useMouseEventOverlayPosition";
@@ -48,13 +54,22 @@ export const TooltipTrigger = ({
 
   const overlayRef = useRef<HTMLDivElement>(null);
 
-  const { overlayProps } = useMouseEventOverlayPosition({
+  const { overlayProps, updatePosition } = useMouseEventOverlayPosition({
     overlayRef,
     isOpen: state.isOpen,
     placement: "bottom left",
     shouldFlip: true,
     offset: theme.value<number>("HelpTooltip.mouseCursorOffset") ?? 20,
   });
+
+  // FIXME: Find the explanation for why it happens, and fix it properly, if it's a legit issue.
+  useEffect(() => {
+    if (state.isOpen) {
+      requestAnimationFrame(() => {
+        updatePosition();
+      });
+    }
+  }, [state.isOpen]);
 
   return (
     <TooltipTriggerAndOverlay

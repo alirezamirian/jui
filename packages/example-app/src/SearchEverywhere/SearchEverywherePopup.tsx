@@ -215,6 +215,13 @@ export function SearchEverywherePopup() {
       const { key } = searchResult[0];
       setSelectedKeys(new Set([key]));
       selectionManagerRef.current?.setFocusedKey(key);
+
+      // A workaround for a mysterious issue that happens only in docusaurus build.
+      // The ref value is not up-to-date, when the effect runs.
+      // FIXME: Find the explanation for why it happens, and fix it properly, if it's a legit issue.
+      requestAnimationFrame(() => {
+        selectionManagerRef.current?.setFocusedKey(key);
+      });
     }
     setSearchResultLimit(SEARCH_RESULT_LIMIT);
   }, [searchResult]);

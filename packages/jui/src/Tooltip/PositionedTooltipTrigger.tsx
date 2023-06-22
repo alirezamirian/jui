@@ -1,4 +1,10 @@
-import React, { HTMLAttributes, ReactElement, RefObject, useRef } from "react";
+import React, {
+  HTMLAttributes,
+  ReactElement,
+  RefObject,
+  useEffect,
+  useRef,
+} from "react";
 import { TooltipTriggerProps as AriaTooltipTriggerProps } from "@react-aria/tooltip";
 import { useTooltipTriggerState } from "@react-stately/tooltip";
 import { TooltipTriggerAndOverlay } from "@intellij-platform/core/Tooltip/TooltipTriggerAndOverlay";
@@ -54,7 +60,7 @@ export const PositionedTooltipTrigger = ({
   const overlayRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement>(null);
 
-  const { overlayProps } = useOverlayPosition({
+  const { overlayProps, updatePosition } = useOverlayPosition({
     ...props,
     overlayRef,
     targetRef: triggerRef,
@@ -62,6 +68,15 @@ export const PositionedTooltipTrigger = ({
     isOpen: state.isOpen,
     onClose: state.close,
   });
+
+  // A workaround for a mysterious issue that happens only in docusaurus build.
+  // The ref value is not up-to-date, when the effect runs.
+  // FIXME: Find the explanation for why it happens, and fix it properly, if it's a legit issue.
+  useEffect(() => {
+    if (state.isOpen) {
+      requestAnimationFrame(updatePosition);
+    }
+  }, [state.isOpen]);
 
   return (
     <TooltipTriggerAndOverlay
