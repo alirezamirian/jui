@@ -8,7 +8,10 @@
   },
   "source": "src/index.html",
   "alias": {
-    "caf": "caf/dist/esm/index.mjs"
+    "caf": "caf/dist/esm/index.mjs",
+    "@intellij-platform/core/utils/tree-utils": "@intellij-platform/core/src/utils/tree-utils",
+    "@intellij-platform/core/ActionSystem/components": "@intellij-platform/core/src/ActionSystem/components",
+    "@intellij-platform/core/utils/array-utils": "@intellij-platform/core/src/utils/array-utils"
   },
   "dependencies": {
     "@intellij-platform/core": "workspace:^",
