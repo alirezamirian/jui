@@ -1,24 +1,28 @@
 import React, {
   ReactElement,
   ReactNode,
-  Suspense,
   useContext,
   useMemo,
   useRef,
   useState,
 } from "react";
-import { ModalWindow, ModalWindowProps } from "./ModalWindow";
+import {
+  ModalWindow,
+  WindowControllerContext,
+  ModalWindowProps,
+} from "./ModalWindow";
 
 interface WindowManagerAPI {
   /**
    * Shows a modal window within the stack of windows managed by {@link WindowManager}.
    * The opened windows will be closed when `onClose` interactions happen.
    */
-  openModalWindow(
+  open(
     props:
-      | ModalWindowProps["children"]
-      | ((args: { close: () => void }) => ModalWindowProps["children"]),
-    options?: Omit<ModalWindowProps, "children">
+      | React.ReactElement<ModalWindowProps, typeof ModalWindow>
+      | ((args: {
+          close: () => void;
+        }) => React.ReactElement<ModalWindowProps, typeof ModalWindow>)
   ): void;
 }
 
@@ -29,7 +33,7 @@ const NotImplementedFn = () => {
 };
 
 const WindowsContext = React.createContext<WindowManagerAPI>({
-  openModalWindow: NotImplementedFn,
+  open: NotImplementedFn,
 });
 
 /**
@@ -55,28 +59,25 @@ export const WindowManager: React.FC<WindowManagerProps> = ({ children }) => {
   const newKeyRef = useRef<number>(0);
 
   const api = useMemo<WindowManagerAPI>(() => {
-    const openModalWindow: WindowManagerAPI["openModalWindow"] = (
-      content,
-      props = {}
-    ) => {
+    const openModalWindow: WindowManagerAPI["open"] = (content) => {
       newKeyRef.current++;
       const close = () => {
         setWindows((currentWindows) =>
           currentWindows.filter((aWindow) => aWindow !== window)
         );
-        props.onClose?.();
       };
       const window = (
-        <Suspense fallback={null}>
-          <ModalWindow key={newKeyRef.current} {...props} onClose={close}>
-            {typeof content === "function" ? content({ close }) : content}
-          </ModalWindow>
-        </Suspense>
+        <WindowControllerContext.Provider
+          value={{ onClose: close }}
+          key={newKeyRef.current}
+        >
+          {typeof content === "function" ? content({ close }) : content}
+        </WindowControllerContext.Provider>
       );
       setWindows((currentWindows) => currentWindows.concat(window));
     };
     return {
-      openModalWindow,
+      open: openModalWindow,
     };
   }, []);
 

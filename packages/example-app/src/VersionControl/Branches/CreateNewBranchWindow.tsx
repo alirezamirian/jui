@@ -2,6 +2,7 @@ import {
   Button,
   Checkbox,
   InputField,
+  ModalWindow,
   styled,
   useBalloonManager,
   WindowLayout,
@@ -88,66 +89,68 @@ export function CreateNewBranchWindow({ close }: { close: () => void }) {
   };
 
   return (
-    <WindowLayout
-      header="Create New Branch"
-      content={
-        <StyledContainer
-          id="create_branch_form"
-          as="form"
-          onSubmit={(e: FormEvent) => {
-            e.preventDefault();
-            create();
-          }}
-        >
-          <InputField
-            autoFocus
-            autoSelect
-            value={branchName}
-            onChange={(newValue) => {
-              setBranchName(cleanUpBranchName(newValue));
-              setIsErrorVisible(true);
+    <ModalWindow minWidth="content" minHeight="content">
+      <WindowLayout
+        header="Create New Branch"
+        content={
+          <StyledContainer
+            id="create_branch_form"
+            as="form"
+            onSubmit={(e: FormEvent) => {
+              e.preventDefault();
+              create();
             }}
-            validationState={validationState}
-            errorMessage={
-              validationState === "invalid" &&
-              error &&
-              ErrorMessages[error](branchName)
-            }
-            label="New branch name:"
-            labelPlacement="above"
-          />
-          <StyledCheckboxesContainer>
-            <Checkbox isSelected={checkout} onChange={setCheckout}>
-              Checkout branch
-            </Checkbox>
-            <Checkbox
-              isSelected={overwrite}
-              isDisabled={!isErrorVisible || error !== "EXISTING"}
-              onChange={setOverwrite}
-            >
-              Overwrite existing branch
-            </Checkbox>
-          </StyledCheckboxesContainer>
-        </StyledContainer>
-      }
-      footer={
-        <WindowLayout.Footer
-          right={
-            <>
-              <Button onPress={close}>Cancel</Button>
-              <Button
-                variant="default"
-                type="submit"
-                form="create_branch_form" // Using form in absence of built-in support for default button
-                isDisabled={validationState === "invalid"}
+          >
+            <InputField
+              autoFocus
+              autoSelect
+              value={branchName}
+              onChange={(newValue) => {
+                setBranchName(cleanUpBranchName(newValue));
+                setIsErrorVisible(true);
+              }}
+              validationState={validationState}
+              errorMessage={
+                validationState === "invalid" &&
+                error &&
+                ErrorMessages[error](branchName)
+              }
+              label="New branch name:"
+              labelPlacement="above"
+            />
+            <StyledCheckboxesContainer>
+              <Checkbox isSelected={checkout} onChange={setCheckout}>
+                Checkout branch
+              </Checkbox>
+              <Checkbox
+                isSelected={overwrite}
+                isDisabled={!isErrorVisible || error !== "EXISTING"}
+                onChange={setOverwrite}
               >
-                Create
-              </Button>
-            </>
-          }
-        />
-      }
-    />
+                Overwrite existing branch
+              </Checkbox>
+            </StyledCheckboxesContainer>
+          </StyledContainer>
+        }
+        footer={
+          <WindowLayout.Footer
+            right={
+              <>
+                <Button onPress={close}>Cancel</Button>
+                <Button
+                  variant="default"
+                  type="submit"
+                  form="create_branch_form" // Using form in absence of built-in support for default button
+                  isDisabled={validationState === "invalid"}
+                >
+                  Create
+                </Button>
+              </>
+            }
+          />
+        }
+      />
+    </ModalWindow>
   );
 }
 

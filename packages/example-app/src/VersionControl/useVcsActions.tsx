@@ -5,21 +5,14 @@ import {
   usePopupManager,
   useWindowManager,
 } from "@intellij-platform/core";
-import {
-  BRANCHES_POPUP_MIN_HEIGHT,
-  BRANCHES_POPUP_MIN_WIDTH,
-  BranchesPopup,
-  branchesPopupSizeState,
-} from "./Branches/BranchesPopup";
+import { BranchesPopup } from "./Branches/BranchesPopup";
 import { useChangesViewActionDefinitions } from "./Changes/useChangesViewActionDefinitions";
 import { VcsActionIds } from "./VcsActionIds";
 import { CreateNewBranchWindow } from "./Branches/CreateNewBranchWindow";
-import { useRecoilValue } from "recoil";
 
 export function useVcsActions(): ActionDefinition[] {
   const popupManager = usePopupManager();
-  const { openModalWindow } = useWindowManager();
-  const branchesPopupSize = useRecoilValue(branchesPopupSizeState);
+  const windowManager = useWindowManager();
 
   return [
     ...useChangesViewActionDefinitions(),
@@ -29,13 +22,9 @@ export function useVcsActions(): ActionDefinition[] {
       description: "Create new branch starting from the selected commit",
       icon: <PlatformIcon icon="general/add.svg" />,
       actionPerformed: () => {
-        openModalWindow(
-          ({ close }) => <CreateNewBranchWindow close={close} />,
-          {
-            minWidth: "content",
-            minHeight: "content",
-          }
-        );
+        windowManager.open(({ close }) => (
+          <CreateNewBranchWindow close={close} />
+        ));
       },
     },
     {
