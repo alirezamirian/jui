@@ -2,9 +2,10 @@ import React, { RefObject, useState } from "react";
 import { useControlledState } from "@react-stately/utils";
 import {
   Bounds,
+  OverlayInteractionHandler,
   OverlayInteractionHandlerProps,
 } from "./OverlayInteractionHandler";
-import { clamp } from "ramda";
+import { clamp, filter } from "ramda";
 import { useContentSize } from "@intellij-platform/core/Overlay/useContentSize";
 import {
   getCenteredBounds,
@@ -212,7 +213,7 @@ export function useResizableMovableOverlay(
        * is not "filled" with default properties.
        */
       ...centeredContentBounds,
-      ...partialBounds,
+      ...(partialBounds && filter((value) => value != null, partialBounds)),
     }),
     UNSAFE_measureContentSize: measureContentSize,
     overlayInteractionHandlerProps,
