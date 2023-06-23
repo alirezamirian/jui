@@ -5,14 +5,21 @@ import {
   usePopupManager,
   useWindowManager,
 } from "@intellij-platform/core";
-import { BranchesPopupContent } from "./Branches/BranchesPopupContent";
+import {
+  BRANCHES_POPUP_MIN_HEIGHT,
+  BRANCHES_POPUP_MIN_WIDTH,
+  BranchesPopupContent,
+  branchesPopupSizeState,
+} from "./Branches/BranchesPopupContent";
 import { useChangesViewActionDefinitions } from "./Changes/useChangesViewActionDefinitions";
 import { VcsActionIds } from "./VcsActionIds";
 import { CreateNewBranchWindow } from "./Branches/CreateNewBranchWindow";
+import { useRecoilValue } from "recoil";
 
 export function useVcsActions(): ActionDefinition[] {
-  const { show } = usePopupManager();
+  const popupManager = usePopupManager();
   const { openModalWindow } = useWindowManager();
+  const branchesPopupSize = useRecoilValue(branchesPopupSizeState);
 
   return [
     ...useChangesViewActionDefinitions(),
@@ -36,7 +43,15 @@ export function useVcsActions(): ActionDefinition[] {
       title: "Branches\u2026",
       icon: <PlatformIcon icon="vcs/branch.svg" />,
       actionPerformed: () => {
-        show(({ close }) => <BranchesPopupContent onClose={close} />);
+        popupManager.show(
+          ({ close }) => <BranchesPopupContent onClose={close} />,
+          {
+            minWidth: BRANCHES_POPUP_MIN_WIDTH,
+            minHeight: BRANCHES_POPUP_MIN_HEIGHT,
+            // FIXME: Bounds needs to be controlled. but it's not feasible with the current PopupManager API.
+            defaultBounds: branchesPopupSize,
+          }
+        );
       },
     },
   ];

@@ -1,5 +1,6 @@
 import {
   ActionTooltip,
+  Bounds,
   Divider,
   Item,
   Menu,
@@ -14,12 +15,17 @@ import {
   StatusBarWidget,
   TooltipTrigger,
 } from "@intellij-platform/core";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { editorCursorPositionState } from "../Editor/editor.state";
 import { switchToPersistentFsProcess } from "../usePersistenceFsNotification";
-import { BranchesPopupContent } from "../VersionControl/Branches/BranchesPopupContent";
+import {
+  BRANCHES_POPUP_MIN_HEIGHT,
+  BRANCHES_POPUP_MIN_WIDTH,
+  BranchesPopupContent,
+  branchesPopupSizeState,
+} from "../VersionControl/Branches/BranchesPopupContent";
 import { activeFileCurrentBranchState } from "../VersionControl/active-file.state";
 import { notImplemented } from "../Project/notImplemented";
 
@@ -62,7 +68,22 @@ const StatusBarProcess = () => {
 export const IdeStatusBar = () => {
   const cursorPosition = useRecoilValue(editorCursorPositionState);
   const currentBranch = useRecoilValue(activeFileCurrentBranchState);
-  const [isBranchesPopupOpen, setBranchesPopupOpen] = useState(false);
+  const [branchesPopupPersistedSize, setBranchesPopupPersistedSize] =
+    useRecoilState(branchesPopupSizeState);
+  const [branchesPopupBounds, setBranchesPopupBounds] = useState<
+    Partial<Bounds>
+  >(branchesPopupPersistedSize ?? {});
+
+  useEffect(() => {
+    setBranchesPopupBounds(({ left, top }) => ({
+      // Following the reference impl, keep the positioning (left,top) untouched. From UX point of view though,
+      // it's probably better to have the popup repositioned as well, with respect to the trigger. Especially because
+      // restoring the default size can increase the size, pushing the popup offscreen.
+      left,
+      top,
+      ...branchesPopupPersistedSize,
+    }));
+  }, [branchesPopupPersistedSize]);
 
   return (
     <StatusBar
@@ -130,8 +151,21 @@ export const IdeStatusBar = () => {
             )}
           </MenuTrigger>
           <PopupOnTrigger
-            isOpen={isBranchesPopupOpen}
-            onOpenChange={setBranchesPopupOpen}
+            onOpenChange={() => {
+              setBranchesPopupBounds(branchesPopupPersistedSize ?? {});
+            }}
+            bounds={branchesPopupBounds}
+            onBoundsChange={(bounds, interactionType) => {
+              if (interactionType === "resize") {
+                setBranchesPopupPersistedSize({
+                  width: bounds.width,
+                  height: bounds.height,
+                });
+              }
+              setBranchesPopupBounds(bounds);
+            }}
+            minWidth={BRANCHES_POPUP_MIN_WIDTH}
+            minHeight={BRANCHES_POPUP_MIN_HEIGHT}
             placement="top"
             interactions="all"
             trigger={

@@ -1,6 +1,9 @@
 import path from "path";
 import React from "react";
 import {
+  ActionButton,
+  ActionToolbar,
+  ActionTooltip,
   AutoHoverPlatformIcon,
   BalloonActionLink,
   Divider,
@@ -12,6 +15,8 @@ import {
   PopupLayout,
   Section,
   SpeedSearchMenu,
+  styled,
+  TooltipTrigger,
   useAction,
   useBalloonManager,
 } from "@intellij-platform/core";
@@ -23,9 +28,39 @@ import {
 import { allBranchesState, useDeleteBranch } from "./branches.state";
 import { notImplemented } from "../../Project/notImplemented";
 import { VcsActionIds } from "../VcsActionIds";
+import { atom, useRecoilState, useRecoilValue } from "recoil";
 
+const StyledHeader = styled.div`
+  box-sizing: border-box;
+  padding: 0 0.375rem;
+  display: flex;
+  align-items: center;
+  width: 100%;
+`;
+const StyledTitle = styled.div`
+  flex: 1;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0 0.625rem;
+`;
+
+export const branchesPopupSizeState = atom<
+  | {
+      width: number;
+      height: number;
+    }
+  | undefined
+>({
+  key: "branchesPopup.bounds",
+  default: undefined,
+});
+
+export const BRANCHES_POPUP_MIN_WIDTH = 300;
+export const BRANCHES_POPUP_MIN_HEIGHT = 55;
 export function BranchesPopupContent({ onClose }: { onClose: () => void }) {
   const repoBranches = useLatestRecoilValue(allBranchesState);
+  const [customSize, setCustomSize] = useRecoilState(branchesPopupSizeState);
 
   const newBranchAction = useAction(VcsActionIds.GIT_CREATE_NEW_BRANCH);
   const deleteBranch = useDeleteBranch();
@@ -43,7 +78,37 @@ export function BranchesPopupContent({ onClose }: { onClose: () => void }) {
       : "Git Branches";
   return (
     <PopupLayout
-      header={<Popup.Header>{title}</Popup.Header>}
+      header={
+        <Popup.Header hasControls>
+          <StyledHeader>
+            <StyledTitle>{title}</StyledTitle>
+            <ActionToolbar>
+              <TooltipTrigger tooltip={<ActionTooltip actionName="Fetch" />}>
+                <ActionButton
+                  onPress={() => {
+                    notImplemented();
+                    onClose();
+                  }}
+                >
+                  <PlatformIcon icon="vcs/fetch.svg" />
+                </ActionButton>
+              </TooltipTrigger>
+              <TooltipTrigger
+                tooltip={<ActionTooltip actionName="Restore Popup Size" />}
+              >
+                <ActionButton
+                  isDisabled={customSize === undefined}
+                  onPress={() => {
+                    setCustomSize(undefined);
+                  }}
+                >
+                  <PlatformIcon icon="general/fitContent.svg" />
+                </ActionButton>
+              </TooltipTrigger>
+            </ActionToolbar>
+          </StyledHeader>
+        </Popup.Header>
+      }
       content={
         <SpeedSearchMenu
           aria-label={title}
