@@ -8,9 +8,9 @@ import {
 import {
   BRANCHES_POPUP_MIN_HEIGHT,
   BRANCHES_POPUP_MIN_WIDTH,
-  BranchesPopupContent,
+  BranchesPopup,
   branchesPopupSizeState,
-} from "./Branches/BranchesPopupContent";
+} from "./Branches/BranchesPopup";
 import { useChangesViewActionDefinitions } from "./Changes/useChangesViewActionDefinitions";
 import { VcsActionIds } from "./VcsActionIds";
 import { CreateNewBranchWindow } from "./Branches/CreateNewBranchWindow";
@@ -43,15 +43,7 @@ export function useVcsActions(): ActionDefinition[] {
       title: "Branches\u2026",
       icon: <PlatformIcon icon="vcs/branch.svg" />,
       actionPerformed: () => {
-        popupManager.show(
-          ({ close }) => <BranchesPopupContent onClose={close} />,
-          {
-            minWidth: BRANCHES_POPUP_MIN_WIDTH,
-            minHeight: BRANCHES_POPUP_MIN_HEIGHT,
-            // FIXME: Bounds needs to be controlled. but it's not feasible with the current PopupManager API.
-            defaultBounds: branchesPopupSize,
-          }
-        );
+        popupManager.show(({ close }) => <BranchesPopup onClose={close} />);
       },
     },
   ];

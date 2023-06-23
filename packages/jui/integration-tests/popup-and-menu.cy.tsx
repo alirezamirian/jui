@@ -1,17 +1,21 @@
 import React from "react";
 
-import { Button, PopupOnTrigger } from "@intellij-platform/core";
+import { Button, Popup, PopupTrigger } from "@intellij-platform/core";
 import { MenuPopupContent } from "../src/Popup/story-helpers";
 
 describe("Popup and menu integration", () => {
   it("lets user select menu items by mouse", () => {
     const onAction = cy.stub();
     cy.mount(
-      <PopupOnTrigger trigger={<Button>Open menu</Button>}>
-        {({ close }) => (
-          <MenuPopupContent menuProps={{ onAction, onClose: close }} />
+      <PopupTrigger
+        popup={({ close }) => (
+          <Popup>
+            <MenuPopupContent menuProps={{ onAction, onClose: close }} />
+          </Popup>
         )}
-      </PopupOnTrigger>
+      >
+        <Button>Open menu</Button>
+      </PopupTrigger>
     );
 
     // First level menu items

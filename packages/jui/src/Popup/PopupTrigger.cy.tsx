@@ -2,12 +2,13 @@ import React from "react";
 import { composeStories } from "@storybook/testing-react";
 import { Button } from "@intellij-platform/core/Button";
 
-import * as stories from "./PopupOnTrigger.stories";
-import { PopupOnTrigger } from "./PopupOnTrigger";
+import * as stories from "./PopupTrigger.stories";
+import { PopupTrigger } from "./PopupTrigger";
+import { Popup } from "./Popup";
 
 const { Positioning, Default, MenuContent } = composeStories(stories);
 
-describe("PopupOnTrigger", () => {
+describe("PopupTrigger", () => {
   describe("positioning", () => {
     it("Ensures the popup is positioned within the viewport", () => {
       cy.window().then(({ innerWidth, innerHeight }) => {
@@ -16,12 +17,12 @@ describe("PopupOnTrigger", () => {
           y: number,
           placement: "top" | "bottom" = "bottom"
         ) => {
-          cy.mount(<Positioning data-testid="popup" placement={placement} />);
-          cy.get("body").dblclick(x, y);
+          cy.mount(<Positioning placement={placement} />);
+          cy.get("body").dblclick(x, y); // moves the trigger to double-click position
           cy.findByRole("button", { expanded: false }).click({
             scrollBehavior: false,
           });
-          cy.findByTestId("popup").isWithinViewport();
+          cy.findByRole("dialog").isWithinViewport();
         };
         testInPosition(innerWidth - 50, innerHeight - 50);
         testInPosition(innerWidth / 2, innerHeight - 50);
@@ -35,17 +36,11 @@ describe("PopupOnTrigger", () => {
 
     it("places the popup below the trigger", () => {
       cy.mount(
-        <PopupOnTrigger
-          trigger={
-            <div style={{ marginLeft: 100 }}>
-              <Button>trigger</Button>
-            </div>
-          }
-          data-testid="popup"
-          isOpen
-        >
-          content
-        </PopupOnTrigger>
+        <PopupTrigger popup={<Popup data-testid="popup">content</Popup>} isOpen>
+          <div style={{ marginLeft: 100 }}>
+            <Button>trigger</Button>
+          </div>
+        </PopupTrigger>
       );
       cy.findByTestId("popup").then(($popup) => {
         const { left, top } = $popup[0].getBoundingClientRect();
@@ -56,18 +51,15 @@ describe("PopupOnTrigger", () => {
 
     it("places the popup above the trigger, if placement is 'top'", () => {
       cy.mount(
-        <PopupOnTrigger
-          trigger={
-            <div style={{ marginLeft: 100, marginTop: 100 }}>
-              <Button>trigger</Button>
-            </div>
-          }
-          data-testid="popup"
+        <PopupTrigger
+          popup={<Popup data-testid="popup">content</Popup>}
           placement="top"
           isOpen
         >
-          content
-        </PopupOnTrigger>
+          <div style={{ marginLeft: 100, marginTop: 100 }}>
+            <Button>trigger</Button>
+          </div>
+        </PopupTrigger>
       );
       cy.findByTestId("popup").then(($popup) => {
         const { left, top } = $popup[0].getBoundingClientRect();
@@ -79,31 +71,26 @@ describe("PopupOnTrigger", () => {
 
   describe("focus behavior", () => {
     it("autofocuses the popup container if there is no autofocus element in the content", () => {
-      cy.mount(<Default data-testid="popup" />);
+      cy.mount(<Default />);
       cy.findByRole("button", { expanded: false }).click();
-      cy.findByTestId("popup").should("have.focus");
+      cy.findByRole("dialog").should("have.focus");
     });
 
     it("doesn't change the focus if there is an autofocus element in the content", () => {
-      cy.mount(<MenuContent data-testid="popup" />);
+      cy.mount(<MenuContent />);
       cy.findByRole("button", { expanded: false }).click();
-      cy.findByTestId("popup").should("not.have.focus");
+      cy.findByRole("dialog").should("not.have.focus");
       cy.findByRole("menu").should("have.focus");
     });
   });
 
   it("toggles the popup open when the trigger is pressed", () => {
     cy.mount(
-      <PopupOnTrigger
-        trigger={
-          <div style={{ marginLeft: 100 }}>
-            <Button>trigger</Button>
-          </div>
-        }
-        data-testid="popup"
-      >
-        popup content
-      </PopupOnTrigger>
+      <PopupTrigger popup={<Popup data-testid="popup">popup content</Popup>}>
+        <div style={{ marginLeft: 100 }}>
+          <Button>trigger</Button>
+        </div>
+      </PopupTrigger>
     );
     cy.findByRole("button", { expanded: false }).click();
     cy.contains("popup content");

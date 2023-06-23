@@ -1,13 +1,12 @@
 import {
   ActionTooltip,
-  Bounds,
   Divider,
   Item,
   Menu,
   MenuItemLayout,
   MenuTrigger,
   PlatformIcon,
-  PopupOnTrigger,
+  PopupTrigger,
   ProgressBar,
   ProgressBarPauseButton,
   ProgressBarStopButton,
@@ -15,17 +14,12 @@ import {
   StatusBarWidget,
   TooltipTrigger,
 } from "@intellij-platform/core";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import { editorCursorPositionState } from "../Editor/editor.state";
 import { switchToPersistentFsProcess } from "../usePersistenceFsNotification";
-import {
-  BRANCHES_POPUP_MIN_HEIGHT,
-  BRANCHES_POPUP_MIN_WIDTH,
-  BranchesPopupContent,
-  branchesPopupSizeState,
-} from "../VersionControl/Branches/BranchesPopupContent";
+import { BranchesPopup } from "../VersionControl/Branches/BranchesPopup";
 import { activeFileCurrentBranchState } from "../VersionControl/active-file.state";
 import { notImplemented } from "../Project/notImplemented";
 
@@ -68,22 +62,6 @@ const StatusBarProcess = () => {
 export const IdeStatusBar = () => {
   const cursorPosition = useRecoilValue(editorCursorPositionState);
   const currentBranch = useRecoilValue(activeFileCurrentBranchState);
-  const [branchesPopupPersistedSize, setBranchesPopupPersistedSize] =
-    useRecoilState(branchesPopupSizeState);
-  const [branchesPopupBounds, setBranchesPopupBounds] = useState<
-    Partial<Bounds>
-  >(branchesPopupPersistedSize ?? {});
-
-  useEffect(() => {
-    setBranchesPopupBounds(({ left, top }) => ({
-      // Following the reference impl, keep the positioning (left,top) untouched. From UX point of view though,
-      // it's probably better to have the popup repositioned as well, with respect to the trigger. Especially because
-      // restoring the default size can increase the size, pushing the popup offscreen.
-      left,
-      top,
-      ...branchesPopupPersistedSize,
-    }));
-  }, [branchesPopupPersistedSize]);
 
   return (
     <StatusBar
@@ -150,39 +128,21 @@ export const IdeStatusBar = () => {
               <StatusBarWidget {...props} ref={ref} label="TypeScript 4.4.3" />
             )}
           </MenuTrigger>
-          <PopupOnTrigger
-            onOpenChange={() => {
-              setBranchesPopupBounds(branchesPopupPersistedSize ?? {});
-            }}
-            bounds={branchesPopupBounds}
-            onBoundsChange={(bounds, interactionType) => {
-              if (interactionType === "resize") {
-                setBranchesPopupPersistedSize({
-                  width: bounds.width,
-                  height: bounds.height,
-                });
-              }
-              setBranchesPopupBounds(bounds);
-            }}
-            minWidth={BRANCHES_POPUP_MIN_WIDTH}
-            minHeight={BRANCHES_POPUP_MIN_HEIGHT}
+          <PopupTrigger
             placement="top"
-            interactions="all"
-            trigger={
-              <TooltipTrigger
-                tooltip={
-                  <ActionTooltip actionName={`Git Branch: ${currentBranch}`} />
-                }
-              >
-                <StatusBarWidget
-                  icon={<PlatformIcon icon="vcs/branch.svg" />}
-                  label={currentBranch}
-                />
-              </TooltipTrigger>
-            }
+            popup={({ close }) => <BranchesPopup onClose={close} />}
           >
-            {({ close }) => <BranchesPopupContent onClose={close} />}
-          </PopupOnTrigger>
+            <TooltipTrigger
+              tooltip={
+                <ActionTooltip actionName={`Git Branch: ${currentBranch}`} />
+              }
+            >
+              <StatusBarWidget
+                icon={<PlatformIcon icon="vcs/branch.svg" />}
+                label={currentBranch}
+              />
+            </TooltipTrigger>
+          </PopupTrigger>
           <StatusBarWidget icon={<PlatformIcon icon="ide/readwrite.svg" />} />
           <StatusBarWidget icon={<PlatformIcon icon="ide/fatalError.svg" />} />
         </>

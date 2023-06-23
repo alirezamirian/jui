@@ -1,23 +1,23 @@
 import React, { ForwardedRef } from "react";
 import { OverlayTriggerProps, useOverlayTrigger } from "@react-aria/overlays";
 import { PressResponder } from "@react-aria/interactions";
-import { mergeProps, useObjectRef } from "@react-aria/utils";
+import { useObjectRef } from "@react-aria/utils";
 import {
   OverlayTriggerProps as OverlayTriggerStateProps,
   useOverlayTriggerState,
 } from "@react-stately/overlays";
 
 import { Popup, PopupProps } from "./Popup";
+import { PopupControllerContext } from "./PopupContext";
 
-export interface PopupOnTriggerProps
+export interface PopupTriggerProps
   extends Partial<OverlayTriggerProps>,
-    Omit<PopupProps, "positioning" | "onClose" | "children" | "id">,
     OverlayTriggerStateProps {
-  trigger: React.ReactElement;
   placement?: Required<PopupProps>["positioning"]["placement"];
-  children:
-    | (({ close }: { close: () => void }) => React.ReactNode)
-    | React.ReactNode;
+  popup:
+    | React.ReactElement
+    | (({ close }: { close: () => void }) => React.ReactNode);
+  children: React.ReactElement;
 }
 
 /**
@@ -25,8 +25,8 @@ export interface PopupOnTriggerProps
  * {@link ActionButton}), and is rendered in place. Similar to {@link Popup component}, `children` defines the content
  * of Popup.
  */
-export const PopupOnTrigger = React.forwardRef(function PopupOnTrigger(
-  { trigger, placement, children, ...props }: PopupOnTriggerProps,
+export const PopupTrigger = React.forwardRef(function PopupTrigger(
+  { placement, children, popup, ...props }: PopupTriggerProps,
   forwardedRef: ForwardedRef<HTMLButtonElement>
 ) {
   const state = useOverlayTriggerState(props);
@@ -39,18 +39,21 @@ export const PopupOnTrigger = React.forwardRef(function PopupOnTrigger(
   return (
     <>
       <PressResponder ref={triggerRef} {...triggerProps}>
-        {trigger}
+        {children}
       </PressResponder>
       {state.isOpen && (
-        <Popup
-          {...mergeProps(props, overlayProps)}
-          positioning={{ targetRef: triggerRef, placement }}
-          onClose={state.close}
+        <PopupControllerContext.Provider
+          value={{
+            overlayProps,
+            positioning: {
+              targetRef: triggerRef,
+              placement,
+            },
+            onClose: state.close,
+          }}
         >
-          {typeof children === "function"
-            ? children({ close: state.close })
-            : children}
-        </Popup>
+          {typeof popup === "function" ? popup({ close: state.close }) : popup}
+        </PopupControllerContext.Provider>
       )}
     </>
   );

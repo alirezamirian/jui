@@ -7,6 +7,8 @@ import React, {
   useState,
 } from "react";
 import { Popup, PopupProps } from "./Popup";
+import { props } from "ramda";
+import { PopupControllerContext } from "@intellij-platform/core/Popup/PopupContext";
 
 interface PopupManagerAPI {
   /**
@@ -14,13 +16,11 @@ interface PopupManagerAPI {
    * The opened popup will be closed when `onClose` interactions happen.
    */
   show(
-    // not sure about the API here. We could also just accept element of type Popup, but there are some caveats to that:
-    // - if the element is not really a popup, we can't control onClose. By rendering <Popup /> it's better guaranteed.
-    // - if a `open` prop gets added to Popup (for convenient and/or for animation), it would be meaningless here.
-    props:
-      | PopupProps["children"]
-      | ((args: { close: () => void }) => PopupProps["children"]),
-    options?: Omit<PopupProps, "children">
+    popup:
+      | React.ReactElement<PopupProps, typeof Popup>
+      | ((args: {
+          close: () => void;
+        }) => React.ReactElement<PopupProps, typeof Popup>)
   ): void;
 }
 
@@ -54,20 +54,22 @@ export const PopupManager: React.FC<PopupManagerProps> = ({ children }) => {
   const newKeyRef = useRef<number>(0);
 
   const api = useMemo<PopupManagerAPI>(() => {
-    const show: PopupManagerAPI["show"] = (content, props = {}) => {
+    const show: PopupManagerAPI["show"] = (popup) => {
       newKeyRef.current++;
       const close = () => {
         setPopups((currentPopups) =>
-          currentPopups.filter((aPopup) => aPopup !== popup)
+          currentPopups.filter((aPopup) => aPopup !== wrappedPopup)
         );
-        props.onClose?.();
       };
-      const popup = (
-        <Popup key={newKeyRef.current} {...props} onClose={close}>
-          {typeof content === "function" ? content({ close }) : content}
-        </Popup>
+      const wrappedPopup = (
+        <PopupControllerContext.Provider
+          key={newKeyRef.current}
+          value={{ onClose: close }}
+        >
+          {typeof popup === "function" ? popup({ close }) : popup}
+        </PopupControllerContext.Provider>
       );
-      setPopups((currentPopups) => currentPopups.concat(popup));
+      setPopups((currentPopups) => currentPopups.concat(wrappedPopup));
     };
     return {
       show,
