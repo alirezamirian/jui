@@ -8,7 +8,7 @@ import {
   useRecoilCallback,
 } from "recoil";
 import { currentProjectState } from "../Project/project.state";
-import git, { status, statusMatrix } from "isomorphic-git";
+import { status, statusMatrix } from "isomorphic-git";
 import { fs } from "../fs/fs";
 import {
   convertGitStatus,
@@ -48,27 +48,6 @@ export const vcsRootForFile = selectorFamily<string | null, string>({
     ({ get }) =>
       get(vcsRootsState).find((root) => filepath.startsWith(root.dir))?.dir ??
       null,
-});
-/**
- * Given the absolute path of a file, returns the current branch on the repository this file belongs to.
- */
-export const branchForFile = selectorFamily<string | null, string>({
-  key: "gitBranchForFile",
-  get:
-    (filepath: string) =>
-    async ({ get }) => {
-      const root = get(vcsRootForFile(filepath));
-      return root ? get(repoCurrentBranch(root)) : null;
-    },
-});
-
-export const repoCurrentBranch = selectorFamily({
-  key: "gitRepoCurrentBranch",
-  get: (repoRoot: string) => async () => {
-    return (
-      (await git.currentBranch({ fs, dir: repoRoot, fullname: false })) || null
-    );
-  },
 });
 
 /**

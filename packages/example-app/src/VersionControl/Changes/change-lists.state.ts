@@ -97,7 +97,6 @@ const refreshChanges =
     set(changeListsState, (changeLists) =>
       changeLists.map((changeList) => {
         if (changeList.active) {
-          console.log(changes);
           return {
             ...changeList,
             changes,

@@ -1,3 +1,4 @@
+import { sortBy } from "ramda";
 import { Key } from "react";
 import {
   atom,
@@ -22,6 +23,7 @@ import {
   dfsVisit,
   getExpandedToNodesKeys,
 } from "@intellij-platform/core/utils/tree-utils";
+import { notNull } from "@intellij-platform/core/utils/array-utils";
 import {
   createSetInterface,
   NestedSelection,
@@ -29,9 +31,7 @@ import {
 } from "@intellij-platform/core";
 import { rollbackViewState } from "../Rollback/rollbackView.state";
 import { activePathsState } from "../../../Project/project.state";
-import { branchForFile } from "../../file-status.state";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
-import { sortBy } from "ramda";
+import { branchForFile } from "../../Branches/branches.state";
 
 export interface ChangeBrowserNode<T extends string> {
   type: T;

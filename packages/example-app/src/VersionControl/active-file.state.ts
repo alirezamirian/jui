@@ -1,11 +1,11 @@
 import { selector } from "recoil";
 import { activeEditorTabState } from "../Editor/editor.state";
+import { vcsRootForFile, vcsRootsState } from "./file-status.state";
 import {
   branchForFile,
-  vcsRootForFile,
-  vcsRootsState,
-} from "./file-status.state";
-import { allBranchesState, RepoBranches } from "./Branches/branches.state";
+  RepoBranches,
+  repoBranchesState,
+} from "./Branches/branches.state";
 
 /**
  * Repo root of the file opened in the active editor tab.
@@ -26,14 +26,7 @@ export const activeFileRepoBranchesState = selector<RepoBranches>({
   key: "vcs/activeFileRepoBranches",
   get: ({ get }) => {
     const activeFileRepoRoot = get(activeFileRepoRootState);
-    const allBranches = get(allBranchesState);
-    return (
-      allBranches.find(({ repoRoot }) => activeFileRepoRoot === repoRoot) ?? {
-        repoRoot: activeFileRepoRoot,
-        localBranches: [],
-        remoteBranches: [],
-      }
-    );
+    return get(repoBranchesState(activeFileRepoRoot));
   },
 });
 /**
@@ -41,5 +34,8 @@ export const activeFileRepoBranchesState = selector<RepoBranches>({
  */
 export const activeFileCurrentBranchState = selector({
   key: "vcs/activeFileCurrentBranch",
-  get: ({ get }) => branchForFile(get(activeFileRepoRootState)),
+  get: ({ get }) => {
+    const activeFile = get(activeEditorTabState)?.filePath;
+    return activeFile ? branchForFile(activeFile) : null;
+  },
 });

@@ -20,6 +20,7 @@ import {
   TooltipTrigger,
   useAction,
   useBalloonManager,
+  useWindowManager,
 } from "@intellij-platform/core";
 
 import { useLatestRecoilValue } from "../../recoil-utils";
@@ -27,6 +28,7 @@ import { allBranchesState, useDeleteBranch } from "./branches.state";
 import { notImplemented } from "../../Project/notImplemented";
 import { VcsActionIds } from "../VcsActionIds";
 import { atom, useRecoilState } from "recoil";
+import { RenameBranchWindow } from "./RenameBranchWindow";
 
 const StyledHeader = styled.div`
   box-sizing: border-box;
@@ -67,6 +69,8 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
   const newBranchAction = useAction(VcsActionIds.GIT_CREATE_NEW_BRANCH);
   const deleteBranch = useDeleteBranch();
   const balloonManager = useBalloonManager();
+  const windowManager = useWindowManager();
+
   // useRefreshRecoilValueOnMount(allBranchesState);
 
   const isFavoriteBranch = (branch: string) => branch === "master"; // TODO;
@@ -149,28 +153,34 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                 case newBranchAction?.id:
                   return newBranchAction?.perform();
                 default:
-                  if (operation === "delete") {
-                    return deleteBranch(branch, repo).then(
-                      () => {
-                        balloonManager.show({
-                          title: `Deleted branch: ${branch}`,
-                          icon: "Info",
-                          actions: (
-                            <BalloonActionLink onPress={notImplemented}>
-                              Restore
-                            </BalloonActionLink>
-                          ),
-                        });
-                      },
-                      () => {
-                        balloonManager.show({
-                          title: `Could not deleted branch: ${branch}`,
-                          icon: "Error",
-                        });
-                      }
-                    );
+                  switch (operation) {
+                    case "delete":
+                      return deleteBranch(repo, branch).then(
+                        () => {
+                          balloonManager.show({
+                            title: `Deleted branch: ${branch}`,
+                            icon: "Info",
+                            actions: (
+                              <BalloonActionLink onPress={notImplemented}>
+                                Restore
+                              </BalloonActionLink>
+                            ),
+                          });
+                        },
+                        () => {
+                          balloonManager.show({
+                            title: `Could not deleted branch: ${branch}`,
+                            icon: "Error",
+                          });
+                        }
+                      );
+                    case "rename":
+                      return windowManager.open(({ close }) => (
+                        <RenameBranchWindow branchName={branch} close={close} />
+                      ));
+                    default:
+                      return notImplemented();
                   }
-                  return notImplemented();
               }
             }}
             onClose={onClose}
@@ -208,7 +218,7 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                     >
                       Show Diff with Working Tree
                     </Item>,
-                    <Divider />,
+                    <Divider key="compare-actions-divider" />,
                   ];
                   const newBranchActions = (
                     branchName: string,
@@ -227,7 +237,7 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                         key={`${repoRoot}//${branchName}//checkout-and-rebase-onto`}
                       >{`Checkout and rebase onto '${branchName}'`}</Item>
                     ),
-                    <Divider />,
+                    <Divider key="new-branch-actions-divider" />,
                   ];
                   const mergeActions = (
                     branchName: string,
@@ -241,11 +251,14 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                       <Item
                         key={`${repoRoot}//${branchName}//merge-into-current`}
                       >{`Merge '${branchName}' onto '${currentBranch}'`}</Item>,
-                      <Divider />,
+                      <Divider key="merge-actions-divider" />,
                     ];
 
                   return [
-                    <Section title={getSectionLabel("Local Branches")}>
+                    <Section
+                      key={`${repoRoot}//local_branches`}
+                      title={getSectionLabel("Local Branches")}
+                    >
                       {localBranches.map(
                         ({ name, trackingBranch, isCurrent }) => {
                           return (
@@ -285,7 +298,7 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                               <Item key={`${repoRoot}//${name}//push`}>
                                 Push...
                               </Item>
-                              <Divider />
+                              <Divider key="push-divider" />
                               <Item key={`${repoRoot}//${name}//rename`}>
                                 Rename...
                               </Item>
@@ -299,7 +312,10 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                         }
                       )}
                     </Section>,
-                    <Section title={getSectionLabel("Remote Branches")}>
+                    <Section
+                      key={`${repoRoot}//remote_branches`}
+                      title={getSectionLabel("Remote Branches")}
+                    >
                       {remoteBranches.map((branchName) => (
                         <Item
                           key={`${repoRoot}//${branchName}`}

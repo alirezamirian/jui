@@ -10,8 +10,13 @@ import {
 import React, { FormEvent, ReactNode, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { activeFileRepoBranchesState } from "../active-file.state";
-import { RepoBranches, useCreateBranch } from "./branches.state";
+import { useCreateBranch } from "./branches.state";
 import { Errors } from "isomorphic-git";
+import {
+  BranchNameError,
+  cleanUpBranchName,
+  validateBranchName,
+} from "./branch-name-utils";
 
 const StyledContainer = styled.div`
   display: flex;
@@ -25,9 +30,9 @@ const StyledCheckboxesContainer = styled.div`
   display: flex;
   gap: 0.75rem;
 `;
-type CreateNewBranchError = "EXISTING" | "CLASHING_WITH_REMOTE";
+
 const ErrorMessages: Record<
-  CreateNewBranchError,
+  BranchNameError,
   (branchName: string) => ReactNode
 > = {
   EXISTING: (branchName: string) => (
@@ -62,7 +67,7 @@ export function CreateNewBranchWindow({ close }: { close: () => void }) {
 
   const create = () => {
     if (isValid) {
-      createBranch(branchName, branches.repoRoot, checkout)
+      createBranch(branches.repoRoot, branchName, checkout)
         .catch((e) => {
           if (e instanceof Errors.AlreadyExistsError) {
             balloonManager.show({
@@ -152,37 +157,4 @@ export function CreateNewBranchWindow({ close }: { close: () => void }) {
       />
     </ModalWindow>
   );
-}
-
-function validateBranchName(
-  branches: RepoBranches,
-  newBranchName: string
-): CreateNewBranchError | null {
-  if (
-    branches.remoteBranches.some(
-      (remoteBranchName) => remoteBranchName === newBranchName
-    )
-  ) {
-    return "CLASHING_WITH_REMOTE";
-  }
-  if (branches.localBranches.some(({ name }) => name === newBranchName)) {
-    return "EXISTING";
-  }
-  return null;
-}
-
-// Almost borrowed from GitRefNameValidator
-const ILLEGAL_CHARS_PATTERN = new RegExp(
-  "(^\\.)|" + // begins with a dot
-    "(^-)|" + // begins with '-'
-    "(^/)|" + // begins with '/'
-    "(\\.\\.)+|" + // two dots in a row
-    "[ ~:^?*\\[\\\\]+|(@\\{)+|" + // contains invalid character: space, one of ~:^?*[\ or @{ sequence)
-    `[${Array(32)
-      .fill(null)
-      .map((_, index) => String.fromCharCode(index))
-      .join("")}u007F]`
-);
-function cleanUpBranchName(branchName: string) {
-  return branchName.replace(ILLEGAL_CHARS_PATTERN, "_");
 }
