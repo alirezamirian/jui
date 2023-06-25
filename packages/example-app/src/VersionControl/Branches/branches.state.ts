@@ -1,8 +1,14 @@
 import { selector, selectorFamily, useRecoilCallback } from "recoil";
-import git, { branch, deleteBranch, renameBranch } from "isomorphic-git";
+import git, {
+  branch,
+  checkout,
+  deleteBranch,
+  renameBranch,
+} from "isomorphic-git";
 import { fs } from "../../fs/fs";
 import { vcsRootForFile, vcsRootsState } from "../file-status.state";
 import { currentBranchState } from "../Changes/ChangesView/ChangesView.state";
+import { dirContentState } from "../../fs/fs.state";
 
 export type LocalBranch = {
   name: string;
@@ -166,6 +172,25 @@ export function useRenameBranch() {
           checkout,
         }).then(() => {
           refresh(repoBranchesState(repoRoot));
+        });
+      },
+    []
+  );
+}
+
+export function useCheckoutBranch() {
+  return useRecoilCallback(
+    ({ refresh, snapshot }) =>
+      (repoRoot: string, branchName: string) => {
+        return checkout({
+          fs,
+          dir: repoRoot,
+          ref: branchName,
+        }).then(() => {
+          refresh(repoBranchesState(repoRoot));
+          refresh(dirContentState(repoRoot));
+          // TODO: update file status (fileStatusState) for the repo. Postponed now until commit is supported, to be
+          //  able to test this more easily.
         });
       },
     []

@@ -20,7 +20,7 @@ import { useRecoilValue } from "recoil";
 import { editorCursorPositionState } from "../Editor/editor.state";
 import { switchToPersistentFsProcess } from "../usePersistenceFsNotification";
 import { BranchesPopup } from "../VersionControl/Branches/BranchesPopup";
-import { activeFileCurrentBranchState } from "../VersionControl/active-file.state";
+import { activeFileRepoHeadState } from "../VersionControl/active-file.state";
 import { notImplemented } from "../Project/notImplemented";
 
 const StyledLastMessage = styled.div`
@@ -61,7 +61,7 @@ const StatusBarProcess = () => {
 
 export const IdeStatusBar = () => {
   const cursorPosition = useRecoilValue(editorCursorPositionState);
-  const currentBranch = useRecoilValue(activeFileCurrentBranchState);
+  const gitRepoHead = useRecoilValue(activeFileRepoHeadState);
 
   return (
     <StatusBar
@@ -134,12 +134,29 @@ export const IdeStatusBar = () => {
           >
             <TooltipTrigger
               tooltip={
-                <ActionTooltip actionName={`Git Branch: ${currentBranch}`} />
+                <ActionTooltip
+                  actionName={
+                    gitRepoHead.detached
+                      ? "Git: Detached HEAD doesn't point to any branch"
+                      : `Git Branch: ${gitRepoHead.head}`
+                  }
+                />
               }
             >
               <StatusBarWidget
-                icon={<PlatformIcon icon="vcs/branch.svg" />}
-                label={currentBranch}
+                icon={
+                  <PlatformIcon
+                    icon={
+                      gitRepoHead.detached
+                        ? "general/warning.svg"
+                        : "vcs/branch.svg"
+                    }
+                  />
+                }
+                label={gitRepoHead.head.slice(
+                  0,
+                  gitRepoHead.detached ? 8 : undefined
+                )}
               />
             </TooltipTrigger>
           </PopupTrigger>

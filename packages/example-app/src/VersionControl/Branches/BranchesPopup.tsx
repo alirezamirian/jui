@@ -24,7 +24,11 @@ import {
 } from "@intellij-platform/core";
 
 import { useLatestRecoilValue } from "../../recoil-utils";
-import { allBranchesState, useDeleteBranch } from "./branches.state";
+import {
+  allBranchesState,
+  useCheckoutBranch,
+  useDeleteBranch,
+} from "./branches.state";
 import { notImplemented } from "../../Project/notImplemented";
 import { VcsActionIds } from "../VcsActionIds";
 import { atom, useRecoilState } from "recoil";
@@ -56,8 +60,6 @@ export const branchesPopupSizeState = atom<
   default: undefined,
 });
 
-export const BRANCHES_POPUP_MIN_WIDTH = 300;
-export const BRANCHES_POPUP_MIN_HEIGHT = 55;
 export function BranchesPopup({ onClose }: { onClose: () => void }) {
   const repoBranches = useLatestRecoilValue(allBranchesState);
   const [branchesPopupPersistedSize, setBranchesPopupPersistedSize] =
@@ -70,6 +72,7 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
   const deleteBranch = useDeleteBranch();
   const balloonManager = useBalloonManager();
   const windowManager = useWindowManager();
+  const checkoutBranch = useCheckoutBranch();
 
   // useRefreshRecoilValueOnMount(allBranchesState);
 
@@ -147,7 +150,7 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                 .map(({ name }) => `${repoRoot}/pull-${name}`)
             )}
             onAction={(key) => {
-              const [repo, branch, operation] = `${key}`.split("//");
+              const [repoRoot, branch, operation] = `${key}`.split("//");
 
               switch (key) {
                 case newBranchAction?.id:
@@ -155,7 +158,7 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                 default:
                   switch (operation) {
                     case "delete":
-                      return deleteBranch(repo, branch).then(
+                      return deleteBranch(repoRoot, branch).then(
                         () => {
                           balloonManager.show({
                             title: `Deleted branch: ${branch}`,
@@ -178,6 +181,18 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                       return windowManager.open(({ close }) => (
                         <RenameBranchWindow branchName={branch} close={close} />
                       ));
+                    case "checkout":
+                      return checkoutBranch(repoRoot, branch)
+                        .then(() => {
+                          // TODO: show toolwindow balloon, when/if git toolwindow is added
+                        })
+                        .catch(() => {
+                          balloonManager.show({
+                            icon: "Error",
+                            title: "Checkout failed",
+                            body: `Could not checkout branch ${branch}`,
+                          });
+                        });
                     default:
                       return notImplemented();
                   }
@@ -219,25 +234,6 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                       Show Diff with Working Tree
                     </Item>,
                     <Divider key="compare-actions-divider" />,
-                  ];
-                  const newBranchActions = (
-                    branchName: string,
-                    isCurrent: boolean
-                  ) => [
-                    !isCurrent && (
-                      <Item key={`${repoRoot}//${branchName}//checkout`}>
-                        Checkout
-                      </Item>
-                    ),
-                    <Item
-                      key={`${repoRoot}//${branchName}//new-branch-from`}
-                    >{`New Branch from '${branchName}'...`}</Item>,
-                    !isCurrent && (
-                      <Item
-                        key={`${repoRoot}//${branchName}//checkout-and-rebase-onto`}
-                      >{`Checkout and rebase onto '${branchName}'`}</Item>
-                    ),
-                    <Divider key="new-branch-actions-divider" />,
                   ];
                   const mergeActions = (
                     branchName: string,
@@ -289,7 +285,20 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                                 />
                               }
                             >
-                              {newBranchActions(name, isCurrent)}
+                              {!isCurrent && (
+                                <Item key={`${repoRoot}//${name}//checkout`}>
+                                  Checkout
+                                </Item>
+                              )}
+                              <Item
+                                key={`${repoRoot}//${name}//new-branch-from`}
+                              >{`New Branch from '${name}'...`}</Item>
+                              {!isCurrent && (
+                                <Item
+                                  key={`${repoRoot}//${name}//checkout-and-rebase-onto`}
+                                >{`Checkout and rebase onto '${name}'`}</Item>
+                              )}
+                              <Divider key="new-branch-actions-divider" />
                               {compareActions(name, isCurrent)}
                               {mergeActions(name, currentBranch)}
                               <Item key={`${repoRoot}//${name}//pull`}>
@@ -337,7 +346,18 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                             />
                           }
                         >
-                          {newBranchActions(branchName, false)}
+                          <Item
+                            key={`${repoRoot}//${branchName}//remote-checkout`}
+                          >
+                            Checkout
+                          </Item>
+                          <Item
+                            key={`${repoRoot}//${branchName}//new-branch-from`}
+                          >{`New Branch from '${branchName}'...`}</Item>
+                          <Item
+                            key={`${repoRoot}//${branchName}//checkout-and-rebase-onto`}
+                          >{`Checkout and rebase onto '${branchName}'`}</Item>
+                          <Divider key="new-branch-actions-divider" />
                           {compareActions(branchName, false)}
                           {mergeActions(branchName, currentBranch)}
                           <Item
