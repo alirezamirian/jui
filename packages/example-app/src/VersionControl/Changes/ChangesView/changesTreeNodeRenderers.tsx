@@ -19,7 +19,7 @@ import {
 } from "@intellij-platform/core";
 import { RepoColorIcon } from "./StyledRepoColorSquare";
 import { StyledCurrentBranchTag } from "./StyledCurrentBranchTag";
-import { CurrentBranchName } from "../../CurrentBranchName";
+import { RepoCurrentBranchName } from "../../RepoCurrentBranchName";
 import { DIR_ICON, getIconForFile } from "../../../file-utils";
 import { useRecoilValue } from "recoil";
 
@@ -52,7 +52,7 @@ const repoNodeItemProps: NodeRenderer<RepositoryNode> = (
       <HighlightedTextValue />
       <ItemLayout.Hint>{fileCountMsg.format({ fileCount })}</ItemLayout.Hint>
       <StyledCurrentBranchTag>
-        <CurrentBranchName repo={node.repository} />
+        <RepoCurrentBranchName repo={node.repository} />
       </StyledCurrentBranchTag>
     </ItemLayout>
   ),

@@ -31,7 +31,7 @@ import {
 } from "@intellij-platform/core";
 import { rollbackViewState } from "../Rollback/rollbackView.state";
 import { activePathsState } from "../../../Project/project.state";
-import { branchForFile } from "../../Branches/branches.state";
+import { branchForPathState } from "../../Branches/branches.state";
 
 export interface ChangeBrowserNode<T extends string> {
   type: T;
@@ -74,13 +74,6 @@ export interface ChangeGrouping<T extends AnyGroupNode, I = string> {
   isAvailable: MaybeRecoilValue<boolean>;
   groupFn: MaybeRecoilValue<GroupFn<T>>;
 }
-
-export const currentBranchState = atomFamily<string | null, string>({
-  key: "vcs/currentBranchName",
-  default: branchForFile,
-  // TODO: effect for syncing (when toolWindow state changes?)
-});
-
 export const showIgnoredFilesState = atom({
   key: "changesView/showIgnoredFiles",
   default: false,

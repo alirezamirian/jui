@@ -8,7 +8,7 @@ import {
   useRecoilCallback,
 } from "recoil";
 import { currentProjectState } from "../Project/project.state";
-import { status, statusMatrix } from "isomorphic-git";
+import { findRoot, status, statusMatrix } from "isomorphic-git";
 import { fs } from "../fs/fs";
 import {
   convertGitStatus,
@@ -45,9 +45,9 @@ export const vcsRootForFile = selectorFamily<string | null, string>({
   key: "gitRootForFile",
   get:
     (filepath: string) =>
-    ({ get }) =>
-      get(vcsRootsState).find((root) => filepath.startsWith(root.dir))?.dir ??
-      null,
+    ({ get }) => {
+      return findRoot({ fs, filepath }).catch(() => null);
+    },
 });
 
 /**

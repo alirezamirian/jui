@@ -7,8 +7,8 @@ import git, {
 } from "isomorphic-git";
 import { fs } from "../../fs/fs";
 import { vcsRootForFile, vcsRootsState } from "../file-status.state";
-import { currentBranchState } from "../Changes/ChangesView/ChangesView.state";
 import { dirContentState } from "../../fs/fs.state";
+import { getTrackingBranch } from "./branch-utils";
 
 export type LocalBranch = {
   name: string;
@@ -43,7 +43,7 @@ const repoLocalBranchesState = selectorFamily<LocalBranch[], string>({
           trackingBranch: await getTrackingBranch({
             fs,
             dir: repoRoot,
-            branch,
+            localBranchName: branch,
           }),
         }))
       );
@@ -111,33 +111,24 @@ export const repoCurrentBranchState = selectorFamily({
     (repoRoot: string) =>
     async ({ get }) => {
       return (
-        get(repoLocalBranchesState(repoRoot)).find((branch) => branch.isCurrent)
-          ?.name || null
+        get(repoLocalBranchesState(repoRoot)).find(
+          (branch) => branch.isCurrent
+        ) || null
       );
     },
 });
 
-async function getTrackingBranch({
-  fs,
-  dir,
-  branch,
-}: Pick<Parameters<typeof git["getConfig"]>[0], "fs" | "dir"> & {
-  branch: string;
-}): Promise<string | null> {
-  const mergeRef = await git.getConfig({
-    fs,
-    dir,
-    path: `branch.${branch}.merge`,
-  });
-  const remote = await git.getConfig({
-    fs,
-    dir,
-    path: `branch.${branch}.remote`,
-  });
-  return mergeRef && remote
-    ? `${remote}/${mergeRef.replace(/^refs\/heads\//, "")}`
-    : null;
-}
+/**
+ * Current branch of the given repository. Can be null, if head is detached.
+ */
+export const repoCurrentBranchNameState = selectorFamily({
+  key: "vcs/repoCurrentBranchName",
+  get:
+    (repoRoot: string) =>
+    async ({ get }) => {
+      return get(repoCurrentBranchState(repoRoot))?.name || null;
+    },
+});
 
 export function useCreateBranch() {
   return useRecoilCallback(
@@ -160,9 +151,9 @@ export function useRenameBranch() {
         // conditionally passing checkout option to work around this issue:
         // https://github.com/isomorphic-git/isomorphic-git/issues/1783
         const currentBranch = snapshot
-          .getLoadable(currentBranchState(repoRoot))
+          .getLoadable(repoCurrentBranchState(repoRoot))
           .getValue();
-        const checkout = branchName === currentBranch;
+        const checkout = branchName === currentBranch?.name;
 
         return renameBranch({
           fs,
@@ -212,12 +203,12 @@ export function useDeleteBranch() {
 /**
  * Given the absolute path of a file, returns the current branch on the repository this file belongs to.
  */
-export const branchForFile = selectorFamily<string | null, string>({
+export const branchForPathState = selectorFamily<string | null, string>({
   key: "gitBranchForFile",
   get:
     (filepath: string) =>
     ({ get }) => {
       const root = get(vcsRootForFile(filepath));
-      return root ? get(repoCurrentBranchState(root)) : null;
+      return root ? get(repoCurrentBranchNameState(root)) : null;
     },
 });

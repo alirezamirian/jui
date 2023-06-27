@@ -5,7 +5,7 @@ import { fs } from "../fs/fs";
 
 import { vcsRootForFile, vcsRootsState } from "./file-status.state";
 import {
-  branchForFile,
+  branchForPathState,
   RepoBranches,
   repoBranchesState,
 } from "./Branches/branches.state";
@@ -40,7 +40,7 @@ export const activeFileCurrentBranchState = selector({
   key: "vcs/activeFileCurrentBranch",
   get: ({ get }) => {
     const activeFile = get(activeEditorTabState)?.filePath;
-    return activeFile ? branchForFile(activeFile) : null;
+    return activeFile ? branchForPathState(activeFile) : null;
   },
 });
 

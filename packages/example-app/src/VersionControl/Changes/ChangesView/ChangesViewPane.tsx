@@ -14,7 +14,6 @@ export const ChangesViewPane = () => {
   useEffect(() => {
     refresh();
   }, []);
-  // FIXME: Rollback window should be moved to upper levels. It should not be coupled with the changes view pane UI
   return (
     <StyledContainer>
       <ChangesViewSplitter />
