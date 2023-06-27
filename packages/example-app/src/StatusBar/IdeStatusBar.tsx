@@ -14,14 +14,15 @@ import {
   StatusBarWidget,
   TooltipTrigger,
 } from "@intellij-platform/core";
-import React from "react";
+import React, { Suspense } from "react";
 import styled from "styled-components";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 import { editorCursorPositionState } from "../Editor/editor.state";
 import { switchToPersistentFsProcess } from "../usePersistenceFsNotification";
 import { BranchesPopup } from "../VersionControl/Branches/BranchesPopup";
 import { activeFileRepoHeadState } from "../VersionControl/active-file.state";
 import { notImplemented } from "../Project/notImplemented";
+import { useLatestRecoilValue } from "../recoil-utils";
 
 const StyledLastMessage = styled.div`
   margin-left: 0.75rem;
@@ -61,7 +62,6 @@ const StatusBarProcess = () => {
 
 export const IdeStatusBar = () => {
   const cursorPosition = useRecoilValue(editorCursorPositionState);
-  const gitRepoHead = useRecoilValue(activeFileRepoHeadState);
 
   return (
     <StatusBar
@@ -132,33 +132,7 @@ export const IdeStatusBar = () => {
             placement="top"
             popup={({ close }) => <BranchesPopup onClose={close} />}
           >
-            <TooltipTrigger
-              tooltip={
-                <ActionTooltip
-                  actionName={
-                    gitRepoHead.detached
-                      ? "Git: Detached HEAD doesn't point to any branch"
-                      : `Git Branch: ${gitRepoHead.head}`
-                  }
-                />
-              }
-            >
-              <StatusBarWidget
-                icon={
-                  <PlatformIcon
-                    icon={
-                      gitRepoHead.detached
-                        ? "general/warning.svg"
-                        : "vcs/branch.svg"
-                    }
-                  />
-                }
-                label={gitRepoHead.head.slice(
-                  0,
-                  gitRepoHead.detached ? 8 : undefined
-                )}
-              />
-            </TooltipTrigger>
+            <BranchPopupTrigger />
           </PopupTrigger>
           <StatusBarWidget icon={<PlatformIcon icon="ide/readwrite.svg" />} />
           <StatusBarWidget icon={<PlatformIcon icon="ide/fatalError.svg" />} />
@@ -167,3 +141,37 @@ export const IdeStatusBar = () => {
     />
   );
 };
+
+function BranchPopupTrigger() {
+  const gitRepoHead = useLatestRecoilValue(activeFileRepoHeadState);
+
+  return (
+    gitRepoHead && (
+      <TooltipTrigger
+        tooltip={
+          <ActionTooltip
+            actionName={
+              gitRepoHead.detached
+                ? "Git: Detached HEAD doesn't point to any branch"
+                : `Git Branch: ${gitRepoHead.head}`
+            }
+          />
+        }
+      >
+        <StatusBarWidget
+          icon={
+            <PlatformIcon
+              icon={
+                gitRepoHead.detached ? "general/warning.svg" : "vcs/branch.svg"
+              }
+            />
+          }
+          label={gitRepoHead.head.slice(
+            0,
+            gitRepoHead.detached ? 8 : undefined
+          )}
+        />
+      </TooltipTrigger>
+    )
+  );
+}
