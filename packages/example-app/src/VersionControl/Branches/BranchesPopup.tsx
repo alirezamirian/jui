@@ -211,10 +211,12 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
             <Item key="checkout_revision">Checkout Tag or Revision...</Item>
             {
               repoBranches.flatMap(
-                ({ remoteBranches, localBranches, repoRoot }) => {
-                  const currentBranch = localBranches.find(
-                    ({ isCurrent }) => isCurrent
-                  )?.name;
+                ({
+                  remoteBranches,
+                  localBranches,
+                  repoRoot,
+                  currentBranch,
+                }) => {
                   const getSectionLabel = (label: string) =>
                     repoBranches.length > 1
                       ? `${label} in ${path.basename(repoBranches[0].repoRoot)}`
@@ -255,71 +257,70 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                       key={`${repoRoot}//local_branches`}
                       title={getSectionLabel("Local Branches")}
                     >
-                      {localBranches.map(
-                        ({ name, trackingBranch, isCurrent }) => {
-                          return (
+                      {localBranches.map(({ name, trackingBranch }) => {
+                        const isCurrent = name === currentBranch?.name;
+                        return (
+                          <Item
+                            key={`${repoRoot}//${name}`}
+                            textValue={name}
+                            title={
+                              <MenuItemLayout
+                                content={name}
+                                icon={
+                                  isFavoriteBranch(name) ? (
+                                    <PlatformIcon icon="nodes/favorite.svg" />
+                                  ) : (
+                                    <AutoHoverPlatformIcon
+                                      icon="nodes/emptyNode.svg"
+                                      hoverIcon="nodes/notFavoriteOnHover.svg"
+                                      hoverContainerSelector="[role='menuitem']"
+                                    />
+                                  )
+                                }
+                                shortcut={
+                                  trackingBranch && (
+                                    <ItemLayout.Hint small>
+                                      {trackingBranch}
+                                    </ItemLayout.Hint>
+                                  )
+                                }
+                              />
+                            }
+                          >
+                            {!isCurrent && (
+                              <Item key={`${repoRoot}//${name}//checkout`}>
+                                Checkout
+                              </Item>
+                            )}
                             <Item
-                              key={`${repoRoot}//${name}`}
-                              textValue={name}
-                              title={
-                                <MenuItemLayout
-                                  content={name}
-                                  icon={
-                                    isFavoriteBranch(name) ? (
-                                      <PlatformIcon icon="nodes/favorite.svg" />
-                                    ) : (
-                                      <AutoHoverPlatformIcon
-                                        icon="nodes/emptyNode.svg"
-                                        hoverIcon="nodes/notFavoriteOnHover.svg"
-                                        hoverContainerSelector="[role='menuitem']"
-                                      />
-                                    )
-                                  }
-                                  shortcut={
-                                    trackingBranch && (
-                                      <ItemLayout.Hint small>
-                                        {trackingBranch}
-                                      </ItemLayout.Hint>
-                                    )
-                                  }
-                                />
-                              }
-                            >
-                              {!isCurrent && (
-                                <Item key={`${repoRoot}//${name}//checkout`}>
-                                  Checkout
-                                </Item>
-                              )}
+                              key={`${repoRoot}//${name}//new-branch-from`}
+                            >{`New Branch from '${name}'...`}</Item>
+                            {!isCurrent && (
                               <Item
-                                key={`${repoRoot}//${name}//new-branch-from`}
-                              >{`New Branch from '${name}'...`}</Item>
-                              {!isCurrent && (
-                                <Item
-                                  key={`${repoRoot}//${name}//checkout-and-rebase-onto`}
-                                >{`Checkout and rebase onto '${name}'`}</Item>
-                              )}
-                              <Divider key="new-branch-actions-divider" />
-                              {compareActions(name, isCurrent)}
-                              {mergeActions(name, currentBranch)}
-                              <Item key={`${repoRoot}//${name}//pull`}>
-                                Update
-                              </Item>
-                              <Item key={`${repoRoot}//${name}//push`}>
-                                Push...
-                              </Item>
-                              <Divider key="push-divider" />
-                              <Item key={`${repoRoot}//${name}//rename`}>
-                                Rename...
-                              </Item>
-                              {!isCurrent && (
-                                <Item key={`${repoRoot}//${name}//delete`}>
-                                  Delete
-                                </Item>
-                              )}
+                                key={`${repoRoot}//${name}//checkout-and-rebase-onto`}
+                              >{`Checkout and rebase onto '${name}'`}</Item>
+                            )}
+                            <Divider key="new-branch-actions-divider" />
+                            {compareActions(name, isCurrent)}
+                            {mergeActions(name, currentBranch?.name)}
+                            <Item key={`${repoRoot}//${name}//pull`}>
+                              Update
                             </Item>
-                          );
-                        }
-                      )}
+                            <Item key={`${repoRoot}//${name}//push`}>
+                              Push...
+                            </Item>
+                            <Divider key="push-divider" />
+                            <Item key={`${repoRoot}//${name}//rename`}>
+                              Rename...
+                            </Item>
+                            {!isCurrent && (
+                              <Item key={`${repoRoot}//${name}//delete`}>
+                                Delete
+                              </Item>
+                            )}
+                          </Item>
+                        );
+                      })}
                     </Section>,
                     <Section
                       key={`${repoRoot}//remote_branches`}
@@ -359,7 +360,7 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                           >{`Checkout and rebase onto '${branchName}'`}</Item>
                           <Divider key="new-branch-actions-divider" />
                           {compareActions(branchName, false)}
-                          {mergeActions(branchName, currentBranch)}
+                          {mergeActions(branchName, currentBranch?.name)}
                           <Item
                             key={`${repoRoot}//${branchName}//pull-into-using-merge`}
                           >{`Pull into '${branchName}' Using Merge`}</Item>

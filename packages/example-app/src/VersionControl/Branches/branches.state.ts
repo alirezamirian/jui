@@ -12,34 +12,28 @@ import { getTrackingBranch } from "./branch-utils";
 
 export type LocalBranch = {
   name: string;
-  isCurrent: boolean;
   trackingBranch: string | null;
 };
 
 export type RepoBranches = {
   repoRoot: string;
+  currentBranch: LocalBranch | null;
   localBranches: LocalBranch[];
   remoteBranches: string[];
 };
 
 /**
- * List of local branches of a given repository. Current branch (if any) is flagged with `isCurrent` flag.
+ * List of local branches of a given repository.
  */
 const repoLocalBranchesState = selectorFamily<LocalBranch[], string>({
   key: "vcs/repoLocalBranches",
   get:
     (repoRoot: string) =>
-    async ({ get }) => {
+    async ({}) => {
       const branches = await git.listBranches({ fs, dir: repoRoot });
-      const currentBranch = await git.currentBranch({
-        fs,
-        dir: repoRoot,
-        fullname: false,
-      });
       return Promise.all(
         branches.map(async (branch) => ({
           name: branch,
-          isCurrent: currentBranch === branch,
           trackingBranch: await getTrackingBranch({
             fs,
             dir: repoRoot,
@@ -80,13 +74,32 @@ export const repoBranchesState = selectorFamily<RepoBranches, string>({
   key: "vcs/repoBranches",
   get:
     (repoRoot: string) =>
-    ({ get }) => {
+    async ({ get }) => {
+      const currentBranchName = get(repoCurrentBranchNameState(repoRoot));
+      const localBranches = get(repoLocalBranchesState(repoRoot));
       return {
         repoRoot,
-        localBranches: get(repoLocalBranchesState(repoRoot)),
+        currentBranch:
+          localBranches.find((branch) => branch.name === currentBranchName) ||
+          null,
+        localBranches: localBranches,
         remoteBranches: get(repoRemoteBranchesState(repoRoot)),
       };
     },
+});
+
+/**
+ * Current branch name of the given repository. Can be null, if head is detached.
+ */
+export const repoCurrentBranchNameState = selectorFamily({
+  key: "vcs/repoCurrentBranch",
+  get: (repoRoot: string) => () => {
+    return git.currentBranch({
+      fs,
+      dir: repoRoot,
+      fullname: false,
+    });
+  },
 });
 
 /**
@@ -100,34 +113,6 @@ export const allBranchesState = selector<RepoBranches[]>({
       get(repoBranchesState(repoRoot))
     );
   },
-});
-
-/**
- * Current branch name of the given repository. Can be null, if head is detached.
- */
-export const repoCurrentBranchState = selectorFamily({
-  key: "vcs/repoCurrentBranch",
-  get:
-    (repoRoot: string) =>
-    async ({ get }) => {
-      return (
-        get(repoLocalBranchesState(repoRoot)).find(
-          (branch) => branch.isCurrent
-        ) || null
-      );
-    },
-});
-
-/**
- * Current branch of the given repository. Can be null, if head is detached.
- */
-export const repoCurrentBranchNameState = selectorFamily({
-  key: "vcs/repoCurrentBranchName",
-  get:
-    (repoRoot: string) =>
-    async ({ get }) => {
-      return get(repoCurrentBranchState(repoRoot))?.name || null;
-    },
 });
 
 export function useCreateBranch() {
@@ -151,8 +136,8 @@ export function useRenameBranch() {
         // conditionally passing checkout option to work around this issue:
         // https://github.com/isomorphic-git/isomorphic-git/issues/1783
         const currentBranch = snapshot
-          .getLoadable(repoCurrentBranchState(repoRoot))
-          .getValue();
+          .getLoadable(repoBranchesState(repoRoot))
+          .getValue().currentBranch;
         const checkout = branchName === currentBranch?.name;
 
         return renameBranch({
@@ -209,6 +194,8 @@ export const branchForPathState = selectorFamily<string | null, string>({
     (filepath: string) =>
     ({ get }) => {
       const root = get(vcsRootForFile(filepath));
-      return root ? get(repoCurrentBranchNameState(root)) : null;
+      return root
+        ? get(repoBranchesState(root)).currentBranch?.name || null
+        : null;
     },
 });

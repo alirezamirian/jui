@@ -56,9 +56,7 @@ export function CreateNewBranchWindow({ close }: { close: () => void }) {
   const [isErrorVisible, setIsErrorVisible] = useState(false);
   const balloonManager = useBalloonManager();
   const createBranch = useCreateBranch();
-  const currentBranchName = branches.localBranches.find(
-    ({ isCurrent }) => isCurrent
-  )?.name;
+  const currentBranchName = branches.currentBranch?.name;
   const [branchName, setBranchName] = useState(currentBranchName || "");
 
   const error = validateBranchName(branches, branchName);

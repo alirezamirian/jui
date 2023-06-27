@@ -1,16 +1,17 @@
 import React from "react";
+import path from "path";
 import {
   ActionTooltip,
   MultiViewToolWindow,
   TooltipTrigger,
 } from "@intellij-platform/core";
+import { notNull } from "@intellij-platform/core/utils/array-utils";
+
 import { ChangesViewPane } from "./Changes/ChangesView/ChangesViewPane";
 import { RecoilValue, selector, useRecoilValue } from "recoil";
 import { allChangesState } from "./Changes/change-lists.state";
 import { vcsRootForFile } from "./file-status.state";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
 import { repoBranchesState } from "./Branches/branches.state";
-import path from "path";
 import { changesGroupingState } from "./Changes/ChangesView/ChangesView.state";
 
 export const COMMIT_TOOLWINDOW_ID = "Commit";
@@ -24,10 +25,7 @@ const changesBranchesState = selector({
 
     return changesRepoRoots.map((repoRoot) => ({
       repoRoot,
-      branch:
-        get(repoBranchesState(repoRoot)).localBranches.find(
-          ({ isCurrent }) => isCurrent
-        ) || null,
+      branch: get(repoBranchesState(repoRoot)).currentBranch,
     }));
   },
 });
