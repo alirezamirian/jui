@@ -435,6 +435,19 @@ export const commitMessageState = atom({
   default: "",
 });
 
+/**
+ * Whether to show error message related to attempting to commit without selecting any change.
+ */
+export const commitErrorMessageState = atom({
+  key: "changesView/commitErrorMessage",
+  default: "",
+});
+
+export const isCommitInProgressState = atom({
+  key: "changesView/commitInProgress",
+  default: false,
+});
+
 export const changesFromActivePaths = selector({
   key: "changesView/changesFromActivePaths",
   get: ({ get }) => {

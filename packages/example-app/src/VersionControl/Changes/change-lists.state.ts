@@ -67,7 +67,7 @@ export const allChangesState = selector<ReadonlyArray<Change>>({
 const isAChange = ([, head, workingDir, stage]: StatusRow): boolean =>
   head !== 1 || workingDir !== 1 || stage !== 1;
 
-const refreshChanges =
+const refreshChangesCallback =
   ({ snapshot, set }: CallbackInterface) =>
   async () => {
     const gitRoots = (await snapshot.getPromise(vcsRootsState)).filter(
@@ -172,7 +172,8 @@ export const useRollbackChanges = () => {
   );
 };
 
-export const useRefreshChanges = () => useRecoilCallback(refreshChanges, []);
+export const useRefreshChanges = () =>
+  useRecoilCallback(refreshChangesCallback, []);
 
 export const useSetActiveChangeList = () =>
   useRecoilCallback(
