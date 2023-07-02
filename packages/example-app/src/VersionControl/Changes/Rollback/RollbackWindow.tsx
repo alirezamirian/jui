@@ -26,12 +26,7 @@ import {
 } from "@intellij-platform/core";
 import { Action } from "@intellij-platform/core/ActionSystem/components";
 
-import {
-  AnyNode,
-  changesTreeNodesState,
-  getNodeKeyForChange,
-  isGroupNode,
-} from "../ChangesView/ChangesView.state";
+import { changesTreeNodesState } from "../ChangesView/ChangesView.state";
 import { getChangeListTreeItemProps } from "../ChangesView/changesTreeNodeRenderers";
 import { rollbackViewState } from "./rollbackView.state";
 import { allChangesState, useRollbackChanges } from "../change-lists.state";
@@ -39,6 +34,11 @@ import { ChangesSummary } from "../ChangesSummary";
 import { groupings } from "../ChangesView/changesGroupings";
 import { RollbackTreeContextMenu } from "./RollbackTreeContextMenu";
 import { notImplemented } from "../../../Project/notImplemented";
+import {
+  AnyNode,
+  getNodeKeyForChange,
+  isGroupNode,
+} from "../ChangesView/change-view-nodes";
 
 const StyledContainer = styled.div`
   box-sizing: border-box;

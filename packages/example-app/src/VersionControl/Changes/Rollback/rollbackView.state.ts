@@ -1,16 +1,16 @@
 import { atom, selector } from "recoil";
 import { Change } from "../change-lists.state";
-import {
-  AnyNode,
-  changesTreeNodesState,
-  getNodeKeyForChange,
-  isGroupNode,
-} from "../ChangesView/ChangesView.state";
+import { changesTreeNodesState } from "../ChangesView/ChangesView.state";
 import {
   getExpandAllKeys,
   getExpandedToNodesKeys,
 } from "@intellij-platform/core/utils/tree-utils";
 import { Bounds } from "@intellij-platform/core/Overlay";
+import {
+  AnyNode,
+  getNodeKeyForChange,
+  isGroupNode,
+} from "../ChangesView/change-view-nodes";
 
 const isOpen = atom<boolean>({
   key: "rollbackView.isOpen",

@@ -6,7 +6,6 @@ import LightningFS from "@isomorphic-git/lightning-fs";
 import { BFSCallback } from "browserfs/src/core/file_system";
 import FS, { FSModule } from "browserfs/dist/node/core/FS";
 
-window.BrowserFS = BrowserFS;
 // importing the type didn't work as expected
 type FileSystem = Parameters<typeof BrowserFS["initialize"]>[0];
 
