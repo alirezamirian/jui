@@ -384,8 +384,7 @@ export const changesFromActivePaths = selector({
 });
 
 /**
- * Recoil callback for queuing (staging) and marking changes as included based on a list of paths.
- * TODO: handle staging too. For now, we just mark changes as included, if they exist in a changelist already.
+ * Recoil callback for queuing and marking changes as included based on a list of paths.
  */
 export const queueCheckInCallback = ({ set, snapshot }: CallbackInterface) => {
   /**

@@ -7,8 +7,9 @@ import git, {
 } from "isomorphic-git";
 import { fs } from "../../fs/fs";
 import { vcsRootForFile, vcsRootsState } from "../file-status.state";
-import { dirContentState } from "../../fs/fs.state";
+import { dirContentState, reloadFileFromDiskCallback } from "../../fs/fs.state";
 import { getTrackingBranch } from "./branch-utils";
+import { editorTabsState } from "../../Editor/editor.state";
 
 export type LocalBranch = {
   name: string;
@@ -148,19 +149,25 @@ export function useRenameBranch() {
 
 export function useCheckoutBranch() {
   return useRecoilCallback(
-    ({ refresh, snapshot }) =>
-      (repoRoot: string, branchName: string) => {
-        return checkout({
-          fs,
-          dir: repoRoot,
-          ref: branchName,
-        }).then(() => {
-          refresh(repoBranchesState(repoRoot));
-          refresh(dirContentState(repoRoot));
-          // TODO: update file status (fileStatusState) for the repo. Postponed now until commit is supported, to be
-          //  able to test this more easily.
+    (callbackInterface) => (repoRoot: string, branchName: string) => {
+      const { refresh, snapshot, transact_UNSTABLE } = callbackInterface;
+      const reloadFileFromDisk = reloadFileFromDiskCallback(callbackInterface);
+      return checkout({
+        fs,
+        dir: repoRoot,
+        ref: branchName,
+      }).then(() => {
+        refresh(repoBranchesState(repoRoot));
+        refresh(dirContentState(repoRoot));
+        // TODO: refreshing file content of the files opened in the editor is not enough.
+        //  Potential improvements: loop over files based on checked out tree.
+        const openedFiles = snapshot.getLoadable(editorTabsState).getValue();
+        openedFiles.forEach(({ filePath }) => {
+          reloadFileFromDisk(filePath);
         });
-      },
+        // TODO: update file status (fileStatusState) for the repo.
+      });
+    },
     []
   );
 }

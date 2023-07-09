@@ -46,7 +46,7 @@ const temporaryTabsDefaultValue = selector({
 });
 
 // it should become something under "project" state later.
-const editorTabsState = atom<EditorTabState[]>({
+export const editorTabsState = atom<EditorTabState[]>({
   key: "editor.tabs",
   default: temporaryTabsDefaultValue,
 });
