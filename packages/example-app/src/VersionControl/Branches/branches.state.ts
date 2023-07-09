@@ -131,21 +131,13 @@ export function useCreateBranch() {
 
 export function useRenameBranch() {
   return useRecoilCallback(
-    ({ refresh, snapshot }) =>
+    ({ refresh }) =>
       (repoRoot: string, branchName: string, newBranchName: string) => {
-        // conditionally passing checkout option to work around this issue:
-        // https://github.com/isomorphic-git/isomorphic-git/issues/1783
-        const currentBranch = snapshot
-          .getLoadable(repoBranchesState(repoRoot))
-          .getValue().currentBranch;
-        const checkout = branchName === currentBranch?.name;
-
         return renameBranch({
           fs,
           dir: repoRoot,
           oldref: branchName,
           ref: newBranchName,
-          checkout,
         }).then(() => {
           refresh(repoBranchesState(repoRoot));
         });

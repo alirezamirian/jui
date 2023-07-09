@@ -20,7 +20,7 @@
     "browserfs": "^2.0.0",
     "caf": "^15.0.0-preB",
     "intl-messageformat": "^9.11.2",
-    "isomorphic-git": "^1.10.3",
+    "isomorphic-git": "^1.24.3",
     "monaco-editor": "^0.28.1",
     "pify": "^5.0.0",
     "ramda": "^0.27.1",
