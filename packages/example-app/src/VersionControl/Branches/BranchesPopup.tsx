@@ -217,9 +217,9 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                   repoRoot,
                   currentBranch,
                 }) => {
-                  const getSectionLabel = (label: string) =>
+                  const getSectionLabel = (label: string, repoRoot: string) =>
                     repoBranches.length > 1
-                      ? `${label} in ${path.basename(repoBranches[0].repoRoot)}`
+                      ? `${label} in ${path.basename(repoRoot)}`
                       : label;
                   const compareActions = (
                     branchName: string,
@@ -255,7 +255,7 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                   return [
                     <Section
                       key={`${repoRoot}//local_branches`}
-                      title={getSectionLabel("Local Branches")}
+                      title={getSectionLabel("Local Branches", repoRoot)}
                     >
                       {localBranches.map(({ name, trackingBranch }) => {
                         const isCurrent = name === currentBranch?.name;
@@ -324,7 +324,7 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                     </Section>,
                     <Section
                       key={`${repoRoot}//remote_branches`}
-                      title={getSectionLabel("Remote Branches")}
+                      title={getSectionLabel("Remote Branches", repoRoot)}
                     >
                       {remoteBranches.map((branchName) => (
                         <Item
