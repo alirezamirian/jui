@@ -12,7 +12,7 @@ export interface ProjectFsItem extends FsItem {
   relativePath: string;
 }
 
-const sampleRepos = {
+export const sampleRepos = {
   JUI: {
     path: "/workspace/jui",
     url: "https://github.com/alirezamirian/jui.git",
@@ -25,6 +25,10 @@ const sampleRepos = {
     path: "/workspace/recoil",
     url: "https://github.com/facebookexperimental/Recoil.git",
   },
+  ExampleRepo: {
+    path: "/workspace/example-repo",
+    url: "https://github.com/thurwitz/example-branches.git",
+  },
 };
 const sampleRepoKey: keyof typeof sampleRepos = "JUI";
 
@@ -36,8 +40,8 @@ export const sampleRepo = sampleRepos[sampleRepoKey];
 export const currentProjectState = atom<Project>({
   key: "project",
   default: {
-    name: sampleRepoKey,
-    path: sampleRepo.path,
+    name: "Workspace",
+    path: "/workspace",
   },
 });
 

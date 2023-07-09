@@ -1,5 +1,7 @@
 import { groupByDirectory } from "./groupByDirectory";
 import { ChangeNode } from "./change-view-nodes";
+import { readFileSync } from "fs";
+import { performance } from "perf_hooks";
 
 const change = (path: string): ChangeNode => ({
   key: path,
@@ -81,5 +83,39 @@ describe("groupByDirectory", () => {
         children: [change("/e/f/g/u.js")],
       },
     ]);
+  });
+
+  it("is ~O(N) performant" /* experimental performance testing */, () => {
+    const changeNodes = readFileSync(
+      // eslint-disable-next-line no-undef
+      __dirname + "/groupByDirectory.spec.fixture.txt",
+      { encoding: "utf-8" }
+    )
+      .split("\n")
+      .filter(Boolean)
+      .map(change);
+
+    const relativePerformanceMeasure =
+      measureTime(() => {
+        Array(10000)
+          .fill(null)
+          .map((_, i) => Math.sqrt(i));
+      }) * 50;
+    const timeFor50 = measureTime(() =>
+      groupByDirectory(changeNodes.slice(0, 10))
+    );
+    const timeFor5_000 = measureTime(() => groupByDirectory(changeNodes));
+    expect(timeFor5_000).toBeLessThan(
+      3 /* Some empirical calibration factor*/ * timeFor50 * 100
+    );
+
+    expect(timeFor5_000).toBeLessThan(relativePerformanceMeasure);
+
+    function measureTime(fn: () => void) {
+      const start = performance.now();
+      fn();
+      const end = performance.now();
+      return end - start;
+    }
   });
 });
