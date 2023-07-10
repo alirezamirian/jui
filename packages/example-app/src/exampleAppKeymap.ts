@@ -80,4 +80,13 @@ export const exampleAppKeymap: Keymap = {
       },
     },
   ],
+  [VcsActionIds.CHECKIN_PROJECT]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        code: "KeyK",
+      },
+    },
+  ],
 };

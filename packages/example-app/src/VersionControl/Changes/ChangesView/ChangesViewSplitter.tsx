@@ -29,7 +29,13 @@ const StyledTreeViewWrapper = styled.div`
 
 // Not so ideal solution for allowing imperatively focusing commit message. Should be ok, since there will
 // be at most only one instance of change view rendered.
-export let focusCommitMessage = () => {};
+let editor: { focus: () => void } | null = null;
+
+export let focusCommitMessage = () => {
+  setTimeout(() => {
+    editor?.focus();
+  });
+};
 
 export const ChangesViewSplitter = () => {
   const {
@@ -44,11 +50,8 @@ export const ChangesViewSplitter = () => {
   const treeActions = useTreeActions({ treeRef });
   // TODO(lib-candidate): ToolWindowAwareSplitter. A wrapper around ThreeViewSplitter which sets orientation based
   //  on anchor orientation from useToolWindowState.
-  focusCommitMessage = () => {
-    setTimeout(() => {
-      editorRef.current?.focus();
-    });
-  };
+  editor = editorRef.current;
+
   return (
     <ThreeViewSplitter
       orientation={orientation}

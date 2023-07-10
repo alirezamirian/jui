@@ -1,17 +1,17 @@
 import React from "react";
 import { useRecoilCallback, useRecoilValue } from "recoil";
-import {
-  ActionDefinition,
-  CommonActionId,
-  PlatformIcon,
-} from "@intellij-platform/core";
+import { ActionDefinition, PlatformIcon } from "@intellij-platform/core";
 
 import { notImplemented } from "../../Project/notImplemented";
 import {
   changeListsUnderSelection,
+  changesTreeNodesState,
   changesUnderSelectedKeys,
+  expandedKeysState,
+  includedChangeKeysState,
   openRollbackWindowForSelectionCallback,
   queueCheckInCallback,
+  selectedKeysState,
 } from "./ChangesView/ChangesView.state";
 import {
   allChangesState,
@@ -29,6 +29,12 @@ import {
 import path from "path";
 import { IntlMessageFormat } from "intl-messageformat";
 import { useEditorStateManager } from "../../Editor/editor.state";
+import {
+  AnyNode,
+  getNodeKeyForChange,
+  isGroupNode,
+} from "./ChangesView/change-view-nodes";
+import { getExpandedToNodesKeys } from "@intellij-platform/core/utils/tree-utils";
 
 export const useChangesViewActionDefinitions = (): ActionDefinition[] => {
   const openRollbackWindow = useRecoilCallback(
@@ -39,6 +45,7 @@ export const useChangesViewActionDefinitions = (): ActionDefinition[] => {
 
   return [
     useCheckInActionDefinition(),
+    useCheckInProjectAction(),
     useJumpToSourceAction(),
     {
       id: VcsActionIds.ROLLBACK,
@@ -114,7 +121,7 @@ function useCheckInActionDefinition(): ActionDefinition {
   );
 
   return {
-    id: VcsActionIds.CHECK_IN,
+    id: VcsActionIds.CHECKIN_FILES,
     title: isDir
       ? (commitDirMsg.format({ count: roots.length }) as string)
       : (commitFileMsg.format({ count: roots.length }) as string),
@@ -126,13 +133,63 @@ function useCheckInActionDefinition(): ActionDefinition {
     },
   };
 }
+function useCheckInProjectAction(): ActionDefinition {
+  const toolWindowManager = useToolWindowManager();
+
+  const queueChanges = useRecoilCallback(
+    ({ snapshot, set }) =>
+      () => {
+        const includedChangesKeys = snapshot
+          .getLoadable(includedChangeKeysState)
+          .getValue();
+        let keyToSelect = includedChangesKeys.values().next().value;
+        if (includedChangesKeys.size === 0) {
+          const allKeys = snapshot
+            .getLoadable(allChangesState)
+            .getValue()
+            .map(getNodeKeyForChange);
+          set(includedChangeKeysState, new Set(allKeys));
+          keyToSelect = allKeys[0];
+        }
+        if (keyToSelect) {
+          const { rootNodes } = snapshot
+            .getLoadable(changesTreeNodesState)
+            .getValue();
+          set(
+            expandedKeysState,
+            new Set([
+              ...snapshot.getLoadable(expandedKeysState).getValue(),
+              ...getExpandedToNodesKeys(
+                (node) => (isGroupNode(node) ? node.children : null),
+                (node) => node.key,
+                rootNodes as AnyNode[],
+                [keyToSelect]
+              ),
+            ])
+          );
+          set(selectedKeysState, new Set([keyToSelect]));
+        }
+      },
+    []
+  );
+
+  return {
+    id: VcsActionIds.CHECKIN_PROJECT,
+    title: "Commit",
+    actionPerformed: () => {
+      queueChanges();
+      toolWindowManager.open(COMMIT_TOOLWINDOW_ID);
+      focusCommitMessage();
+    },
+  };
+}
 
 function useJumpToSourceAction(): ActionDefinition {
   const editorStateManager = useEditorStateManager();
   const selectedChanges = useRecoilValue(changesUnderSelectedKeys);
 
   return {
-    id: CommonActionId.EDIT_SOURCE,
+    id: VcsActionIds.JUMP_TO_SOURCE,
     title: "Jump to source",
     icon: <PlatformIcon icon="actions/editSource.svg" />,
     actionPerformed: () => {

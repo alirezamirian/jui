@@ -168,7 +168,7 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
     ref,
     () => ({
       focus: (key: Key) => {
-        windowFocusableRefs.current[key].current?.focus();
+        windowFocusableRefs.current[key]?.current?.focus();
       },
       hasFocus: (key: Key) =>
         document.activeElement?.closest(`[data-tool-window-id="${key}"]`) !==
