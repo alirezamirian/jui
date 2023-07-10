@@ -15,10 +15,12 @@ import { SampleRepoInitializer } from "./SampleRepoInitializer";
 import { fs, WaitForFs } from "./fs/fs";
 import { exampleAppKeymap } from "./exampleAppKeymap";
 import { ToolWindowsRefContext } from "./Project/useToolWindowManager";
+import * as path from "path";
 
 // useful globals for debugging purposes
 (window as any).git = git;
 (window as any).fs = fs;
+(window as any).path = path;
 (window as any).http = http;
 
 /**

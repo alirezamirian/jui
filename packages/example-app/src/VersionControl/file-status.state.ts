@@ -2,12 +2,11 @@ import {
   atom,
   atomFamily,
   CallbackInterface,
-  GetRecoilValue,
   selector,
   selectorFamily,
   useRecoilCallback,
 } from "recoil";
-import { currentProjectState } from "../Project/project.state";
+import { sampleRepos } from "../Project/project.state";
 import { findRoot, status, statusMatrix } from "isomorphic-git";
 import { fs } from "../fs/fs";
 import {
@@ -18,16 +17,26 @@ import {
 import { useEffect } from "react";
 import * as path from "path";
 
-const temporaryVcsMappingsDefault = ({
-  get,
-}: {
-  get: GetRecoilValue;
-}): VcsDirectoryMapping[] => [
-  {
-    dir: get(currentProjectState).path,
-    vcs: "git",
-  },
-];
+async function asyncFilter<T>(
+  predicate: (item: T) => Promise<boolean>,
+  array: T[]
+) {
+  const predicateResult = await Promise.all(
+    array.map((item) => predicate(item).catch(() => false))
+  );
+  return array.filter((item, index) => predicateResult[index]);
+}
+const temporaryVcsMappingsDefault = async (): Promise<
+  VcsDirectoryMapping[]
+> => {
+  return asyncFilter(
+    ({ dir }) => fs.promises.stat(dir).then(Boolean),
+    Object.values(sampleRepos).map(({ path }) => ({
+      dir: path,
+      vcs: "git",
+    }))
+  );
+};
 
 // This should be refactored to have the configuration file(s) as the source of truth.
 export const vcsRootsState = atom<VcsDirectoryMapping[]>({

@@ -13,6 +13,7 @@ import { dirContentState, FsItem } from "../fs/fs.state";
 import { filterPath } from "../Project/project-utils";
 import { getParentPaths } from "../file-utils";
 import * as path from "path";
+import { vcsRootsState } from "../VersionControl/file-status.state";
 
 interface FileTreeNodeBase {
   parent: (FileTreeNodeBase & { children: FsItem[] }) | null;
@@ -45,7 +46,10 @@ export const expandedKeysState = atom({
   key: "projectView.expandedKeys",
   default: selector({
     key: "projectView.expandedKeys/default",
-    get: ({ get }) => new Set<Key>([get(currentProjectState).path]),
+    get: ({ get }) =>
+      new Set<Key>(
+        get(vcsRootsState).flatMap(({ dir }) => getParentPaths(dir).concat(dir))
+      ),
   }),
 });
 
