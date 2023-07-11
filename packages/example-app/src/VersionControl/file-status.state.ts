@@ -16,16 +16,8 @@ import {
 } from "./file-status";
 import { useEffect } from "react";
 import * as path from "path";
+import { asyncFilter } from "../async-utils";
 
-async function asyncFilter<T>(
-  predicate: (item: T) => Promise<boolean>,
-  array: T[]
-) {
-  const predicateResult = await Promise.all(
-    array.map((item) => predicate(item).catch(() => false))
-  );
-  return array.filter((item, index) => predicateResult[index]);
-}
 const temporaryVcsMappingsDefault = async (): Promise<
   VcsDirectoryMapping[]
 > => {

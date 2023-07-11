@@ -33,6 +33,8 @@ import { notImplemented } from "../../Project/notImplemented";
 import { VcsActionIds } from "../VcsActionIds";
 import { atom, useRecoilState } from "recoil";
 import { RenameBranchWindow } from "./RenameBranchWindow";
+import { Errors } from "isomorphic-git";
+import { find } from "ramda";
 
 const StyledHeader = styled.div`
   box-sizing: border-box;
@@ -152,6 +154,49 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
             onAction={(key) => {
               const [repoRoot, branch, operation] = `${key}`.split("//");
 
+              async function tryCheckout(checkout: () => Promise<unknown>) {
+                try {
+                  await checkout();
+                  // TODO: show toolwindow balloon, when/if git toolwindow is added
+                } catch (e) {
+                  if (e instanceof Errors.CheckoutConflictError) {
+                    // TODO: open Git Checkout Problem window.
+                    balloonManager.show({
+                      icon: "Error",
+                      title: "Git Checkout Problem",
+                      body: e.message,
+                    });
+                  } else {
+                    balloonManager.show({
+                      icon: "Error",
+                      title: "Checkout failed",
+                      body: `Could not checkout branch ${branch}`,
+                    });
+                  }
+                }
+              }
+
+              function checkoutLocalBranch() {
+                return tryCheckout(() => checkoutBranch(repoRoot, branch));
+              }
+
+              function checkoutRemoteBranch() {
+                const remoteBranch = repoBranches
+                  ?.find(({ repoRoot: aRepoRoot }) => aRepoRoot === repoRoot)
+                  ?.remoteBranches.find(
+                    ({ name, remote }) => `${remote}/${name}` === branch
+                  );
+                if (remoteBranch) {
+                  return tryCheckout(() =>
+                    checkoutBranch(
+                      repoRoot,
+                      remoteBranch.name,
+                      remoteBranch.remote
+                    )
+                  );
+                }
+              }
+
               switch (key) {
                 case newBranchAction?.id:
                   return newBranchAction?.perform();
@@ -182,17 +227,9 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                         <RenameBranchWindow branchName={branch} close={close} />
                       ));
                     case "checkout":
-                      return checkoutBranch(repoRoot, branch)
-                        .then(() => {
-                          // TODO: show toolwindow balloon, when/if git toolwindow is added
-                        })
-                        .catch(() => {
-                          balloonManager.show({
-                            icon: "Error",
-                            title: "Checkout failed",
-                            body: `Could not checkout branch ${branch}`,
-                          });
-                        });
+                      return checkoutLocalBranch();
+                    case "remote-checkout":
+                      return checkoutRemoteBranch();
                     default:
                       return notImplemented();
                   }
@@ -326,53 +363,56 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                       key={`${repoRoot}//remote_branches`}
                       title={getSectionLabel("Remote Branches", repoRoot)}
                     >
-                      {remoteBranches.map((branchName) => (
-                        <Item
-                          key={`${repoRoot}//${branchName}`}
-                          textValue={branchName}
-                          title={
-                            <MenuItemLayout
-                              content={branchName}
-                              icon={
-                                isFavoriteBranch(branchName) ? (
-                                  <PlatformIcon icon="nodes/favorite.svg" />
-                                ) : (
-                                  <AutoHoverPlatformIcon
-                                    icon="nodes/emptyNode.svg"
-                                    hoverIcon="nodes/notFavoriteOnHover.svg"
-                                    hoverContainerSelector="[role='menuitem']"
-                                  />
-                                )
-                              }
-                            />
-                          }
-                        >
+                      {remoteBranches.map((branch) => {
+                        const branchName = `${branch.remote}/${branch.name}`;
+                        return (
                           <Item
-                            key={`${repoRoot}//${branchName}//remote-checkout`}
+                            key={`${repoRoot}//${branchName}`}
+                            textValue={branchName}
+                            title={
+                              <MenuItemLayout
+                                content={branchName}
+                                icon={
+                                  isFavoriteBranch(branchName) ? (
+                                    <PlatformIcon icon="nodes/favorite.svg" />
+                                  ) : (
+                                    <AutoHoverPlatformIcon
+                                      icon="nodes/emptyNode.svg"
+                                      hoverIcon="nodes/notFavoriteOnHover.svg"
+                                      hoverContainerSelector="[role='menuitem']"
+                                    />
+                                  )
+                                }
+                              />
+                            }
                           >
-                            Checkout
+                            <Item
+                              key={`${repoRoot}//${branchName}//remote-checkout`}
+                            >
+                              Checkout
+                            </Item>
+                            <Item
+                              key={`${repoRoot}//${branchName}//new-branch-from`}
+                            >{`New Branch from '${branchName}'...`}</Item>
+                            <Item
+                              key={`${repoRoot}//${branchName}//checkout-and-rebase-onto`}
+                            >{`Checkout and rebase onto '${branchName}'`}</Item>
+                            <Divider key="new-branch-actions-divider" />
+                            {compareActions(branchName, false)}
+                            {mergeActions(branchName, currentBranch?.name)}
+                            <Item
+                              key={`${repoRoot}//${branchName}//pull-into-using-merge`}
+                            >{`Pull into '${branchName}' Using Merge`}</Item>
+                            <Item
+                              key={`${repoRoot}//${branchName}//pull-into-using-rebase`}
+                            >{`Pull into '${branchName}' Using Rebase`}</Item>
+                            <Divider />
+                            <Item key={`${repoRoot}//${branchName}//delete`}>
+                              Delete
+                            </Item>
                           </Item>
-                          <Item
-                            key={`${repoRoot}//${branchName}//new-branch-from`}
-                          >{`New Branch from '${branchName}'...`}</Item>
-                          <Item
-                            key={`${repoRoot}//${branchName}//checkout-and-rebase-onto`}
-                          >{`Checkout and rebase onto '${branchName}'`}</Item>
-                          <Divider key="new-branch-actions-divider" />
-                          {compareActions(branchName, false)}
-                          {mergeActions(branchName, currentBranch?.name)}
-                          <Item
-                            key={`${repoRoot}//${branchName}//pull-into-using-merge`}
-                          >{`Pull into '${branchName}' Using Merge`}</Item>
-                          <Item
-                            key={`${repoRoot}//${branchName}//pull-into-using-rebase`}
-                          >{`Pull into '${branchName}' Using Rebase`}</Item>
-                          <Divider />
-                          <Item key={`${repoRoot}//${branchName}//delete`}>
-                            Delete
-                          </Item>
-                        </Item>
-                      ))}
+                        );
+                      })}
                     </Section>,
                   ];
                 }

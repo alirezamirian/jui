@@ -10,17 +10,23 @@ import { vcsRootForFile, vcsRootsState } from "../file-status.state";
 import { dirContentState, reloadFileFromDiskCallback } from "../../fs/fs.state";
 import { getTrackingBranch } from "./branch-utils";
 import { editorTabsState } from "../../Editor/editor.state";
+import { asyncFilter } from "../../async-utils";
 
 export type LocalBranch = {
   name: string;
   trackingBranch: string | null;
 };
 
+export type RemoteBranch = {
+  name: string;
+  remote: string;
+};
+
 export type RepoBranches = {
   repoRoot: string;
   currentBranch: LocalBranch | null;
   localBranches: LocalBranch[];
-  remoteBranches: string[];
+  remoteBranches: RemoteBranch[];
 };
 
 /**
@@ -50,7 +56,7 @@ const repoLocalBranchesState = selectorFamily<LocalBranch[], string>({
  */
 const repoRemoteBranchesState = selectorFamily({
   key: "vcs/repoRemoteBranches",
-  get: (repoRoot: string) => async () => {
+  get: (repoRoot: string) => async (): Promise<RemoteBranch[]> => {
     const remotes = await git.listRemotes({ fs, dir: repoRoot });
     return (
       await Promise.all(
@@ -60,7 +66,7 @@ const repoRemoteBranchesState = selectorFamily({
             .then((branches) =>
               branches
                 .filter((branch) => branch !== "HEAD")
-                .map((branch) => `${remote}/${branch}`)
+                .map((branch) => ({ name: branch, remote }))
             )
         )
       )
@@ -149,25 +155,27 @@ export function useRenameBranch() {
 
 export function useCheckoutBranch() {
   return useRecoilCallback(
-    (callbackInterface) => (repoRoot: string, branchName: string) => {
-      const { refresh, snapshot, transact_UNSTABLE } = callbackInterface;
-      const reloadFileFromDisk = reloadFileFromDiskCallback(callbackInterface);
-      return checkout({
-        fs,
-        dir: repoRoot,
-        ref: branchName,
-      }).then(() => {
+    (callbackInterface) =>
+      async (repoRoot: string, branchName: string, remote?: string) => {
+        const { refresh, snapshot, set } = callbackInterface;
+        const reloadFileFromDisk =
+          reloadFileFromDiskCallback(callbackInterface);
+        await checkout({
+          fs,
+          dir: repoRoot,
+          remote,
+          ref: branchName,
+        });
         refresh(repoBranchesState(repoRoot));
         refresh(dirContentState(repoRoot));
-        // TODO: refreshing file content of the files opened in the editor is not enough.
-        //  Potential improvements: loop over files based on checked out tree.
         const openedFiles = snapshot.getLoadable(editorTabsState).getValue();
-        openedFiles.forEach(({ filePath }) => {
-          reloadFileFromDisk(filePath);
-        });
+        const existingOpenedFile = await asyncFilter(
+          ({ filePath }) => reloadFileFromDisk(filePath),
+          openedFiles
+        );
+        set(editorTabsState, existingOpenedFile);
         // TODO: update file status (fileStatusState) for the repo.
-      });
-    },
+      },
     []
   );
 }

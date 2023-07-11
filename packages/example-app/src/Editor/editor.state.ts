@@ -58,8 +58,10 @@ const activeEditorTabIndexState = atom<number>({
 
 export const activeEditorTabState = selector<EditorTabState | null>({
   key: "editor.activeTab",
-  get: ({ get }) =>
-    get(editorTabsState)[get(activeEditorTabIndexState)] || null,
+  get: ({ get }) => {
+    const tabs = get(editorTabsState);
+    return tabs[get(activeEditorTabIndexState)] || tabs[0] || null;
+  },
 });
 
 export const editorCursorPositionState = atom<Position>({

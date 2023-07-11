@@ -9,7 +9,8 @@ export function validateBranchName(
 ): BranchNameError | null {
   if (
     branches.remoteBranches.some(
-      (remoteBranchName) => remoteBranchName === newBranchName
+      (remoteBranch) =>
+        `${remoteBranch.remote}/${remoteBranch.name}` === newBranchName
     )
   ) {
     return "CLASHING_WITH_REMOTE";

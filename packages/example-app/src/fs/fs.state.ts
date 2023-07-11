@@ -45,10 +45,22 @@ export const dirContentState = selectorFamily({
   },
 });
 
+/**
+ * recoil callback to refresh the file content recoil value of a give path.
+ * The callback returns `true` the file exists and content is refreshed successfully, and `false otherwise.
+ * @param set
+ */
 export const reloadFileFromDiskCallback =
   ({ set }: CallbackInterface) =>
-  async (path: string) =>
-    set(fileContent(path), await fetchFileContent(path));
+  async (path: string) => {
+    try {
+      const content = await fetchFileContent(path);
+      set(fileContent(path), content);
+      return true;
+    } catch {
+      return false;
+    }
+  };
 
 const fetchFileContent = async (filepath: string | undefined) => {
   if (!filepath) {
