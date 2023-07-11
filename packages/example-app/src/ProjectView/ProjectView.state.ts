@@ -14,6 +14,7 @@ import { filterPath } from "../Project/project-utils";
 import { getParentPaths } from "../file-utils";
 import * as path from "path";
 import { vcsRootsState } from "../VersionControl/file-status.state";
+import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 interface FileTreeNodeBase {
   parent: (FileTreeNodeBase & { children: FsItem[] }) | null;
@@ -79,10 +80,10 @@ async function createProjectTree(
   project: Project,
   get: GetRecoilValue
 ): Promise<ProjectTreeRoot> {
-  const rootItems = await get(dirContentState(project.path));
+  const rootItems = get(dirContentState(project.path));
   const mapItem =
     (parent: FileTreeDirNode | null) =>
-    async (item: FsItem): Promise<FileTreeNode> => {
+    async (item: FsItem): Promise<FileTreeNode | null> => {
       const name = path.basename(item.path);
       const node = {
         ...item,
@@ -91,13 +92,19 @@ async function createProjectTree(
       };
       const dirNode: FileTreeDirNode = { ...node, children: [] };
       if (item.type === "dir") {
-        dirNode.children = await Promise.all(
-          ((await get(dirContentState(item.path))) ?? ([] as FsItem[])).map(
-            mapItem(dirNode)
-          )
-        );
+        if (filterPath(item)) {
+          dirNode.children = (
+            await Promise.all(
+              (get(dirContentState(item.path)) ?? ([] as FsItem[])).map(
+                mapItem(dirNode)
+              )
+            )
+          ).filter(notNull);
+          return dirNode;
+        }
+        return null;
       }
-      return item.type === "dir" ? dirNode : node;
+      return node;
     };
 
   return {
@@ -105,8 +112,8 @@ async function createProjectTree(
     path: project.path,
     name: project.name,
     parent: null,
-    children: await Promise.all(
-      (rootItems || []).filter(filterPath).map(mapItem(null))
+    children: (await Promise.all((rootItems || []).map(mapItem(null)))).filter(
+      notNull
     ),
   };
 }

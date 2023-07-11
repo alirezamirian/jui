@@ -54,27 +54,40 @@ export const projectFilePath = selectorFamily({
 });
 
 export const currentProjectFilesState = selector({
-  key: "projectFiles",
+  key: "project.current.files",
   get: async ({ get }): Promise<ProjectFsItem[]> => {
     const project = get(currentProjectState);
-    const items = get(dirContentState(project.path));
-    const files: ProjectFsItem[] = [];
-    const addItem = (item: FsItem) => {
-      if (item.type === "dir" && filterPath(item)) {
-        const childItems = get(dirContentState(item.path));
-        if (childItems) {
-          childItems.map(addItem);
-        }
-      } else {
-        files.push({
-          ...item,
-          relativePath: path.relative(project.path, item.path),
-        });
-      }
-    };
-    (items || []).forEach((item) => addItem(item));
-    return files;
+    return get(projectFilesState(project.path));
   },
+});
+
+export const projectFilesState = selectorFamily({
+  key: "project.files",
+  get:
+    (
+      projectPath: string /* could be changed to project id, when project entity is more mature */
+    ) =>
+    async ({ get }): Promise<ProjectFsItem[]> => {
+      const items = get(dirContentState(projectPath));
+      const files: ProjectFsItem[] = [];
+      const addItem = (item: FsItem) => {
+        if (item.type === "dir") {
+          if (filterPath(item)) {
+            const childItems = get(dirContentState(item.path));
+            if (childItems) {
+              childItems.forEach(addItem);
+            }
+          }
+        } else {
+          files.push({
+            ...item,
+            relativePath: path.relative(projectPath, item.path),
+          });
+        }
+      };
+      (items || []).forEach((item) => addItem(item));
+      return files;
+    },
 });
 
 /**
