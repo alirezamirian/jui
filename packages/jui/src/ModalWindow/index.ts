@@ -1,6 +1,6 @@
 export {
   ModalWindow,
-  ModalWindowProps,
+  type ModalWindowProps,
   DEFAULT_WINDOW_MIN_HEIGHT,
   DEFAULT_WINDOW_MIN_WIDTH,
 } from "./ModalWindow";

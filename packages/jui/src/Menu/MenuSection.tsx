@@ -12,7 +12,7 @@ export interface MenuSectionProps<T> {
   filter?: (node: Node<T>) => boolean;
 }
 
-const StyledMenuHeading = styled.li`
+const StyledMenuHeading = styled.div`
   cursor: default;
   padding: 2px 0 2px 12px;
   font-weight: bold;

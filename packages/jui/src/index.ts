@@ -37,8 +37,8 @@ export * from "./Tooltip";
 export * from "./Popup";
 export * from "./InputField";
 
-export { Bounds } from "./Overlay";
-export { TextRange } from "./TextRange";
+export { type Bounds } from "./Overlay";
+export { type TextRange } from "./TextRange";
 
 export { Pressable } from "@react-aria/interactions";
-export { FocusScope, FocusScopeProps } from "@react-aria/focus";
+export { FocusScope, type FocusScopeProps } from "@react-aria/focus";
