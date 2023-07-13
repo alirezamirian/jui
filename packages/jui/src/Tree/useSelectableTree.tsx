@@ -89,6 +89,7 @@ export function useSelectableTree<T>(
   const onKeyDown = (event: KeyboardEvent) => {
     const focusedKey = state.selectionManager.focusedKey;
     if (focusedKey == null) {
+      event.continuePropagation();
       return;
     }
     const item = state.collection.getItem(focusedKey);
