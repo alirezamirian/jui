@@ -13,8 +13,7 @@ import {
   validateBranchName,
 } from "./branch-name-utils";
 import { useRecoilValue } from "recoil";
-import { activeFileRepoBranchesState } from "../active-file.state";
-import { useRenameBranch } from "./branches.state";
+import { repoBranchesState, useRenameBranch } from "./branches.state";
 
 const StyledContainer = styled.div`
   padding: 0.5rem 1rem;
@@ -42,15 +41,17 @@ export const ErrorMessages: Record<
 
 export function RenameBranchWindow({
   branchName,
+  repoRoot,
   close,
 }: {
   branchName: string;
+  repoRoot: string;
   close: () => void;
 }) {
   const [newBranchName, setNewBranchName] = useState(branchName);
   const [touched, setTouched] = useState(false);
   const balloonManager = useBalloonManager();
-  const branches = useRecoilValue(activeFileRepoBranchesState);
+  const branches = useRecoilValue(repoBranchesState(repoRoot));
   const renameBranch = useRenameBranch();
 
   const error = validateBranchName(branches, newBranchName);

@@ -1,16 +1,24 @@
-import { selector, selectorFamily, useRecoilCallback } from "recoil";
+import { equals } from "ramda";
+import {
+  atom,
+  selector,
+  selectorFamily,
+  useRecoilCallback,
+  useRecoilValue,
+} from "recoil";
 import git, {
   branch,
   checkout,
   deleteBranch,
   renameBranch,
 } from "isomorphic-git";
+
 import { fs } from "../../fs/fs";
 import { vcsRootForFile, vcsRootsState } from "../file-status.state";
 import { dirContentState, reloadFileFromDiskCallback } from "../../fs/fs.state";
-import { getTrackingBranch } from "./branch-utils";
 import { editorTabsState } from "../../Editor/editor.state";
 import { asyncFilter } from "../../async-utils";
+import { getTrackingBranch } from "./branch-utils";
 
 export type LocalBranch = {
   name: string;
@@ -122,6 +130,117 @@ export const allBranchesState = selector<RepoBranches[]>({
   },
 });
 
+/**
+ * Given the absolute path of a file, returns the current branch on the repository this file belongs to.
+ */
+export const branchForPathState = selectorFamily<string | null, string>({
+  key: "gitBranchForFile",
+  get:
+    (filepath: string) =>
+    ({ get }) => {
+      const root = get(vcsRootForFile(filepath));
+      return root
+        ? get(repoBranchesState(root)).currentBranch?.name || null
+        : null;
+    },
+});
+
+type FavoriteBranch = {
+  repoRoot: string;
+  branchType: "local" | "remote";
+  branchName: string;
+};
+
+const PREDEFINED_FAVORITE_BRANCH_NAMES = [
+  { branchType: "local", branchName: "master" },
+  { branchType: "remote", branchName: "origin/master" },
+];
+
+const favoriteBranchesState = atom<FavoriteBranch[]>({
+  key: "vcs/branches/favorite",
+  default: [],
+});
+
+const excludedFromFavoriteBranchesState = atom<FavoriteBranch[]>({
+  key: "vcs/branches/favorite-excluded",
+  default: [],
+});
+
+function isPredefinedAsFavorite(params: {
+  repoRoot: string;
+  branchName: string;
+  branchType: "local" | "remote";
+}) {
+  return PREDEFINED_FAVORITE_BRANCH_NAMES.some(
+    ({ branchType, branchName }) =>
+      branchName === params.branchName && branchType === params.branchType
+  );
+}
+
+const isFavorite = (
+  favoriteBranches: FavoriteBranch[],
+  excludedFromFavoriteBranches: FavoriteBranch[],
+  params: FavoriteBranch
+) => {
+  if (favoriteBranches.find(equals(params))) {
+    return true;
+  }
+  if (excludedFromFavoriteBranches.find(equals(params))) {
+    return false;
+  }
+  return isPredefinedAsFavorite(params);
+};
+
+function useToggleFavoriteBranch() {
+  return useRecoilCallback(
+    ({ set, snapshot }) =>
+      (
+        params: FavoriteBranch,
+        favorite: boolean = !isFavorite(
+          snapshot.getLoadable(favoriteBranchesState).getValue(),
+          snapshot.getLoadable(excludedFromFavoriteBranchesState).getValue(),
+          params
+        )
+      ) => {
+        const remove = (currentValue: FavoriteBranch[]) =>
+          currentValue.filter(
+            (favoriteBranch: FavoriteBranch) => !equals(favoriteBranch, params)
+          );
+        const add = (currentValue: FavoriteBranch[]) => {
+          if (currentValue.some(equals(params))) {
+            return currentValue;
+          }
+          return currentValue.concat(params);
+        };
+
+        if (favorite) {
+          set(excludedFromFavoriteBranchesState, remove);
+          if (!isPredefinedAsFavorite(params)) {
+            set(favoriteBranchesState, add);
+          }
+        } else {
+          set(favoriteBranchesState, remove);
+          if (isPredefinedAsFavorite(params)) {
+            set(excludedFromFavoriteBranchesState, add);
+          }
+        }
+      },
+    []
+  );
+}
+export function useFavoriteBranches() {
+  const favoriteBranches = useRecoilValue(favoriteBranchesState);
+  const excludedFromFavoriteBranches = useRecoilValue(
+    excludedFromFavoriteBranchesState
+  );
+
+  return {
+    isFavorite: (params: FavoriteBranch) =>
+      isFavorite(favoriteBranches, excludedFromFavoriteBranches, params),
+    toggleFavorite: useToggleFavoriteBranch(),
+  } as const;
+}
+
 export function useCreateBranch() {
   return useRecoilCallback(
     ({ refresh }) =>
@@ -136,18 +255,42 @@ export function useCreateBranch() {
   );
 }
 
+/**
+ * Rename of a local branch.
+ */
 export function useRenameBranch() {
+  const toggleFavoriteBranch = useToggleFavoriteBranch();
   return useRecoilCallback(
-    ({ refresh }) =>
-      (repoRoot: string, branchName: string, newBranchName: string) => {
-        return renameBranch({
+    ({ refresh, snapshot }) =>
+      async (repoRoot: string, branchName: string, newBranchName: string) => {
+        await renameBranch({
           fs,
           dir: repoRoot,
           oldref: branchName,
           ref: newBranchName,
-        }).then(() => {
-          refresh(repoBranchesState(repoRoot));
         });
+        refresh(repoBranchesState(repoRoot));
+        const favoriteBranch = {
+          branchType: "local",
+          branchName,
+          repoRoot,
+        } as const;
+        if (
+          isFavorite(
+            snapshot.getLoadable(favoriteBranchesState).getValue(),
+            snapshot.getLoadable(excludedFromFavoriteBranchesState).getValue(),
+            favoriteBranch
+          )
+        ) {
+          toggleFavoriteBranch(favoriteBranch, false); // remove old branch from favorites
+          toggleFavoriteBranch(
+            {
+              ...favoriteBranch,
+              branchName: newBranchName,
+            },
+            true
+          ); // add new branch as favorite
+        }
       },
     []
   );
@@ -191,18 +334,3 @@ export function useDeleteBranch() {
     []
   );
 }
-
-/**
- * Given the absolute path of a file, returns the current branch on the repository this file belongs to.
- */
-export const branchForPathState = selectorFamily<string | null, string>({
-  key: "gitBranchForFile",
-  get:
-    (filepath: string) =>
-    ({ get }) => {
-      const root = get(vcsRootForFile(filepath));
-      return root
-        ? get(repoBranchesState(root)).currentBranch?.name || null
-        : null;
-    },
-});

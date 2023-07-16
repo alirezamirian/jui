@@ -7,7 +7,7 @@ import {
   useOverlayTriggerState,
 } from "@react-stately/overlays";
 
-import { Popup, PopupProps } from "./Popup";
+import { PopupProps } from "./Popup";
 import { PopupControllerContext } from "./PopupContext";
 
 export interface PopupTriggerProps

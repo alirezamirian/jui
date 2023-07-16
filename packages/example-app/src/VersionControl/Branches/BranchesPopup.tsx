@@ -4,7 +4,6 @@ import {
   ActionButton,
   ActionToolbar,
   ActionTooltip,
-  AutoHoverPlatformIcon,
   BalloonActionLink,
   Bounds,
   Divider,
@@ -28,13 +27,14 @@ import {
   allBranchesState,
   useCheckoutBranch,
   useDeleteBranch,
+  useFavoriteBranches,
 } from "./branches.state";
 import { notImplemented } from "../../Project/notImplemented";
 import { VcsActionIds } from "../VcsActionIds";
 import { atom, useRecoilState } from "recoil";
 import { RenameBranchWindow } from "./RenameBranchWindow";
 import { Errors } from "isomorphic-git";
-import { find } from "ramda";
+import { BranchFavoriteButton } from "./BranchFavoriteButton";
 
 const StyledHeader = styled.div`
   box-sizing: border-box;
@@ -78,7 +78,7 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
 
   // useRefreshRecoilValueOnMount(allBranchesState);
 
-  const isFavoriteBranch = (branch: string) => branch === "master"; // TODO;
+  const { isFavorite, toggleFavorite } = useFavoriteBranches();
 
   if (!repoBranches) {
     return null;
@@ -224,7 +224,11 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                       );
                     case "rename":
                       return windowManager.open(({ close }) => (
-                        <RenameBranchWindow branchName={branch} close={close} />
+                        <RenameBranchWindow
+                          repoRoot={repoRoot}
+                          branchName={branch}
+                          close={close}
+                        />
                       ));
                     case "checkout":
                       return checkoutLocalBranch();
@@ -296,6 +300,11 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                     >
                       {localBranches.map(({ name, trackingBranch }) => {
                         const isCurrent = name === currentBranch?.name;
+                        const favoriteBranchArgs = {
+                          branchName: name,
+                          branchType: "local",
+                          repoRoot,
+                        } as const;
                         return (
                           <Item
                             key={`${repoRoot}//${name}`}
@@ -304,15 +313,13 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                               <MenuItemLayout
                                 content={name}
                                 icon={
-                                  isFavoriteBranch(name) ? (
-                                    <PlatformIcon icon="nodes/favorite.svg" />
-                                  ) : (
-                                    <AutoHoverPlatformIcon
-                                      icon="nodes/emptyNode.svg"
-                                      hoverIcon="nodes/notFavoriteOnHover.svg"
-                                      hoverContainerSelector="[role='menuitem']"
-                                    />
-                                  )
+                                  <BranchFavoriteButton
+                                    isFavorite={isFavorite(favoriteBranchArgs)}
+                                    isCurrent={isCurrent}
+                                    onClick={() => {
+                                      toggleFavorite(favoriteBranchArgs);
+                                    }}
+                                  />
                                 }
                                 shortcut={
                                   trackingBranch && (
@@ -365,6 +372,11 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                     >
                       {remoteBranches.map((branch) => {
                         const branchName = `${branch.remote}/${branch.name}`;
+                        const favoriteBranchArgs = {
+                          branchName,
+                          branchType: "remote",
+                          repoRoot,
+                        } as const;
                         return (
                           <Item
                             key={`${repoRoot}//${branchName}`}
@@ -373,15 +385,12 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                               <MenuItemLayout
                                 content={branchName}
                                 icon={
-                                  isFavoriteBranch(branchName) ? (
-                                    <PlatformIcon icon="nodes/favorite.svg" />
-                                  ) : (
-                                    <AutoHoverPlatformIcon
-                                      icon="nodes/emptyNode.svg"
-                                      hoverIcon="nodes/notFavoriteOnHover.svg"
-                                      hoverContainerSelector="[role='menuitem']"
-                                    />
-                                  )
+                                  <BranchFavoriteButton
+                                    isFavorite={isFavorite(favoriteBranchArgs)}
+                                    onClick={() => {
+                                      toggleFavorite(favoriteBranchArgs);
+                                    }}
+                                  />
                                 }
                               />
                             }
