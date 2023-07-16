@@ -1,13 +1,20 @@
 import React, { ForwardedRef } from "react";
 import useForwardedRef from "@intellij-platform/core/utils/useForwardedRef";
-import { useTheme } from "styled-components";
-import { Theme } from "../Theme/Theme";
+import { useTheme } from "@intellij-platform/core/styled";
 import { IconProps } from "./IconProps";
 import { StyledIconWrapper } from "./StyledIconWrapper";
 import { useSvgIcon } from "./useSvgIcon";
 
 export interface PlatformIconProps extends IconProps {
+  /**
+   * Icon path in intellij platform repo.
+   * If starts with "/", the path will be from the repo root. Otherwise, it's relative to "platform/icons/src".
+   * ".svg" extension is optional.
+   */
   icon: string;
+  /**
+   * Similar to icon, but for dark themes.
+   */
   darkIcon?: string;
 }
 
@@ -22,7 +29,9 @@ export const getDarkPath = (path: string, darkPath?: string) => {
 };
 
 const getPlatformIconPath = (relativePath: string) =>
-  `platform/icons/src/${relativePath}`;
+  relativePath.startsWith("/")
+    ? relativePath.slice(1)
+    : `platform/icons/src/${relativePath}`;
 
 /**
  * Renders an icon from the predefined list of platform icons.
@@ -30,6 +39,7 @@ const getPlatformIconPath = (relativePath: string) =>
  * @example <PlatformIcon icon="general/hideToolWindow" />
  * @example <PlatformIcon icon="toolbar/pin" />
  * @example <PlatformIcon icon="toolbar/pin.svg" />
+ * @example <PlatformIcon icon="/platform/dvcs-impl/resources/icons/currentBranchLabel.svg" />
  */
 export const PlatformIcon = React.forwardRef(
   (
@@ -37,7 +47,7 @@ export const PlatformIcon = React.forwardRef(
     forwardedRef: ForwardedRef<HTMLElement>
   ) => {
     const ref = useForwardedRef(forwardedRef);
-    const theme = useTheme() as Theme; // TODO: investigate why useTheme is typed like this
+    const theme = useTheme();
     const iconName = theme.dark ? getDarkPath(icon, darkIcon) : icon;
     useSvgIcon(
       {
