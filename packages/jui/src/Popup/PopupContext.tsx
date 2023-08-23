@@ -1,6 +1,6 @@
-import { DOMAttributes, FocusableElement } from "@react-types/shared";
+import { DOMAttributes } from "@react-types/shared";
 import { createContext } from "react";
-import { PopupProps } from "@intellij-platform/core";
+import { PopupProps } from "./Popup";
 
 export const PopupContext = createContext<{
   isActive: boolean;
