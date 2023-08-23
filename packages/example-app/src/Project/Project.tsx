@@ -22,6 +22,7 @@ import { useProjectActions } from "./useProjectActions";
 import { searchEverywhereState } from "../SearchEverywhere/searchEverywhere.state";
 import { useVcsActions } from "../VersionControl/useVcsActions";
 import { _balloonManagerRef } from "./notImplemented";
+import { PersistentStateProvider } from "./persistence/PersistentStateProvider";
 
 const StyledWindowFrame = styled.div`
   display: flex;
@@ -52,34 +53,36 @@ export const Project = ({
   ];
 
   return (
-    <StyledWindowFrame style={{ height }}>
-      <ActionsProvider
-        actions={allActions}
-        useCapture /* useCapture because of Monaco's aggressive event handling. Specifically, Cmd+Shift+O in .ts files  */
-      >
-        {({ shortcutHandlerProps }) => (
-          <>
-            <DefaultToolWindows
-              ref={toolWindowRef}
-              toolWindowsState={state}
-              onToolWindowStateChange={(newState) => {
-                setState(newState);
-              }}
-              windows={toolWindows}
-              containerProps={shortcutHandlerProps}
-              // To make it not annoying when the whole app is a part of a bigger page. It's fine to disable focus trap,
-              // because the focusable element, the editor, fills the whole main content.
-              allowBlurOnInteractionOutside
-            >
-              <FileEditor />
-            </DefaultToolWindows>
-            <IdeStatusBar />
-          </>
-        )}
-      </ActionsProvider>
+    <PersistentStateProvider>
+      <StyledWindowFrame style={{ height }}>
+        <ActionsProvider
+          actions={allActions}
+          useCapture /* useCapture because of Monaco's aggressive event handling. Specifically, Cmd+Shift+O in .ts files  */
+        >
+          {({ shortcutHandlerProps }) => (
+            <>
+              <DefaultToolWindows
+                ref={toolWindowRef}
+                toolWindowsState={state}
+                onToolWindowStateChange={(newState) => {
+                  setState(newState);
+                }}
+                windows={toolWindows}
+                containerProps={shortcutHandlerProps}
+                // To make it not annoying when the whole app is a part of a bigger page. It's fine to disable focus trap,
+                // because the focusable element, the editor, fills the whole main content.
+                allowBlurOnInteractionOutside
+              >
+                <FileEditor />
+              </DefaultToolWindows>
+              <IdeStatusBar />
+            </>
+          )}
+        </ActionsProvider>
 
-      {isSearchEveryWhereOpen && <SearchEverywherePopup />}
-      {isRollbackWindowOpen && <RollbackWindow />}
-    </StyledWindowFrame>
+        {isSearchEveryWhereOpen && <SearchEverywherePopup />}
+        {isRollbackWindowOpen && <RollbackWindow />}
+      </StyledWindowFrame>
+    </PersistentStateProvider>
   );
 };

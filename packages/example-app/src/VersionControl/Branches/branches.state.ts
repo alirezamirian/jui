@@ -1,4 +1,4 @@
-import { equals } from "ramda";
+import { equals, groupBy } from "ramda";
 import {
   atom,
   selector,
@@ -19,6 +19,8 @@ import { dirContentState, reloadFileFromDiskCallback } from "../../fs/fs.state";
 import { editorTabsState } from "../../Editor/editor.state";
 import { asyncFilter } from "../../async-utils";
 import { getTrackingBranch } from "./branch-utils";
+import { array, literal, object, string, union } from "@recoiljs/refine";
+import { persistentAtomEffect } from "../../Project/persistence/persistentAtomEffect";
 
 export type LocalBranch = {
   name: string;
@@ -35,6 +37,14 @@ export type RepoBranches = {
   currentBranch: LocalBranch | null;
   localBranches: LocalBranch[];
   remoteBranches: RemoteBranch[];
+};
+
+type BranchType = "LOCAL" | "REMOTE";
+
+type BranchInfo = {
+  repoRoot: string;
+  branchType: BranchType;
+  branchName: string;
 };
 
 /**
@@ -145,31 +155,139 @@ export const branchForPathState = selectorFamily<string | null, string>({
     },
 });
 
-type FavoriteBranch = {
-  repoRoot: string;
-  branchType: "local" | "remote";
-  branchName: string;
-};
-
 const PREDEFINED_FAVORITE_BRANCH_NAMES = [
-  { branchType: "local", branchName: "master" },
-  { branchType: "remote", branchName: "origin/master" },
+  { branchType: "LOCAL", branchName: "master" },
+  { branchType: "REMOTE", branchName: "origin/master" },
 ];
 
-const favoriteBranchesState = atom<FavoriteBranch[]>({
+type MaybeArray<T> = Array<T> | T;
+const maybeArray = <T>(input: MaybeArray<T> | undefined): Array<T> =>
+  Array.isArray(input) ? input : input ? [input] : [];
+interface BranchStorage {
+  map: MaybeArray<{
+    entry: {
+      "@type": "LOCAL" | "REMOTE";
+      value: {
+        list: MaybeArray<{
+          "branch-info": {
+            "@repo": string;
+            "@source": string;
+          };
+        }>;
+      };
+    };
+  }>;
+}
+
+/**
+ * Implements the intellij's data structure for persisting branch storage objects, used in persisting favorite branches
+ * state. The reason for following the same data structure is to be able to open existing intellij projects with this
+ * app and have it read/write the persistent state the same way an intellij does.
+ */
+interface GitSettingsStorage {
+  "favorite-branches"?: {
+    "branch-storage": BranchStorage;
+  };
+  "exclude-from-favorite"?: {
+    "branch-storage": BranchStorage;
+  };
+}
+
+function readBranchStorage(branchStorage: BranchStorage | undefined) {
+  return (
+    maybeArray(branchStorage?.map).flatMap<BranchInfo>((entry) =>
+      maybeArray(entry?.entry.value.list).map(
+        ({ "branch-info": { "@source": branchName, "@repo": repoRoot } }) => ({
+          branchType: entry?.entry["@type"],
+          branchName,
+          repoRoot,
+        })
+      )
+    ) || []
+  );
+}
+
+function toBranchStorage(value: readonly BranchInfo[]): BranchStorage {
+  const branchesByType = groupBy(({ branchType }) => branchType, value);
+  const entries = Object.entries(branchesByType).map(
+    ([branchType, branches]) => ({
+      entry: {
+        "@type": branchType as BranchType,
+        value: {
+          list: branches.map((branch) => ({
+            "branch-info": {
+              "@repo": branch.repoRoot,
+              "@source": branch.branchName,
+            },
+          })),
+        },
+      },
+    })
+  );
+  return {
+    map: entries,
+  };
+}
+
+const branchInfoArrayChecker = array(
+  object({
+    branchType: union(literal("LOCAL"), literal("REMOTE")),
+    branchName: string(),
+    repoRoot: string(),
+  })
+);
+const favoriteBranchesState = atom<ReadonlyArray<BranchInfo>>({
   key: "vcs/branches/favorite",
   default: [],
+  effects: [
+    persistentAtomEffect<ReadonlyArray<BranchInfo>, GitSettingsStorage>({
+      refine: branchInfoArrayChecker,
+      componentName: "Git.Settings",
+      read: (gitSettings) => {
+        return readBranchStorage(
+          gitSettings?.["favorite-branches"]?.["branch-storage"]
+        );
+      },
+      update: (value) => {
+        return (currentValue): GitSettingsStorage => ({
+          ...(currentValue || {}),
+          "favorite-branches": {
+            "branch-storage": toBranchStorage(value),
+          },
+        });
+      },
+    }),
+  ],
 });
 
-const excludedFromFavoriteBranchesState = atom<FavoriteBranch[]>({
+const excludedFromFavoriteBranchesState = atom<ReadonlyArray<BranchInfo>>({
   key: "vcs/branches/favorite-excluded",
   default: [],
+  effects: [
+    persistentAtomEffect<ReadonlyArray<BranchInfo>, GitSettingsStorage>({
+      refine: branchInfoArrayChecker,
+      componentName: "Git.Settings",
+      read: (gitSettings) => {
+        return readBranchStorage(
+          gitSettings?.["exclude-from-favorite"]?.["branch-storage"]
+        );
+      },
+      update: (value) => {
+        return (currentValue): GitSettingsStorage => ({
+          ...(currentValue || {}),
+          "exclude-from-favorite": {
+            "branch-storage": toBranchStorage(value),
+          },
+        });
+      },
+    }),
+  ],
 });
 
 function isPredefinedAsFavorite(params: {
   repoRoot: string;
   branchName: string;
-  branchType: "local" | "remote";
+  branchType: BranchType;
 }) {
   return PREDEFINED_FAVORITE_BRANCH_NAMES.some(
     ({ branchType, branchName }) =>
@@ -178,9 +296,9 @@ function isPredefinedAsFavorite(params: {
 }
 
 const isFavorite = (
-  favoriteBranches: FavoriteBranch[],
-  excludedFromFavoriteBranches: FavoriteBranch[],
-  params: FavoriteBranch
+  favoriteBranches: ReadonlyArray<BranchInfo>,
+  excludedFromFavoriteBranches: ReadonlyArray<BranchInfo>,
+  params: BranchInfo
 ) => {
   if (favoriteBranches.find(equals(params))) {
     return true;
@@ -195,18 +313,22 @@ function useToggleFavoriteBranch() {
   return useRecoilCallback(
     ({ set, snapshot }) =>
       (
-        params: FavoriteBranch,
+        params: BranchInfo,
         favorite: boolean = !isFavorite(
           snapshot.getLoadable(favoriteBranchesState).getValue(),
           snapshot.getLoadable(excludedFromFavoriteBranchesState).getValue(),
           params
         )
       ) => {
-        const remove = (currentValue: FavoriteBranch[]) =>
+        const remove = (
+          currentValue: ReadonlyArray<BranchInfo>
+        ): ReadonlyArray<BranchInfo> =>
           currentValue.filter(
-            (favoriteBranch: FavoriteBranch) => !equals(favoriteBranch, params)
+            (favoriteBranch: BranchInfo) => !equals(favoriteBranch, params)
           );
-        const add = (currentValue: FavoriteBranch[]) => {
+        const add = (
+          currentValue: ReadonlyArray<BranchInfo>
+        ): ReadonlyArray<BranchInfo> => {
           if (currentValue.some(equals(params))) {
             return currentValue;
           }
@@ -235,7 +357,7 @@ export function useFavoriteBranches() {
   );
 
   return {
-    isFavorite: (params: FavoriteBranch) =>
+    isFavorite: (params: BranchInfo) =>
       isFavorite(favoriteBranches, excludedFromFavoriteBranches, params),
     toggleFavorite: useToggleFavoriteBranch(),
   } as const;
@@ -271,7 +393,7 @@ export function useRenameBranch() {
         });
         refresh(repoBranchesState(repoRoot));
         const favoriteBranch = {
-          branchType: "local",
+          branchType: "LOCAL",
           branchName,
           repoRoot,
         } as const;

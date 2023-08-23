@@ -302,7 +302,7 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                         const isCurrent = name === currentBranch?.name;
                         const favoriteBranchArgs = {
                           branchName: name,
-                          branchType: "local",
+                          branchType: "LOCAL",
                           repoRoot,
                         } as const;
                         return (
@@ -374,7 +374,7 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                         const branchName = `${branch.remote}/${branch.name}`;
                         const favoriteBranchArgs = {
                           branchName,
-                          branchType: "remote",
+                          branchType: "REMOTE",
                           repoRoot,
                         } as const;
                         return (
