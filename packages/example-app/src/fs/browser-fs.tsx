@@ -11,7 +11,7 @@ type FileSystem = Parameters<typeof BrowserFS["initialize"]>[0];
 
 // not so accurate type.
 export type PromisifiedFS = Omit<
-  LightningFS.PromisifedFS, // borrowed from LightningFS
+  LightningFS.PromisifiedFS, // borrowed from LightningFS
   "init" | "activate" | "deactivate"
 > & { exists: (path: string) => Promise<boolean> };
 
@@ -44,7 +44,15 @@ export function initializeFS(fsBackend: FileSystem): FSModuleWithPromises {
   const fsm = BrowserFS.BFSRequire("fs");
 
   // @ts-expect-error
-  fsm.promises = pify(fsm);
+  fsm.promises = pify({
+    ...fsm,
+    // fs.exists violates error-first rule of callback-based async functions
+    exists: (
+      filePath: string,
+      cb: (error: null | unknown, value: boolean) => void
+    ) => fsm.exists(filePath, (value) => cb(null, value)),
+  });
+
   return fsm as FSModuleWithPromises;
 }
 

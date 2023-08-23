@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@intellij-platform/core": "workspace:^",
-    "@isomorphic-git/lightning-fs": "^4.4.1",
+    "@isomorphic-git/lightning-fs": "^4.6.0",
     "@monaco-editor/react": "^4.2.2",
     "browserfs": "^2.0.0",
     "caf": "^15.0.0-preB",
@@ -31,7 +31,6 @@
     "xterm-for-react": "^1.0.4"
   },
   "devDependencies": {
-    "@types/isomorphic-git__lightning-fs": "^4.4.2",
     "@types/jest": "^29.5.2",
     "jest": "^29.5.0"
   }

@@ -73,10 +73,7 @@ const copyFsRecursively = CAF(function* (
   }
 });
 const fileExists = async (fs: PromisifiedFS, filepath: string) => {
-  const exists = await fs
-    .exists(filepath)
-    // sometimes it throws boolean instead of returning :|
-    .catch((e) => (typeof e === "boolean" ? e : Promise.reject(e)));
+  const exists = await fs.exists(filepath);
 
   return exists && !(await fs.stat(filepath)).isDirectory();
 };

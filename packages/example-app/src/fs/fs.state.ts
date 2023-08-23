@@ -5,6 +5,7 @@ import {
   useRecoilRefresher_UNSTABLE,
 } from "recoil";
 import { fs } from "./fs";
+import { Stats } from "@isomorphic-git/lightning-fs";
 
 export interface FsItem {
   type: "dir" | "file";
@@ -30,7 +31,7 @@ export const dirContentState = selectorFamily({
     const stats = await Promise.all(
       fileNames.map((fileName) => {
         const filePath = `${path}/${fileName}`;
-        return fs.promises.stat(filePath).then((stat) => ({
+        return fs.promises.stat(filePath).then((stat: Stats) => ({
           ...stat,
           type: stat.isDirectory() ? ("dir" as const) : ("file" as const),
           filePath,
@@ -62,14 +63,14 @@ export const reloadFileFromDiskCallback =
     }
   };
 
-const fetchFileContent = async (filepath: string | undefined) => {
+const fetchFileContent = async (
+  filepath: string | undefined
+): Promise<string> => {
   if (!filepath) {
     return "";
   }
-  // @ts-expect-error return type is wrong
-  return fs.promises.readFile(filepath, {
-    encoding: "utf8",
-  }) as Promise<string>;
+  // @ts-expect-error: bad typing in @isomorphic-git/lightning-fs@4.6.0. It's fixed, but not published at the time of writing this
+  return fs.promises.readFile(filepath, { encoding: "utf8" });
 };
 
 /**
@@ -96,13 +97,8 @@ export const fileContent = atomFamily<string, string | undefined>({
         if (filepath) {
           // Should a sync API be used here?
           fs.promises
-            .writeFile(
-              filepath,
-              // @ts-expect-error: string should also be acceptable. Seems like bad typing
-              content,
-              { encoding: "utf8" }
-            )
-            .catch((e) => {
+            .writeFile(filepath, content, "utf8")
+            .catch((e: unknown) => {
               console.error("failed to sync the file back to the fs", e);
             });
         }
