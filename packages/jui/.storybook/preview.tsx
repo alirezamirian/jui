@@ -1,44 +1,43 @@
 import React, { useEffect } from "react";
-// @ts-expect-error missing type definition
-import { withThemes } from "storybook-addon-themes/react";
 import { Theme, ThemeProvider } from "../src/Theme";
+import {
+  withThemeProvider,
+  ThemeConfigType,
+} from "storybook-addon-theme-provider";
 
 const requireTheme = require.context("../themes", false, /\.theme\.json$/);
 
-const themes = requireTheme.keys().map((themeFile: string) => {
+const themes = requireTheme.keys().map((themeFile: string): ThemeConfigType => {
   const themeJson = requireTheme(themeFile);
   return {
     name: themeJson.name,
-    theme: new Theme(themeJson),
+    themeObject: new Theme(themeJson) as any,
     color: themeJson.ui?.["*"]?.background,
   };
 });
 
-export const decorators = [withThemes];
-
-export const parameters = {
-  actions: { argTypesRegex: "^on[A-Z].*" },
-  backgrounds: {
-    disable: true,
+export default {
+  decorators: [withThemeProvider(StoryThemeProvider)],
+  globals: {
+    selectedTheme: "Darcula",
+    themes,
   },
-  themes: {
-    default: "Darcula",
-    Decorator,
-    clearable: false,
-    list: themes,
+  parameters: {
+    actions: { argTypesRegex: "^on[A-Z].*" },
+    backgrounds: {
+      disable: true,
+    },
   },
 };
 
-function Decorator(props: {
-  children: React.ReactNode;
-  theme: { theme: Theme };
+function StoryThemeProvider(props: {
+  children?: React.ReactNode;
+  theme?: unknown;
 }) {
+  const theme = (props.theme as Theme) || themes[0].themeObject;
   useEffect(() => {
     // maybe just black and white based on theme.theme.dark?
-    document.body.style.background =
-      props.theme.theme.color("*.background") ?? "";
+    document.body.style.background = theme.color("*.background") ?? "";
   });
-  return (
-    <ThemeProvider theme={props.theme.theme}>{props.children}</ThemeProvider>
-  );
+  return <ThemeProvider theme={theme}>{props.children}</ThemeProvider>;
 }
