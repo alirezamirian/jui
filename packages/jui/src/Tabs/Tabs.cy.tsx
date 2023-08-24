@@ -1,4 +1,4 @@
-import { composeStories } from "@storybook/testing-react";
+import { composeStories } from "@storybook/react";
 import React from "react";
 import * as stories from "./2-Tabs.stories";
 

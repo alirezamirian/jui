@@ -1,5 +1,5 @@
 import React from "react";
-import { composeStories } from "@storybook/testing-react";
+import { composeStories } from "@storybook/react";
 import * as stories from "./StatusBar.stories";
 
 const { Default } = composeStories(stories);

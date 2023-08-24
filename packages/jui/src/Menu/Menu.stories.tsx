@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { Meta, Story } from "@storybook/react";
+import { StoryObj, StoryFn, Meta } from "@storybook/react";
 import { Item } from "@react-stately/collections";
 import { ContextMenuContainer, styled } from "@intellij-platform/core";
 
@@ -45,7 +45,7 @@ export default {
   },
 } as Meta<MenuProps<unknown>>;
 
-const Template: Story<MenuProps<ExampleMenuItem>> = (
+const Template: StoryFn<MenuProps<ExampleMenuItem>> = (
   props: MenuProps<ExampleMenuItem>
 ) => <Menu {...props} />;
 
@@ -104,7 +104,7 @@ AutoFocusFirst.args = {
   autoFocus: "first",
 };
 
-export const StaticWithTextItems: Story = () => (
+export const StaticWithTextItems: StoryFn = () => (
   <Menu>
     <Item>Restart Typescript Service</Item>
     <Item title="Compile">
@@ -122,12 +122,14 @@ Nested.args = {
   disabledKeys: ["Float"],
 };
 
-export const Position = ({ offsetRight = 230 }: { offsetRight: number }) => {
-  return (
-    <div style={{ paddingLeft: `calc(100% - ${offsetRight}px)` }}>
-      <Menu items={exampleMenuItems}>{renderItem}</Menu>
-    </div>
-  );
+export const Position = {
+  render: ({ offsetRight = 230 }: { offsetRight: number }) => {
+    return (
+      <div style={{ paddingLeft: `calc(100% - ${offsetRight}px)` }}>
+        <Menu items={exampleMenuItems}>{renderItem}</Menu>
+      </div>
+    );
+  },
 };
 
 export const ToggleSubmenuOnPress = Template.bind(null);
@@ -170,57 +172,59 @@ Sections.args = {
   ],
 };
 
-export const MenuWithTrigger: Story<
+export const MenuWithTrigger: StoryObj<
   {
     offsetRight?: number;
     offsetBottom?: number;
     menuProps: Partial<MenuProps<any>>;
   } & Pick<MenuTriggerProps, "preventFocusOnPress" | "restoreFocus">
-> = ({
-  offsetRight,
-  offsetBottom,
-  menuProps: otherMenuProps,
-  ...otherProps
-}) => {
-  return (
-    <div
-      style={{
-        paddingLeft:
-          offsetRight != undefined
-            ? `calc(100% - ${offsetRight + 24}px)`
-            : undefined,
-        paddingTop:
-          offsetBottom != undefined
-            ? `calc(100% - ${offsetBottom + 24}px)`
-            : undefined,
-      }}
-    >
-      <ActionToolbar>
-        <MenuTrigger
-          {...otherProps}
-          renderMenu={({ menuProps }) => (
-            <Menu
-              items={exampleMenuItems}
-              disabledKeys={["Float"]}
-              {...menuProps}
-              {...otherMenuProps}
-              onAction={(key) => {
-                console.log("onAction", key);
-              }}
-            >
-              {renderItem}
-            </Menu>
-          )}
-        >
-          {(props, ref) => (
-            <ActionButton {...props} ref={ref}>
-              <PlatformIcon icon={"general/gearPlain"} />
-            </ActionButton>
-          )}
-        </MenuTrigger>
-      </ActionToolbar>
-    </div>
-  );
+> = {
+  render: ({
+    offsetRight,
+    offsetBottom,
+    menuProps: otherMenuProps,
+    ...otherProps
+  }) => {
+    return (
+      <div
+        style={{
+          paddingLeft:
+            offsetRight != undefined
+              ? `calc(100% - ${offsetRight + 24}px)`
+              : undefined,
+          paddingTop:
+            offsetBottom != undefined
+              ? `calc(100% - ${offsetBottom + 24}px)`
+              : undefined,
+        }}
+      >
+        <ActionToolbar>
+          <MenuTrigger
+            {...otherProps}
+            renderMenu={({ menuProps }) => (
+              <Menu
+                items={exampleMenuItems}
+                disabledKeys={["Float"]}
+                {...menuProps}
+                {...otherMenuProps}
+                onAction={(key) => {
+                  console.log("onAction", key);
+                }}
+              >
+                {renderItem}
+              </Menu>
+            )}
+          >
+            {(props, ref) => (
+              <ActionButton {...props} ref={ref}>
+                <PlatformIcon icon={"general/gearPlain"} />
+              </ActionButton>
+            )}
+          </MenuTrigger>
+        </ActionToolbar>
+      </div>
+    );
+  },
 };
 
 const StyledContainer = styled.div`
@@ -232,57 +236,63 @@ const StyledContainer = styled.div`
   height: 100vh;
 `;
 
-export const ContextMenu: Story<{
+export const ContextMenu: StoryObj<{
   children?: ReactNode;
   menuProps?: Partial<MenuProps<object>>;
-}> = ({ children, menuProps = {} }) => {
-  return (
-    <>
-      <div
-        style={{
-          height: "25vh",
-          background: `repeating-linear-gradient(45deg, #aaa, #aaa 10px, #999 10px, #999 20px)`,
-        }}
-      />
-      <ContextMenuContainer
-        id="context-menu-container"
-        renderMenu={() => (
-          <Menu aria-label="Editor Context Menu" {...menuProps}>
-            <Item textValue="Column Selection Mode">
-              <MenuItemLayout content="Column Selection Mode" shortcut="⇧⌘8" />
-            </Item>
-            <Divider />
-            <Item textValue="Go to">
-              <Item textValue="Navigation Bar">
-                <MenuItemLayout content="Navigation Bar" shortcut="`⌘↑`" />
+}> = {
+  render: ({ children, menuProps = {} }) => {
+    return (
+      <>
+        <div
+          style={{
+            height: "25vh",
+            background: `repeating-linear-gradient(45deg, #aaa, #aaa 10px, #999 10px, #999 20px)`,
+          }}
+        />
+        <ContextMenuContainer
+          id="context-menu-container"
+          renderMenu={() => (
+            <Menu aria-label="Editor Context Menu" {...menuProps}>
+              <Item textValue="Column Selection Mode">
+                <MenuItemLayout
+                  content="Column Selection Mode"
+                  shortcut="⇧⌘8"
+                />
               </Item>
-              <Item textValue="Implementation(s)">
-                <MenuItemLayout content="Implementation(s)" shortcut="⌥⌘B" />
+              <Divider />
+              <Item textValue="Go to">
+                <Item textValue="Navigation Bar">
+                  <MenuItemLayout content="Navigation Bar" shortcut="`⌘↑`" />
+                </Item>
+                <Item textValue="Implementation(s)">
+                  <MenuItemLayout content="Implementation(s)" shortcut="⌥⌘B" />
+                </Item>
               </Item>
-            </Item>
-            <Item textValue="Generate">
-              <MenuItemLayout content="Generate" shortcut="⌘N" />
-            </Item>
-            <Divider />
-            <Item title="Local History">
-              <Item>Show History</Item>
-              <Item>Put Label...</Item>
-            </Item>
-            <Divider />
-            <Item textValue="Compare with Clipboard">
-              <MenuItemLayout
-                icon={<PlatformIcon icon={"actions/diff"} />}
-                content="Compare with Clipboard"
-              />
-            </Item>
-          </Menu>
-        )}
-      >
-        <StyledContainer>Right click somewhere. {children}</StyledContainer>
-      </ContextMenuContainer>
-    </>
-  );
-};
-ContextMenu.parameters = {
-  layout: "fullscreen",
+              <Item textValue="Generate">
+                <MenuItemLayout content="Generate" shortcut="⌘N" />
+              </Item>
+              <Divider />
+              <Item title="Local History">
+                <Item>Show History</Item>
+                <Item>Put Label...</Item>
+              </Item>
+              <Divider />
+              <Item textValue="Compare with Clipboard">
+                <MenuItemLayout
+                  icon={<PlatformIcon icon={"actions/diff"} />}
+                  content="Compare with Clipboard"
+                />
+              </Item>
+            </Menu>
+          )}
+        >
+          <StyledContainer>Right click somewhere. {children}</StyledContainer>
+        </ContextMenuContainer>
+      </>
+    );
+  },
+
+  parameters: {
+    layout: "fullscreen",
+  },
 };

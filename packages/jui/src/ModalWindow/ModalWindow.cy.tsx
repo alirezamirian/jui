@@ -1,5 +1,5 @@
 import React from "react";
-import { composeStories } from "@storybook/testing-react";
+import { composeStories } from "@storybook/react";
 import * as stories from "./ModalWindow.stories";
 import { ModalWindow, WindowLayout } from "@intellij-platform/core";
 

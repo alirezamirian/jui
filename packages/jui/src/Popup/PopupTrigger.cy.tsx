@@ -1,5 +1,5 @@
 import React from "react";
-import { composeStories } from "@storybook/testing-react";
+import { composeStories } from "@storybook/react";
 import { Button } from "@intellij-platform/core/Button";
 
 import * as stories from "./PopupTrigger.stories";

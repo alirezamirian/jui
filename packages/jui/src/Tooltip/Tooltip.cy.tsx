@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { composeStories } from "@storybook/testing-react";
+import { composeStories } from "@storybook/react";
 import * as stories from "./TooltipTrigger.stories";
 import * as helpTooltipStories from "./HelpTooltip.stories";
 import * as actionHelpTooltipStories from "./ActionHelpTooltip.stories";

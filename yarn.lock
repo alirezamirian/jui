@@ -4108,7 +4108,7 @@ __metadata:
     "@storybook/addon-links": ^7.3.2
     "@storybook/react": ^7.3.2
     "@storybook/react-webpack5": ^7.3.2
-    "@storybook/testing-react": ^2.0.0
+    "@storybook/testing-react": ^2.0.1
     "@swc/helpers": ^0.3.17
     "@testing-library/cypress": ^8.0.3
     "@types/jest": 26.0.22
@@ -9054,9 +9054,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/testing-react@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@storybook/testing-react@npm:2.0.0"
+"@storybook/testing-react@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@storybook/testing-react@npm:2.0.1"
   dependencies:
     "@storybook/csf": ^0.1.0
   peerDependencies:
@@ -9065,7 +9065,7 @@ __metadata:
     "@storybook/react": ^7.0.0-beta.0 || ^7.0.0-rc.0 || ^7.0.0
     "@storybook/types": ^7.0.0-beta.0 || ^7.0.0-rc.0 || ^7.0.0
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 7d8130dca4b305c34d1694ca451b15b3c3a97b865fa84081383dc576b014d39248e5744f3081897900aa88fafd94ad5da16016c79ece811f8def76c499784baf
+  checksum: efc32621c0b606409b622887832a2c86bc94f1d1012957f59c4d804d4b9414146dae7e50c8419bba1c85c0fc08feafbc4a4179a21cbda05fdb3ca4b891892dac
   languageName: node
   linkType: hard
 

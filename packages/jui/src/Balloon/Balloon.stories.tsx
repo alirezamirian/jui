@@ -1,11 +1,18 @@
-import { Meta, Story } from "@storybook/react";
 import React from "react";
-import { Balloon, BalloonActionLink, BalloonProps } from "./Balloon";
+import { Meta, StoryObj } from "@storybook/react";
 import { AutoHoverPlatformIcon, PlatformIcon } from "@intellij-platform/core";
+
+import { Balloon, BalloonActionLink } from "./Balloon";
 
 export default {
   title: "Components/Balloon",
   component: Balloon,
+  argTypes: { onClose: { action: "onClose" } },
+} as Meta<typeof Balloon>;
+
+type Story = StoryObj<typeof Balloon>;
+
+export const Default: Story = {
   args: {
     title: "Maven Projects need to be imported",
     body: "Projects to be imported: MavenSync, MavenDependencies. Maven project structure has been changed. Import changes to IntelliJ IDEA project to make it work correctly. Otherwise, code analysis, completion and other features might work incorrectly.",
@@ -19,76 +26,61 @@ export default {
     headerActions: (
       <AutoHoverPlatformIcon icon="ide/notification/gear" role="button" />
     ),
-  } as BalloonProps,
-  argTypes: { onClose: { action: "onClose" } },
-} as Meta;
-
-const Template: Story<BalloonProps> = (props) => {
-  return <Balloon {...props} />;
+  },
+  render: (props) => <Balloon {...props} />,
 };
 
-export const Default: Story<BalloonProps> = Template.bind({});
+const withProps = (args: typeof Default.args): Story => ({
+  ...Default,
+  args: { ...Default.args, ...args },
+});
 
-export const Expanded: Story<BalloonProps> = Template.bind({});
-Expanded.args = { expanded: true };
+export const Expanded = withProps({ expanded: true });
+export const Info = withProps({ icon: "Info" });
 
-export const Info: Story<BalloonProps> = Template.bind({});
-Info.args = { icon: "Info" };
+export const Warning = withProps({ icon: "Warning" });
 
-export const Warning: Story<BalloonProps> = Template.bind({});
-Warning.args = { icon: "Warning" };
+export const Error = withProps({ icon: "Error" });
 
-export const Error: Story<BalloonProps> = Template.bind({});
-Error.args = { icon: "Error" };
-
-export const CustomIcon: Story<BalloonProps> = Template.bind({});
-CustomIcon.args = {
+export const CustomIcon = withProps({
   title: "Docker file detection",
   body: "you may setup docker deployment run configuration for the following file",
   icon: <PlatformIcon icon="expui/fileTypes/docker.svg" />,
-};
+});
 
-export const ShortBody: Story<BalloonProps> = Template.bind({});
-ShortBody.args = {
+export const ShortBody = withProps({
   body: "Projects to be imported: MavenSync",
-};
+});
 
-export const LongTitle: Story<BalloonProps> = Template.bind({});
-LongTitle.args = {
+export const LongTitle = withProps({
   title:
     "Maven Projects need to be imported Maven Projects need to be imported",
-};
+});
 
-export const LongActions: Story<BalloonProps> = Template.bind({});
-LongActions.args = {
+export const LongActions = withProps({
   actions: (
     <BalloonActionLink>
       Enable auto-import Enable auto-import Enable auto-import Enable
       auto-import
     </BalloonActionLink>
   ),
-};
+});
 
-export const WithoutTitle: Story<BalloonProps> = Template.bind({});
-WithoutTitle.args = { title: undefined };
+export const WithoutTitle = withProps({ title: undefined });
 
-export const WithoutTitleAndActions: Story<BalloonProps> = Template.bind({});
-WithoutTitleAndActions.args = {
+export const WithoutTitleAndActions = withProps({
   title: undefined,
   actions: null,
-};
+});
 
-export const WithoutBody: Story<BalloonProps> = Template.bind({});
-WithoutBody.args = { body: undefined };
+export const WithoutBody = withProps({ body: undefined });
 
-export const WithoutBodyAndActions: Story<BalloonProps> = Template.bind({});
-WithoutBodyAndActions.args = {
+export const WithoutBodyAndActions = withProps({
   title: "Everything is up-to-date",
   body: undefined,
   actions: null,
-};
+});
 
-export const WithoutActions: Story<BalloonProps> = Template.bind({});
-WithoutActions.args = {
+export const WithoutActions = withProps({
   actions: null,
-};
+});

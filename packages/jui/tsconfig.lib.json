@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["webpack-env"]
+    "types": []
   },
   "include": ["src"],
   "exclude": ["src/**/*.cy.tsx", "src/**/*.stories.tsx", "src/**/*.spec.ts"]
