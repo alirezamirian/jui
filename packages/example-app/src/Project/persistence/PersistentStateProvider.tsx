@@ -84,12 +84,19 @@ export function PersistentStateProvider({
   const workspacePromiseRef = useRef<{
     [key: string]: Promise<WorkspaceState | null>;
   }>({});
+
+  const resolveStorageFile = (storageFile: string) =>
+    path.join(
+      containerDirectory,
+      storageFileMapping[storageFile] || storageFile
+    );
+
   const getWorkspace = (storageFile: string) => {
-    const resolvedStorageFile = storageFileMapping[storageFile] || storageFile;
+    // FIXME: caching the first read can cause issues when multiple writes happen, where they override each other.
+    const resolvedStorageFile = resolveStorageFile(storageFile);
     if (!workspacePromiseRef.current[resolvedStorageFile]) {
-      workspacePromiseRef.current[resolvedStorageFile] = readWorkspace(
-        path.join(containerDirectory, storageFile)
-      );
+      workspacePromiseRef.current[resolvedStorageFile] =
+        readWorkspace(resolvedStorageFile);
     }
     return workspacePromiseRef.current[resolvedStorageFile];
   };
@@ -144,7 +151,7 @@ export function PersistentStateProvider({
               ...componentState,
             });
           }
-          await writeWorkspace(storageFile, workspace);
+          await writeWorkspace(resolveStorageFile(storageFile), workspace);
         }
       }}
     >
