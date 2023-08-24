@@ -3,7 +3,7 @@
 
 import { ApiDescription } from "@site/src/components/ApiDescription";
 import { EmbeddedStory } from "@site/src/components/EmbeddedStory";
-import { Popup, PopupOnTrigger } from "@intellij-platform/core";
+import { Popup, PopupTrigger } from "@intellij-platform/core";
 
 # Popup
 
@@ -17,36 +17,40 @@ import { Popup, PopupOnTrigger } from "@intellij-platform/core";
 ### Live example
 
 ```jsx live themed
-// import { PopupOnTrigger, Popup, Button } from "@intellij-platform/core";
+// import { PopupTrigger, Popup, Button } from "@intellij-platform/core";
 
-<PopupOnTrigger
-  trigger={<Button>Open popup</Button>}
+<PopupTrigger
   interactions="move" // Other values: "all", "none"
   placement="bottom" // Other values: "top"
   nonDismissable={false} // Other values: true
   allowScroll="auto" // Other values: false, true
+  popup={
+    <Popup>
+      <Popup.Layout
+        header={<Popup.Header>Header</Popup.Header>}
+        content={
+          <div style={{ padding: "0.5rem" }}>
+            Popup Content. Popup Content. Popup Content. <br />
+            Popup Content. Popup Content. Popup Content. <br />
+            Popup Content. Popup Content. Popup Content. <br />
+          </div>
+        }
+        footer={<Popup.Hint>Hint text</Popup.Hint>}
+      />
+    </Popup>
+  }
 >
-  <Popup.Layout
-    header={<Popup.Header>Header</Popup.Header>}
-    content={
-      <div style={{ padding: "0.5rem" }}>
-        Popup Content. Popup Content. Popup Content. <br />
-        Popup Content. Popup Content. Popup Content. <br />
-        Popup Content. Popup Content. Popup Content. <br />
-      </div>
-    }
-    footer={<Popup.Hint>Hint text</Popup.Hint>}
-  />
-</PopupOnTrigger>
+  <Button>Open popup</Button>
+</PopupTrigger>
 ```
 
 ## Popup
 
 <ApiDescription of={Popup} />
 
-## PopupOnTrigger
+## PopupTrigger
 
-<ApiDescription of={PopupOnTrigger} />
+<ApiDescription of={PopupTrigger} />
 
 ## Popup Content
 
