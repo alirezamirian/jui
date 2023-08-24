@@ -15,22 +15,26 @@
   },
   "dependencies": {
     "@intellij-platform/core": "workspace:^",
-    "@isomorphic-git/lightning-fs": "^4.4.1",
+    "@isomorphic-git/lightning-fs": "^4.6.0",
     "@monaco-editor/react": "^4.2.2",
+    "@recoiljs/refine": "^0.1.1",
     "browserfs": "^2.0.0",
     "caf": "^15.0.0-preB",
+    "fast-xml-parser": "^4.2.7",
     "intl-messageformat": "^9.11.2",
-    "isomorphic-git": "^1.10.3",
+    "isomorphic-git": "^1.24.3",
     "monaco-editor": "^0.28.1",
     "pify": "^5.0.0",
     "ramda": "^0.27.1",
     "react": "17",
     "react-dom": "17",
     "recoil": "^0.7.7",
+    "recoil-sync": "^0.2.0",
     "styled-components": "^5",
     "xterm-for-react": "^1.0.4"
   },
   "devDependencies": {
-    "@types/isomorphic-git__lightning-fs": "^4.4.2"
+    "@types/jest": "^29.5.2",
+    "jest": "^29.5.0"
   }
 }

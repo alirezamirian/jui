@@ -8,6 +8,7 @@ import {
 import {
   SpeedSearchProps,
   SpeedSearchPopup,
+  SpeedSearch,
 } from "@intellij-platform/core/SpeedSearch";
 
 import { StyledList } from "../StyledList";

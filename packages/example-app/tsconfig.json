@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  // keeping references here helps with editor support. We don't compile this project directly.
+  "references": [
+    {
+      "path": "tsconfig.jest.json"
+    }
+  ]
+}

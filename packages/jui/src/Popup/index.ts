@@ -4,7 +4,7 @@ export {
   DEFAULT_POPUP_MIN_HEIGHT,
   DEFAULT_POPUP_MIN_WIDTH,
 } from "./Popup";
-export { type PopupOnTriggerProps, PopupOnTrigger } from "./PopupOnTrigger";
+export { type PopupTriggerProps, PopupTrigger } from "./PopupTrigger";
 export { PopupLayout } from "./PopupLayout";
 export {
   type PopupManagerProps,

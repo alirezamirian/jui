@@ -1,14 +1,5 @@
 import { IntlMessageFormat } from "intl-messageformat";
-import {
-  AnyNode,
-  ChangeBrowserNode,
-  ChangeListNode,
-  ChangeNode,
-  changesGroupingState,
-  DirectoryNode,
-  isGroupNode,
-  RepositoryNode,
-} from "./ChangesView.state";
+import { changesGroupingState } from "./ChangesView.state";
 import React, { Key } from "react";
 import { ItemProps } from "@react-types/shared";
 import path from "path";
@@ -19,9 +10,18 @@ import {
 } from "@intellij-platform/core";
 import { RepoColorIcon } from "./StyledRepoColorSquare";
 import { StyledCurrentBranchTag } from "./StyledCurrentBranchTag";
-import { CurrentBranchName } from "../../CurrentBranchName";
+import { RepoCurrentBranchName } from "../../RepoCurrentBranchName";
 import { DIR_ICON, getIconForFile } from "../../../file-utils";
 import { useRecoilValue } from "recoil";
+import {
+  AnyNode,
+  ChangeBrowserNode,
+  ChangeListNode,
+  ChangeNode,
+  DirectoryNode,
+  isGroupNode,
+  RepositoryNode,
+} from "./change-view-nodes";
 
 /**
  * Necessary properties for each node, to be passed to `Item`s rendered in tree.
@@ -52,7 +52,7 @@ const repoNodeItemProps: NodeRenderer<RepositoryNode> = (
       <HighlightedTextValue />
       <ItemLayout.Hint>{fileCountMsg.format({ fileCount })}</ItemLayout.Hint>
       <StyledCurrentBranchTag>
-        <CurrentBranchName repo={node.repository} />
+        <RepoCurrentBranchName repo={node.repository} />
       </StyledCurrentBranchTag>
     </ItemLayout>
   ),

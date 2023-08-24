@@ -1,5 +1,5 @@
-export { Menu, MenuProps, MenuOverlayContext } from "./Menu";
-export { SpeedSearchMenu, SpeedSearchMenuProps } from "./SpeedSearchMenu";
+export { Menu, type MenuProps, MenuOverlayContext } from "./Menu";
+export { SpeedSearchMenu, type SpeedSearchMenuProps } from "./SpeedSearchMenu";
 export * from "./MenuTrigger";
 export * from "./MenuItemLayout";
 export * from "./ContextMenuContainer";

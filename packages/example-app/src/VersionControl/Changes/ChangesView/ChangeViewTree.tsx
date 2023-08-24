@@ -8,17 +8,16 @@ import {
   TreeRefValue,
 } from "@intellij-platform/core";
 import {
-  AnyNode,
   changesTreeNodesState,
   expandedKeysState,
   includedChangesNestedSelection,
-  isGroupNode,
   selectedKeysState,
 } from "./ChangesView.state";
 import { ChangesViewTreeContextMenu } from "./ChangesViewTreeContextMenu";
 import { getChangeListTreeItemProps } from "./changesTreeNodeRenderers";
 import { useActivePathsProvider } from "../../../Project/project.state";
 import { useEditorStateManager } from "../../../Editor/editor.state";
+import { AnyNode, isGroupNode } from "./change-view-nodes";
 
 function findPathsUnderNode(node: AnyNode): string[] {
   if (node?.type === "directory") {

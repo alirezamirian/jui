@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import {
   DefaultToolWindow,
   PlatformIcon,
@@ -11,6 +11,8 @@ import {
   COMMIT_TOOLWINDOW_ID,
   CommitToolWindow,
 } from "../VersionControl/CommitToolWindow";
+
+import { UNSAFE_FocusRestoringSuspense } from "../UNSAFE_FocusRestoringSuspense";
 
 export type ToolWindowDescriptor = {
   id: string;
@@ -42,7 +44,11 @@ export const toolWindows: ToolWindowDescriptor[] = [
     id: COMMIT_TOOLWINDOW_ID,
     title: "Commit",
     icon: <PlatformIcon icon="toolwindows/toolWindowCommit" />,
-    content: <CommitToolWindow />,
+    content: (
+      <Suspense fallback={<UNSAFE_FocusRestoringSuspense />}>
+        <CommitToolWindow />
+      </Suspense>
+    ),
     initialState: toolWindowState({ anchor: "left", isVisible: false }),
   },
 ];

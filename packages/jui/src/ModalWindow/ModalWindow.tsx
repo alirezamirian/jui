@@ -1,4 +1,4 @@
-import React, { FocusEventHandler, useRef } from "react";
+import React, { FocusEventHandler, useContext, useRef } from "react";
 import { useModal, useOverlay, usePreventScroll } from "@react-aria/overlays";
 import { focusSafely, FocusScope } from "@react-aria/focus";
 import { useDialog } from "@react-aria/dialog";
@@ -52,6 +52,10 @@ const StyledWindowInnerContainer = styled.div`
 export const DEFAULT_WINDOW_MIN_WIDTH = 50;
 export const DEFAULT_WINDOW_MIN_HEIGHT = 24;
 
+export const WindowControllerContext = React.createContext<
+  Partial<Pick<ModalWindowProps, "onClose">>
+>({});
+
 /**
  * A movable/resizable modal window. The window header which holds the title, can be used to drag the window around.
  * In the reference impl, modal windows are os-native, and contain os-level buttons for minimize/close/maximise, which
@@ -78,12 +82,17 @@ export const ModalWindow = ({
   ...props
 }: ModalWindowProps): React.ReactElement => {
   const { children } = props;
+  const propsContext = useContext(WindowControllerContext);
+  const onClose = () => {
+    propsContext.onClose?.();
+    props.onClose?.();
+  };
 
   const ref = React.useRef<HTMLDivElement>(null);
   const { overlayProps, underlayProps } = useOverlay(
     {
       isOpen: true, // maybe allow rendering closed window? :-?
-      onClose: props.onClose,
+      onClose,
       isDismissable: false,
       isKeyboardDismissDisabled: false,
       shouldCloseOnBlur: false,

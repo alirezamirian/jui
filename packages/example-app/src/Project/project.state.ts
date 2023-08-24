@@ -12,7 +12,7 @@ export interface ProjectFsItem extends FsItem {
   relativePath: string;
 }
 
-const sampleRepos = {
+export const sampleRepos = {
   JUI: {
     path: "/workspace/jui",
     url: "https://github.com/alirezamirian/jui.git",
@@ -25,6 +25,10 @@ const sampleRepos = {
     path: "/workspace/recoil",
     url: "https://github.com/facebookexperimental/Recoil.git",
   },
+  ExampleRepo: {
+    path: "/workspace/example-repo",
+    url: "https://github.com/thurwitz/example-branches.git",
+  },
 };
 const sampleRepoKey: keyof typeof sampleRepos = "JUI";
 
@@ -36,8 +40,8 @@ export const sampleRepo = sampleRepos[sampleRepoKey];
 export const currentProjectState = atom<Project>({
   key: "project",
   default: {
-    name: sampleRepoKey,
-    path: sampleRepo.path,
+    name: "Workspace",
+    path: "/workspace",
   },
 });
 
@@ -50,27 +54,40 @@ export const projectFilePath = selectorFamily({
 });
 
 export const currentProjectFilesState = selector({
-  key: "projectFiles",
+  key: "project.current.files",
   get: async ({ get }): Promise<ProjectFsItem[]> => {
     const project = get(currentProjectState);
-    const items = get(dirContentState(project.path));
-    const files: ProjectFsItem[] = [];
-    const addItem = (item: FsItem) => {
-      if (item.type === "dir" && filterPath(item)) {
-        const childItems = get(dirContentState(item.path));
-        if (childItems) {
-          childItems.map(addItem);
-        }
-      } else {
-        files.push({
-          ...item,
-          relativePath: path.relative(project.path, item.path),
-        });
-      }
-    };
-    (items || []).forEach((item) => addItem(item));
-    return files;
+    return get(projectFilesState(project.path));
   },
+});
+
+export const projectFilesState = selectorFamily({
+  key: "project.files",
+  get:
+    (
+      projectPath: string /* could be changed to project id, when project entity is more mature */
+    ) =>
+    async ({ get }): Promise<ProjectFsItem[]> => {
+      const items = get(dirContentState(projectPath));
+      const files: ProjectFsItem[] = [];
+      const addItem = (item: FsItem) => {
+        if (item.type === "dir") {
+          if (filterPath(item)) {
+            const childItems = get(dirContentState(item.path));
+            if (childItems) {
+              childItems.forEach(addItem);
+            }
+          }
+        } else {
+          files.push({
+            ...item,
+            relativePath: path.relative(projectPath, item.path),
+          });
+        }
+      };
+      (items || []).forEach((item) => addItem(item));
+      return files;
+    },
 });
 
 /**

@@ -12,7 +12,8 @@ export const VcsActionIds = {
   SET_DEFAULT_CHANGELIST: "ChangesView.SetDefault",
   MOVE_TO_ANOTHER_CHANGELIST: "ChangesView.Move",
   SHOW_DIFF: "Diff.ShowDiff", // Maybe doesn't belong here?
-  CHECK_IN: "CheckinFiles",
+  CHECKIN_FILES: "CheckinFiles",
+  CHECKIN_PROJECT: "CheckinProject",
   JUMP_TO_SOURCE: CommonActionId.EDIT_SOURCE,
 
   GROUP_CHANGES_VIEW_POPUP_MENU: "ChangesViewPopupMenu", // Not used yet

@@ -1,3 +1,4 @@
+import { sortBy } from "ramda";
 import { Key } from "react";
 import {
   atom,
@@ -16,12 +17,12 @@ import {
   changeListsState,
 } from "../change-lists.state";
 import { groupings } from "./changesGroupings";
-import { VcsDirectoryMapping } from "../../file-status";
 import {
   bfsVisit,
   dfsVisit,
   getExpandedToNodesKeys,
 } from "@intellij-platform/core/utils/tree-utils";
+import { notNull } from "@intellij-platform/core/utils/array-utils";
 import {
   createSetInterface,
   NestedSelection,
@@ -29,38 +30,19 @@ import {
 } from "@intellij-platform/core";
 import { rollbackViewState } from "../Rollback/rollbackView.state";
 import { activePathsState } from "../../../Project/project.state";
-import { branchForFile } from "../../file-status.state";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
-import { sortBy } from "ramda";
-
-export interface ChangeBrowserNode<T extends string> {
-  type: T;
-  key: string;
-}
-
-export interface GroupNode<T extends string> extends ChangeBrowserNode<T> {
-  children: ReadonlyArray<AnyNode>;
-}
-
-export interface ChangeNode extends ChangeBrowserNode<"change"> {
-  change: Change;
-}
-
-export interface ChangeListNode extends GroupNode<"changelist"> {
-  changeList: ChangeListObj;
-}
-
-export interface DirectoryNode extends GroupNode<"directory"> {
-  dirPath: string;
-  parentNodePath: string;
-}
-
-export interface RepositoryNode extends GroupNode<"repo"> {
-  repository: VcsDirectoryMapping;
-}
-
-export type AnyGroupNode = ChangeListNode | RepositoryNode | DirectoryNode;
-export type AnyNode = AnyGroupNode | ChangeNode;
+import {
+  AnyGroupNode,
+  AnyNode,
+  ChangeBrowserNode,
+  ChangeListNode,
+  changeListNode,
+  ChangeNode,
+  getChildren,
+  getNodeKeyForChange,
+  GroupNode,
+  isChangeNode,
+  isGroupNode,
+} from "./change-view-nodes";
 
 type MaybeRecoilValue<T> = T | RecoilValue<T>;
 
@@ -74,13 +56,6 @@ export interface ChangeGrouping<T extends AnyGroupNode, I = string> {
   isAvailable: MaybeRecoilValue<boolean>;
   groupFn: MaybeRecoilValue<GroupFn<T>>;
 }
-
-export const currentBranchState = atomFamily<string | null, string>({
-  key: "vcs/currentBranchName",
-  default: branchForFile,
-  // TODO: effect for syncing (when toolWindow state changes?)
-});
-
 export const showIgnoredFilesState = atom({
   key: "changesView/showIgnoredFiles",
   default: false,
@@ -288,60 +263,6 @@ export const availableGroupingsState = selector({
       })),
 });
 
-const changeBrowserNodeKey = (type: string, id: string): string =>
-  `${type}_${id}`;
-
-export const getNodeKeyForChange = (change: Change) =>
-  changeBrowserNodeKey("change", change.after.path);
-
-export const changeNode = (change: Change): ChangeNode => ({
-  type: "change",
-  key: getNodeKeyForChange(change),
-  change,
-});
-
-export const changeListNode = (
-  changeList: ChangeListObj,
-  groupFn: GroupFn<any> = (i) => i
-): ChangeListNode => ({
-  type: "changelist",
-  key: changeBrowserNodeKey("changelist", changeList.id),
-  changeList,
-  children: groupFn(changeList.changes.map((change) => changeNode(change))),
-});
-
-export const directoryNode = (
-  dirPath: string,
-  parentNodePath: string,
-  children: AnyNode[] = []
-): DirectoryNode => ({
-  type: "directory",
-  key: changeBrowserNodeKey("directory", dirPath),
-  dirPath,
-  parentNodePath,
-  children,
-});
-
-export const repositoryNode = (
-  repository: VcsDirectoryMapping,
-  children: AnyNode[] = []
-): RepositoryNode => ({
-  type: "repo",
-  key: changeBrowserNodeKey("repo", repository.dir),
-  repository,
-  children,
-});
-
-export const isGroupNode = (
-  node: ChangeBrowserNode<any>
-): node is GroupNode<any> => "children" in node;
-
-const isChangeNode = (node: ChangeBrowserNode<any>): node is ChangeNode =>
-  node.type === "change";
-
-export const isDirectoryNode = (node: AnyNode): node is DirectoryNode =>
-  node.type === "directory";
-
 const recursiveGrouping = (
   groupingFns: Array<GroupFn<AnyGroupNode>>,
   nodes: ReadonlyArray<ChangeBrowserNode<any>>
@@ -357,11 +278,8 @@ const recursiveGrouping = (
   [...groupNodes, ...groups].forEach((groupNode) => {
     groupNode.children = recursiveGrouping(nextGroupingFns, groupNode.children);
   });
-  return groups;
+  return groups.filter((group) => group.children.length > 0);
 };
-
-const getChildren = (node: AnyNode) =>
-  isGroupNode(node) ? node.children : null;
 
 export const changesTreeNodesState = selector<{
   rootNodes: ChangeListNode[];
@@ -442,6 +360,19 @@ export const commitMessageState = atom({
   default: "",
 });
 
+/**
+ * Whether to show error message related to attempting to commit without selecting any change.
+ */
+export const commitErrorMessageState = atom({
+  key: "changesView/commitErrorMessage",
+  default: "",
+});
+
+export const isCommitInProgressState = atom({
+  key: "changesView/commitInProgress",
+  default: false,
+});
+
 export const changesFromActivePaths = selector({
   key: "changesView/changesFromActivePaths",
   get: ({ get }) => {
@@ -453,8 +384,7 @@ export const changesFromActivePaths = selector({
 });
 
 /**
- * Recoil callback for queuing (staging) and marking changes as included based on a list of paths.
- * TODO: handle staging too. For now, we just mark changes as included, if they exist in a changelist already.
+ * Recoil callback for queuing and marking changes as included based on a list of paths.
  */
 export const queueCheckInCallback = ({ set, snapshot }: CallbackInterface) => {
   /**

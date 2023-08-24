@@ -1,4 +1,4 @@
-import React, { ForwardedRef, RefObject, useState } from "react";
+import React, { ForwardedRef, RefObject, useContext, useState } from "react";
 import { DOMProps } from "@react-types/shared";
 import { useFocusWithin, useInteractOutside } from "@react-aria/interactions";
 import { useFocusable } from "@react-aria/focus";
@@ -22,7 +22,7 @@ import { useFocusForwarder } from "@intellij-platform/core/utils/useFocusForward
 
 import { useDialog } from "./_useDialog";
 import { PopupHeader } from "./PopupHeader";
-import { PopupContext } from "./PopupContext";
+import { PopupContext, PopupControllerContext } from "./PopupContext";
 import { PopupLayout } from "./PopupLayout";
 import { StyledPopupHint } from "./StyledPopupHint";
 
@@ -73,7 +73,7 @@ export const DEFAULT_POPUP_MIN_HEIGHT = 50;
 /**
  * [Popup](https://www.figma.com/file/nfDfMAdV7j2fnQlpYNAOfP/IntelliJ-Platform-UI-Kit-%28Community%29?node-id=75426%3A16881&t=vzpRGV2y2cDw5a6Z-0)
  * component, rendered as a draggable overlay which is positioned either in the center of the viewport or relative to a trigger element.
- * If there is a trigger element, use {@link PopupOnTrigger} instead.
+ * If there is a trigger element, use {@link PopupTrigger} instead.
  */
 export const _Popup = (
   // NOTE: export is only for __docgenInfo to be emitted for this.
@@ -83,12 +83,18 @@ export const _Popup = (
     allowScroll = "auto",
     minWidth = DEFAULT_POPUP_MIN_WIDTH,
     minHeight = DEFAULT_POPUP_MIN_HEIGHT,
-    positioning,
-    onClose = () => {}, // current version of useOverlay doesn't handle undefined onClose, despite the type
+    positioning: positioningProp,
+    onClose: onCloseProp,
     ...props
   }: PopupProps,
   forwardedRef: ForwardedRef<HTMLDivElement>
 ): JSX.Element => {
+  const propsContext = useContext(PopupControllerContext);
+  const positioning = positioningProp || propsContext.positioning;
+  const onClose = () => {
+    onCloseProp?.();
+    propsContext.onClose?.();
+  };
   const ref = useObjectRef<HTMLDivElement>(forwardedRef);
   const shouldCloseOnInteractOutside = (element: Element) => {
     return (
@@ -181,6 +187,7 @@ export const _Popup = (
             focusableProps,
             focusForwarderProps,
             overlayProps,
+            propsContext.overlayProps || {},
             dialogProps,
             filterDOMProps(props)
           )}

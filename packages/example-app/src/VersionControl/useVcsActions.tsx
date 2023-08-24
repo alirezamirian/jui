@@ -5,14 +5,14 @@ import {
   usePopupManager,
   useWindowManager,
 } from "@intellij-platform/core";
-import { BranchesPopupContent } from "./Branches/BranchesPopupContent";
+import { BranchesPopup } from "./Branches/BranchesPopup";
 import { useChangesViewActionDefinitions } from "./Changes/useChangesViewActionDefinitions";
 import { VcsActionIds } from "./VcsActionIds";
 import { CreateNewBranchWindow } from "./Branches/CreateNewBranchWindow";
 
 export function useVcsActions(): ActionDefinition[] {
-  const { show } = usePopupManager();
-  const { openModalWindow } = useWindowManager();
+  const popupManager = usePopupManager();
+  const windowManager = useWindowManager();
 
   return [
     ...useChangesViewActionDefinitions(),
@@ -22,13 +22,9 @@ export function useVcsActions(): ActionDefinition[] {
       description: "Create new branch starting from the selected commit",
       icon: <PlatformIcon icon="general/add.svg" />,
       actionPerformed: () => {
-        openModalWindow(
-          ({ close }) => <CreateNewBranchWindow close={close} />,
-          {
-            minWidth: "content",
-            minHeight: "content",
-          }
-        );
+        windowManager.open(({ close }) => (
+          <CreateNewBranchWindow close={close} />
+        ));
       },
     },
     {
@@ -36,7 +32,7 @@ export function useVcsActions(): ActionDefinition[] {
       title: "Branches\u2026",
       icon: <PlatformIcon icon="vcs/branch.svg" />,
       actionPerformed: () => {
-        show(({ close }) => <BranchesPopupContent onClose={close} />);
+        popupManager.show(({ close }) => <BranchesPopup onClose={close} />);
       },
     },
   ];

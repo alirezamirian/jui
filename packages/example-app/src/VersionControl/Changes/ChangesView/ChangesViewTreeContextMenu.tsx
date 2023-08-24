@@ -15,7 +15,7 @@ export const ChangesViewTreeContextMenu = () => {
     <ActionsMenu
       aria-label="Context menu"
       actions={[
-        useAction(VcsActionIds.CHECK_IN),
+        useAction(VcsActionIds.CHECKIN_FILES),
         useAction(VcsActionIds.ROLLBACK),
         useAction(VcsActionIds.JUMP_TO_SOURCE),
         new DividerItem(),

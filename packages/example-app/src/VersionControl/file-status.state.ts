@@ -2,13 +2,12 @@ import {
   atom,
   atomFamily,
   CallbackInterface,
-  GetRecoilValue,
   selector,
   selectorFamily,
   useRecoilCallback,
 } from "recoil";
-import { currentProjectState } from "../Project/project.state";
-import git, { status, statusMatrix } from "isomorphic-git";
+import { sampleRepos } from "../Project/project.state";
+import { findRoot, status, statusMatrix } from "isomorphic-git";
 import { fs } from "../fs/fs";
 import {
   convertGitStatus,
@@ -17,17 +16,19 @@ import {
 } from "./file-status";
 import { useEffect } from "react";
 import * as path from "path";
+import { asyncFilter } from "../async-utils";
 
-const temporaryVcsMappingsDefault = ({
-  get,
-}: {
-  get: GetRecoilValue;
-}): VcsDirectoryMapping[] => [
-  {
-    dir: get(currentProjectState).path,
-    vcs: "git",
-  },
-];
+const temporaryVcsMappingsDefault = async (): Promise<
+  VcsDirectoryMapping[]
+> => {
+  return asyncFilter(
+    ({ dir }) => fs.promises.stat(dir).then(Boolean),
+    Object.values(sampleRepos).map(({ path }) => ({
+      dir: path,
+      vcs: "git",
+    }))
+  );
+};
 
 // This should be refactored to have the configuration file(s) as the source of truth.
 export const vcsRootsState = atom<VcsDirectoryMapping[]>({
@@ -45,30 +46,9 @@ export const vcsRootForFile = selectorFamily<string | null, string>({
   key: "gitRootForFile",
   get:
     (filepath: string) =>
-    ({ get }) =>
-      get(vcsRootsState).find((root) => filepath.startsWith(root.dir))?.dir ??
-      null,
-});
-/**
- * Given the absolute path of a file, returns the current branch on the repository this file belongs to.
- */
-export const branchForFile = selectorFamily<string | null, string>({
-  key: "gitBranchForFile",
-  get:
-    (filepath: string) =>
-    async ({ get }) => {
-      const root = get(vcsRootForFile(filepath));
-      return root ? get(repoCurrentBranch(root)) : null;
+    ({ get }) => {
+      return findRoot({ fs, filepath }).catch(() => null);
     },
-});
-
-export const repoCurrentBranch = selectorFamily({
-  key: "gitRepoCurrentBranch",
-  get: (repoRoot: string) => async () => {
-    return (
-      (await git.currentBranch({ fs, dir: repoRoot, fullname: false })) || null
-    );
-  },
 });
 
 /**

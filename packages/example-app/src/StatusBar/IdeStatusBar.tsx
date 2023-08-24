@@ -1,3 +1,6 @@
+import React from "react";
+import { useRecoilValue } from "recoil";
+import styled from "styled-components";
 import {
   ActionTooltip,
   Divider,
@@ -6,63 +9,74 @@ import {
   MenuItemLayout,
   MenuTrigger,
   PlatformIcon,
-  PopupOnTrigger,
+  PopupTrigger,
   ProgressBar,
   ProgressBarPauseButton,
+  ProgressBarProps,
   ProgressBarStopButton,
   StatusBar,
   StatusBarWidget,
   TooltipTrigger,
 } from "@intellij-platform/core";
-import React, { useState } from "react";
-import styled from "styled-components";
-import { useRecoilValue } from "recoil";
 import { editorCursorPositionState } from "../Editor/editor.state";
 import { switchToPersistentFsProcess } from "../usePersistenceFsNotification";
-import { BranchesPopupContent } from "../VersionControl/Branches/BranchesPopupContent";
-import { activeFileCurrentBranchState } from "../VersionControl/active-file.state";
+import { BranchesPopup } from "../VersionControl/Branches/BranchesPopup";
+import { activeFileRepoHeadState } from "../VersionControl/active-file.state";
 import { notImplemented } from "../Project/notImplemented";
+import { useLatestRecoilValue } from "../recoil-utils";
+import { isCommitInProgressState } from "../VersionControl/Changes/ChangesView/ChangesView.state";
 
 const StyledLastMessage = styled.div`
   margin-left: 0.75rem;
   cursor: pointer;
 `;
 
+function StatusBarProgress(
+  props: Omit<ProgressBarProps, "dense" | "namePosition" | "width">
+) {
+  return <ProgressBar dense namePosition="side" width={146} {...props} />;
+}
+
+/**
+ * Intentionally, "processes" haven't been abstracted as an extension point for different features, since the focus
+ * here is not to create an IDE, but to demo UI components.
+ */
 const StatusBarProcess = () => {
   const process = useRecoilValue(switchToPersistentFsProcess);
+  const isCommitInProgress = useRecoilValue(isCommitInProgressState);
 
   return (
-    process && (
-      <ProgressBar
-        name={process.name}
-        isIndeterminate={process.isIndeterminate}
-        value={process.progress}
-        dense
-        namePosition="side"
-        width={146}
-        button={
-          <>
-            {process.onPause && (
-              <ProgressBarPauseButton
-                small
-                paused={false}
-                onPausedChange={() => {}}
-              />
-            )}
-            {process.onCancel && (
-              <ProgressBarStopButton small onPress={process.onCancel} />
-            )}
-          </>
-        }
-      />
-    )
+    <>
+      {process && (
+        <StatusBarProgress
+          name={process.name}
+          isIndeterminate={process.isIndeterminate}
+          value={process.progress}
+          button={
+            <>
+              {process.onPause && (
+                <ProgressBarPauseButton
+                  small
+                  paused={false}
+                  onPausedChange={() => {}}
+                />
+              )}
+              {process.onCancel && (
+                <ProgressBarStopButton small onPress={process.onCancel} />
+              )}
+            </>
+          }
+        />
+      )}
+      {isCommitInProgress && (
+        <StatusBarProgress name={"Committing..."} isIndeterminate />
+      )}
+    </>
   );
 };
 
 export const IdeStatusBar = () => {
   const cursorPosition = useRecoilValue(editorCursorPositionState);
-  const currentBranch = useRecoilValue(activeFileCurrentBranchState);
-  const [isBranchesPopupOpen, setBranchesPopupOpen] = useState(false);
 
   return (
     <StatusBar
@@ -129,26 +143,12 @@ export const IdeStatusBar = () => {
               <StatusBarWidget {...props} ref={ref} label="TypeScript 4.4.3" />
             )}
           </MenuTrigger>
-          <PopupOnTrigger
-            isOpen={isBranchesPopupOpen}
-            onOpenChange={setBranchesPopupOpen}
+          <PopupTrigger
             placement="top"
-            interactions="all"
-            trigger={
-              <TooltipTrigger
-                tooltip={
-                  <ActionTooltip actionName={`Git Branch: ${currentBranch}`} />
-                }
-              >
-                <StatusBarWidget
-                  icon={<PlatformIcon icon="vcs/branch.svg" />}
-                  label={currentBranch}
-                />
-              </TooltipTrigger>
-            }
+            popup={({ close }) => <BranchesPopup onClose={close} />}
           >
-            {({ close }) => <BranchesPopupContent onClose={close} />}
-          </PopupOnTrigger>
+            <BranchPopupTrigger />
+          </PopupTrigger>
           <StatusBarWidget icon={<PlatformIcon icon="ide/readwrite.svg" />} />
           <StatusBarWidget icon={<PlatformIcon icon="ide/fatalError.svg" />} />
         </>
@@ -156,3 +156,37 @@ export const IdeStatusBar = () => {
     />
   );
 };
+
+function BranchPopupTrigger() {
+  const gitRepoHead = useLatestRecoilValue(activeFileRepoHeadState);
+
+  return (
+    gitRepoHead && (
+      <TooltipTrigger
+        tooltip={
+          <ActionTooltip
+            actionName={
+              gitRepoHead.detached
+                ? "Git: Detached HEAD doesn't point to any branch"
+                : `Git Branch: ${gitRepoHead.head}`
+            }
+          />
+        }
+      >
+        <StatusBarWidget
+          icon={
+            <PlatformIcon
+              icon={
+                gitRepoHead.detached ? "general/warning.svg" : "vcs/branch.svg"
+              }
+            />
+          }
+          label={gitRepoHead.head.slice(
+            0,
+            gitRepoHead.detached ? 8 : undefined
+          )}
+        />
+      </TooltipTrigger>
+    )
+  );
+}
