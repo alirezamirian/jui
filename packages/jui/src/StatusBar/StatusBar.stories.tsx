@@ -1,5 +1,5 @@
 import React from "react";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn, StoryObj } from "@storybook/react";
 import styled from "styled-components";
 import { PlatformIcon } from "@intellij-platform/core/Icon";
 import { StatusBarWidget } from "@intellij-platform/core/StatusBar/StatusBarWidget";
@@ -95,6 +95,13 @@ export default {
   parameters: {
     layout: "fullscreen",
   },
+  render: (props) => {
+    return (
+      <StyledContainer>
+        <StatusBar {...props} />
+      </StyledContainer>
+    );
+  },
   args: {
     left: (
       <>
@@ -108,14 +115,5 @@ export default {
     right: widgets,
   },
   argTypes: {},
-} as Meta;
-
-const Template: Story<StatusBarProps> = (props) => {
-  return (
-    <StyledContainer>
-      <StatusBar {...props} />
-    </StyledContainer>
-  );
-};
-
-export const Default: Story<StatusBarProps> = Template.bind({});
+} as Meta<StatusBarProps>;
+export const Default: StoryObj<StatusBarProps> = {};

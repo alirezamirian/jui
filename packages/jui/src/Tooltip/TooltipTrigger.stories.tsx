@@ -1,4 +1,4 @@
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn, StoryObj } from "@storybook/react";
 import React from "react";
 import { Tooltip } from "./Tooltip";
 import {
@@ -29,36 +29,34 @@ export default {
   argTypes: {},
 } as Meta<TooltipTriggerProps>;
 
-const Template: Story<TooltipTriggerProps> = (props) => (
-  <TooltipTrigger {...props} />
-);
-export const Default = Template.bind(null);
-export const OnInput = Template.bind(null);
+export const Default: StoryObj<TooltipTriggerProps> = {};
 
-OnInput.args = {
-  children: <input />,
+export const OnInput: StoryObj<TooltipTriggerProps> = {
+  args: {
+    children: <input />,
+  },
 };
 
-export const Interactive = Template.bind(null);
-
-Interactive.args = {
-  tooltip: (
-    <ActionHelpTooltip
-      actionName="Switch Task"
-      helpText="Tasks are stored locally only. Connect your issue tracker to link your commits with the corresponding issues."
-      shortcut="⌥⇧T"
-      link={<Link>Managing tasks</Link>}
-    />
-  ),
+export const Interactive: StoryObj<TooltipTriggerProps> = {
+  args: {
+    tooltip: (
+      <ActionHelpTooltip
+        actionName="Switch Task"
+        helpText="Tasks are stored locally only. Connect your issue tracker to link your commits with the corresponding issues."
+        shortcut="⌥⇧T"
+        link={<Link>Managing tasks</Link>}
+      />
+    ),
+  },
 };
 
-export const Disabled = Template.bind(null);
-
-Disabled.args = {
-  isDisabled: true,
+export const Disabled: StoryObj<TooltipTriggerProps> = {
+  args: {
+    isDisabled: true,
+  },
 };
 
-export const All: Story<TooltipTriggerProps> = () => {
+export const All: StoryFn<TooltipTriggerProps> = () => {
   return (
     <div
       style={{

@@ -1,16 +1,23 @@
 import React, { useState } from "react";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn, StoryObj } from "@storybook/react";
 import { Button } from "@intellij-platform/core";
 import {
   ProgressBar,
-  ProgressBarProps,
   ProgressBarPauseButton,
+  ProgressBarProps,
   ProgressBarStopButton,
 } from "./";
 
 export default {
   title: "Components/ProgressBar",
   component: ProgressBar,
+  render: ({ containerWidth, ...props }) => {
+    return (
+      <div style={{ width: containerWidth }}>
+        <ProgressBar {...props} />
+      </div>
+    );
+  },
   args: {
     name: "Indexing...",
     details: "Long long long long long long text",
@@ -24,103 +31,101 @@ export default {
 
 type ProgressBarStoryProps = ProgressBarProps & { containerWidth: number };
 
-const Template: Story<ProgressBarStoryProps> = ({
-  containerWidth,
-  ...props
-}) => {
-  return (
-    <div style={{ width: containerWidth }}>
-      <ProgressBar {...props} />
-    </div>
-  );
+export const Default: StoryObj<ProgressBarStoryProps> = {};
+
+export const LongDetails: StoryObj<ProgressBarStoryProps> = {
+  args: {
+    details:
+      "Long long long long long long long long long long long long long long long long details",
+  },
 };
 
-export const Default: Story<ProgressBarStoryProps> = Template.bind({});
-
-export const LongDetails: Story<ProgressBarStoryProps> = Template.bind({});
-
-LongDetails.args = {
-  details:
-    "Long long long long long long long long long long long long long long long long details",
+export const Bare: StoryObj<ProgressBarStoryProps> = {
+  args: {
+    details: undefined,
+    name: undefined,
+  },
 };
 
-export const Bare: Story<ProgressBarStoryProps> = Template.bind({});
+export const Inline: StoryObj<ProgressBarStoryProps> = {
+  args: {
+    details: undefined,
+    name: undefined,
+    isIndeterminate: true,
+    containerWidth: undefined,
+  },
 
-Bare.args = {
-  details: undefined,
-  name: undefined,
+  parameters: {
+    layout: "fullscreen",
+  },
 };
 
-export const Inline: Story<ProgressBarStoryProps> = Template.bind({});
-
-Inline.args = {
-  details: undefined,
-  name: undefined,
-  isIndeterminate: true,
-  containerWidth: undefined,
-};
-Inline.parameters = {
-  layout: "fullscreen",
+export const NameOnSide: StoryObj<ProgressBarStoryProps> = {
+  args: {
+    namePosition: "side",
+    details: "",
+    name: "Syntax Analysis:",
+  },
 };
 
-export const NameOnSide: Story<ProgressBarStoryProps> = Template.bind({});
-NameOnSide.args = {
-  namePosition: "side",
-  details: "",
-  name: "Syntax Analysis:",
+export const MinAndMaxValues: StoryObj<ProgressBarStoryProps> = {
+  args: {
+    minValue: 6,
+    maxValue: 18,
+    value: 12,
+  },
 };
 
-export const MinAndMaxValues: Story<ProgressBarStoryProps> = Template.bind({});
-MinAndMaxValues.args = {
-  minValue: 6,
-  maxValue: 18,
-  value: 12,
+export const ShowPercentage: StoryObj<ProgressBarStoryProps> = {
+  args: {
+    showValueLabel: true,
+  },
 };
 
-export const ShowPercentage: Story<ProgressBarStoryProps> = Template.bind({});
-ShowPercentage.args = {
-  showValueLabel: true,
+export const ShowCustomValueLabel: StoryObj<ProgressBarStoryProps> = {
+  args: {
+    showValueLabel: true,
+    valueLabel: "1 of 8",
+  },
 };
 
-export const ShowCustomValueLabel: Story<ProgressBarStoryProps> = Template.bind(
-  {}
-);
-ShowCustomValueLabel.args = {
-  showValueLabel: true,
-  valueLabel: "1 of 8",
+export const WithPauseButton: StoryObj<ProgressBarStoryProps> = {
+  render: (props) => {
+    const [paused, setPaused] = useState(false);
+    return (
+      <ProgressBar
+        {...props}
+        button={
+          <ProgressBarPauseButton paused={paused} onPausedChange={setPaused} />
+        }
+      />
+    );
+  },
 };
 
-export const WithPauseButton: Story<ProgressBarStoryProps> = (props) => {
-  const [paused, setPaused] = useState(false);
-  return (
-    <Default
-      {...props}
-      button={
-        <ProgressBarPauseButton paused={paused} onPausedChange={setPaused} />
-      }
-    />
-  );
+export const WithSecondaryDetails: StoryObj<ProgressBarStoryProps> = {
+  ...WithPauseButton,
+  args: {
+    name: "Updating indexes",
+    details: "Indexing module 'foo'",
+    secondaryDetails: "/path/to/module/foo/some/file/in/module/foo.ts",
+  },
 };
 
-export const WithSecondaryDetails: Story<ProgressBarStoryProps> =
-  WithPauseButton.bind({});
-WithSecondaryDetails.args = {
-  name: "Updating indexes",
-  details: "Indexing module 'foo'",
-  secondaryDetails: "/path/to/module/foo/some/file/in/module/foo.ts",
+export const WithStopButton: StoryObj<ProgressBarStoryProps> = {
+  args: {
+    button: <ProgressBarStopButton onPress={() => {}} />,
+  },
 };
 
-export const WithStopButton: Story<ProgressBarStoryProps> = Template.bind({});
-WithStopButton.args = {
-  button: <ProgressBarStopButton onPress={() => {}} />,
+export const WithCustomButton: StoryObj<ProgressBarStoryProps> = {
+  args: {
+    button: <Button>Cancel</Button>,
+  },
 };
 
-export const WithCustomButton: Story<ProgressBarStoryProps> = Template.bind({});
-WithCustomButton.args = {
-  button: <Button>Cancel</Button>,
-};
-
-export const Indeterminate: Story<ProgressBarStoryProps> = Template.bind({});
-Indeterminate.args = {
-  isIndeterminate: true,
+export const Indeterminate: StoryObj<ProgressBarStoryProps> = {
+  args: {
+    isIndeterminate: true,
+  },
 };

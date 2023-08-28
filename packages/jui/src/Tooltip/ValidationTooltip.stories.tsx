@@ -1,5 +1,5 @@
 import React from "react";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn, StoryObj } from "@storybook/react";
 import {
   ValidationTooltip,
   ValidationTooltipProps,
@@ -14,23 +14,21 @@ export default {
   argTypes: {},
 } as Meta<ValidationTooltipProps>;
 
-const Template: Story<ValidationTooltipProps> = (props) => {
-  return <ValidationTooltip {...props} />;
+export const Default: StoryObj<ValidationTooltipProps> = {};
+
+export const Warning: StoryObj<ValidationTooltipProps> = {
+  args: {
+    type: "warning",
+  },
 };
 
-export const Default: Story<ValidationTooltipProps> = Template.bind({});
-
-export const Warning: Story<ValidationTooltipProps> = Template.bind({});
-Warning.args = {
-  type: "warning",
-};
-
-export const MultiLine: Story<ValidationTooltipProps> = Template.bind({});
-MultiLine.args = {
-  children: (
-    <>
-      Branch name foo already exists. <br />
-      Change the name or overwrite existing branch
-    </>
-  ),
+export const MultiLine: StoryObj<ValidationTooltipProps> = {
+  args: {
+    children: (
+      <>
+        Branch name foo already exists. <br />
+        Change the name or overwrite existing branch
+      </>
+    ),
+  },
 };

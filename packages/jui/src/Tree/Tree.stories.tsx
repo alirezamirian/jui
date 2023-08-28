@@ -1,5 +1,5 @@
 import { Item } from "@react-stately/collections";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn, StoryObj } from "@storybook/react";
 import React, { Key, useState } from "react";
 import { Tree, TreeProps } from "./Tree";
 import { treeItems } from "./story-helpers";
@@ -16,65 +16,67 @@ export default {
   Component: Tree,
 } as Meta;
 
-export const Static: Story<TreeProps<never>> = (props) => {
-  const [selectedKeys, setSelectedKeys] = useState<"all" | Set<Key>>(
-    new Set(["Theme", "index.ts"])
-  );
-  return (
-    <div style={{ display: "flex" }}>
-      <Pane>
-        <Tree
-          fillAvailableSpace
-          selectionMode="multiple"
-          defaultExpandedKeys={["List", "Theme", "BasicList", "Foo"]}
-          selectedKeys={selectedKeys}
-          disabledKeys={["SpeedSearchList.tsx"]}
-          onSelectionChange={setSelectedKeys}
-          {...props}
-        >
-          <Item key="index.ts">index.ts</Item>
-          <Item title="List" key="List">
-            <Item title="BasicList" key="BasicList">
-              <Item>BasicList.stories.tsx</Item>
-              <Item>BasicList.tsx</Item>
-              <Item>BasicListItem.tsx</Item>
-              <Item>useBasicList.ts</Item>
-            </Item>
+export const Static: StoryObj<TreeProps<never>> = {
+  render: (props) => {
+    const [selectedKeys, setSelectedKeys] = useState<"all" | Set<Key>>(
+      new Set(["Theme", "index.ts"])
+    );
+    return (
+      <div style={{ display: "flex" }}>
+        <Pane>
+          <Tree
+            fillAvailableSpace
+            selectionMode="multiple"
+            defaultExpandedKeys={["List", "Theme", "BasicList", "Foo"]}
+            selectedKeys={selectedKeys}
+            disabledKeys={["SpeedSearchList.tsx"]}
+            onSelectionChange={setSelectedKeys}
+            {...props}
+          >
+            <Item key="index.ts">index.ts</Item>
+            <Item title="List" key="List">
+              <Item title="BasicList" key="BasicList">
+                <Item>BasicList.stories.tsx</Item>
+                <Item>BasicList.tsx</Item>
+                <Item>BasicListItem.tsx</Item>
+                <Item>useBasicList.ts</Item>
+              </Item>
 
-            <Item title="SpeedSearchList" key="SpeedSearchList">
-              <Item>SpeedSearchList.stories.tsx</Item>
-              <Item key="SpeedSearchList.tsx">SpeedSearchList.tsx</Item>
-              <Item>SpeedSearchListItem.tsx</Item>
-              <Item>useSpeedSearchList.ts</Item>
-            </Item>
+              <Item title="SpeedSearchList" key="SpeedSearchList">
+                <Item>SpeedSearchList.stories.tsx</Item>
+                <Item key="SpeedSearchList.tsx">SpeedSearchList.tsx</Item>
+                <Item>SpeedSearchListItem.tsx</Item>
+                <Item>useSpeedSearchList.ts</Item>
+              </Item>
 
-            <Item>ListDivider.tsx</Item>
-          </Item>
-          <Item title="Theme" key="Theme">
-            <Item>createTheme.ts</Item>
-          </Item>
-          <Item title="Foo">
-            <Item title="Bar">
-              <Item title="FooBar">
-                <Item title="Baz">
-                  <Item>Baz.ts</Item>
+              <Item>ListDivider.tsx</Item>
+            </Item>
+            <Item title="Theme" key="Theme">
+              <Item>createTheme.ts</Item>
+            </Item>
+            <Item title="Foo">
+              <Item title="Bar">
+                <Item title="FooBar">
+                  <Item title="Baz">
+                    <Item>Baz.ts</Item>
+                  </Item>
+                  <Item>Foo.ts</Item>
+                  <Item>Bar.ts</Item>
                 </Item>
-                <Item>Foo.ts</Item>
-                <Item>Bar.ts</Item>
               </Item>
             </Item>
-          </Item>
-        </Tree>
-      </Pane>
-      <div style={{ marginLeft: 20 }}>
-        <h4>Selection</h4>
-        <SelectionLog selection={selectedKeys} />
+          </Tree>
+        </Pane>
+        <div style={{ marginLeft: 20 }}>
+          <h4>Selection</h4>
+          <SelectionLog selection={selectedKeys} />
+        </div>
       </div>
-    </div>
-  );
+    );
+  },
 };
 
-export const Dynamic: Story = () => {
+export const Dynamic: StoryFn = () => {
   const [selectedKeys, setSelectedKeys] = useState<"all" | Set<Key>>(
     new Set(["Theme", "index.ts"])
   );
@@ -110,33 +112,39 @@ const containerWidthItems: typeof treeItems = [
     .fill(null)
     .map((_, index) => ({ name: Array(index).fill("~~").join(" ") })),
 ];
-export const ScrollAndContainerWidth: Story<{ width: number }> = ({
-  width,
-}) => {
-  return (
-    <>
-      <div style={{ width, height: 200 }}>
-        <Tree
-          data-testid="tree"
-          selectionMode="multiple"
-          fillAvailableSpace
-          items={containerWidthItems}
-          defaultSelectedKeys={["~~ ~~"]}
-        >
-          {(item) => (
-            <Item key={item.name} title={item.name} childItems={item.children}>
-              {item.name}
-            </Item>
-          )}
-        </Tree>
-      </div>
-    </>
-  );
-};
-ScrollAndContainerWidth.args = { width: 400 };
-ScrollAndContainerWidth.storyName = "Scroll & Container Width";
 
-export const WithContextMenu: Story = () => {
+export const ScrollAndContainerWidth: StoryObj<{ width: number }> = {
+  render: ({ width }) => {
+    return (
+      <>
+        <div style={{ width, height: 200 }}>
+          <Tree
+            data-testid="tree"
+            selectionMode="multiple"
+            fillAvailableSpace
+            items={containerWidthItems}
+            defaultSelectedKeys={["~~ ~~"]}
+          >
+            {(item) => (
+              <Item
+                key={item.name}
+                title={item.name}
+                childItems={item.children}
+              >
+                {item.name}
+              </Item>
+            )}
+          </Tree>
+        </div>
+      </>
+    );
+  },
+
+  args: { width: 400 },
+  name: "Scroll & Container Width",
+};
+
+export const WithContextMenu: StoryFn = () => {
   const [selectedKeys, setSelectedKeys] = useState<"all" | Set<Key>>(
     new Set([])
   );

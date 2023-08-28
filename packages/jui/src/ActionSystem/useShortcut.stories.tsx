@@ -1,4 +1,4 @@
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import React, { useEffect, useRef } from "react";
 import { Color } from "@intellij-platform/core/Theme";
 import { styled } from "@intellij-platform/core/styled";
@@ -43,7 +43,7 @@ const StyledContainer = styled.div`
     text-align: left;
   }
 `;
-const Template: Story<Args> = ({ onAction, shortcuts }: Args) => {
+const Template: StoryFn<Args> = ({ onAction, shortcuts }: Args) => {
   const { shortcutHandlerProps } = useShortcuts(shortcuts, onAction);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn, StoryObj } from "@storybook/react";
 import React from "react";
 import { Link, LinkProps } from "./Link";
 
@@ -12,13 +12,10 @@ export default {
   argTypes: { onPress: { action: "pressed" } },
 } as Meta;
 
-const Template: Story<LinkProps> = (props) => {
-  return <Link {...props} />;
-};
+export const Default: StoryObj<LinkProps> = {};
 
-export const Default: Story<LinkProps> = Template.bind({});
-
-export const Disabled: Story<LinkProps> = Template.bind({});
-Disabled.args = {
-  isDisabled: true,
+export const Disabled: StoryObj<LinkProps> = {
+  args: {
+    isDisabled: true,
+  },
 };

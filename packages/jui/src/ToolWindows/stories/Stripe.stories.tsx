@@ -3,8 +3,8 @@ import { clone, move } from "ramda";
 import React, { useState } from "react";
 import { styledComponentsControlsExclude } from "../../story-helpers";
 import {
-  MovableToolWindowStripeProviderProps,
   MovableToolWindowStripeProvider,
+  MovableToolWindowStripeProviderProps,
 } from "../MovableToolWindowStripeProvider";
 import { StyledToolWindowStripeProps } from "../StyledToolWindowStripe";
 import { ToolWindowStripe } from "../ToolWindowStripe";
@@ -37,32 +37,38 @@ const toolWindowStripes: ToolWindowStripesData<{ name: string }> = {
   bottom: { main: [{ name: "TODO" }], split: [] },
 };
 
-export const Stripe = (props: StyledToolWindowStripeProps) => {
-  const { anchor = "bottom" } = props;
-  const paddingProp = (
-    {
-      right: "paddingLeft",
-      left: "paddingRight",
-      bottom: "paddingTop",
-      top: "paddingBottom",
-    } as const
-  )[anchor];
-  return (
-    <div
-      style={{
-        height: "calc(100vh - 50px)",
-        [paddingProp]: 50,
-      }}
-    >
-      <ToolWindowStripe
-        anchor={anchor}
-        items={toolWindowStripes.left.main}
-        splitItems={toolWindowStripes.left.split}
-        getKey={(item) => item.name}
-        renderItem={(item) => item.name}
-      />
-    </div>
-  );
+export const Stripe = {
+  render: (props: StyledToolWindowStripeProps) => {
+    const { anchor = "bottom" } = props;
+    const paddingProp = (
+      {
+        right: "paddingLeft",
+        left: "paddingRight",
+        bottom: "paddingTop",
+        top: "paddingBottom",
+      } as const
+    )[anchor];
+    return (
+      <div
+        style={{
+          height: "calc(100vh - 50px)",
+          [paddingProp]: 50,
+        }}
+      >
+        <ToolWindowStripe
+          anchor={anchor}
+          items={toolWindowStripes.left.main}
+          splitItems={toolWindowStripes.left.split}
+          getKey={(item) => item.name}
+          renderItem={(item) => item.name}
+        />
+      </div>
+    );
+  },
+
+  argTypes: {
+    anchor: { defaultValue: "left" },
+  },
 };
 
 const moveBetweenArrays = <T extends unknown>(
@@ -108,49 +114,43 @@ const useToolWindowStripesData = <T extends unknown>(
   };
 };
 
-export const MovableStripeButtons = (props: {
-  left: boolean;
-  right: boolean;
-  top: boolean;
-}) => {
-  const { data, onMove } = useToolWindowStripesData(toolWindowStripes);
-  const renderStripe = (anchor: Anchor) => (
-    <ToolWindowStripe
-      anchor={anchor}
-      items={data[anchor].main}
-      splitItems={data[anchor].split}
-      getKey={(item) => item.name}
-      renderItem={(item) => item.name}
-    />
-  );
-  const spacer = <span style={{ width: 200 }} />;
-  return (
-    <div
-      style={{
-        height: "100vh",
-        display: "flex",
-        alignItems: "start",
-        background:
-          "repeating-linear-gradient(45deg, transparent 20px, rgba(0, 0, 0, 0.1) 40px)",
-      }}
-    >
-      <MovableToolWindowStripeProvider onMove={onMove}>
-        {props.left && renderStripe("left")}
-        {spacer}
-        {props.right && renderStripe("right")}
-        {spacer}
-        {props.top && renderStripe("top")}
-      </MovableToolWindowStripeProvider>
-    </div>
-  );
-};
+export const MovableStripeButtons = {
+  render: (props: { left: boolean; right: boolean; top: boolean }) => {
+    const { data, onMove } = useToolWindowStripesData(toolWindowStripes);
+    const renderStripe = (anchor: Anchor) => (
+      <ToolWindowStripe
+        anchor={anchor}
+        items={data[anchor].main}
+        splitItems={data[anchor].split}
+        getKey={(item) => item.name}
+        renderItem={(item) => item.name}
+      />
+    );
+    const spacer = <span style={{ width: 200 }} />;
+    return (
+      <div
+        style={{
+          height: "100vh",
+          display: "flex",
+          alignItems: "start",
+          background:
+            "repeating-linear-gradient(45deg, transparent 20px, rgba(0, 0, 0, 0.1) 40px)",
+        }}
+      >
+        <MovableToolWindowStripeProvider onMove={onMove}>
+          {props.left && renderStripe("left")}
+          {spacer}
+          {props.right && renderStripe("right")}
+          {spacer}
+          {props.top && renderStripe("top")}
+        </MovableToolWindowStripeProvider>
+      </div>
+    );
+  },
 
-MovableStripeButtons.argTypes = {
-  left: { defaultValue: true, type: "boolean" },
-  right: { defaultValue: true, type: "boolean" },
-  top: { defaultValue: true, type: "boolean" },
-};
-
-Stripe.argTypes = {
-  anchor: { defaultValue: "left" },
+  argTypes: {
+    left: { defaultValue: true, type: "boolean" },
+    right: { defaultValue: true, type: "boolean" },
+    top: { defaultValue: true, type: "boolean" },
+  },
 };

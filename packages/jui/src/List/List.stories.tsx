@@ -1,5 +1,5 @@
 import React, { Key, useState } from "react";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn, StoryObj } from "@storybook/react";
 import { List, ListProps } from "./List";
 import { legends } from "../../test-data";
 import { Divider } from "../Collections/Divider";
@@ -12,11 +12,11 @@ import {
 } from "./story-helpers";
 import {
   ContextMenuContainer,
-  Menu,
   Item,
-  Section,
+  Menu,
   MenuItemLayout,
   PlatformIcon,
+  Section,
 } from "@intellij-platform/core";
 
 export default {
@@ -24,8 +24,8 @@ export default {
   component: List,
 } as Meta;
 
-export const Default: Story<ListProps<never>> = (props) => {
-  return (
+export const Default: StoryObj<ListProps<typeof legends[number]>> = {
+  render: (props) => (
     <Pane>
       <List
         selectionMode="single"
@@ -36,14 +36,13 @@ export const Default: Story<ListProps<never>> = (props) => {
         {itemRenderer(renderItemText)}
       </List>
     </Pane>
-  );
+  ),
+  args: {},
 };
-
-Default.args = {};
 
 export const WithConnectedInput = commonListStories.withConnectedInput(List);
 
-export const AlwaysShownAsFocused = () => {
+export const AlwaysShownAsFocused: StoryFn = () => {
   return (
     <Pane>
       <List
@@ -58,7 +57,7 @@ export const AlwaysShownAsFocused = () => {
   );
 };
 
-export const WithStaticData = () => {
+export const WithStaticData: StoryFn = () => {
   return (
     <Pane>
       <List selectionMode="multiple" fillAvailableSpace>
@@ -74,33 +73,29 @@ export const WithStaticData = () => {
   );
 };
 
-export const MultiSelect = ({
-  fillAvailableSpace,
-  shouldFocusWrap,
-  alwaysShowAsFocused,
-}: any) => {
-  return (
-    <Pane>
-      <List
-        selectionMode="multiple"
-        items={legends}
-        fillAvailableSpace={fillAvailableSpace}
-        shouldFocusWrap={shouldFocusWrap}
-        alwaysShowAsFocused={alwaysShowAsFocused}
-      >
-        {itemRenderer(renderItemText)}
-      </List>
-    </Pane>
-  );
-};
-MultiSelect.argTypes = {
-  shouldFocusWrap: { control: "boolean" },
-};
-MultiSelect.args = {
-  shouldFocusWrap: { value: false },
+export const MultiSelect: StoryObj<ListProps<object>> = {
+  render: ({
+    fillAvailableSpace,
+    shouldFocusWrap,
+    alwaysShowAsFocused,
+  }: any) => {
+    return (
+      <Pane>
+        <List
+          selectionMode="multiple"
+          items={legends}
+          fillAvailableSpace={fillAvailableSpace}
+          shouldFocusWrap={shouldFocusWrap}
+          alwaysShowAsFocused={alwaysShowAsFocused}
+        >
+          {itemRenderer(renderItemText)}
+        </List>
+      </Pane>
+    );
+  },
 };
 
-export const WithContextMenu: Story = () => {
+export const WithContextMenu: StoryFn = () => {
   const [selectedKeys, setSelectedKeys] = useState<"all" | Set<Key>>(
     new Set([])
   );

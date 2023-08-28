@@ -1,5 +1,5 @@
 import React from "react";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn, StoryObj } from "@storybook/react";
 import { SpeedSearchList, SpeedSearchListProps } from "./SpeedSearchList";
 import { legends } from "../../../test-data";
 import { HighlightedTextValue } from "../../CollectionSpeedSearch/HighlightedTextValue";
@@ -17,23 +17,25 @@ export default {
   component: SpeedSearchList,
 } as Meta;
 
-export const WithHighlight: Story<SpeedSearchListProps<any>> = (props) => {
-  return (
-    <Pane>
-      <SpeedSearchList
-        selectionMode="multiple"
-        items={legends}
-        disabledKeys={["El Amir"]}
-        fillAvailableSpace
-        {...props}
-      >
-        {itemRenderer(renderItemTextWithHighlights)}
-      </SpeedSearchList>
-    </Pane>
-  );
+export const WithHighlight: StoryObj<SpeedSearchListProps<any>> = {
+  render: (props) => {
+    return (
+      <Pane>
+        <SpeedSearchList
+          selectionMode="multiple"
+          items={legends}
+          disabledKeys={["El Amir"]}
+          fillAvailableSpace
+          {...props}
+        >
+          {itemRenderer(renderItemTextWithHighlights)}
+        </SpeedSearchList>
+      </Pane>
+    );
+  },
 };
 
-export const WithoutHighlight = () => {
+export const WithoutHighlight: StoryFn = () => {
   return (
     <Pane>
       <SpeedSearchList
@@ -47,7 +49,7 @@ export const WithoutHighlight = () => {
     </Pane>
   );
 };
-export const HighlightInCustomUI = () => {
+export const HighlightInCustomUI: StoryFn = () => {
   return (
     <Pane>
       <SpeedSearchList

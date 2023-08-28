@@ -18,17 +18,17 @@ import "cypress-real-events/support";
 import "./commands";
 
 import React, { useEffect } from "react";
-import { setGlobalConfig } from "@storybook/testing-react";
+import { setProjectAnnotations } from "@storybook/react";
 import { mount, MountOptions } from "cypress/react";
 import { Theme, ThemeProvider } from "@intellij-platform/core";
-import * as sbPreview from "../../.storybook/preview";
+import sbPreview from "../../.storybook/preview";
 const requireTheme = require.context("../../themes", false, /\.theme\.json$/);
 const themes = requireTheme.keys().map((themeFile: string) => {
   const themeJson = requireTheme(themeFile);
   return new Theme(themeJson);
 });
 
-setGlobalConfig(sbPreview);
+setProjectAnnotations(sbPreview);
 
 const TestThemeProvider = ({
   theme,

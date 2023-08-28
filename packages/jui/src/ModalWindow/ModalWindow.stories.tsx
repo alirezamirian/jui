@@ -1,4 +1,4 @@
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react";
 import React, { useEffect, useState } from "react";
 import { ModalWindow, ModalWindowProps } from "./ModalWindow";
 import { SpeedSearchTreeSample } from "@intellij-platform/core/story-components";
@@ -64,85 +64,93 @@ export default {
   // argTypes: {},
 } as Meta<ModalWindowProps>;
 
-const Template: Story<ModalWindowProps> = (props) => <ModalWindow {...props} />;
+export const ControlledBounds: StoryObj<ModalWindowProps> = {
+  render: (props) => {
+    const [bounds, setBounds] = useState<Bounds>({
+      left: 100,
+      top: 100,
+      width: 450,
+      height: 300,
+    });
+    return (
+      <ModalWindow {...props} bounds={bounds} onBoundsChange={setBounds}>
+        <WindowLayout
+          header="Window title"
+          content={
+            <div style={{ padding: 16 }}>
+              bounds: {JSON.stringify(bounds, null, 2)}
+              <RenderCount />
+            </div>
+          }
+        />
+      </ModalWindow>
+    );
+  },
+};
 
-export const ControlledBounds: Story<ModalWindowProps> = (props) => {
-  const [bounds, setBounds] = useState<Bounds>({
-    left: 100,
-    top: 100,
-    width: 450,
-    height: 300,
-  });
-  return (
-    <ModalWindow {...props} bounds={bounds} onBoundsChange={setBounds}>
+export const Default: StoryObj<ModalWindowProps> = {};
+
+export const NoResize: StoryObj<ModalWindowProps> = {
+  args: {
+    interactions: "move",
+  },
+};
+
+export const DefaultSize: StoryObj<ModalWindowProps> = {
+  args: {
+    defaultBounds: { width: 300, height: 300 },
+  },
+};
+
+export const DefaultPosition: StoryObj<ModalWindowProps> = {
+  args: {
+    defaultBounds: { left: 100, top: 100 },
+  },
+};
+
+export const DefaultSizeAndPosition: StoryObj<ModalWindowProps> = {
+  args: {
+    defaultBounds: { left: 100, top: 100, width: 300, height: 300 },
+  },
+};
+
+export const NoInteraction: StoryObj<ModalWindowProps> = {
+  args: {
+    interactions: "none",
+  },
+};
+
+export const LimitedMovement: StoryObj<
+  Omit<ModalWindowProps, "onBoundsChanging"> & { containerBounds: Bounds }
+> = {
+  render: ({ containerBounds, ...props }) => (
+    <>
+      <ModalWindow
+        {...props}
+        onBoundsChanging={containedWithin(containerBounds)}
+      />
       <WindowLayout
         header="Window title"
         content={
-          <div style={{ padding: 16 }}>
-            bounds: {JSON.stringify(bounds, null, 2)}
-            <RenderCount />
-          </div>
+          <div
+            style={{
+              position: "fixed",
+              boxShadow: "0 0 0 2px rgb(255 0 0 / 50%)",
+              ...containerBounds,
+            }}
+          />
         }
       />
-    </ModalWindow>
-  );
-};
+    </>
+  ),
 
-export const Default = Template.bind({});
-
-export const NoResize = Template.bind({});
-NoResize.args = {
-  interactions: "move",
-};
-export const DefaultSize = Template.bind({});
-DefaultSize.args = {
-  defaultBounds: { width: 300, height: 300 },
-};
-
-export const DefaultPosition = Template.bind({});
-DefaultPosition.args = {
-  defaultBounds: { left: 100, top: 100 },
-};
-
-export const DefaultSizeAndPosition = Template.bind({});
-DefaultSizeAndPosition.args = {
-  defaultBounds: { left: 100, top: 100, width: 300, height: 300 },
-};
-
-export const NoInteraction = Template.bind({});
-NoInteraction.args = {
-  interactions: "none",
-};
-
-export const LimitedMovement: Story<
-  Omit<ModalWindowProps, "onBoundsChanging"> & { containerBounds: Bounds }
-> = ({ containerBounds, ...props }) => (
-  <>
-    <ModalWindow
-      {...props}
-      onBoundsChanging={containedWithin(containerBounds)}
-    />
-    <WindowLayout
-      header="Window title"
-      content={
-        <div
-          style={{
-            position: "fixed",
-            boxShadow: "0 0 0 2px rgb(255 0 0 / 50%)",
-            ...containerBounds,
-          }}
-        />
-      }
-    />
-  </>
-);
-
-LimitedMovement.args = {
-  containerBounds: {
-    left: 20,
-    top: 20,
-    width: window.innerWidth - 100,
-    height: window.innerHeight - 100,
+  args: {
+    containerBounds: {
+      left: 20,
+      top: 20,
+      width: window.innerWidth - 100,
+      height: window.innerHeight - 100,
+    },
   },
 };
 
@@ -181,128 +189,131 @@ const NestedWindowExample = () => {
     </div>
   );
 };
-export const Nested = Template.bind({});
-Nested.args = {
-  children: <NestedWindowExample />,
-  minWidth: window.innerWidth / 3,
-  minHeight: window.innerHeight / 3,
+
+export const Nested: StoryObj<ModalWindowProps> = {
+  args: {
+    children: <NestedWindowExample />,
+    minWidth: window.innerWidth / 3,
+    minHeight: window.innerHeight / 3,
+  },
 };
 
-export const MinSize = Template.bind({});
-
-MinSize.args = {
-  minWidth: 300,
-  minHeight: 200,
-  children: (
-    <div style={{ padding: 16 }}>
-      Minimum size is set to 300x200 pixels. You can resize to a bigger size.
-    </div>
-  ),
-};
-export const MinSizeContent = Template.bind({});
-
-MinSizeContent.args = {
-  minWidth: "content",
-  minHeight: "content",
-  children: (
-    <div style={{ padding: 16, outline: "none" }} contentEditable>
-      Window Content. Window Content. Window Content. <br />
-      Window Content. Window Content. Window Content. <br />
-      Window Content. Window Content. Window Content.
-    </div>
-  ),
+export const MinSize: StoryObj<ModalWindowProps> = {
+  args: {
+    minWidth: 300,
+    minHeight: 200,
+    children: (
+      <div style={{ padding: 16 }}>
+        Minimum size is set to 300x200 pixels. You can resize to a bigger size.
+      </div>
+    ),
+  },
 };
 
-export const WithTallFooter = Template.bind({});
+export const MinSizeContent: StoryObj<ModalWindowProps> = {
+  args: {
+    minWidth: "content",
+    minHeight: "content",
+    children: (
+      <div style={{ padding: 16, outline: "none" }} contentEditable>
+        Window Content. Window Content. Window Content. <br />
+        Window Content. Window Content. Window Content. <br />
+        Window Content. Window Content. Window Content.
+      </div>
+    ),
+  },
+};
 
-WithTallFooter.args = {
-  minHeight: 200,
-  minWidth: 275,
-  children: (
-    <WindowLayout
-      header="Rollback Changes"
-      content={
-        <StyledContainer style={{ paddingBottom: 0 }}>
-          <div style={{ display: "flex" }}>
-            <ActionToolbar>
-              <ActionButton>
-                <PlatformIcon icon="actions/diff" />
-              </ActionButton>
-              <ActionButton>
-                <PlatformIcon icon="actions/groupBy" />
-              </ActionButton>
-            </ActionToolbar>
-            <span style={{ flex: 1 }} />
-            <ActionToolbar>
-              <ActionButton>
-                <PlatformIcon icon="actions/expandall" />
-              </ActionButton>
-              <ActionButton>
-                <PlatformIcon icon="actions/collapseall" />
-              </ActionButton>
-            </ActionToolbar>
-          </div>
+export const WithTallFooter: StoryObj<ModalWindowProps> = {
+  args: {
+    minHeight: 200,
+    minWidth: 275,
+    children: (
+      <WindowLayout
+        header="Rollback Changes"
+        content={
+          <StyledContainer style={{ paddingBottom: 0 }}>
+            <div style={{ display: "flex" }}>
+              <ActionToolbar>
+                <ActionButton>
+                  <PlatformIcon icon="actions/diff" />
+                </ActionButton>
+                <ActionButton>
+                  <PlatformIcon icon="actions/groupBy" />
+                </ActionButton>
+              </ActionToolbar>
+              <span style={{ flex: 1 }} />
+              <ActionToolbar>
+                <ActionButton>
+                  <PlatformIcon icon="actions/expandall" />
+                </ActionButton>
+                <ActionButton>
+                  <PlatformIcon icon="actions/collapseall" />
+                </ActionButton>
+              </ActionToolbar>
+            </div>
 
-          <StyledFrame>
-            <SpeedSearchTreeSample />
-          </StyledFrame>
-        </StyledContainer>
-      }
-      footer={
-        <>
-          <div
-            style={{
-              padding: "0 .75rem",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <StyledLine>1 added</StyledLine>
-            <Checkbox>Delete local copies of the added files</Checkbox>
-          </div>
+            <StyledFrame>
+              <SpeedSearchTreeSample />
+            </StyledFrame>
+          </StyledContainer>
+        }
+        footer={
+          <>
+            <div
+              style={{
+                padding: "0 .75rem",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <StyledLine>1 added</StyledLine>
+              <Checkbox>Delete local copies of the added files</Checkbox>
+            </div>
+            <WindowLayout.Footer
+              right={
+                <>
+                  <Button autoFocus>Cancel</Button>
+                  <Button variant="default">Rollback</Button>
+                </>
+              }
+            />
+          </>
+        }
+      />
+    ),
+  },
+};
+
+export const WithFooter: StoryObj<ModalWindowProps> = {
+  args: {
+    children: (
+      <WindowLayout
+        header="Dialog title"
+        content={
+          <StyledContainer>
+            <StyledFrame>
+              <SpeedSearchTreeSample />
+            </StyledFrame>
+          </StyledContainer>
+        }
+        footer={
           <WindowLayout.Footer
+            left={
+              <>
+                <Button variant="icon">?</Button>
+                <Checkbox>Open in editor</Checkbox>
+              </>
+            }
             right={
               <>
                 <Button autoFocus>Cancel</Button>
-                <Button variant="default">Rollback</Button>
+                <Button variant="default">OK</Button>
               </>
             }
           />
-        </>
-      }
-    />
-  ),
-};
-
-export const WithFooter = Template.bind({});
-
-WithFooter.args = {
-  children: (
-    <WindowLayout
-      header="Dialog title"
-      content={
-        <StyledContainer>
-          <StyledFrame>
-            <SpeedSearchTreeSample />
-          </StyledFrame>
-        </StyledContainer>
-      }
-      footer={
-        <WindowLayout.Footer
-          left={
-            <>
-              <Button variant="icon">?</Button>
-              <Checkbox>Open in editor</Checkbox>
-            </>
-          }
-          right={
-            <>
-              <Button autoFocus>Cancel</Button>
-              <Button variant="default">OK</Button>
-            </>
-          }
-        />
-      }
-    />
-  ),
+        }
+      />
+    ),
+  },
 };

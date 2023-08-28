@@ -1,4 +1,4 @@
-import { Meta } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react";
 import { PlatformIcon } from "../Icon";
 import { DebuggerTabContent } from "./DebuggerTabs/DebuggerTabContent";
 import { EditorTabContent } from "./EditorTabs/EditorTabContent";
@@ -23,50 +23,54 @@ export default {
   },
 } as Meta;
 
-export const EditorTheme: React.FC<StoryProps<EditorTabsProps<any>>> = (
-  props
-) => {
-  return (
-    <EditorTabs {...props} items={editorTabs} active>
-      {(tab: typeof editorTabs[number]) => (
-        <Item key={tab.title} textValue={tab.title}>
-          <EditorTabContent
-            icon={<PlatformIcon icon={tab.icon} />}
-            title={tab.title}
-            pinned={tab.pinned}
-          />
-        </Item>
-      )}
-    </EditorTabs>
-  );
+export const EditorTheme: StoryObj<StoryProps> = {
+  render: (props) => {
+    return (
+      <EditorTabs {...props} items={editorTabs} active>
+        {(tab: typeof editorTabs[number]) => (
+          <Item key={tab.title} textValue={tab.title}>
+            <EditorTabContent
+              icon={<PlatformIcon icon={tab.icon} />}
+              title={tab.title}
+              pinned={tab.pinned}
+            />
+          </Item>
+        )}
+      </EditorTabs>
+    );
+  },
 };
-export const DebuggerTheme: React.FC<StoryProps> = (props) => {
-  return (
-    <DebuggerTabs {...props} items={debuggerTabs}>
-      {(tab: typeof debuggerTabs[number]) => (
-        <Item key={tab.title} textValue={tab.title}>
-          <DebuggerTabContent
-            icon={tab.icon && <PlatformIcon icon={tab.icon} />}
-            title={tab.title}
-          />
-        </Item>
-      )}
-    </DebuggerTabs>
-  );
+export const DebuggerTheme: StoryObj<StoryProps> = {
+  render: (props) => {
+    return (
+      <DebuggerTabs {...props} items={debuggerTabs}>
+        {(tab: typeof debuggerTabs[number]) => (
+          <Item key={tab.title} textValue={tab.title}>
+            <DebuggerTabContent
+              icon={tab.icon && <PlatformIcon icon={tab.icon} />}
+              title={tab.title}
+            />
+          </Item>
+        )}
+      </DebuggerTabs>
+    );
+  },
 };
-export const ToolWindowTheme: React.FC<StoryProps> = (props) => {
-  return (
-    <ToolWindowTabs {...props} items={toolWindowTabs}>
-      {(tab: typeof toolWindowTabs[number]) => (
-        <Item key={tab.title} textValue={tab.title}>
-          <TabContentLayout
-            startIcon={<PlatformIcon icon={tab.icon} />}
-            title={tab.title}
-          />
-        </Item>
-      )}
-    </ToolWindowTabs>
-  );
+export const ToolWindowTheme: StoryObj<StoryProps> = {
+  render: (props) => {
+    return (
+      <ToolWindowTabs {...props} items={toolWindowTabs}>
+        {(tab: typeof toolWindowTabs[number]) => (
+          <Item key={tab.title} textValue={tab.title}>
+            <TabContentLayout
+              startIcon={<PlatformIcon icon={tab.icon} />}
+              title={tab.title}
+            />
+          </Item>
+        )}
+      </ToolWindowTabs>
+    );
+  },
 };
 const editorTabs = [
   {
