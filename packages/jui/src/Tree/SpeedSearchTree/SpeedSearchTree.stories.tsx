@@ -1,4 +1,4 @@
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import React, { Key, useState } from "react";
 import {
   Pane,
@@ -20,7 +20,7 @@ export default {
   },
 } as Meta;
 
-export const Static: Story = () => {
+export const Static: StoryFn = () => {
   const [selectedKeys, setSelectedKeys] = useState<"all" | Set<Key>>(
     new Set(["Theme", "index.ts"])
   );
@@ -40,7 +40,7 @@ export const Static: Story = () => {
   );
 };
 
-export const Dynamic: Story = () => {
+export const Dynamic: StoryFn = () => {
   // Note: selection being initialized to "Theme" and "index.ts" is important in testing some stuff in cypress tests.
   // It must not be changed.
   const [selectedKeys, setSelectedKeys] = useState<"all" | Set<Key>>(
@@ -77,7 +77,7 @@ export const Dynamic: Story = () => {
   );
 };
 
-export const HighlightsWithSpace: Story = () => {
+export const HighlightsWithSpace: StoryFn = () => {
   return (
     <Pane id="component-container">
       <SpeedSearchTree fillAvailableSpace selectionMode="multiple">

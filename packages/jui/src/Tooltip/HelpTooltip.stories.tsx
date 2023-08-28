@@ -1,6 +1,6 @@
-import { Meta, Story } from "@storybook/react";
-import { HelpTooltip, HelpTooltipProps, Link } from "@intellij-platform/core";
 import React from "react";
+import { Meta, StoryObj } from "@storybook/react";
+import { HelpTooltip, HelpTooltipProps, Link } from "@intellij-platform/core";
 
 export default {
   title: "Components/Tooltip/Help",
@@ -12,25 +12,23 @@ export default {
   argTypes: {},
 } as Meta<HelpTooltipProps>;
 
-const Template: Story<HelpTooltipProps> = (props) => {
-  return <HelpTooltip {...props} />;
+export const Default: StoryObj<HelpTooltipProps> = {};
+
+export const WithShortcut: StoryObj<HelpTooltipProps> = {
+  args: {
+    shortcut: "⌘M",
+  },
 };
 
-export const Default: Story<HelpTooltipProps> = Template.bind({});
-
-export const WithShortcut: Story<HelpTooltipProps> = Template.bind({});
-WithShortcut.args = {
-  shortcut: "⌘M",
+export const WithLink: StoryObj<HelpTooltipProps> = {
+  args: {
+    link: <Link>Example</Link>,
+  },
 };
 
-export const WithLink: Story<HelpTooltipProps> = Template.bind({});
-WithLink.args = {
-  link: <Link>Example</Link>,
-};
-
-export const WithShortcutAndLink: Story<HelpTooltipProps> = Template.bind({});
-
-WithShortcutAndLink.args = {
-  shortcut: "⌘M",
-  link: <Link>Example</Link>,
+export const WithShortcutAndLink: StoryObj<HelpTooltipProps> = {
+  args: {
+    shortcut: "⌘M",
+    link: <Link>Example</Link>,
+  },
 };

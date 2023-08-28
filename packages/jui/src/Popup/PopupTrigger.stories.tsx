@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn, StoryObj } from "@storybook/react";
 import {
   ActionButton,
   Checkbox,
@@ -44,183 +44,195 @@ export default {
   argTypes: {},
 } as Meta<PopupTriggerProps>;
 
-const Template: Story<PopupTriggerProps> = (props) => {
-  return <PopupTrigger {...props} />;
-};
+export const Default: StoryObj<PopupTriggerProps> = {};
 
-export const Default = Template.bind(null);
+export const Positioning: StoryObj<PopupTriggerProps> = {
+  render: ({ children, ...props }) => {
+    const [triggerPosition, setTriggerPosition] = useState({
+      left: 16,
+      top: 16,
+    });
 
-export const Positioning: Story<PopupTriggerProps> = ({
-  children,
-  ...props
-}) => {
-  const [triggerPosition, setTriggerPosition] = useState({ left: 16, top: 16 });
-
-  return (
-    <div
-      style={{ height: 2000, width: 2000 }}
-      onDoubleClick={(e) => {
-        if (e.target === e.currentTarget) {
-          setTriggerPosition({ left: e.pageX - 11, top: e.pageY - 11 });
-        }
-      }}
-    >
-      <PopupTrigger {...props}>
-        <span
-          title="Double click on the background to move this button to different positions"
-          style={{ position: "absolute", ...triggerPosition }}
-        >
-          {children}
-        </span>
-      </PopupTrigger>
-    </div>
-  );
-};
-
-export const PlacementTop = Template.bind(null);
-PlacementTop.args = {
-  placement: "top",
-};
-PlacementTop.decorators = [
-  (TheStory) => (
-    <div style={{ marginTop: 50 }}>
-      <TheStory />
-    </div>
-  ),
-];
-
-export const DefaultOpen = Template.bind(null);
-DefaultOpen.args = {
-  defaultOpen: true,
-};
-export const ControlledOpen: Story<PopupTriggerProps> = (props) => {
-  const [isOpen, setOpen] = useState(false);
-  return (
-    <>
-      <div>
-        <Checkbox isSelected={isOpen} onChange={setOpen}>
-          Popup Open
-        </Checkbox>
+    return (
+      <div
+        style={{ height: 2000, width: 2000 }}
+        onDoubleClick={(e) => {
+          if (e.target === e.currentTarget) {
+            setTriggerPosition({ left: e.pageX - 11, top: e.pageY - 11 });
+          }
+        }}
+      >
+        <PopupTrigger {...props}>
+          <span
+            title="Double click on the background to move this button to different positions"
+            style={{ position: "absolute", ...triggerPosition }}
+          >
+            {children}
+          </span>
+        </PopupTrigger>
       </div>
-      <PopupTrigger {...props} isOpen={isOpen} onOpenChange={setOpen} />
-    </>
-  );
+    );
+  },
 };
 
-export const DefaultSize = Template.bind(null);
-DefaultSize.args = {
-  popup: (
-    <Popup
-      defaultBounds={{
-        width: 300,
-        height: 200,
-      }}
-    >
-      <PopupLayout
-        header={<Popup.Header>Title</Popup.Header>}
-        content={
-          <div style={{ padding: "0.375rem" }}>
-            Popup Content. Popup Content.
-          </div>
-        }
-      />
-    </Popup>
-  ),
+export const PlacementTop: StoryObj<PopupTriggerProps> = {
+  args: {
+    placement: "top",
+  },
+  decorators: [
+    (TheStory) => (
+      <div style={{ marginTop: 50 }}>
+        <TheStory />
+      </div>
+    ),
+  ],
 };
 
-export const DefaultPosition = Template.bind(null);
-DefaultPosition.args = {
-  popup: (
-    <Popup
-      defaultBounds={{
-        top: 100,
-        left: 100,
-      }}
-    >
-      <PopupLayout
-        header={<Popup.Header>Title</Popup.Header>}
-        content={
-          <div style={{ padding: "0.375rem" }}>
-            Popup Content. Popup Content.
-          </div>
-        }
-      />
-    </Popup>
-  ),
+export const DefaultOpen: StoryObj<PopupTriggerProps> = {
+  args: {
+    defaultOpen: true,
+  },
 };
 
-export const NoResize = Template.bind({});
-NoResize.args = {
-  popup: (
-    <Popup interactions="move">
-      <PopupLayout
-        header={<Popup.Header>Title</Popup.Header>}
-        content={
-          <div style={{ padding: "0.375rem" }}>
-            Popup Content. Popup Content.
-          </div>
-        }
-      />
-    </Popup>
-  ),
+export const ControlledOpen: StoryObj<PopupTriggerProps> = {
+  render: (props) => {
+    const [isOpen, setOpen] = useState(false);
+    return (
+      <>
+        <div>
+          <Checkbox isSelected={isOpen} onChange={setOpen}>
+            Popup Open
+          </Checkbox>
+        </div>
+        <PopupTrigger {...props} isOpen={isOpen} onOpenChange={setOpen} />
+      </>
+    );
+  },
 };
 
-export const NoInteraction = Template.bind({});
-NoInteraction.args = {
-  popup: (
-    <Popup interactions="none">
-      <PopupLayout
-        header={<Popup.Header>Title</Popup.Header>}
-        content={
-          <div style={{ padding: "0.375rem" }}>
-            Popup Content. Popup Content.
-          </div>
-        }
-      />
-    </Popup>
-  ),
+export const DefaultSize: StoryObj<PopupTriggerProps> = {
+  args: {
+    popup: (
+      <Popup
+        defaultBounds={{
+          width: 300,
+          height: 200,
+        }}
+      >
+        <PopupLayout
+          header={<Popup.Header>Title</Popup.Header>}
+          content={
+            <div style={{ padding: "0.375rem" }}>
+              Popup Content. Popup Content.
+            </div>
+          }
+        />
+      </Popup>
+    ),
+  },
 };
 
-export const NonDismissable = Template.bind({});
-NonDismissable.args = {
-  popup: (
-    <Popup nonDismissable>
-      <PopupLayout
-        header={<Popup.Header>Title</Popup.Header>}
-        content={
-          <div style={{ padding: "0.375rem" }}>
-            Popup Content. Popup Content.
-          </div>
-        }
-      />
-    </Popup>
-  ),
+export const DefaultPosition: StoryObj<PopupTriggerProps> = {
+  args: {
+    popup: (
+      <Popup
+        defaultBounds={{
+          top: 100,
+          left: 100,
+        }}
+      >
+        <PopupLayout
+          header={<Popup.Header>Title</Popup.Header>}
+          content={
+            <div style={{ padding: "0.375rem" }}>
+              Popup Content. Popup Content.
+            </div>
+          }
+        />
+      </Popup>
+    ),
+  },
 };
 
-export const ListContent = Template.bind(null);
-ListContent.args = {
-  popup: <Popup>{listPopupContent}</Popup>,
+export const NoResize = {
+  args: {
+    popup: (
+      <Popup interactions="move">
+        <PopupLayout
+          header={<Popup.Header>Title</Popup.Header>}
+          content={
+            <div style={{ padding: "0.375rem" }}>
+              Popup Content. Popup Content.
+            </div>
+          }
+        />
+      </Popup>
+    ),
+  },
 };
 
-export const TreeContent = Template.bind(null);
-TreeContent.args = {
-  popup: <Popup>{treePopupContent}</Popup>,
+export const NoInteraction = {
+  args: {
+    popup: (
+      <Popup interactions="none">
+        <PopupLayout
+          header={<Popup.Header>Title</Popup.Header>}
+          content={
+            <div style={{ padding: "0.375rem" }}>
+              Popup Content. Popup Content.
+            </div>
+          }
+        />
+      </Popup>
+    ),
+  },
 };
 
-export const MenuContent = Template.bind(null);
-MenuContent.args = {
-  popup: ({ close }) => (
-    <Popup interactions="none">
-      <MenuPopupContent menuProps={{ onClose: close, onAction: alert }} />
-    </Popup>
-  ),
+export const NonDismissable = {
+  args: {
+    popup: (
+      <Popup nonDismissable>
+        <PopupLayout
+          header={<Popup.Header>Title</Popup.Header>}
+          content={
+            <div style={{ padding: "0.375rem" }}>
+              Popup Content. Popup Content.
+            </div>
+          }
+        />
+      </Popup>
+    ),
+  },
 };
 
-export const OnCustomTrigger = Template.bind(null);
-OnCustomTrigger.args = {
-  children: (
-    <Pressable>
-      <button>Custom trigger</button>
-    </Pressable>
-  ),
+export const ListContent: StoryObj<PopupTriggerProps> = {
+  args: {
+    popup: <Popup>{listPopupContent}</Popup>,
+  },
+};
+
+export const TreeContent: StoryObj<PopupTriggerProps> = {
+  args: {
+    popup: <Popup>{treePopupContent}</Popup>,
+  },
+};
+
+export const MenuContent: StoryObj<PopupTriggerProps> = {
+  args: {
+    popup: ({ close }) => (
+      <Popup interactions="none">
+        <MenuPopupContent menuProps={{ onClose: close, onAction: alert }} />
+      </Popup>
+    ),
+  },
+};
+
+export const OnCustomTrigger: StoryObj<PopupTriggerProps> = {
+  args: {
+    children: (
+      <Pressable>
+        <button>Custom trigger</button>
+      </Pressable>
+    ),
+  },
 };

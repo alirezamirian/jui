@@ -1,5 +1,4 @@
-import { Meta, Story } from "@storybook/react";
-import React from "react";
+import { Meta, StoryObj } from "@storybook/react";
 import { Checkbox, CheckboxProps } from "./Checkbox";
 
 export default {
@@ -8,35 +7,42 @@ export default {
   args: {
     children: "Enable the awesome settings",
   },
-} as Meta;
+} as Meta<CheckboxProps>;
 
-export const Default: Story<CheckboxProps> = (props) => {
-  return <Checkbox {...props} />;
+export const Default: StoryObj<CheckboxProps> = {};
+
+export const Disabled: StoryObj<CheckboxProps> = {
+  args: { isDisabled: true },
 };
 
-export const Disabled = Default.bind({});
-Disabled.args = { isDisabled: true };
+export const DefaultSelected: StoryObj<CheckboxProps> = {
+  args: { defaultSelected: true },
+};
 
-export const DefaultSelected = Default.bind({});
-DefaultSelected.args = { defaultSelected: true };
+export const Selected: StoryObj<CheckboxProps> = {
+  args: { isSelected: true },
+};
 
-export const Selected = Default.bind({});
-Selected.args = { isSelected: true };
+export const Indeterminate: StoryObj<CheckboxProps> = {
+  args: { isIndeterminate: true },
+};
 
-export const Indeterminate = Default.bind({});
-Indeterminate.args = { isIndeterminate: true };
+export const IndeterminateDisabled: StoryObj<CheckboxProps> = {
+  args: { isIndeterminate: true, isDisabled: true },
+};
 
-export const IndeterminateDisabled = Default.bind({});
-IndeterminateDisabled.args = { isIndeterminate: true, isDisabled: true };
+export const WithoutLabel: StoryObj<CheckboxProps> = {
+  args: { children: null },
+};
 
-export const WithoutLabel = Default.bind({});
-WithoutLabel.args = { children: null };
+export const PreventFocus: StoryObj<CheckboxProps> = {
+  args: { preventFocus: true },
+};
 
-export const PreventFocus = Default.bind({});
-PreventFocus.args = { preventFocus: true };
+export const ExcludeFromTabOrder: StoryObj<CheckboxProps> = {
+  args: { excludeFromTabOrder: true },
+};
 
-export const ExcludeFromTabOrder = Default.bind({});
-ExcludeFromTabOrder.args = { excludeFromTabOrder: true };
-
-export const DisableFocusAlwaysVisible = Default.bind({});
-DisableFocusAlwaysVisible.args = { disableFocusAlwaysVisible: true };
+export const DisableFocusAlwaysVisible: StoryObj<CheckboxProps> = {
+  args: { disableFocusAlwaysVisible: true },
+};

@@ -1,11 +1,11 @@
 import React from "react";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn, StoryObj } from "@storybook/react";
 import {
   ActionButton,
   Checkbox,
+  FocusScope,
   PlatformIcon,
   styled,
-  FocusScope,
 } from "@intellij-platform/core";
 
 import {
@@ -15,9 +15,65 @@ import {
 } from "./story-helpers";
 import { Popup, PopupProps } from "./Popup";
 
+const StyledCustomHeader = styled.div`
+  width: 100%;
+  color: ${({ theme }) => theme.commonColors.labelForeground};
+  gap: 0.625rem;
+  display: flex;
+  align-items: center;
+`;
+
+const StyledCustomHeaderTitle = styled.div`
+  overflow: hidden;
+  flex: 1;
+  padding-inline-start: 0.625rem;
+`;
+
+const StyledCustomHeaderMuted = styled.span`
+  color: ${({ theme }) => theme.commonColors.inactiveTextColor};
+`;
+
+const StyledCustomHeader2 = styled.div`
+  width: 100%;
+  color: ${({ theme }) => theme.commonColors.labelForeground};
+  background: ${({ theme }) =>
+    theme.color("SearchEverywhere.Header.background")};
+  gap: 0.625rem;
+  display: flex;
+  height: 100%;
+  padding: 0 1rem;
+`;
+
+const StyledTabs = styled.div`
+  display: flex;
+  height: 100%;
+  button {
+    all: unset;
+    padding: 0.5rem 1rem;
+  }
+  .active {
+    background: ${({ theme }) =>
+      theme.color("SearchEverywhere.Tab.selectedBackground")};
+  }
+`;
+
+const StyledSearchFieldHint = styled.div`
+  color: ${({ theme }) =>
+    theme.color("SearchEverywhere.SearchField.infoForeground")};
+  white-space: nowrap;
+`;
+
 export default {
   title: "Components/Popup",
   component: Popup,
+  render: (props) => {
+    return (
+      <div>
+        <input />
+        <Popup {...props} />
+      </div>
+    );
+  },
   args: {
     children: (
       <Popup.Layout
@@ -34,17 +90,9 @@ export default {
   argTypes: {},
 } as Meta<PopupProps>;
 
-const Template: Story<PopupProps> = (props) => {
-  return (
-    <div>
-      <input />
-      <Popup {...props} />
-    </div>
-  );
-};
-export const Default: Story<PopupProps> = Template.bind({});
+export const Default: StoryObj<PopupProps> = {};
 
-export const MultiplePopups: Story = () => {
+export const MultiplePopups: StoryFn = () => {
   return (
     <>
       <Popup
@@ -81,102 +129,90 @@ export const MultiplePopups: Story = () => {
   );
 };
 
-export const MinSizeContent = Template.bind({});
-MinSizeContent.args = {
-  children: (
-    <>
-      <Popup.Header>Title</Popup.Header>
-      <div style={{ padding: "0.5rem" }}>
-        Popup Content. Popup Content. <br />
-        Popup Content. Popup Content. <br />
-        Popup Content. Popup Content.
-      </div>
-    </>
-  ),
-  interactions: "all",
-  minHeight: "content",
-  minWidth: "content",
-};
-
-export const DefaultSize = Template.bind(null);
-DefaultSize.args = {
-  defaultBounds: {
-    width: 300,
-    height: 200,
+export const MinSizeContent: StoryObj<PopupProps> = {
+  args: {
+    children: (
+      <>
+        <Popup.Header>Title</Popup.Header>
+        <div style={{ padding: "0.5rem" }}>
+          Popup Content. Popup Content. <br />
+          Popup Content. Popup Content. <br />
+          Popup Content. Popup Content.
+        </div>
+      </>
+    ),
+    interactions: "all",
+    minHeight: "content",
+    minWidth: "content",
   },
 };
 
-export const DefaultPosition = Template.bind(null);
-DefaultPosition.args = {
-  defaultBounds: {
-    top: 100,
-    left: 100,
+export const DefaultSize: StoryObj<PopupProps> = {
+  args: {
+    defaultBounds: {
+      width: 300,
+      height: 200,
+    },
   },
 };
-export const Resizable = Template.bind({});
-Resizable.args = {
-  interactions: "all",
+
+export const DefaultPosition: StoryObj<PopupProps> = {
+  args: {
+    defaultBounds: {
+      top: 100,
+      left: 100,
+    },
+  },
 };
 
-export const NoInteraction = Template.bind({});
-NoInteraction.args = {
-  interactions: "none",
+export const Resizable: StoryObj<PopupProps> = {
+  args: {
+    interactions: "all",
+  },
 };
 
-export const NonDismissable = Template.bind({});
-NonDismissable.args = {
-  nonDismissable: true,
+export const NoInteraction: StoryObj<PopupProps> = {
+  args: {
+    interactions: "none",
+  },
 };
 
-export const CustomHeader: Story<PopupProps> = (props) => <Popup {...props} />;
-
-const StyledCustomHeader = styled.div`
-  width: 100%;
-  color: ${({ theme }) => theme.commonColors.labelForeground};
-  gap: 0.625rem;
-  display: flex;
-  align-items: center;
-`;
-
-const StyledCustomHeaderTitle = styled.div`
-  overflow: hidden;
-  flex: 1;
-  padding-inline-start: 0.625rem;
-`;
-
-const StyledCustomHeaderMuted = styled.span`
-  color: ${({ theme }) => theme.commonColors.inactiveTextColor};
-`;
-
-CustomHeader.args = {
-  children: (
-    <Popup.Layout
-      header={
-        <Popup.Header hasControls>
-          <StyledCustomHeader>
-            <StyledCustomHeaderTitle>
-              Method <b>setActive(boolean)</b>&nbsp;
-              <StyledCustomHeaderMuted>
-                of com.intellij.ui.TitlePanel
-              </StyledCustomHeaderMuted>
-            </StyledCustomHeaderTitle>
-            <span>6+ usages</span>
-            <ActionButton>
-              <PlatformIcon icon="actions/moveToBottomLeft" />
-            </ActionButton>
-          </StyledCustomHeader>
-        </Popup.Header>
-      }
-      content={<div style={{ minHeight: 100, padding: "0.5rem" }}>Content</div>}
-      footer={
-        <Popup.Hint>Press ⌥⌘F7 again to search in 'Project files'</Popup.Hint>
-      }
-    />
-  ),
+export const NonDismissable: StoryObj<PopupProps> = {
+  args: {
+    nonDismissable: true,
+  },
 };
-export const MultipleRowHeader: Story<PopupProps> = (props) => (
-  <Popup {...props} />
-);
+
+export const CustomHeader: StoryObj<PopupProps> = {
+  args: {
+    children: (
+      <Popup.Layout
+        header={
+          <Popup.Header hasControls>
+            <StyledCustomHeader>
+              <StyledCustomHeaderTitle>
+                Method <b>setActive(boolean)</b>&nbsp;
+                <StyledCustomHeaderMuted>
+                  of com.intellij.ui.TitlePanel
+                </StyledCustomHeaderMuted>
+              </StyledCustomHeaderTitle>
+              <span>6+ usages</span>
+              <ActionButton>
+                <PlatformIcon icon="actions/moveToBottomLeft" />
+              </ActionButton>
+            </StyledCustomHeader>
+          </Popup.Header>
+        }
+        content={
+          <div style={{ minHeight: 100, padding: "0.5rem" }}>Content</div>
+        }
+        footer={
+          <Popup.Hint>Press ⌥⌘F7 again to search in 'Project files'</Popup.Hint>
+        }
+      />
+    ),
+  },
+};
 
 const StyledSearchFieldContainer = styled.div`
   display: flex;
@@ -200,107 +236,86 @@ const StyledSearchFieldContainer = styled.div`
   }
 `;
 
-const StyledCustomHeader2 = styled.div`
-  width: 100%;
-  color: ${({ theme }) => theme.commonColors.labelForeground};
-  background: ${({ theme }) =>
-    theme.color("SearchEverywhere.Header.background")};
-  gap: 0.625rem;
-  display: flex;
-  height: 100%;
-  padding: 0 1rem;
-`;
-
-const StyledTabs = styled.div`
-  display: flex;
-  height: 100%;
-  button {
-    all: unset;
-    padding: 0.5rem 1rem;
-  }
-  .active {
-    background: ${({ theme }) =>
-      theme.color("SearchEverywhere.Tab.selectedBackground")};
-  }
-`;
-
-const StyledSearchFieldHint = styled.div`
-  color: ${({ theme }) =>
-    theme.color("SearchEverywhere.SearchField.infoForeground")};
-  white-space: nowrap;
-`;
-MultipleRowHeader.args = {
-  interactions: "all",
-  minWidth: "content",
-  minHeight: 20,
-  children: (
-    <Popup.Layout
-      header={
-        <>
-          <Popup.Header hasControls>
-            <StyledCustomHeader2>
-              <div style={{ flex: 1, height: "100%" }}>
-                <StyledTabs
-                  onMouseDown={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  <button>All</button>
-                  <button>Classes</button>
-                  <button className="active">Files</button>
-                  <button>Symbols</button>
-                  <button>Actions</button>
-                </StyledTabs>
-              </div>
-              <Checkbox preventFocus>Include disabled actions</Checkbox>
-            </StyledCustomHeader2>
-          </Popup.Header>
-          <StyledSearchFieldContainer>
-            <PlatformIcon icon="actions/search" />
-            <FocusScope contain>
-              <input autoFocus />
-            </FocusScope>
-            <StyledSearchFieldHint>
-              Press ⌥⏎ to assign a shortcut
-            </StyledSearchFieldHint>
-          </StyledSearchFieldContainer>
-        </>
-      }
-      content={<div style={{ minHeight: 100, padding: "0.5rem" }}>Content</div>}
-      footer={
-        <Popup.Hint>
-          Resize to see the order of things going out of the view: content,
-          footer, header
-        </Popup.Hint>
-      }
-    />
-  ),
+export const MultipleRowHeader: StoryObj<PopupProps> = {
+  args: {
+    interactions: "all",
+    minWidth: "content",
+    minHeight: 20,
+    children: (
+      <Popup.Layout
+        header={
+          <>
+            <Popup.Header hasControls>
+              <StyledCustomHeader2>
+                <div style={{ flex: 1, height: "100%" }}>
+                  <StyledTabs
+                    onMouseDown={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    <button>All</button>
+                    <button>Classes</button>
+                    <button className="active">Files</button>
+                    <button>Symbols</button>
+                    <button>Actions</button>
+                  </StyledTabs>
+                </div>
+                <Checkbox preventFocus>Include disabled actions</Checkbox>
+              </StyledCustomHeader2>
+            </Popup.Header>
+            <StyledSearchFieldContainer>
+              <PlatformIcon icon="actions/search" />
+              <FocusScope contain>
+                <input autoFocus />
+              </FocusScope>
+              <StyledSearchFieldHint>
+                Press ⌥⏎ to assign a shortcut
+              </StyledSearchFieldHint>
+            </StyledSearchFieldContainer>
+          </>
+        }
+        content={
+          <div style={{ minHeight: 100, padding: "0.5rem" }}>Content</div>
+        }
+        footer={
+          <Popup.Hint>
+            Resize to see the order of things going out of the view: content,
+            footer, header
+          </Popup.Hint>
+        }
+      />
+    ),
+  },
 };
 
-export const WithHint: Story<PopupProps> = Template.bind({});
-WithHint.args = {
-  children: (
-    <Popup.Layout
-      content={<div style={{ padding: "0.375rem" }}>Popup Content</div>}
-      header={<Popup.Header>Popup Title</Popup.Header>}
-      footer={
-        <Popup.Hint>Press ⌥⌘F7 again to search in 'Project files'</Popup.Hint>
-      }
-    />
-  ),
+export const WithHint: StoryObj<PopupProps> = {
+  args: {
+    children: (
+      <Popup.Layout
+        content={<div style={{ padding: "0.375rem" }}>Popup Content</div>}
+        header={<Popup.Header>Popup Title</Popup.Header>}
+        footer={
+          <Popup.Hint>Press ⌥⌘F7 again to search in 'Project files'</Popup.Hint>
+        }
+      />
+    ),
+  },
 };
 
-export const ListContent = Template.bind(null);
-ListContent.args = {
-  children: listPopupContent,
+export const ListContent: StoryObj<PopupProps> = {
+  args: {
+    children: listPopupContent,
+  },
 };
 
-export const TreeContent = Template.bind(null);
-TreeContent.args = {
-  children: treePopupContent,
+export const TreeContent: StoryObj<PopupProps> = {
+  args: {
+    children: treePopupContent,
+  },
 };
 
-export const MenuContent = Template.bind(null);
-MenuContent.args = {
-  children: <MenuPopupContent />,
+export const MenuContent: StoryObj<PopupProps> = {
+  args: {
+    children: <MenuPopupContent />,
+  },
 };

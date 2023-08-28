@@ -1,4 +1,4 @@
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { BalloonActionLink } from "./Balloon";
 import {
@@ -46,10 +46,12 @@ const ShowBalloonButton = () => {
   );
 };
 
-export const BalloonManagerStory: Story<BalloonManagerProps> = (props) => (
-  <BalloonManager {...props}>
-    <ShowBalloonButton />
-  </BalloonManager>
-);
+export const BalloonManagerStory: StoryObj<BalloonManagerProps> = {
+  render: (props) => (
+    <BalloonManager {...props}>
+      <ShowBalloonButton />
+    </BalloonManager>
+  ),
 
-BalloonManagerStory.storyName = "Balloon Manager";
+  name: "Balloon Manager",
+};

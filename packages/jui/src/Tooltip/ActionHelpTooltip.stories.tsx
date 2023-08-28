@@ -1,4 +1,4 @@
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import {
   ActionHelpTooltip,
   ActionHelpTooltipProps,
@@ -17,24 +17,23 @@ export default {
   argTypes: {},
 } as Meta<ActionHelpTooltipProps>;
 
-const Template: Story<ActionHelpTooltipProps> = (props) => {
-  return <ActionHelpTooltip {...props} />;
+export const Default = {};
+
+export const WithShortcut = {
+  args: {
+    shortcut: "⌥⇧T",
+  },
 };
 
-export const Default = Template.bind({});
-
-export const WithShortcut = Template.bind({});
-WithShortcut.args = {
-  shortcut: "⌥⇧T",
+export const WithLink = {
+  args: {
+    link: <Link>Managing tasks</Link>,
+  },
 };
 
-export const WithLink = Template.bind({});
-WithLink.args = {
-  link: <Link>Managing tasks</Link>,
-};
-
-export const WithShortcutAndLink = Template.bind({});
-WithShortcutAndLink.args = {
-  shortcut: "⌥⇧T",
-  link: <Link>Managing tasks</Link>,
+export const WithShortcutAndLink = {
+  args: {
+    shortcut: "⌥⇧T",
+    link: <Link>Managing tasks</Link>,
+  },
 };

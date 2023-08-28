@@ -1,5 +1,5 @@
 import React from "react";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import { SpeedSearchTree, Tree } from "@intellij-platform/core";
 import {
   staticSpeedSearchTreeItems,
@@ -11,7 +11,7 @@ export default {
   title: "Components/TreeActions",
 } as Meta;
 
-export const OnTree: Story = () => (
+export const OnTree: StoryFn = () => (
   <TreeActionsWrapper>
     {(treeRef) => (
       <Tree
@@ -24,7 +24,7 @@ export const OnTree: Story = () => (
     )}
   </TreeActionsWrapper>
 );
-export const OnSpeedSearchTree: Story = () => (
+export const OnSpeedSearchTree: StoryFn = () => (
   <TreeActionsWrapper>
     {(treeRef) => (
       <SpeedSearchTree

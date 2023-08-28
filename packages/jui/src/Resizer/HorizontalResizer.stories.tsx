@@ -1,4 +1,4 @@
-import { Meta } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react";
 import React, { CSSProperties, useState } from "react";
 import { css } from "styled-components";
 import {
@@ -87,27 +87,30 @@ const getComponentsAndProps = (
         sizeStyles: { height: size },
       };
 };
-export const Default = ({ orientation, ...props }: StoryProps) => {
-  const [size, setSize] = useState(200);
-  const { Resizer, Container, FirstSide, SecondSide, sizeStyles } =
-    getComponentsAndProps(orientation, size);
-  return (
-    <Container>
-      <FirstSide style={sizeStyles}>Resizable panel</FirstSide>
-      <Resizer
-        {...props}
-        onResizeStarted={(...args) => {
-          props.onResizeStarted(...args);
-          return size;
-        }}
-        onResize={(...args) => {
-          setSize(args[0]);
-          props.onResize(...args);
-        }}
-      />
-      <SecondSide />
-    </Container>
-  );
+
+export const Default: StoryObj<StoryProps> = {
+  render: ({ orientation, ...props }) => {
+    const [size, setSize] = useState(200);
+    const { Resizer, Container, FirstSide, SecondSide, sizeStyles } =
+      getComponentsAndProps(orientation, size);
+    return (
+      <Container>
+        <FirstSide style={sizeStyles}>Resizable panel</FirstSide>
+        <Resizer
+          {...props}
+          onResizeStarted={(...args) => {
+            props.onResizeStarted(...args);
+            return size;
+          }}
+          onResize={(...args) => {
+            setSize(args[0]);
+            props.onResize(...args);
+          }}
+        />
+        <SecondSide />
+      </Container>
+    );
+  },
 };
 
 const Handle = styled.div<{ orientation: "horizontal" | "vertical" }>`
@@ -129,80 +132,84 @@ const Handle = styled.div<{ orientation: "horizontal" | "vertical" }>`
         `}
 `;
 
-export const CustomAppearance = ({ orientation, ...props }: StoryProps) => {
-  const [size, setSize] = useState(200);
-  const { Resizer, Container, FirstSide, SecondSide, sizeStyles } =
-    getComponentsAndProps(orientation, size);
+export const CustomAppearance: StoryObj<StoryProps> = {
+  render: ({ orientation, ...props }: StoryProps) => {
+    const [size, setSize] = useState(200);
+    const { Resizer, Container, FirstSide, SecondSide, sizeStyles } =
+      getComponentsAndProps(orientation, size);
 
-  return (
-    <Container>
-      <FirstSide style={sizeStyles}>Resizable panel</FirstSide>
-      <Resizer
-        {...props}
-        onResizeStarted={(...args) => {
-          props.onResizeStarted(...args);
-          return size;
-        }}
-        onResize={(...args) => {
-          setSize(args[0]);
-          props.onResize(...args);
-        }}
-      >
-        <Handle orientation={orientation} />
-      </Resizer>
-      <SecondSide />
-    </Container>
-  );
+    return (
+      <Container>
+        <FirstSide style={sizeStyles}>Resizable panel</FirstSide>
+        <Resizer
+          {...props}
+          onResizeStarted={(...args) => {
+            props.onResizeStarted(...args);
+            return size;
+          }}
+          onResize={(...args) => {
+            setSize(args[0]);
+            props.onResize(...args);
+          }}
+        >
+          <Handle orientation={orientation} />
+        </Resizer>
+        <SecondSide />
+      </Container>
+    );
+  },
+
+  argTypes: {
+    ...meta.argTypes,
+    background: { defaultValue: "lightgrey" },
+    size: { defaultValue: 10 },
+  },
 };
 
-CustomAppearance.argTypes = {
-  ...meta.argTypes,
-  background: { defaultValue: "lightgrey" },
-  width: { defaultValue: 10 },
-};
+export const WithMinSize = {
+  render: ({
+    orientation,
+    minSize,
+    ...props
+  }: StoryProps & { minSize: CSSProperties["minWidth" | "minHeight"] }) => {
+    const [size, setSize] = useState(200);
+    const { Resizer, Container, FirstSide, SecondSide, sizeStyles } =
+      getComponentsAndProps(orientation, size);
+    return (
+      <Container>
+        <FirstSide
+          style={{
+            ...sizeStyles,
+            [orientation === "horizontal" ? "minWidth" : "minHeight"]: minSize,
+          }}
+        >
+          Resizable panel
+        </FirstSide>
+        <Resizer
+          {...props}
+          onResizeStarted={(...args) => {
+            props.onResizeStarted(...args);
+            return size;
+          }}
+          onResize={(...args) => {
+            setSize(args[0]);
+            props.onResize(...args);
+          }}
+        />
+        <SecondSide />
+      </Container>
+    );
+  },
 
-export const WithMinSize = ({
-  orientation,
-  minSize,
-  ...props
-}: StoryProps & { minSize: CSSProperties["minWidth" | "minHeight"] }) => {
-  const [size, setSize] = useState(200);
-  const { Resizer, Container, FirstSide, SecondSide, sizeStyles } =
-    getComponentsAndProps(orientation, size);
-  return (
-    <Container>
-      <FirstSide
-        style={{
-          ...sizeStyles,
-          [orientation === "horizontal" ? "minWidth" : "minHeight"]: minSize,
-        }}
-      >
-        Resizable panel
-      </FirstSide>
-      <Resizer
-        {...props}
-        onResizeStarted={(...args) => {
-          props.onResizeStarted(...args);
-          return size;
-        }}
-        onResize={(...args) => {
-          setSize(args[0]);
-          props.onResize(...args);
-        }}
-      />
-      <SecondSide />
-    </Container>
-  );
-};
-
-WithMinSize.argTypes = {
-  ...meta.argTypes,
-  minSize: {
-    type: "string",
-    options: ["100px", "fit-content", "min-content", undefined],
-    control: {
-      type: "select",
+  argTypes: {
+    ...meta.argTypes,
+    minSize: {
+      type: "string",
+      options: ["100px", "fit-content", "min-content", undefined],
+      control: {
+        type: "select",
+      },
+      defaultValue: "100px",
     },
-    defaultValue: "100px",
   },
 };

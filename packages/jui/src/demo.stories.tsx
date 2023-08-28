@@ -7,9 +7,11 @@ export default {
   title: "Demos/Example App",
 } as Meta;
 
-export const ExampleApp = () => <App />;
-ExampleApp.parameters = {
-  layout: "fullscreen",
-  controls: { exclude: styledComponentsControlsExclude },
-  component: ExampleApp,
+export const ExampleApp = {
+  render: () => <App />,
+
+  parameters: {
+    layout: "fullscreen",
+    controls: { exclude: styledComponentsControlsExclude },
+  },
 };

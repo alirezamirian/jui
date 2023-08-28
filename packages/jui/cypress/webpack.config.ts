@@ -1,4 +1,5 @@
 const libSrcAlias = require("../../../config/lib-src-webpack-alias");
+import { Configuration, ProvidePlugin } from "webpack";
 /**
  * This is needed for cypress component testing.
  *
@@ -10,7 +11,6 @@ const libSrcAlias = require("../../../config/lib-src-webpack-alias");
  * to change this. Also some peer dependencies of @cypress/webpack-dev-server are missing at the moment but are somehow
  * provided, and therefore ignored!
  *
- * @type webpack.Configuration
  */
 export default {
   mode: "development",
@@ -20,7 +20,19 @@ export default {
     alias: {
       ...libSrcAlias,
     },
+    fallback: {
+      crypto: require.resolve("crypto-browserify"),
+      path: require.resolve("path-browserify"),
+      stream: require.resolve("stream-browserify"),
+      process: require.resolve("process/browser"),
+    },
   },
+  plugins: [
+    new ProvidePlugin({
+      process: "process/browser",
+      Buffer: ["buffer", "Buffer"],
+    }),
+  ],
   module: {
     rules: [
       {
@@ -42,4 +54,4 @@ export default {
       },
     ],
   },
-};
+} as Configuration;

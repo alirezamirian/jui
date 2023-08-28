@@ -1,5 +1,5 @@
 import React from "react";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import { PlatformIcon } from "@intellij-platform/core/Icon";
 import { DividerItem, Item } from "@intellij-platform/core/Collections";
 import {
@@ -46,14 +46,14 @@ export default {
   },
 } as Meta<SpeedSearchMenuProps<unknown>>;
 
-const Template: Story<SpeedSearchMenuProps<ExampleMenuItem>> = (
+const Template: StoryFn<SpeedSearchMenuProps<ExampleMenuItem>> = (
   props: SpeedSearchMenuProps<ExampleMenuItem>
 ) => <SpeedSearchMenu {...props} />;
 
-export const Default: Story<SpeedSearchMenuProps<ExampleMenuItem>> =
+export const Default: StoryFn<SpeedSearchMenuProps<ExampleMenuItem>> =
   Template.bind(null);
 
-export const WithSections: Story<SpeedSearchMenuProps<ExampleMenuItem>> =
+export const WithSections: StoryFn<SpeedSearchMenuProps<ExampleMenuItem>> =
   Template.bind(null);
 
 WithSections.args = {
@@ -79,39 +79,43 @@ WithSections.args = {
     </>
   ).props.children,
 };
-export const WithCustomEmptyText: Story<SpeedSearchMenuProps<ExampleMenuItem>> =
-  Template.bind(null);
+export const WithCustomEmptyText: StoryFn<
+  SpeedSearchMenuProps<ExampleMenuItem>
+> = Template.bind(null);
 WithCustomEmptyText.args = {
   emptyText: "Nothing here",
 };
-export const WithTrigger = ({
-  menuProps: otherMenuProps,
-}: {
-  menuProps: Partial<SpeedSearchMenuProps<any>>;
-}) => {
-  return (
-    <ActionToolbar>
-      <MenuTrigger
-        renderMenu={({ menuProps }) => (
-          <SpeedSearchMenu
-            items={items}
-            disabledKeys={["Float"]}
-            {...menuProps}
-            {...otherMenuProps}
-            onAction={(key) => {
-              console.log("onAction", key);
-            }}
-          >
-            {renderItem}
-          </SpeedSearchMenu>
-        )}
-      >
-        {(props, ref) => (
-          <ActionButton {...props} ref={ref}>
-            <PlatformIcon icon={"general/gearPlain"} />
-          </ActionButton>
-        )}
-      </MenuTrigger>
-    </ActionToolbar>
-  );
+
+export const WithTrigger = {
+  render: ({
+    menuProps: otherMenuProps,
+  }: {
+    menuProps: Partial<SpeedSearchMenuProps<any>>;
+  }) => {
+    return (
+      <ActionToolbar>
+        <MenuTrigger
+          renderMenu={({ menuProps }) => (
+            <SpeedSearchMenu
+              items={items}
+              disabledKeys={["Float"]}
+              {...menuProps}
+              {...otherMenuProps}
+              onAction={(key) => {
+                console.log("onAction", key);
+              }}
+            >
+              {renderItem}
+            </SpeedSearchMenu>
+          )}
+        >
+          {(props, ref) => (
+            <ActionButton {...props} ref={ref}>
+              <PlatformIcon icon={"general/gearPlain"} />
+            </ActionButton>
+          )}
+        </MenuTrigger>
+      </ActionToolbar>
+    );
+  },
 };

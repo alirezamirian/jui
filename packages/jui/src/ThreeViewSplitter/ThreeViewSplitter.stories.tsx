@@ -2,14 +2,30 @@ import React, { useState } from "react";
 
 import { Meta } from "@storybook/react";
 import { ThreeViewSplitter, ThreeViewSplitterProps } from "./ThreeViewSplitter";
-import {
-  ComponentArgTypes,
-  styledComponentsControlsExclude,
-} from "../story-helpers";
+import { styledComponentsControlsExclude } from "../story-helpers";
 
 export default {
   title: "Components/ThreeViewSplitter",
-} as Meta;
+  argTypes: {
+    orientation: {
+      defaultValue: "horizontal",
+      type: {
+        name: "enum",
+        value: ["horizontal", "vertical"] as Array<
+          Required<ThreeViewSplitterProps>["orientation"]
+        >,
+      },
+    },
+    innerViewMinSize: { defaultValue: 50, type: "number" },
+    firstView: { defaultValue: "First view", type: "string" },
+    innerView: { defaultValue: "Inner view", type: "string" },
+    lastView: { defaultValue: "Last view", type: "string" },
+  },
+  parameters: {
+    layout: "fullscreen",
+    controls: { exclude: styledComponentsControlsExclude },
+  },
+} as Meta<ThreeViewSplitterProps>;
 
 const ThreeViewSplitterWithStyles: React.FC<ThreeViewSplitterProps> = (
   props
@@ -40,72 +56,50 @@ const ThreeViewSplitterWithStyles: React.FC<ThreeViewSplitterProps> = (
   );
 };
 
-export const WithInitialSize = (props: Partial<ThreeViewSplitterProps>) => {
-  const [firstSize, setFirstSize] = useState<number>(250);
-  const [lastSize, setLastSize] = useState<number>(250);
-  return (
-    <ThreeViewSplitterWithStyles
-      {...props}
-      firstSize={firstSize}
-      onFirstResize={setFirstSize}
-      lastSize={lastSize}
-      onLastResize={setLastSize}
-    />
-  );
-};
-
-export const WithoutInitialSize = (props: Partial<ThreeViewSplitterProps>) => {
-  const [firstSize, setFirstSize] = useState<number>();
-  const [lastSize, setLastSize] = useState<number>();
-  return (
-    <ThreeViewSplitterWithStyles
-      {...props}
-      firstSize={firstSize}
-      onFirstResize={setFirstSize}
-      lastSize={lastSize}
-      onLastResize={setLastSize}
-    />
-  );
-};
-export const RelativeSizing = (props: Partial<ThreeViewSplitterProps>) => {
-  const [firstSize, setFirstSize] = useState<number>(0.2);
-  const [lastSize, setLastSize] = useState<number>(0.2);
-  return (
-    <ThreeViewSplitterWithStyles
-      {...props}
-      firstSize={firstSize}
-      onFirstResize={setFirstSize}
-      lastSize={lastSize}
-      onLastResize={setLastSize}
-    />
-  );
-};
-
-const argTypes: ComponentArgTypes<ThreeViewSplitterProps> = {
-  orientation: {
-    defaultValue: "horizontal",
-    type: {
-      name: "enum",
-      value: ["horizontal", "vertical"] as Array<
-        Required<ThreeViewSplitterProps>["orientation"]
-      >,
-    },
+export const WithInitialSize = {
+  render: (props: Partial<ThreeViewSplitterProps>) => {
+    const [firstSize, setFirstSize] = useState<number>(250);
+    const [lastSize, setLastSize] = useState<number>(250);
+    return (
+      <ThreeViewSplitterWithStyles
+        {...props}
+        firstSize={firstSize}
+        onFirstResize={setFirstSize}
+        lastSize={lastSize}
+        onLastResize={setLastSize}
+      />
+    );
   },
-  innerViewMinSize: { defaultValue: 50, type: "number" },
-  firstView: { defaultValue: "First view", type: "string" },
-  innerView: { defaultValue: "Inner view", type: "string" },
-  lastView: { defaultValue: "Last view", type: "string" },
-};
-const parameters = {
-  layout: "fullscreen",
-  controls: { exclude: styledComponentsControlsExclude },
 };
 
-WithoutInitialSize.argTypes = argTypes;
-WithoutInitialSize.parameters = parameters;
+export const WithoutInitialSize = {
+  render: (props: Partial<ThreeViewSplitterProps>) => {
+    const [firstSize, setFirstSize] = useState<number>();
+    const [lastSize, setLastSize] = useState<number>();
+    return (
+      <ThreeViewSplitterWithStyles
+        {...props}
+        firstSize={firstSize}
+        onFirstResize={setFirstSize}
+        lastSize={lastSize}
+        onLastResize={setLastSize}
+      />
+    );
+  },
+};
 
-WithInitialSize.argTypes = argTypes;
-WithInitialSize.parameters = parameters;
-
-RelativeSizing.argTypes = argTypes;
-RelativeSizing.parameters = parameters;
+export const RelativeSizing = {
+  render: (props: Partial<ThreeViewSplitterProps>) => {
+    const [firstSize, setFirstSize] = useState<number>(0.2);
+    const [lastSize, setLastSize] = useState<number>(0.2);
+    return (
+      <ThreeViewSplitterWithStyles
+        {...props}
+        firstSize={firstSize}
+        onFirstResize={setFirstSize}
+        lastSize={lastSize}
+        onLastResize={setLastSize}
+      />
+    );
+  },
+};

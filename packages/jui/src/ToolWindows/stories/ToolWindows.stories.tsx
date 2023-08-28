@@ -24,10 +24,10 @@ import {
 } from "../ToolWindowsState/ToolWindowsState";
 import {
   ActionTooltip,
+  DefaultToolWindows,
   HighlightedTextValue,
   TabCloseButton,
   TooltipTrigger,
-  DefaultToolWindows,
 } from "@intellij-platform/core";
 
 export default {
@@ -147,26 +147,35 @@ const windows = [
 ];
 const windowById = indexBy(({ id }) => id, windows);
 
-export const Default = (
-  props: Pick<ToolWindowsProps, "hideToolWindowBars" | "useWidescreenLayout">
-) => {
-  const [state, setState] = useState(
-    () =>
-      new ToolWindowsState(map(({ initialState }) => initialState, windowById))
-  );
-  return (
-    <DefaultToolWindows
-      {...props}
-      height={"100vh"}
-      toolWindowsState={state}
-      onToolWindowStateChange={setState}
-      windows={windows}
-    >
-      <div style={{ padding: 8 }}>
-        <textarea />
-      </div>
-    </DefaultToolWindows>
-  );
+export const Default = {
+  render: (
+    props: Pick<ToolWindowsProps, "hideToolWindowBars" | "useWidescreenLayout">
+  ) => {
+    const [state, setState] = useState(
+      () =>
+        new ToolWindowsState(
+          map(({ initialState }) => initialState, windowById)
+        )
+    );
+    return (
+      <DefaultToolWindows
+        {...props}
+        height={"100vh"}
+        toolWindowsState={state}
+        onToolWindowStateChange={setState}
+        windows={windows}
+      >
+        <div style={{ padding: 8 }}>
+          <textarea />
+        </div>
+      </DefaultToolWindows>
+    );
+  },
+
+  parameters: {
+    layout: "fullscreen",
+    controls: { exclude: styledComponentsControlsExclude },
+  },
 };
 
 const open = (toolWindow: typeof windows[number]): typeof windows[number] => ({
@@ -174,129 +183,127 @@ const open = (toolWindow: typeof windows[number]): typeof windows[number] => ({
   initialState: { ...toolWindow.initialState, isVisible: true },
 });
 
-export const MultiView = (
-  props: Pick<ToolWindowsProps, "hideToolWindowBars" | "useWidescreenLayout">
-) => {
-  const filteredWindows = indexBy(
-    ({ id }) => id,
-    windows.filter(({ id }) => id === "run").map(open)
-  );
-  const [state, setState] = useState(
-    () =>
-      new ToolWindowsState(
-        map(({ initialState }) => initialState, filteredWindows)
-      )
-  );
+export const MultiView = {
+  render: (
+    props: Pick<ToolWindowsProps, "hideToolWindowBars" | "useWidescreenLayout">
+  ) => {
+    const filteredWindows = indexBy(
+      ({ id }) => id,
+      windows.filter(({ id }) => id === "run").map(open)
+    );
+    const [state, setState] = useState(
+      () =>
+        new ToolWindowsState(
+          map(({ initialState }) => initialState, filteredWindows)
+        )
+    );
 
-  const { executions, toggle, runScript, close } = useFakeExecution(
-    packageJson.scripts
-  );
+    const { executions, toggle, runScript, close } = useFakeExecution(
+      packageJson.scripts
+    );
 
-  return (
-    <ToolWindows
-      {...props}
-      height={"100vh"}
-      toolWindowsState={state}
-      onToolWindowStateChange={setState}
-      windows={[
-        {
-          id: "run",
-          toolbarButton: (
-            <>
-              <PlatformIcon icon="toolwindows/toolWindowRun">
-                {executions.some((execution) => execution.isRunning) && (
-                  <StyledIconLiveIndicator />
-                )}
-              </PlatformIcon>
-              &nbsp; Run
-            </>
-          ),
-          content: (
-            <MultiViewToolWindow
-              headerContent={({ renderedViewSwitcher }) => {
-                return (
-                  <>
-                    {<span style={{ marginRight: 4 }}>Run</span>}
-                    {executions.length > 1 ? (
-                      renderedViewSwitcher
-                    ) : (
-                      <FakeExecutionToolbar
-                        execution={executions[0]}
-                        toggle={toggle}
-                      />
-                    )}
-                  </>
-                );
-              }}
-            >
-              {executions.map((execution) => (
-                <MultiViewToolWindow.View
-                  key={execution.id}
-                  tabContent={
-                    <ToolWindowTabContent
-                      title={execution.title}
-                      icon={
-                        <PlatformIcon icon="runConfigurations/application">
-                          {execution.isRunning && <StyledIconLiveIndicator />}
-                        </PlatformIcon>
-                      }
-                      closeButton={
-                        <TooltipTrigger
-                          tooltip={
-                            <ActionTooltip
-                              actionName="Close Tab"
-                              shortcut="^⇧F4"
+    return (
+      <ToolWindows
+        {...props}
+        height={"100vh"}
+        toolWindowsState={state}
+        onToolWindowStateChange={setState}
+        windows={[
+          {
+            id: "run",
+            toolbarButton: (
+              <>
+                <PlatformIcon icon="toolwindows/toolWindowRun">
+                  {executions.some((execution) => execution.isRunning) && (
+                    <StyledIconLiveIndicator />
+                  )}
+                </PlatformIcon>
+                &nbsp; Run
+              </>
+            ),
+            content: (
+              <MultiViewToolWindow
+                headerContent={({ renderedViewSwitcher }) => {
+                  return (
+                    <>
+                      {<span style={{ marginRight: 4 }}>Run</span>}
+                      {executions.length > 1 ? (
+                        renderedViewSwitcher
+                      ) : (
+                        <FakeExecutionToolbar
+                          execution={executions[0]}
+                          toggle={toggle}
+                        />
+                      )}
+                    </>
+                  );
+                }}
+              >
+                {executions.map((execution) => (
+                  <MultiViewToolWindow.View
+                    key={execution.id}
+                    tabContent={
+                      <ToolWindowTabContent
+                        title={execution.title}
+                        icon={
+                          <PlatformIcon icon="runConfigurations/application">
+                            {execution.isRunning && <StyledIconLiveIndicator />}
+                          </PlatformIcon>
+                        }
+                        closeButton={
+                          <TooltipTrigger
+                            tooltip={
+                              <ActionTooltip
+                                actionName="Close Tab"
+                                shortcut="^⇧F4"
+                              />
+                            }
+                          >
+                            <TabCloseButton
+                              onPress={() => close(execution.id)}
                             />
-                          }
-                        >
-                          <TabCloseButton onPress={() => close(execution.id)} />
-                        </TooltipTrigger>
-                      }
-                    />
-                  }
-                >
-                  <VerticalFlexContainer>
-                    {executions.length > 1 && (
-                      <FakeExecutionToolbar
-                        execution={execution}
-                        toggle={toggle}
+                          </TooltipTrigger>
+                        }
                       />
-                    )}
-                    <RunConsoleOutput />
-                  </VerticalFlexContainer>
-                </MultiViewToolWindow.View>
+                    }
+                  >
+                    <VerticalFlexContainer>
+                      {executions.length > 1 && (
+                        <FakeExecutionToolbar
+                          execution={execution}
+                          toggle={toggle}
+                        />
+                      )}
+                      <RunConsoleOutput />
+                    </VerticalFlexContainer>
+                  </MultiViewToolWindow.View>
+                ))}
+              </MultiViewToolWindow>
+            ),
+          },
+        ]}
+      >
+        <div style={{ marginTop: 25, width: 300 }}>
+          <SpeedSearchList
+            onAction={(key) => runScript(`${key}`)}
+            selectionMode="single"
+          >
+            <Section title="Run a script">
+              {Object.keys(packageJson.scripts).map((name) => (
+                <Item key={name} textValue={name}>
+                  <HighlightedTextValue />
+                </Item>
               ))}
-            </MultiViewToolWindow>
-          ),
-        },
-      ]}
-    >
-      <div style={{ marginTop: 25, width: 300 }}>
-        <SpeedSearchList
-          onAction={(key) => runScript(`${key}`)}
-          selectionMode="single"
-        >
-          <Section title="Run a script">
-            {Object.keys(packageJson.scripts).map((name) => (
-              <Item key={name} textValue={name}>
-                <HighlightedTextValue />
-              </Item>
-            ))}
-          </Section>
-        </SpeedSearchList>
-      </div>
-    </ToolWindows>
-  );
-};
+            </Section>
+          </SpeedSearchList>
+        </div>
+      </ToolWindows>
+    );
+  },
 
-MultiView.parameters = {
-  layout: "fullscreen",
-  controls: { exclude: styledComponentsControlsExclude },
-  component: MultiViewToolWindow,
-};
-
-Default.parameters = {
-  layout: "fullscreen",
-  controls: { exclude: styledComponentsControlsExclude },
-  component: Default,
+  parameters: {
+    layout: "fullscreen",
+    controls: { exclude: styledComponentsControlsExclude },
+    component: MultiViewToolWindow,
+  },
 };

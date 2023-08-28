@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 import { indexBy, map } from "ramda";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import {
   ActionButton,
   ActionHelpTooltip,
@@ -64,11 +64,7 @@ const RunConsoleOutput = styled.div`
   flex: 1;
 `;
 
-/**
- * A kitchen sink story for testing changes to themes. Mostly styled components that use theme properties.
- * Useful for manual testing, and also used in an automated visual test on theme changes.
- */
-export const Theme: Story = () => {
+export const Theme: StoryFn = () => {
   const speedSearchTree = (
     <>
       <DefaultToolWindow

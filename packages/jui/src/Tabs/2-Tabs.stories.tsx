@@ -1,4 +1,4 @@
-import { Meta, StoryFn } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react";
 import { MenuItemLayout, PlatformIcon } from "@intellij-platform/core";
 import React from "react";
 import { TabContentLayout, TabItem, TabsProps } from ".";
@@ -24,55 +24,60 @@ export default {
   },
 } as Meta;
 
-export const StaticItems: StoryFn<StoryProps> = (props) => {
-  return (
-    <Tabs {...props}>
-      <TabItem>Tab 1</TabItem>
-      <TabItem>Tab 2</TabItem>
-      <TabItem>Tab 3</TabItem>
-    </Tabs>
-  );
-};
-
-export const DynamicItems = (props: StoryProps) => {
-  return (
-    <Tabs
-      {...props}
-      items={["Tab 1", "Tab 2", "Tab 3"].map((title) => ({ title }))}
-    >
-      {({ title }: { title: string }) => <TabItem key={title}>{title}</TabItem>}
-    </Tabs>
-  );
-};
-
-export const Overflow: StoryFn<StoryProps & { maxWidth: number }> = ({
-  maxWidth = 800,
-  ...props
-}) => {
-  const tabs = Array(10)
-    .fill(null)
-    .map((_, index) => ({
-      title: `Big tab title #${index}`,
-      icon: "nodes/folder",
-    }));
-  return (
-    <div style={{ maxWidth }}>
-      <Tabs {...props} items={tabs}>
-        {(tab) => {
-          const icon = <PlatformIcon icon={tab.icon} />;
-          return (
-            <TabItem
-              key={tab.title}
-              textValue={tab.title}
-              inOverflowMenu={
-                <MenuItemLayout content={tab.title} icon={icon} />
-              }
-            >
-              <TabContentLayout startIcon={icon} title={tab.title} />
-            </TabItem>
-          );
-        }}
+export const StaticItems: StoryObj<StoryProps> = {
+  render: (props) => {
+    return (
+      <Tabs {...props}>
+        <TabItem>Tab 1</TabItem>
+        <TabItem>Tab 2</TabItem>
+        <TabItem>Tab 3</TabItem>
       </Tabs>
-    </div>
-  );
+    );
+  },
+};
+
+export const DynamicItems: StoryObj<StoryProps> = {
+  render: (props: StoryProps) => {
+    return (
+      <Tabs
+        {...props}
+        items={["Tab 1", "Tab 2", "Tab 3"].map((title) => ({ title }))}
+      >
+        {({ title }: { title: string }) => (
+          <TabItem key={title}>{title}</TabItem>
+        )}
+      </Tabs>
+    );
+  },
+};
+
+export const Overflow: StoryObj<StoryProps & { maxWidth: number }> = {
+  render: ({ maxWidth = 800, ...props }) => {
+    const tabs = Array(10)
+      .fill(null)
+      .map((_, index) => ({
+        title: `Big tab title #${index}`,
+        icon: "nodes/folder",
+      }));
+    return (
+      <div style={{ maxWidth }}>
+        <Tabs {...props} items={tabs}>
+          {(tab) => {
+            const icon = <PlatformIcon icon={tab.icon} />;
+            return (
+              <TabItem
+                key={tab.title}
+                textValue={tab.title}
+                inOverflowMenu={
+                  <MenuItemLayout content={tab.title} icon={icon} />
+                }
+              >
+                <TabContentLayout startIcon={icon} title={tab.title} />
+              </TabItem>
+            );
+          }}
+        </Tabs>
+      </div>
+    );
+  },
 };

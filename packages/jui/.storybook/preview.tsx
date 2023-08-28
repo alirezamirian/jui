@@ -6,20 +6,23 @@ import {
 } from "storybook-addon-theme-provider";
 
 const requireTheme = require.context("../themes", false, /\.theme\.json$/);
+const DEFAULT_THEME_NAME = "Darcula";
 
-const themes = requireTheme.keys().map((themeFile: string): ThemeConfigType => {
-  const themeJson = requireTheme(themeFile);
-  return {
-    name: themeJson.name,
-    themeObject: new Theme(themeJson) as any,
-    color: themeJson.ui?.["*"]?.background,
-  };
-});
+const themes = (requireTheme.keys() as Array<string>).map(
+  (themeFile: string): ThemeConfigType => {
+    const themeJson = requireTheme(themeFile);
+    return {
+      name: themeJson.name,
+      themeObject: new Theme(themeJson) as any,
+      color: themeJson.ui?.["*"]?.background,
+    };
+  }
+);
 
 export default {
   decorators: [withThemeProvider(StoryThemeProvider)],
   globals: {
-    selectedTheme: "Darcula",
+    selectedTheme: DEFAULT_THEME_NAME,
     themes,
   },
   parameters: {
@@ -34,7 +37,9 @@ function StoryThemeProvider(props: {
   children?: React.ReactNode;
   theme?: unknown;
 }) {
-  const theme = (props.theme as Theme) || themes[0].themeObject;
+  const theme =
+    (props.theme as Theme) ||
+    themes.find(({ name }) => name === DEFAULT_THEME_NAME)?.themeObject;
   useEffect(() => {
     // maybe just black and white based on theme.theme.dark?
     document.body.style.background = theme.color("*.background") ?? "";
