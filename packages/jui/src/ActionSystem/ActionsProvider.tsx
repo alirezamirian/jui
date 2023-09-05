@@ -19,23 +19,48 @@ import { dfsVisit } from "@intellij-platform/core/utils/tree-utils";
 
 export interface ActionContext {
   element: Element | null;
+  /**
+   * UI event that triggered the action, if a shortcut triggered the action.
+   */
   event:
     | React.MouseEvent<HTMLElement>
     | React.KeyboardEvent<HTMLElement>
     | null;
 }
 
+/**
+ * Represents the definition of an action.
+ * @interface
+ */
 export interface ActionDefinition {
+  /**
+   * The unique identifier for the action. Used to assign shortcuts to the action, via a {@link Keymap}.
+   */
   id: string;
+  /**
+   * The title of an action.
+   * This value will be used as the text in UI display for the action.
+   */
   title: string;
-  actionPerformed: (
-    /**
-     * UI event that triggered the action, if a shortcut triggered the action.
-     */
-    context: ActionContext
-  ) => void;
+  /**
+   * The function that will be executed when the action is performed.
+   * @param context It provides further information about the action event.
+   */
+  actionPerformed: (context: ActionContext) => void;
+  /**
+   * An optional icon for an action.
+   * If provided, it will be displayed along with the title in the UI.
+   */
   icon?: React.ReactNode;
+  /**
+   * An optional description for an action.
+   * If provided, it can be displayed as additional information about the action in the UI.
+   */
   description?: string;
+  /**
+   * An optional disable state for an action.
+   * If set to `true`, this action would be in disabled state and cannot be performed.
+   */
   isDisabled?: boolean;
 }
 
@@ -61,7 +86,13 @@ export interface MutableAction
 }
 export type Action = Readonly<MutableAction>;
 
+/**
+ * Represents the properties required for the ActionsProvider component.
+ */
 interface ActionsProviderProps {
+  /**
+   * A collection of action definitions.
+   */
   actions: ActionDefinition[];
   children: (args: {
     shortcutHandlerProps: HTMLAttributes<HTMLElement>;
@@ -83,6 +114,15 @@ function generateId() {
 const ACTION_PROVIDER_ID_ATTRIBUTE = "data-action-provider";
 const ACTION_PROVIDER_ID_DATA_PREFIX = "action_provider_id_";
 const actionProvidersMap = new Map<string, Action[]>();
+
+/**
+ * Provides a set of actions for the wrapped UI. Uses the currently provided keymap to find the shortcuts
+ * for each action, and passes the necessary event handlers for the shortcuts, to the `children` render function.
+ *
+ * @param {Array<Action>} props.actions - The actions to be provided.
+ * @param {boolean} [props.useCapture] - Specifies whether to use capture phase for event handling.
+ * @param {Function} props.children - Render function that accepts shortcutHandlerProps as argument.
+ */
 export function ActionsProvider(props: ActionsProviderProps): JSX.Element {
   const parentContext = useContext(ActionsContext);
   const keymap = useKeymap();

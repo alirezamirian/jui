@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Meta, StoryFn, StoryObj } from "@storybook/react";
 import {
-  ActionButton,
+  IconButton,
   Checkbox,
   PlatformIcon,
   Popup,
@@ -20,9 +20,9 @@ export default {
   component: PopupTrigger,
   args: {
     children: (
-      <ActionButton>
+      <IconButton>
         <PlatformIcon icon="general/add" />
-      </ActionButton>
+      </IconButton>
     ),
     popup: (
       <Popup>

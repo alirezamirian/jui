@@ -3,7 +3,7 @@ import { selectedKeysState } from "./ChangesView.state";
 import { DividerItem, useAction } from "@intellij-platform/core";
 import React from "react";
 import { VcsActionIds } from "../../VcsActionIds";
-import { ActionsMenu } from "@intellij-platform/core/ActionSystem/components";
+import { ActionsMenu } from "@intellij-platform/core";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 export const ChangesViewTreeContextMenu = () => {

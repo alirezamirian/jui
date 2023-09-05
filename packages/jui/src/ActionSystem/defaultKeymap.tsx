@@ -17,6 +17,10 @@ import { CommonActionId } from "@intellij-platform/core/ActionSystem/CommonActio
 // TODO: OS specific defaults
 // TODO: extract and export action ids
 // NOTE: defaultKeymap doesn't belong to ActionSystem semantically. Would be something to be moved to a separate module
+/**
+ * Default Intellij Idea keymapping for common action ids, including tool window actions.
+ * @see CommonActionId
+ */
 export const defaultKeymap: Keymap = {
   [RESIZE_TOOL_WINDOW_RIGHT_ACTION_ID]: [
     {

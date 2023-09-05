@@ -6,3 +6,5 @@ export * from "./ActionShortcut";
 export * from "./CommonActionIds";
 export * from "./shortcutToString";
 export * from "./ActionGroup";
+
+export * from "./components";

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { indexBy, map } from "ramda";
 import { Meta, StoryFn } from "@storybook/react";
 import {
-  ActionButton,
+  IconButton,
   ActionHelpTooltip,
   ActionTooltip,
   AutoHoverPlatformIcon,
@@ -71,9 +71,9 @@ export const Theme: StoryFn = () => {
         headerContent="SpeedSearchTree"
         additionalActions={
           <>
-            <ActionButton>
+            <IconButton>
               <PlatformIcon icon="actions/expandall" />
-            </ActionButton>
+            </IconButton>
           </>
         }
       >

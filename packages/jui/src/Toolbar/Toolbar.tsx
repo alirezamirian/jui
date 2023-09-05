@@ -1,20 +1,21 @@
-import { Theme } from "@intellij-platform/core/Theme";
 import React, { useContext } from "react";
-import { StyledActionButton } from "../ActionButton";
+import { Theme } from "@intellij-platform/core/Theme";
+
+import { StyledIconButton } from "../IconButton";
 import { styled } from "../styled";
 import {
   StyledHorizontalSeparator,
   StyledVerticalSeparator,
 } from "../StyledSeparator";
 
-interface ActionToolbarProps {
+interface ToolbarProps {
   orientation?: "vertical" | "horizontal";
   /**
    * Whether to include a border to the bottom/right the toolbar, or not.
    */
   hasBorder?: boolean;
 }
-const StyledActionToolbar = styled.div`
+const StyledToolbar = styled.div`
   display: flex;
 `;
 
@@ -31,7 +32,7 @@ const getBorder = ({
         theme.dark ? "rgb(50,50,50)" : "rgb(192, 192, 192)"
       )}`
     : "none";
-const StyledHorizontalActionToolbar = styled(StyledActionToolbar)<{
+const StyledHorizontalToolbar = styled(StyledToolbar)<{
   hasBorder?: boolean;
 }>`
   padding: 2px;
@@ -42,12 +43,12 @@ const StyledHorizontalActionToolbar = styled(StyledActionToolbar)<{
   // NOTE: in the original implementation, there is no empty space between buttons, but buttons have kind of an
   // invisible left padding, which is mouse-intractable, but doesn't visually seem a part of the button.
   // Although implementable, it didn't seem necessary to follow the exact same thing. Margin should be fine.
-  ${StyledActionButton} {
+  ${StyledIconButton} {
     margin: 0 2px 0 2px;
   }
 `;
 
-const StyledVerticalActionToolbar = styled(StyledActionToolbar)<{
+const StyledVerticalToolbar = styled(StyledToolbar)<{
   hasBorder?: boolean;
 }>`
   flex-direction: column;
@@ -57,7 +58,7 @@ const StyledVerticalActionToolbar = styled(StyledActionToolbar)<{
   ${StyledVerticalSeparator} {
     margin: 4px 1px;
   }
-  ${StyledActionButton} {
+  ${StyledIconButton} {
     margin: 2px 0 1px 0;
   }
 `;
@@ -74,7 +75,7 @@ const OrientationContext = React.createContext<"horizontal" | "vertical">(
  *   - hidden, shown by arrow. Similar to actions in Git->Log. Note that the behaviour for horizontal and vertical
  *     modes are different apparently.
  */
-export const ActionToolbar: React.FC<ActionToolbarProps> = ({
+export const Toolbar: React.FC<ToolbarProps> = ({
   orientation = "horizontal",
   hasBorder = false,
   children,
@@ -82,22 +83,22 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
   return (
     <OrientationContext.Provider value={orientation}>
       {orientation === "horizontal" ? (
-        <StyledHorizontalActionToolbar hasBorder={hasBorder}>
+        <StyledHorizontalToolbar hasBorder={hasBorder}>
           {children}
-        </StyledHorizontalActionToolbar>
+        </StyledHorizontalToolbar>
       ) : (
-        <StyledVerticalActionToolbar hasBorder={hasBorder}>
+        <StyledVerticalToolbar hasBorder={hasBorder}>
           {children}
-        </StyledVerticalActionToolbar>
+        </StyledVerticalToolbar>
       )}
     </OrientationContext.Provider>
   );
 };
 
 /**
- * Separator to be used between action buttons in an action toolbar.
+ * Separator to be used between items in a toolbar.
  */
-export const ActionToolbarSeparator = (): React.ReactElement => {
+export const ToolbarSeparator = (): React.ReactElement => {
   const orientation = useContext(OrientationContext);
   return orientation === "horizontal" ? (
     <StyledHorizontalSeparator />

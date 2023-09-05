@@ -1,18 +1,18 @@
 import React, { HTMLProps } from "react";
-import { ActionButton } from "@intellij-platform/core/ActionButton";
-import { ActionToolbar } from "@intellij-platform/core/ActionToolbar/ActionToolbar";
+import { IconButton } from "@intellij-platform/core/IconButton";
+import { Toolbar } from "@intellij-platform/core/Toolbar/Toolbar";
 import { PlatformIcon } from "@intellij-platform/core/Icon";
 import { MenuTrigger } from "@intellij-platform/core/Menu/MenuTrigger";
 import { ActionTooltip, TooltipTrigger } from "@intellij-platform/core/Tooltip";
 import { styled } from "@intellij-platform/core/styled";
 import { StyledHorizontalSeparator } from "@intellij-platform/core/StyledSeparator";
 import { UnknownThemeProp } from "@intellij-platform/core/Theme/Theme";
-import { Action } from "@intellij-platform/core/ActionSystem/components";
 import { ToolWindowSettingsIconMenu } from "./ToolWindowSettingsIconMenu";
 import {
   DOCK_TOOL_WINDOW_ACTION_ID,
   HIDE_ACTIVE_WINDOW_ACTION_ID,
 } from "./ToolWindowActionIds";
+import { ActionButton } from "@intellij-platform/core/ActionSystem";
 
 export interface ToolWindowHeaderProps
   extends Omit<HTMLProps<HTMLDivElement>, "ref" | "as"> {
@@ -65,14 +65,14 @@ export const DefaultToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
     <StyledToolWindowHeader active={contentHasFocus} {...otherProps}>
       <StyledToolWindowHeaderContent>{children}</StyledToolWindowHeaderContent>
       <StyledToolWindowHeaderActions>
-        <ActionToolbar>
+        <Toolbar>
           {additionalActions && (
             <>
               {additionalActions}
               <StyledHorizontalSeparator />
             </>
           )}
-          <Action.Button actionId={DOCK_TOOL_WINDOW_ACTION_ID} />
+          <ActionButton actionId={DOCK_TOOL_WINDOW_ACTION_ID} />
           <MenuTrigger
             renderMenu={({ menuProps }) => {
               return <ToolWindowSettingsIconMenu menuProps={menuProps} />;
@@ -80,14 +80,14 @@ export const DefaultToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
           >
             {(props, ref) => (
               <TooltipTrigger tooltip={<ActionTooltip actionName="Options" />}>
-                <ActionButton {...props} ref={ref}>
+                <IconButton {...props} ref={ref}>
                   <PlatformIcon icon="general/gearPlain" />
-                </ActionButton>
+                </IconButton>
               </TooltipTrigger>
             )}
           </MenuTrigger>
-          <Action.Button actionId={HIDE_ACTIVE_WINDOW_ACTION_ID} />
-        </ActionToolbar>
+          <ActionButton actionId={HIDE_ACTIVE_WINDOW_ACTION_ID} />
+        </Toolbar>
       </StyledToolWindowHeaderActions>
     </StyledToolWindowHeader>
   );

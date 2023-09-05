@@ -2,10 +2,10 @@ import { Meta, StoryFn, StoryObj } from "@storybook/react";
 import React from "react";
 import { Tooltip } from "./Tooltip";
 import {
-  ActionButton,
+  IconButton,
   ActionHelpTooltip,
-  ActionToolbar,
-  ActionToolbarSeparator,
+  Toolbar,
+  ToolbarSeparator,
   Button,
   Link,
   PlatformIcon,
@@ -69,24 +69,24 @@ export const All: StoryFn<TooltipTriggerProps> = () => {
       <TooltipTrigger tooltip={<Tooltip children="Tooltip text" />}>
         <Button>button</Button>
       </TooltipTrigger>
-      <ActionToolbar>
+      <Toolbar>
         <TooltipTrigger tooltip={<Tooltip children="Expand All" />}>
-          <ActionButton excludeFromTabOrder={false}>
+          <IconButton excludeFromTabOrder={false}>
             <PlatformIcon icon="actions/expandall" />
-          </ActionButton>
+          </IconButton>
         </TooltipTrigger>
         <TooltipTrigger tooltip={<Tooltip children="Collapse All" />}>
-          <ActionButton excludeFromTabOrder={false}>
+          <IconButton excludeFromTabOrder={false}>
             <PlatformIcon icon="actions/collapseall" />
-          </ActionButton>
+          </IconButton>
         </TooltipTrigger>
-        <ActionToolbarSeparator />
+        <ToolbarSeparator />
         <TooltipTrigger tooltip={<Tooltip children="Show Options Menu" />}>
-          <ActionButton>
+          <IconButton>
             <PlatformIcon icon="general/gearPlain" />
-          </ActionButton>
+          </IconButton>
         </TooltipTrigger>
-        <ActionToolbarSeparator />
+        <ToolbarSeparator />
         <TooltipTrigger
           tooltip={
             <ActionHelpTooltip
@@ -113,11 +113,11 @@ export const All: StoryFn<TooltipTriggerProps> = () => {
             />
           }
         >
-          <ActionButton>
+          <IconButton>
             <PlatformIcon icon="actions/search" />
-          </ActionButton>
+          </IconButton>
         </TooltipTrigger>
-      </ActionToolbar>
+      </Toolbar>
     </div>
   );
 };

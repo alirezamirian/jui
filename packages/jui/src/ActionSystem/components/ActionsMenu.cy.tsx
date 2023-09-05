@@ -1,8 +1,5 @@
 import React from "react";
-import {
-  ActionItem,
-  ActionsMenu,
-} from "@intellij-platform/core/ActionSystem/components";
+import { ActionItem, ActionsMenu } from "@intellij-platform/core";
 import {
   ActionGroupDefinition,
   ActionsProvider,

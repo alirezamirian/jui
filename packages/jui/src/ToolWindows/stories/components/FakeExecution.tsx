@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { ActionToolbar } from "../../../ActionToolbar/ActionToolbar";
-import { ActionButton } from "../../../ActionButton";
+import { Toolbar } from "@intellij-platform/core/Toolbar/Toolbar";
+import { IconButton } from "../../../IconButton";
 import { PlatformIcon } from "../../../Icon";
 import { StyledHorizontalSeparator } from "../../../StyledSeparator";
 import { styled } from "../../../styled";
@@ -74,21 +74,21 @@ export const FakeExecutionToolbar = ({
   execution: Execution;
   toggle: (executionId: string) => void;
 }) => (
-  <ActionToolbar hasBorder>
-    <ActionButton onPress={() => toggle(id)}>
+  <Toolbar hasBorder>
+    <IconButton onPress={() => toggle(id)}>
       <PlatformIcon icon={isRunning ? "actions/restart" : "actions/execute"} />
-    </ActionButton>
-    <ActionButton isDisabled={!isRunning} onPress={() => toggle(id)}>
+    </IconButton>
+    <IconButton isDisabled={!isRunning} onPress={() => toggle(id)}>
       <PlatformIcon icon="actions/suspend" />
-    </ActionButton>
+    </IconButton>
     <StyledHorizontalSeparator />
-    <ActionButton isDisabled>
+    <IconButton isDisabled>
       <PlatformIcon icon="runConfigurations/scroll_down" />
-    </ActionButton>
-    <ActionButton>
+    </IconButton>
+    <IconButton>
       <PlatformIcon icon="actions/gc" />
-    </ActionButton>
-  </ActionToolbar>
+    </IconButton>
+  </Toolbar>
 );
 
 export const VerticalFlexContainer = styled.div`

@@ -1,8 +1,8 @@
 import path from "path";
 import React, { useState } from "react";
 import {
-  ActionButton,
-  ActionToolbar,
+  IconButton,
+  Toolbar,
   ActionTooltip,
   BalloonActionLink,
   Bounds,
@@ -108,21 +108,21 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
           <Popup.Header hasControls>
             <StyledHeader>
               <StyledTitle>{title}</StyledTitle>
-              <ActionToolbar>
+              <Toolbar>
                 <TooltipTrigger tooltip={<ActionTooltip actionName="Fetch" />}>
-                  <ActionButton
+                  <IconButton
                     onPress={() => {
                       notImplemented();
                       onClose();
                     }}
                   >
                     <PlatformIcon icon="vcs/fetch.svg" />
-                  </ActionButton>
+                  </IconButton>
                 </TooltipTrigger>
                 <TooltipTrigger
                   tooltip={<ActionTooltip actionName="Restore Popup Size" />}
                 >
-                  <ActionButton
+                  <IconButton
                     isDisabled={branchesPopupPersistedSize === undefined}
                     onPress={() => {
                       setBranchesPopupPersistedSize(undefined);
@@ -134,9 +134,9 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                     }}
                   >
                     <PlatformIcon icon="general/fitContent.svg" />
-                  </ActionButton>
+                  </IconButton>
                 </TooltipTrigger>
-              </ActionToolbar>
+              </Toolbar>
             </StyledHeader>
           </Popup.Header>
         }

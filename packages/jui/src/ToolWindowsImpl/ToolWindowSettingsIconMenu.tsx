@@ -5,10 +5,7 @@ import {
   useAction,
   useActionGroup,
 } from "@intellij-platform/core/ActionSystem";
-import {
-  ActionItem,
-  ActionsMenu,
-} from "@intellij-platform/core/ActionSystem/components/ActionsMenu";
+import { ActionItem, ActionsMenu } from "@intellij-platform/core/ActionSystem";
 import {
   MOVE_TO_ACTION_GROUP_ID,
   TOOL_WINDOW_RESIZE_ACTION_GROUP_ID,

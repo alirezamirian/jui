@@ -119,15 +119,15 @@ https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8
             <td>❌</td>
         </tr>
         <tr>
-            <td colspan="3"><a href="https://jetbrains.github.io/ui/controls/icon_button/">Action Button</a></td>
+            <td colspan="3"><a href="https://jetbrains.github.io/ui/controls/icon_button/">Icon Button (aka ActionButton)</a></td>
             <td>✅</td>
         </tr>
         <tr>
-            <td colspan="3">Action Button with menu 🧬</td>
+            <td colspan="3">Icon Button with menu 🧬</td>
             <td>✅</td>
         </tr>
         <tr>
-            <td colspan="3"><a href="https://jetbrains.github.io/ui/controls/toolbar/">Action Toolbar</a></td>
+            <td colspan="3"><a href="https://jetbrains.github.io/ui/controls/toolbar/">Toolbar</a></td>
             <td>✅</td>
         </tr>
         <tr>

@@ -4,7 +4,7 @@ import { styled } from "../styled";
 import { mergeProps, useObjectRef } from "@react-aria/utils";
 import { useFocusable } from "@react-aria/focus";
 
-export interface ActionButtonProps
+export interface IconButtonProps
   extends PressProps,
     // Maybe we should allow any arbitrary HTMLProps<HTMLButtonElement> props, instead of whitelisting?
     Pick<
@@ -12,10 +12,13 @@ export interface ActionButtonProps
       "onFocus" | "onBlur" | "style" | "className"
     > {
   children?: React.ReactNode;
+  /**
+   * The minimum width/height of the button.
+   */
   minSize?: number;
   /**
-   * Whether the button should be focusable by pressing tab. The default is true for action buttons, which means they
-   * are not included in the tab order.
+   * Whether the button should be focusable by pressing tab. The default is true for icon buttons (aka. action buttons),
+   * which means they are not included in the tab order.
    */
   excludeFromTabOrder?: boolean;
 }
@@ -23,7 +26,7 @@ export interface ActionButtonProps
 export const DEFAULT_MINIMUM_BUTTON_SIZE = 22;
 export const NAVBAR_MINIMUM_BUTTON_SIZE = 20;
 
-export const StyledActionButton = styled.button<{ minSize: number }>`
+export const StyledIconButton = styled.button<{ minSize: number }>`
   position: relative; // to allow absolutely positioned overlays like an dropdown icon at the bottom right corner
   background: none;
   color: inherit;
@@ -58,7 +61,11 @@ export const StyledActionButton = styled.button<{ minSize: number }>`
   }
 `;
 
-export const ActionButton = React.forwardRef(function ActionButton(
+/**
+ * Icon button, aka Action Button, in the reference implementation.
+ * @see https://jetbrains.github.io/ui/controls/icon_button/
+ */
+export const IconButton = React.forwardRef(function IconButton(
   {
     minSize = DEFAULT_MINIMUM_BUTTON_SIZE,
     preventFocusOnPress = true,
@@ -72,7 +79,7 @@ export const ActionButton = React.forwardRef(function ActionButton(
     onPressUp,
     shouldCancelOnPointerExit,
     ...otherProps
-  }: ActionButtonProps,
+  }: IconButtonProps,
   forwardedRef: ForwardedRef<HTMLButtonElement>
 ) {
   // FIXME: use useButton
@@ -93,7 +100,7 @@ export const ActionButton = React.forwardRef(function ActionButton(
   });
 
   return (
-    <StyledActionButton
+    <StyledIconButton
       className={isPressed ? "active" : ""}
       disabled={isDisabled}
       {...mergeProps(pressProps, otherProps, focusableProps)}

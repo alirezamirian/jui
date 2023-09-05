@@ -1,3 +1,4 @@
+import { flatten } from "ramda";
 import React from "react";
 import {
   ActionGroupDefinition,
@@ -10,8 +11,7 @@ import {
 } from "@intellij-platform/core/ActionSystem";
 import { SpeedSearchMenu } from "@intellij-platform/core/Menu";
 import { useEventCallback } from "@intellij-platform/core/utils/useEventCallback";
-import { renderActionAsMenuItem } from "@intellij-platform/core/ActionSystem/components/ActionsMenu";
-import { flatten } from "ramda";
+import { renderActionAsMenuItem } from "./ActionsMenu";
 
 export const useCreateDefaultActionGroup = () => {
   const { show } = usePopupManager();
