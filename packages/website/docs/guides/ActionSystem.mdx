@@ -1,0 +1,372 @@
+---
+---
+
+# Actions
+
+:::warning Experimental
+The current implementation of the action system is experimental and is likely to undergo significant revisions to meet
+the performance demands of real-world applications with thousands of actions.
+:::
+
+An _action_ represents an available functionality, without specifying how it's invoked. Shortcuts can separately be
+assigned to actions via a `keymap`, allowing for a customizable and personalized user experience. The action system,
+at its core, is only about defining actions for each part of the UI and associating these actions with
+shortcuts, without any direct dependencies on other aspects of the design system. However, there are
+[UI components](#ui-components) available to facilitate creation of toolbars and menus based on actions.
+
+:::note
+The core functionality of the action system may be extracted into a standalone package in the future,
+making it a reusable component for applications built using any design system.
+:::
+
+The action system consists of the following primary components:
+
+- `ActionsProvider` component, which allows for defining actions for a UI area.
+- `KeymapProvider` component, which allows for assigning shortcut(s) to actions.
+- UI components that helps with creating menus, toolbars, etc. based on action system abstractions.
+
+Below is a basic example of how these components are used.
+Subsequent sections will provide detailed explanations of the components and interfaces involved.
+
+```tsx live noInline noPadding themed
+const StyledDiv = styled.div`
+  &:focus {
+    outline: 4px solid ${({ theme }) => theme.color("Button.focusedBorderColor")}!important;
+    outline-offset: 2px;
+  }
+`;
+render(
+  <KeymapProvider
+    keymap={{
+      MY_ACTION: [
+        {
+          type: "keyboard",
+          firstKeyStroke: { modifiers: ["Shift"], code: "KeyD" },
+        },
+      ],
+    }}
+  >
+    <ActionsProvider
+      actions={[
+        {
+          id: "MY_ACTION",
+          title: "My Action",
+          icon: <PlatformIcon icon="general/information.svg" />,
+          actionPerformed: () => alert("My Action performed"),
+        },
+      ]}
+    >
+      {({ shortcutHandlerProps }) => (
+        <div {...shortcutHandlerProps} style={{ padding: "1rem" }}>
+          <StyledDiv tabIndex={0}>
+            Click here to focus, then press <code>Shift+D</code>
+          </StyledDiv>
+          <br />
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            Or press this button: <ActionButton actionId="MY_ACTION" />
+          </div>
+        </div>
+      )}
+    </ActionsProvider>
+  </KeymapProvider>
+);
+```
+
+## Defining actions
+
+`ActionsProvider` is used as a wrapper component that defines available actions for the wrapped UI.
+Multiple, potentially nested `ActionsProvider` may be rendered in an application. `ActionProvider` itself doesn't render
+any wrapper element. Shortcut event handler props are passed to `children` which is expected to be a render function:
+
+```tsx
+<ActionsProvider actions={actions}>
+  {({ shortcutHandlerProps }) => <div {...shortcutHandlerProps}>...</div>}
+</ActionsProvider>
+```
+
+`actions` is an array of objects implementing `ActionDefinition` interface. At minimum, an action must have:
+
+- `id`: A unique identifier based on which shortcuts are assigned in `keymap`.
+- `actionPerformed`: A function to be invoked when the action is triggered, e.g. via a shortcut.
+- `title`: The only mandatory presentation information for the action.
+
+Moreover, an action has the following optional properties:
+
+- `isDisabled`: If `true`, prevents action from being performed. [Action UI components](#ui-components) will also utilize
+  this field to either disable or hide the corresponding UI component.
+- `icon`: A React node to be used as the associated icon for the action. It's required if the action is to be rendered
+  as an [ActionButton](#actionbutton), and optional for [menu items](#menu).
+- `description`: Plain text, additional description about the action. Not used in [ActionButton](#actionbutton), or
+  [menu items](#menu).
+
+### Action Groups
+
+An ActionGroup is a special type of action with a list of children actions. An action group itself can be performed.
+
+### Default action group
+
+A default implementation of action group is available, which when performed, opens a [Popup](../components/popup),
+presenting the children actions in a [SpeedSearchMenu](../components/Menu#speedsearchmenu). The default action
+group requires [PopupManager](../components/Popup#popupmanager), for opening the popup.
+
+`useCreateDefaultActionGroup` returns a function that creates action groups:
+
+```tsx
+import { useCreateDefaultActionGroup } from "@intellij-platform/core";
+
+const createDefaultActionGroup = useCreateDefaultActionGroup();
+
+createDefaultActionGroup({
+  id: "MY_ACTION_GROUP",
+  title: "My Action Group",
+  children: [
+    /* action definitions */
+  ],
+});
+```
+
+```tsx themed live noInline
+function ExampleApp({ children }) {
+  return (
+    <PopupManager>
+      <KeymapProvider
+        keymap={{
+          Changelists: [
+            {
+              type: "keyboard",
+              firstKeyStroke: { modifiers: ["Shift"], code: "KeyD" },
+            },
+          ],
+        }}
+      >
+        {children}
+      </KeymapProvider>
+    </PopupManager>
+  );
+}
+function DefaultActionGroupExample() {
+  const createDefaultActionGroup = useCreateDefaultActionGroup();
+
+  return (
+    <ActionsProvider
+      actions={[
+        createDefaultActionGroup({
+          id: "Changelists",
+          title: "Changelists",
+          icon: <PlatformIcon icon="vcs/changelist.svg" />,
+          children: [
+            {
+              id: "New Changelist...",
+              title: "New Changelist...",
+              icon: <PlatformIcon icon="general/add.svg" />,
+              actionPerformed: () => alert("New Changelist..."),
+            },
+            {
+              id: "Edit Changelist...",
+              title: "Edit Changelist...",
+              icon: <PlatformIcon icon="actions/edit.svg" />,
+              actionPerformed: () => alert("Edit Changelist..."),
+            },
+            {
+              id: "Move to another changelist...",
+              title: "Move to another changelist...",
+              actionPerformed: () => alert("Edit Changelist..."),
+            },
+          ],
+        }),
+      ]}
+    >
+      {({ shortcutHandlerProps }) => (
+        <div {...shortcutHandlerProps}>
+          <ActionButton actionId="Changelists" />
+        </div>
+      )}
+    </ActionsProvider>
+  );
+}
+
+render(
+  <ExampleApp>
+    <DefaultActionGroupExample />
+  </ExampleApp>
+);
+```
+
+## Using actions
+
+`useActions` can be used to query the list of all provided actions. Use `useAction` instead to query an specific action,
+by id. The queried `Action` object has a `perform` method which can be invoked e.g. when a menu item or a button is
+pressed. Note that `Action` interface is quite similar but not identical to `ActionDefinition`.
+
+```tsx
+function MyActionButton() {
+  const action = useAction("MY_ACTION");
+  return action && <Button onPress={() => action.perform()}>My Action</Button>;
+}
+```
+
+`useActionGroup` is also similar to `useAction`, but it asserts the queried action is a group.
+
+### Query actions based on DOM elements
+
+`useAction` or `useActions` is the canonical API for accessing currently provided actions from a React component.
+`getAvailableActionsFor` is an alternative API that allows for querying available actions from a DOM element. This can
+be useful in specific scenarios such as the implementation of the [find action][find-action-in-the-reference-impl].
+You can also check out the implementation of "find action" action [in the example app][find-action-in-example-app].
+
+### UI components
+
+`useAction`, and `useActionGroup` can be used to query actions and create a menu or toolbar out of them. For typical
+use cases, however, there are convenient components that interface on `Action` or action id.
+
+### Menu
+
+Use `ActionsMenu` to render a list of action objects as a menu. `ActionGroup` items are rendered as a section or a
+submenu, depending on `isPopup` property of the action group object.
+Note that `ActionsMenu` just provides an interface based on action items, but it doesn't query any action from the
+actions context, and just uses action properties to create menu items from it.
+
+```tsx themed live
+<ActionsMenu
+  // actions would normally be coming from useAction calls, rather than hard coded like this, but this example
+  // shows how ActionsMenu is a dump component mapping Action objects to menu items.
+  actions={[
+    {
+      id: "Cut",
+      title: "Cut",
+      icon: <PlatformIcon icon="actions/menu-cut.svg" />,
+      shortcut: "⌘X",
+      perform: () => alert("Cut"),
+    },
+    {
+      id: "Copy",
+      title: "Copy",
+      icon: <PlatformIcon icon="actions/copy.svg" />,
+      shortcut: "⌘C",
+      perform: () => alert("Copy"),
+    },
+    {
+      id: "Copy Path/Reference...",
+      title: "Copy Path/Reference...",
+      perform: () => alert("Copy Path/Reference..."),
+    },
+    {
+      id: "Paste",
+      title: "Paste",
+      icon: <PlatformIcon icon="actions/menu-paste.svg" />,
+      shortcut: "⌘V",
+      perform: () => alert("Paste"),
+    },
+    new DividerItem(),
+    {
+      id: "Compare with...",
+      title: "Diff",
+      icon: <PlatformIcon icon="actions/diff.svg" />,
+      shortcut: "⌘D",
+      perform: () => alert("Diff"),
+    },
+  ]}
+/>
+```
+
+Use `ActionGroupMenu` to render actions of an action group, as a menu:
+
+```tsx themed live
+<ActionGroupMenu
+  // actions would normally be coming from useAction calls, rather than hard coded like this, but this example
+  // shows how ActionsMenu is a dump component mapping Action objects to menu items.
+  actionGroup={{
+    id: "FILE_ACTIONS",
+    title: "File Actions",
+    children: [
+      {
+        id: "Cut",
+        title: "Cut",
+        icon: <PlatformIcon icon="actions/menu-cut.svg" />,
+        shortcut: "⌘X",
+        perform: () => alert("Cut"),
+      },
+      {
+        id: "Copy",
+        title: "Copy",
+        icon: <PlatformIcon icon="actions/copy.svg" />,
+        shortcut: "⌘C",
+        perform: () => alert("Copy"),
+      },
+      {
+        id: "Copy Path/Reference...",
+        title: "Copy Path/Reference...",
+        perform: () => alert("Copy Path/Reference..."),
+      },
+      {
+        id: "Paste",
+        title: "Paste",
+        icon: <PlatformIcon icon="actions/menu-paste.svg" />,
+        shortcut: "⌘V",
+        perform: () => alert("Paste"),
+      },
+      {
+        id: "DIFF_ACTION_GROUP",
+        title: "Diff actions",
+        children: [
+          {
+            id: "Compare with...",
+            title: "Diff",
+            icon: <PlatformIcon icon="actions/diff.svg" />,
+            shortcut: "⌘D",
+            perform: () => alert("Diff"),
+          },
+        ],
+      },
+    ],
+  }}
+/>
+```
+
+### ActionButton
+
+Use `ActionButton` to create an `IconButton` based on a provided action. Unlike `ActionsMenu` and `ActionGroupMenu`,
+`ActionButton` interfaces on action ID, and queries the target action via `useAction`. If the action doesn't exist,
+it renders nothing.
+
+```jsx live themed noPadding
+<ActionsProvider
+  actions={[
+    {
+      id: "refresh",
+      title: "Refresh",
+      icon: <PlatformIcon icon="actions/refresh.svg" />,
+      actionPerformed: () => alert("Refresh"),
+    },
+  ]}
+>
+  {({ shortcutHandlerProps }) => (
+    <div {...shortcutHandlerProps} style={{ padding: "1rem" }}>
+      <ActionButton actionId="refresh" />
+    </div>
+  )}
+</ActionsProvider>
+```
+
+## Shortcuts and key mapping
+
+A `Keymap` is a mapping from action ids to a list of associated shortcuts. In an application that uses actions, the
+`KeymapProvider` is typically used as a top level wrapper, to provide a keymap.
+
+```tsx
+import {Keymap, KeymapProvider} from '@intellij-platform/core';
+
+const keymap: Keymap = isMac() ? macKeymap : defaultKeymap;
+<KeymapProvider keymap={keymap}>...</KeyMapProvider>
+```
+
+## Differences with the Intellij Platform
+
+While the action system almost replicates [Intellij Platform's Action System][action-system], there are some design
+differences worth noting:
+
+TODO
+
+[action-system]: https://plugins.jetbrains.com/docs/intellij/basic-action-system.html
+[find-action-in-the-reference-impl]: https://www.jetbrains.com/idea/guide/tutorials/presenting/find-action
+[find-action-in-example-app]: https://github.com/alirezamirian/jui/blob/master/packages/example-app/src/SearchEverywhere/contributors/action/actionsSearchContributor.tsx

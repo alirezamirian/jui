@@ -39,6 +39,7 @@ const withThemeBackground = (Component) => {
     if (props.themed) {
       style.color = theme.color("*.foreground");
       style["--ifm-pre-background"] = theme.color("*.background");
+      style["--ifm-code-background"] = "none";
     }
     return (
       <div
