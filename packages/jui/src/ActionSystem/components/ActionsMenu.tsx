@@ -16,7 +16,7 @@ type ActionGroupAsMenuItem = Pick<
 export type ActionItem = ActionGroupAsMenuItem | Action | DividerItem;
 
 function isAction(item: ActionItem): item is Action {
-  return "actionPerformed" in item;
+  return "perform" in item;
 }
 
 export type ActionMenuProps = {
@@ -70,7 +70,10 @@ export function renderActionAsMenuItem(
   const isGroup = "children" in action;
   if (isGroup && !action.isPopup) {
     return (
-      <Section key={action.id} title={action.title} items={action.children}>
+      // `title` is intentionally not passed, as menu sections created from action groups usually don't have title.
+      // Maybe it should be an option?
+      // @ts-expect-error: hasDivider is not yet made a public API.
+      <Section key={action.id} hasDivider items={action.children}>
         {renderActionAsMenuItem}
       </Section>
     );
