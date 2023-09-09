@@ -3,7 +3,7 @@
 
 # Collections
 
-A good number of components like List, Tree, Menu, Tabs, etc. display a collection of items.
+A good number of components such as List, Tree, Menu, Tabs, etc. display a collection of items.
 [@react-stately/collections](https://react-spectrum.adobe.com/react-stately/collections.html) is used for all of them
 to provide a uniform and flexible API that would allow for both static jsx-based or dynamic source of items.
 
@@ -15,17 +15,14 @@ on the item object. It's important to understand this assumption that the render
 not any other piece of state from the closure, for example.
 
 :::info
-Item renderer function is assumed to be a pure function that depends only on its single argument, the item
-object.
+The item renderer function should be a pure function that relies exclusively on its single argument: the item object.
 :::
 
-In some cases however, there might be a need to render some UI based on a something other than the item object itself.
-Below is a few ways to do that.
+However, in certain scenarios, you might need to render UI elements based on factors other than the item object. Here are a few ways to achieve this:
 
-### Using context
+xwxw### Using context
 
-TODO (important point: especially useful for components that implement virtual rendering, as only a limited number of
-items are mounted at each moment, and changes to the additional state would only affect those, without collection being rebuilt)
+TODO (This is particularly useful for components implementing virtual rendering, where only a limited number of items are mounted at a time, and changes to additional state should affect only those without rebuilding the entire collection).
 
 ### Wrapping items with extra state
 
@@ -33,14 +30,12 @@ TODO
 
 ### Disabling or limiting cache
 
-Passing `true` to `cacheInvalidation` prop in components that support it will disable caching altogether, but can
-drastically reduce the performance for large number of components. In a test on a [Tree](../components/Tree) with 400 elements,
-it was ~10x slower with cache being disabled.
+For components that support it, you can control caching by setting the `cacheInvalidation` prop. Passing `true` to this prop will disable caching entirely, but it may significantly reduce performance for large collections. In a performance test on a [Tree](../components/Tree) with 400 elements, disabling the cache resulted in a ~10x slower rendering.
 
-A middle ground is to pass an array of cache invalidators instead of turning the cache off completely:
+A middle-ground approach is to pass an array of cache invalidators instead of completely turning off the cache:
 
 ```tsx
 <Tree cacheInvalidation={{ invalidators: [nestedSelection] }}>...</Tree>
 ```
 
-This would invalidate the cache only when `nestedSelection` is changed.
+This configuration will only invalidate the cache when `nestedSelection` changes.
