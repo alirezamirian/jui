@@ -12,7 +12,7 @@ import {
   DOCK_TOOL_WINDOW_ACTION_ID,
   HIDE_ACTIVE_WINDOW_ACTION_ID,
 } from "./ToolWindowActionIds";
-import { ActionButton } from "@intellij-platform/core/ActionSystem";
+import { ActionButton } from "@intellij-platform/core/ActionSystem/components";
 
 export interface ToolWindowHeaderProps
   extends Omit<HTMLProps<HTMLDivElement>, "ref" | "as"> {

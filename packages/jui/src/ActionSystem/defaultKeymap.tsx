@@ -1,4 +1,3 @@
-import { Keymap } from "@intellij-platform/core/ActionSystem/KeymapProvider";
 import {
   FOCUS_EDITOR_ACTION_ID,
   HIDE_ACTIVE_WINDOW_ACTION_ID,
@@ -12,7 +11,9 @@ import {
   // For some reason importing from shorter paths doesn't work as expected in cypress ¯\_(ツ)_/¯
   // Weirdly, `import *` works in that case.
 } from "@intellij-platform/core/ToolWindowsImpl/ToolWindowActionIds";
-import { CommonActionId } from "@intellij-platform/core/ActionSystem/CommonActionIds";
+
+import { Keymap } from "./KeymapProvider";
+import { CommonActionId } from "./CommonActionIds";
 
 // TODO: OS specific defaults
 // TODO: extract and export action ids

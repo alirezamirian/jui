@@ -1,5 +1,5 @@
 import React from "react";
-import { useAction } from "@intellij-platform/core/ActionSystem";
+import { useAction } from "@intellij-platform/core/ActionSystem/ActionsProvider";
 import { IconButton } from "@intellij-platform/core/IconButton";
 import { ActionTooltip, TooltipTrigger } from "@intellij-platform/core/Tooltip";
 

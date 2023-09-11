@@ -1,3 +1,7 @@
+/**
+ * Action system components. Intentionally re-exported only from the root index file, and not the index.ts in
+ * ActionSystem.
+ */
 export { ActionButton } from "./ActionButton";
 export {
   ActionsMenu,

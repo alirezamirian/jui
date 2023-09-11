@@ -4,7 +4,7 @@ import { Item } from "@react-stately/collections";
 import { ContextMenuContainer, styled } from "@intellij-platform/core";
 
 import { IconButton } from "../IconButton";
-import { Toolbar } from "@intellij-platform/core/Toolbar/Toolbar";
+import { Toolbar } from "../Toolbar/Toolbar";
 import { Divider, DividerItem } from "../Collections/Divider";
 import { PlatformIcon } from "../Icon";
 import { styledComponentsControlsExclude } from "../story-helpers";

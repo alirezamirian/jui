@@ -1,12 +1,11 @@
-import {
-  Keymap,
-  useKeymap,
-} from "@intellij-platform/core/ActionSystem/KeymapProvider";
 import { pick, sortBy } from "ramda";
 import React, { HTMLAttributes, useContext, useEffect, useState } from "react";
-import { shortcutToString } from "@intellij-platform/core/ActionSystem/shortcutToString";
-import { useShortcuts } from "@intellij-platform/core/ActionSystem/useShortcut";
-import { Shortcut } from "@intellij-platform/core/ActionSystem/Shortcut";
+import { useEventCallback } from "@intellij-platform/core/utils/useEventCallback";
+import { dfsVisit } from "@intellij-platform/core/utils/tree-utils";
+
+import { Keymap, useKeymap } from "./KeymapProvider";
+import { shortcutToString } from "./shortcutToString";
+import { useShortcuts } from "./useShortcut";
 import {
   ActionGroup,
   ActionInResolvedGroup,
@@ -14,77 +13,12 @@ import {
   isActionGroupDefinition,
   MutableActionGroup,
 } from "./ActionGroup";
-import { useEventCallback } from "@intellij-platform/core/utils/useEventCallback";
-import { dfsVisit } from "@intellij-platform/core/utils/tree-utils";
-
-export interface ActionContext {
-  element: Element | null;
-  /**
-   * UI event that triggered the action, if a shortcut triggered the action.
-   */
-  event:
-    | React.MouseEvent<HTMLElement>
-    | React.KeyboardEvent<HTMLElement>
-    | null;
-}
-
-/**
- * Represents the definition of an action.
- * @interface
- */
-export interface ActionDefinition {
-  /**
-   * The unique identifier for the action. Used to assign shortcuts to the action, via a {@link Keymap}.
-   */
-  id: string;
-  /**
-   * The title of an action.
-   * This value will be used as the text in UI display for the action.
-   */
-  title: string;
-  /**
-   * The function that will be executed when the action is performed.
-   * @param context It provides further information about the action event.
-   */
-  actionPerformed: (context: ActionContext) => void;
-  /**
-   * An optional icon for an action.
-   * If provided, it will be displayed along with the title in the UI.
-   */
-  icon?: React.ReactNode;
-  /**
-   * An optional description for an action.
-   * If provided, it can be displayed as additional information about the action in the UI.
-   */
-  description?: string;
-  /**
-   * An optional disable state for an action.
-   * If set to `true`, this action would be in disabled state and cannot be performed.
-   */
-  isDisabled?: boolean;
-}
-
-export interface MutableAction
-  extends Pick<
-    ActionDefinition,
-    "title" | "icon" | "description" | "isDisabled"
-  > {
-  id: string;
-  /**
-   * shortcuts assigned to this action based on the keymap context
-   */
-  shortcuts: readonly Shortcut[] | undefined;
-  /**
-   * string representation of the shortcuts
-   */
-  shortcut: string | undefined;
-
-  /**
-   * Performs the action, if it's enabled.
-   */
-  perform: (context?: ActionContext) => void;
-}
-export type Action = Readonly<MutableAction>;
+import {
+  Action,
+  ActionContext,
+  ActionDefinition,
+  MutableAction,
+} from "@intellij-platform/core/ActionSystem/Action";
 
 /**
  * Represents the properties required for the ActionsProvider component.

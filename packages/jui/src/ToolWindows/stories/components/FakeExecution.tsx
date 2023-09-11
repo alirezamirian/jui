@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Toolbar } from "@intellij-platform/core/Toolbar/Toolbar";
+import { Toolbar } from "../../../Toolbar/Toolbar";
 import { IconButton } from "../../../IconButton";
 import { PlatformIcon } from "../../../Icon";
 import { StyledHorizontalSeparator } from "../../../StyledSeparator";

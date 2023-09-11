@@ -1,6 +1,6 @@
-import { ActionGroup } from "@intellij-platform/core/ActionSystem";
 import React from "react";
-import { ActionMenuProps, ActionsMenu } from "./ActionsMenu";
+import { type ActionGroup } from "@intellij-platform/core/ActionSystem/ActionGroup";
+import { type ActionMenuProps, ActionsMenu } from "./ActionsMenu";
 
 export type ActionGroupMenuProps = Omit<ActionMenuProps, "actions"> & {
   actionGroup: ActionGroup;

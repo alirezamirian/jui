@@ -1,17 +1,15 @@
 import { flatten } from "ramda";
 import React from "react";
 import {
-  ActionGroupDefinition,
+  type ActionGroupDefinition,
   isActionGroupDefinition,
 } from "@intellij-platform/core/ActionSystem/ActionGroup";
+import { useGetActionShortcut } from "@intellij-platform/core/ActionSystem/ActionShortcut";
 import { Popup, usePopupManager } from "@intellij-platform/core/Popup";
-import {
-  ActionContext,
-  useGetActionShortcut,
-} from "@intellij-platform/core/ActionSystem";
 import { SpeedSearchMenu } from "@intellij-platform/core/Menu";
 import { useEventCallback } from "@intellij-platform/core/utils/useEventCallback";
 import { renderActionAsMenuItem } from "./ActionsMenu";
+import { ActionContext } from "@intellij-platform/core/ActionSystem/Action";
 
 export const useCreateDefaultActionGroup = () => {
   const { show } = usePopupManager();

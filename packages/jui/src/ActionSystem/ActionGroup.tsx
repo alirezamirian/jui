@@ -1,7 +1,7 @@
 import {
   Action,
   ActionDefinition,
-} from "@intellij-platform/core/ActionSystem/ActionsProvider";
+} from "@intellij-platform/core/ActionSystem/Action";
 
 export type ActionInResolvedGroup = Action & { parent: ResolvedActionGroup };
 

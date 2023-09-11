@@ -1,13 +1,10 @@
 import React from "react";
 import { flatten } from "ramda";
 import { Menu, MenuItemLayout } from "@intellij-platform/core/Menu";
-import {
-  Divider,
-  DividerItem,
-  Item,
-} from "@intellij-platform/core/Collections";
-import { Action, ActionGroup } from "@intellij-platform/core/ActionSystem";
-import { Section } from "@react-stately/collections";
+import { Divider, Item, Section } from "@intellij-platform/core/Collections";
+import { DividerItem } from "@intellij-platform/core/Collections/Divider"; // Importing from /Collections breaks the build for some reason
+import { type ActionGroup } from "@intellij-platform/core/ActionSystem/ActionGroup";
+import { type Action } from "@intellij-platform/core/ActionSystem/Action";
 
 type ActionGroupAsMenuItem = Pick<
   ActionGroup,
