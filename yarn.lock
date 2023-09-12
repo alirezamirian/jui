@@ -4122,7 +4122,7 @@ __metadata:
     crypto-browserify: ^3.12.0
     cypress: ^13.2.0
     cypress-plugin-snapshots: 1.4.4
-    cypress-real-events: ^1.10.3
+    cypress-real-events: 1.7.4
     hygen: ^6.2.11
     jest: ^29.0.3
     path-browserify: ^1.0.1
@@ -13686,12 +13686,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress-real-events@npm:^1.10.3":
-  version: 1.10.3
-  resolution: "cypress-real-events@npm:1.10.3"
+"cypress-real-events@npm:1.7.4":
+  version: 1.7.4
+  resolution: "cypress-real-events@npm:1.7.4"
   peerDependencies:
-    cypress: ^4.x || ^5.x || ^6.x || ^7.x || ^8.x || ^9.x || ^10.x || ^11.x || ^12.x || ^13.x
-  checksum: 9a6d4addb33b16fcf4e4eb55c21589b626203303f8e60b441b5ed50d55c55424b5587efd91a7b79fbca7d4fbc544829d2793e9c29fdf94dfa7ecaf5f661b105e
+    cypress: ^4.x || ^5.x || ^6.x || ^7.x || ^8.x || ^9.x || ^10.x || ^11.x
+  checksum: 6b796b765b3e959264c9e967c1c3d735aeb1225ce27e9a00021c0a797019545202a8a3c13539c16321cd2dcb0008c556f80714655a69da3d45e4ea08d62f9b0c
   languageName: node
   linkType: hard
 
