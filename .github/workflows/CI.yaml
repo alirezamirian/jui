@@ -24,7 +24,7 @@ jobs:
           cache: yarn
 
       - name: Install Dependencies 🔧
-        run: yarn
+        run: yarn install --immutable
 
   build_and_test:
     runs-on: ubuntu-latest
@@ -44,7 +44,7 @@ jobs:
           cache: yarn
 
       - name: Install Dependencies 🔧
-        run: yarn
+        run: yarn install --immutable
 
       - name: Type Check ʦ
         run: yarn run type-check
@@ -93,7 +93,7 @@ jobs:
           cache: yarn
 
       - name: Install Dependencies 🔧
-        run: yarn
+        run: yarn install --immutable
 
       - name: Run Cypress Tests ✅
         if: ${{ env.IS_PR_JUST_MERGED == 'true' || env.IS_PR_WITH_PERCY == 'true' }}
