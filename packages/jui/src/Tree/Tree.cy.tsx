@@ -69,9 +69,9 @@ describe("Tree", () => {
     const onAction = cy.stub().as("onAction");
     cy.mount(<Static onAction={onAction} />);
 
-    cy.contains("index.ts").dblclick();
+    cy.findByRole("treeitem", { name: "index.ts" }).dblclick();
     cy.get("@onAction").should("be.calledOnceWith", "index.ts");
-    cy.contains("index.ts").type("{enter}");
+    cy.findByRole("treeitem", { name: "index.ts" }).type("{enter}");
     cy.get("@onAction").should("be.calledTwice");
   });
 

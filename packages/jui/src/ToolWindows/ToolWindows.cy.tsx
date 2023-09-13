@@ -42,6 +42,7 @@ const SimpleToolWindows = ({
     >
       <div style={{ padding: 8 }}>
         <textarea data-testid="main content focusable" />
+        <div data-testid="main content non-focusable">main content</div>
       </div>
     </ToolWindows>
   );
@@ -85,7 +86,7 @@ describe("ToolWindows", () => {
       );
       cy.contains("First window").click();
       cy.findByTestId("First window focusable 2").click();
-      cy.get("body").click(500, 100);
+      cy.findByTestId("main content non-focusable").click();
       cy.focused().should("exist");
       cy.findByTestId("First window focusable 2").should("have.focus");
     });
