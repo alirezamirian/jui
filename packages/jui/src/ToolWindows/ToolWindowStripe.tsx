@@ -172,6 +172,9 @@ function ToolWindowStripeButton<T, S>({
   const { pressProps } = {
     pressProps: {
       onPointerUp: onPress,
+      onMouseDown: (e) => {
+        e.preventDefault();
+      },
     } as HTMLAttributes<HTMLElement>,
   }; //usePress({ onPress });
   const props = useElementMove({

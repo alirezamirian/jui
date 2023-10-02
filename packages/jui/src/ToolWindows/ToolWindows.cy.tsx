@@ -155,6 +155,23 @@ describe("ToolWindows", () => {
 
       cy.findByTestId("main content focusable").should("have.focus");
     });
+
+    it("keeps focus where it is, when stripe buttons are being pressed", () => {
+      cy.mount(
+        <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
+          <SimpleToolWindows />
+        </ThemeProvider>
+      );
+      cy.findByTestId("First window stripe button").click();
+      cy.findByTestId("First window focusable 1").should("be.focused");
+      cy.findByTestId("First window stripe button").realMouseDown();
+      cy.findByTestId("First window focusable 1").should("be.focused");
+      cy.findByTestId("First window stripe button").realMouseMove(10, 50);
+      cy.findByTestId("First window focusable 1").should("be.focused");
+      cy.get("body").realMouseUp();
+      cy.findByTestId("First window focusable 1").should("be.focused");
+    });
+
     /**
      * Known issue. FIXME. See DefaultToolWindow for more info
      */
