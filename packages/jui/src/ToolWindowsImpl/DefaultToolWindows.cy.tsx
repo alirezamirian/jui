@@ -217,10 +217,7 @@ describe("DefaultToolWindowActions", () => {
         </ThemeProvider>
       );
       cy.realPress(["Meta", "2"]);
-
-      // Focus should to go main content, but it doesn't currently because of a known issue. FIXME in ToolWindows
-      // cy.findByTestId("main content focusable").should("have.focus");
-      cy.findByTestId("First window").find("input").eq(0).should("have.focus");
+      cy.findByTestId("main content focusable").should("have.focus");
     });
   });
 });

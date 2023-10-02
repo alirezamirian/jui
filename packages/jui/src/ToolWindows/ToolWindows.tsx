@@ -1,3 +1,4 @@
+import { indexBy } from "ramda";
 import React, {
   CSSProperties,
   ForwardedRef,
@@ -8,7 +9,8 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { FocusScope as AriaFocusScope } from "@react-aria/focus";
+import { useLatest } from "@intellij-platform/core/utils/useLatest";
+
 import { ThreeViewSplitter } from "../ThreeViewSplitter/ThreeViewSplitter";
 import { FocusScope } from "../utils/FocusScope";
 import { FloatToolWindows } from "./FloatToolWindows";
@@ -25,8 +27,7 @@ import { ToolWindowStateProvider } from "./ToolWindowsState/ToolWindowStateProvi
 import { ToolWindowStripe } from "./ToolWindowStripe";
 import { UndockSide } from "./UndockSide";
 import { Anchor, isHorizontalToolWindow } from "./utils";
-import { useLatest } from "@intellij-platform/core/utils/useLatest";
-import { indexBy } from "ramda";
+import { useOnFocusLost } from "./useOnFocusLost";
 import { useInteractOutside } from "@react-aria/interactions";
 
 interface ToolWindow {
@@ -67,13 +68,6 @@ export interface ToolWindowsProps {
    * props to be passed to the container element.
    */
   containerProps?: Omit<HTMLProps<HTMLDivElement>, "as">;
-
-  /**
-   * By default, `ToolWindows` prevents focus from going to `body`, when something blurs. This is especially
-   * useful for global actions handled at the level of ToolWindows, to be able to consistently capture keyboard events.
-   * setting `disableFocusTrap` to true prevents that default behavior.
-   */
-  allowBlurOnInteractionOutside?: boolean;
 }
 
 export interface ToolWindowRefValue {
@@ -111,7 +105,6 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
   {
     hideToolWindowBars = false,
     useWidescreenLayout = false,
-    allowBlurOnInteractionOutside = false,
     height = "100%",
     minHeight = "0",
     toolWindowsState,
@@ -119,7 +112,7 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
     windows,
     children,
     mainContentMinWidth = 50,
-    containerProps,
+    containerProps = {},
   }: ToolWindowsProps,
   ref: ForwardedRef<ToolWindowRefValue>
 ): React.ReactElement {
@@ -197,17 +190,22 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
     []
   );
 
-  const [interactionOutside, setInteractionOutside] = useState(false);
+  const interactionOutsideRef = useRef(false);
   useInteractOutside({
     ref: containerRef,
-    isDisabled: !allowBlurOnInteractionOutside,
     onInteractOutsideStart: () => {
-      setInteractionOutside(true);
+      interactionOutsideRef.current = true;
     },
     onInteractOutside: () => {
-      setInteractionOutside(false);
+      interactionOutsideRef.current = false;
     },
   });
+
+  useOnFocusLost(({ focusReceivingElement }) => {
+    if (!focusReceivingElement && !interactionOutsideRef.current) {
+      mainContentFocusScopeRef.current?.focus();
+    }
+  }, containerRef);
 
   // TODO: extract component candidate
   const renderStripe = ({
@@ -431,38 +429,20 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
       </>
     );
   };
+
   return (
-    /**
-     * About FocusScope:
-     * When focus is within the ToolWindows, clicking on non-focusable parts of the UI should not make the focus get
-     * lost. That's especially important with the top level actions being handled on a wrapper around ToolWindows.
-     * Because if the focus goes to body, keyboard events are no longer handled, with the way action system is currently
-     * implemented.
-     * AriaFocusScope provides a somewhat accurate behaviour, but it might also be too much, and we can consider
-     * a more light-weight approach. Issues with the current usage of AriaFocus:
-     * - FocusScope traverses the dom tree to find focusable elements, and it might come with considerable performance
-     *   penalty at this place. Something to be investigated more.
-     * - When the focus is lost, e.g. the active tool window closes, FocusScope moves focus to the **first** focusable
-     *  element, whereas in the reference implementation of Tool Windows, the focus goes to the main content (usually
-     *  the editor).
-     *  TODO: investigate alternative approaches for focus handling here.
-     */
-    <AriaFocusScope
-      contain={!(allowBlurOnInteractionOutside && interactionOutside)}
+    <StyledToolWindowOuterLayout.Shell
+      {...containerProps}
+      ref={containerRef}
+      /**
+       * Potential refactoring: hideStripes can also be handled by conditionally
+       * rendering tool window bars, instead of considering it as a feature of
+       * StyledToolWindowOuterLayout
+       **/
+      hideStripes={hideToolWindowBars}
+      style={{ height, minHeight, ...containerProps?.style }}
     >
-      <StyledToolWindowOuterLayout.Shell
-        {...containerProps}
-        ref={containerRef}
-        /**
-         * Potential refactoring: hideStripes can also be handled by conditionally
-         * rendering tool window bars, instead of considering it as a feature of
-         * StyledToolWindowOuterLayout
-         **/
-        hideStripes={hideToolWindowBars}
-        style={{ height, minHeight, ...containerProps?.style }}
-      >
-        {layoutState && renderInnerLayout(layoutState)}
-      </StyledToolWindowOuterLayout.Shell>
-    </AriaFocusScope>
+      {layoutState && renderInnerLayout(layoutState)}
+    </StyledToolWindowOuterLayout.Shell>
   );
 });

@@ -63,7 +63,7 @@ describe("ToolWindows", () => {
       cy.findByTestId("First window focusable 1").should("have.focus");
     });
 
-    it("Focuses the first focusable element, when a non-focusable area within the tool window is clicked", () => {
+    it("focuses the first focusable element, when a non-focusable area within the tool window is clicked", () => {
       cy.mount(
         <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
           <SimpleToolWindows />
@@ -78,17 +78,55 @@ describe("ToolWindows", () => {
       cy.findByTestId("First window focusable 1").should("have.focus");
     });
 
-    it("keeps focused element focused, when a non-focusable area within in the main area is clicked", () => {
+    it("moves focus to the main area, when a non-focusable area within in the main area is clicked", () => {
       cy.mount(
         <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
           <SimpleToolWindows />
         </ThemeProvider>
       );
-      cy.contains("First window").click();
-      cy.findByTestId("First window focusable 2").click();
-      cy.findByTestId("main content non-focusable").click();
-      cy.focused().should("exist");
-      cy.findByTestId("First window focusable 2").should("have.focus");
+      cy.contains("First window").realClick();
+      cy.findByTestId("First window focusable 2")
+        .realClick()
+        .should("be.focused");
+      cy.findByTestId("main content non-focusable").realClick();
+      cy.findByTestId("main content focusable").should("have.focus");
+    });
+
+    it("keeps main content focused, when a non-focusable element inside is clicked", () => {
+      cy.mount(
+        <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
+          <div>outside area</div>
+          <SimpleToolWindows />
+        </ThemeProvider>
+      );
+      cy.findByTestId("main content focusable").focus().should("have.focus");
+      cy.findByTestId("main content non-focusable").realClick(); // clicking non-focusable element inside tool window
+      cy.findByTestId("main content focusable").should("have.focus");
+    });
+
+    it("looses focus when a non-focusable element outside is clicked", () => {
+      cy.mount(
+        <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
+          <div>outside area</div>
+          <SimpleToolWindows />
+        </ThemeProvider>
+      );
+      cy.findByTestId("main content focusable").focus().should("have.focus");
+      cy.contains("outside area").realClick(); // clicking non-focusable element outside tool window
+      cy.findByTestId("main content focusable").should("not.have.focus");
+    });
+
+    it("allows focusable element outside the ToolWindows get focused.", () => {
+      cy.mount(
+        <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
+          <div>
+            outside area <input data-testid="outside-input" />
+          </div>
+          <SimpleToolWindows />
+        </ThemeProvider>
+      );
+      cy.findByTestId("main content focusable").focus().should("have.focus");
+      cy.findByTestId("outside-input").realClick().should("have.focus");
     });
 
     // NOTE: even when focus is within the tool window, focusing the tool window container (by pressing header,
@@ -105,7 +143,7 @@ describe("ToolWindows", () => {
       cy.findByTestId("First window focusable 1").should("have.focus");
     });
 
-    it("moves focus to the main content when a window is toggled closed ", () => {
+    it("moves focus to the main content when a window is toggled closed", () => {
       cy.mount(
         <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
           <SimpleToolWindows />
@@ -115,9 +153,7 @@ describe("ToolWindows", () => {
       cy.findByTestId("Second window stripe button").click();
       cy.findByTestId("Second window stripe button").click();
 
-      // Focus should to go main content, but it doesn't currently because of a known issue. FIXME in ToolWindows
-      // cy.findByTestId("main content focusable").should('have.focus');
-      cy.findByTestId("First window focusable 1").should("have.focus");
+      cy.findByTestId("main content focusable").should("have.focus");
     });
     /**
      * Known issue. FIXME. See DefaultToolWindow for more info
