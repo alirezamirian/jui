@@ -734,9 +734,11 @@ describe("ContextMenu", () => {
     // to viewport.
     cy.mount(<ContextMenu />);
     cy.scrollTo("bottom", { duration: 0 });
-    cy.get("#context-menu-container").rightclick("bottomRight", {
-      scrollBehavior: false,
-    });
+    cy.get("#context-menu-container")
+      .realMouseMove(0, 0) // this fixes a flakiness in screenshots, which depends on whether other test cases are run before this
+      .rightclick("bottomRight", {
+        scrollBehavior: false,
+      });
     matchImageSnapshot("context-menu-opened");
   });
 
