@@ -2,11 +2,7 @@ import React from "react";
 import { Meta, StoryFn } from "@storybook/react";
 import { PlatformIcon } from "@intellij-platform/core/Icon";
 import { DividerItem, Item } from "@intellij-platform/core/Collections";
-import {
-  ActionButton,
-  ActionToolbar,
-  MenuTrigger,
-} from "@intellij-platform/core";
+import { IconButton, Toolbar, MenuTrigger } from "@intellij-platform/core";
 import { Section } from "@react-stately/collections";
 
 import { styledComponentsControlsExclude } from "../story-helpers";
@@ -93,7 +89,7 @@ export const WithTrigger = {
     menuProps: Partial<SpeedSearchMenuProps<any>>;
   }) => {
     return (
-      <ActionToolbar>
+      <Toolbar>
         <MenuTrigger
           renderMenu={({ menuProps }) => (
             <SpeedSearchMenu
@@ -110,12 +106,12 @@ export const WithTrigger = {
           )}
         >
           {(props, ref) => (
-            <ActionButton {...props} ref={ref}>
+            <IconButton {...props} ref={ref}>
               <PlatformIcon icon={"general/gearPlain"} />
-            </ActionButton>
+            </IconButton>
           )}
         </MenuTrigger>
-      </ActionToolbar>
+      </Toolbar>
     );
   },
 };

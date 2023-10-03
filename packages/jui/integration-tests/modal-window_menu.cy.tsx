@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  ActionButton,
+  IconButton,
   FocusScope,
   Item,
   Menu,
@@ -31,9 +31,9 @@ const ModalOnMenuItem = () => {
           )}
         >
           {(props, ref) => (
-            <ActionButton {...props} ref={ref} preventFocusOnPress={false}>
+            <IconButton {...props} ref={ref} preventFocusOnPress={false}>
               <PlatformIcon icon="general/gear" />
-            </ActionButton>
+            </IconButton>
           )}
         </MenuTrigger>
         {isOpen && (

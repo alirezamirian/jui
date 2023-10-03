@@ -6,3 +6,7 @@ export * from "./ActionShortcut";
 export * from "./CommonActionIds";
 export * from "./shortcutToString";
 export * from "./ActionGroup";
+export { Action } from "@intellij-platform/core/ActionSystem/Action";
+export { MutableAction } from "@intellij-platform/core/ActionSystem/Action";
+export { ActionDefinition } from "@intellij-platform/core/ActionSystem/Action";
+export { ActionContext } from "@intellij-platform/core/ActionSystem/Action";

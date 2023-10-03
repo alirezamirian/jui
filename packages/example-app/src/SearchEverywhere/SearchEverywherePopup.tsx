@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
-  ActionButton,
+  IconButton,
   ActionDefinition,
   ActionsProvider,
   FocusScope,
@@ -350,9 +350,9 @@ export function SearchEverywherePopup() {
                         </Tabs>
                       </div>
                       {currentTabContributor?.headerFilters}
-                      <ActionButton style={{ margin: "0 0.5rem" }} isDisabled>
+                      <IconButton style={{ margin: "0 0.5rem" }} isDisabled>
                         <PlatformIcon icon="actions/moveToLeftBottom" />
-                      </ActionButton>
+                      </IconButton>
                     </StyledHeader>
                   </Popup.Header>
                   <StyledSearchFieldContainer>

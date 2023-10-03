@@ -3,8 +3,8 @@ import { StoryObj, StoryFn, Meta } from "@storybook/react";
 import { Item } from "@react-stately/collections";
 import { ContextMenuContainer, styled } from "@intellij-platform/core";
 
-import { ActionButton } from "../ActionButton";
-import { ActionToolbar } from "../ActionToolbar/ActionToolbar";
+import { IconButton } from "../IconButton";
+import { Toolbar } from "../Toolbar/Toolbar";
 import { Divider, DividerItem } from "../Collections/Divider";
 import { PlatformIcon } from "../Icon";
 import { styledComponentsControlsExclude } from "../story-helpers";
@@ -198,7 +198,7 @@ export const MenuWithTrigger: StoryObj<
               : undefined,
         }}
       >
-        <ActionToolbar>
+        <Toolbar>
           <MenuTrigger
             {...otherProps}
             renderMenu={({ menuProps }) => (
@@ -216,12 +216,12 @@ export const MenuWithTrigger: StoryObj<
             )}
           >
             {(props, ref) => (
-              <ActionButton {...props} ref={ref}>
+              <IconButton {...props} ref={ref}>
                 <PlatformIcon icon={"general/gearPlain"} />
-              </ActionButton>
+              </IconButton>
             )}
           </MenuTrigger>
-        </ActionToolbar>
+        </Toolbar>
       </div>
     );
   },

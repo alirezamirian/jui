@@ -1,4 +1,3 @@
-import { Keymap } from "@intellij-platform/core/ActionSystem/KeymapProvider";
 import {
   FOCUS_EDITOR_ACTION_ID,
   HIDE_ACTIVE_WINDOW_ACTION_ID,
@@ -12,11 +11,17 @@ import {
   // For some reason importing from shorter paths doesn't work as expected in cypress ¯\_(ツ)_/¯
   // Weirdly, `import *` works in that case.
 } from "@intellij-platform/core/ToolWindowsImpl/ToolWindowActionIds";
-import { CommonActionId } from "@intellij-platform/core/ActionSystem/CommonActionIds";
+
+import { Keymap } from "./KeymapProvider";
+import { CommonActionId } from "./CommonActionIds";
 
 // TODO: OS specific defaults
 // TODO: extract and export action ids
 // NOTE: defaultKeymap doesn't belong to ActionSystem semantically. Would be something to be moved to a separate module
+/**
+ * Default Intellij Idea keymapping for common action ids, including tool window actions.
+ * @see CommonActionId
+ */
 export const defaultKeymap: Keymap = {
   [RESIZE_TOOL_WINDOW_RIGHT_ACTION_ID]: [
     {

@@ -15,6 +15,19 @@ import { ItemProps } from "@react-types/shared";
 import { PartialNode } from "@react-stately/collections";
 
 interface DividerProps {}
+
+/**
+ * To be used in dynamic collections, just to provide a key and make it easy to check in the render
+ * function to figure out what to render (an Item or a Divider)
+ */
+export class DividerItem {
+  private static seq = 0;
+  key = "divider_" + DividerItem.seq++;
+  get id() {
+    return this.key;
+  }
+}
+
 function Divider({}: DividerProps): ReactElement {
   // eslint-disable-line @typescript-eslint/no-unused-vars
   return null as any;
@@ -36,15 +49,3 @@ Divider.getCollectionNode = function* getCollectionNode<T>(
     hasChildNodes: false,
   };
 };
-
-/**
- * To be used in dynamic collections, just to provide a key and make it easy to check in the render
- * function to figure out what to render (an Item or a Divider)
- */
-export class DividerItem {
-  private static seq = 0;
-  key = "divider_" + DividerItem.seq++;
-  get id() {
-    return this.key;
-  }
-}

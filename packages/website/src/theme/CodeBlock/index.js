@@ -7,7 +7,7 @@
 
 import React from "react";
 import { useTheme } from "styled-components";
-import Playground from "@theme/Playground";
+import Playground from "./Playground";
 import ReactLiveScope from "@theme/ReactLiveScope";
 import CodeBlock from "@theme-init/CodeBlock";
 import clsx from "clsx";
@@ -32,9 +32,14 @@ const withThemeBackground = (Component) => {
   function WithThemeBackground(props) {
     const theme = useTheme();
     const content = <Component {...props} />;
-    const style = { "--ifm-list-item-margin": 0 };
+    const style = {
+      "--ifm-list-item-margin": 0,
+    };
+
     if (props.themed) {
+      style.color = theme.color("*.foreground");
       style["--ifm-pre-background"] = theme.color("*.background");
+      style["--ifm-code-background"] = "none";
     }
     return (
       <div

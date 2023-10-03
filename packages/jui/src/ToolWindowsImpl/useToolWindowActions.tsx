@@ -23,7 +23,7 @@ import {
   UNDOCK_MODE_ACTION_ID,
   WINDOW_MODE_ACTION_ID,
 } from "./ToolWindowActionIds";
-import { ActionGroupDefinition } from "@intellij-platform/core/ActionSystem/ActionGroup";
+import { ActionGroupDefinition } from "@intellij-platform/core/ActionSystem";
 import { useCreateDefaultActionGroup } from "@intellij-platform/core/ActionSystem/components";
 
 // Resize steps in Intellij Platform is calculated based on the size of a "W" character and some

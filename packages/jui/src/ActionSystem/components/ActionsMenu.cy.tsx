@@ -1,8 +1,5 @@
 import React from "react";
-import {
-  ActionItem,
-  ActionsMenu,
-} from "@intellij-platform/core/ActionSystem/components";
+import { ActionItem, ActionsMenu } from "@intellij-platform/core";
 import {
   ActionGroupDefinition,
   ActionsProvider,
@@ -75,6 +72,7 @@ describe("ActionsMenu", () => {
       </ActionsProvider>
     );
     cy.findByRole("menuitem", { name: "Action 1" }).should("not.exist");
+    cy.findByRole("group", { name: "Action Group 1" }).should("not.exist");
     cy.findByRole("menuitem", { name: "Action Group 1" }).click();
     cy.findByRole("menuitem", { name: "Action 1" });
   });
@@ -109,7 +107,7 @@ describe("ActionsMenu", () => {
       </ActionsProvider>
     );
     cy.findByRole("menuitem", { name: "Action 1" });
-    cy.findByRole("group", { name: "Action Group 1" });
+    cy.findByRole("group");
   });
 
   it("performs selected action", () => {

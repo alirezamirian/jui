@@ -127,27 +127,38 @@ function useSpeedSearchMenu<T>(
     }
   });
 
-  const lastSize = useRef({ width: 0, height: 0 });
+  const lastSize = useRef<{ width: number; height: number } | null>(null);
   const [size, setSize] = useState<{ width: number; height: number } | null>(
     null
   );
+  const measureSize = () => {
+    const { offsetWidth = 0, offsetHeight = 0 } = containerRef.current || {};
+    if (offsetWidth > 0 && offsetHeight > 0) {
+      lastSize.current = {
+        width: offsetWidth,
+        height: offsetHeight,
+      };
+    }
+  };
   const isSearchActive =
     speedSearch.active && speedSearch.searchTerm.length > 0;
   useResizeObserver({
     ref: containerRef,
     onResize: useEventCallback(() => {
       if (!isSearchActive) {
-        lastSize.current = {
-          width: containerRef.current?.offsetWidth ?? 0,
-          height: containerRef.current?.offsetHeight ?? 0,
-        };
+        measureSize();
       }
     }),
   });
   useLayoutEffect(() => {
     if (isSearchActive) {
-      setSize(lastSize.current);
+      if (lastSize.current) {
+        setSize(lastSize.current);
+      }
     } else {
+      if (!lastSize.current) {
+        measureSize();
+      }
       setSize(null);
     }
   }, [isSearchActive]);

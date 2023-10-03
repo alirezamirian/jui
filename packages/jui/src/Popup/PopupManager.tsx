@@ -7,7 +7,6 @@ import React, {
   useState,
 } from "react";
 import { Popup, PopupProps } from "./Popup";
-import { props } from "ramda";
 import { PopupControllerContext } from "@intellij-platform/core/Popup/PopupContext";
 
 interface PopupManagerAPI {

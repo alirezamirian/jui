@@ -40,7 +40,7 @@ describe("Checkbox", () => {
     );
     cy.get("#dummyInput").focus(); // tabbing to the text input
     cy.realPress("Tab"); // next tab should move focus to the checkbox
-    cy.focused().should("have.attr", "type", "checkbox");
+    cy.findByRole("checkbox").should("be.focused");
 
     cy.mount(
       <div id="component-container">
@@ -50,7 +50,7 @@ describe("Checkbox", () => {
     );
     cy.get("#dummyInput").focus(); // tabbing to the text input
     cy.realPress("Tab"); // next tab should not focus the checkbox since excludeFromTabOrder is passed
-    cy.focused().should("not.exist");
+    cy.findByRole("checkbox").should("not.be.focused");
   });
 
   it("supports preventFocus", () => {

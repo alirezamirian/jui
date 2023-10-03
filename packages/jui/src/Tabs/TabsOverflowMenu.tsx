@@ -1,7 +1,7 @@
 import { Collection, Node } from "@react-types/shared";
 import { Item } from "@react-stately/collections";
 import { Menu, MenuTrigger } from "@intellij-platform/core/Menu";
-import { ActionButton } from "@intellij-platform/core/ActionButton";
+import { IconButton } from "@intellij-platform/core/IconButton";
 import { PlatformIcon } from "@intellij-platform/core/Icon";
 import React, { Key } from "react";
 
@@ -40,9 +40,9 @@ export const TabsOverflowMenu = <T extends unknown>({
         }}
       >
         {(props, ref) => (
-          <ActionButton {...props} ref={ref}>
+          <IconButton {...props} ref={ref}>
             <PlatformIcon icon="actions/findAndShowNextMatches" />
-          </ActionButton>
+          </IconButton>
         )}
       </MenuTrigger>
     )}

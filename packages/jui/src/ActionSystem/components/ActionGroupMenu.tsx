@@ -1,14 +1,12 @@
-import { ActionGroup } from "@intellij-platform/core/ActionSystem";
 import React from "react";
-import { ActionMenuProps, ActionsMenu } from "./ActionsMenu";
+import { type ActionGroup } from "@intellij-platform/core/ActionSystem/ActionGroup";
+import { type ActionMenuProps, ActionsMenu } from "./ActionsMenu";
 
 export type ActionGroupMenuProps = Omit<ActionMenuProps, "actions"> & {
   actionGroup: ActionGroup;
 };
 /**
- * Renders children of an action group as a menu
- *
- * TODO: handle isPopup in children groups to render the child group as either a section or submenu
+ * Renders children of an action group as a menu.
  */
 export const ActionGroupMenu = ({
   actionGroup,

@@ -2,10 +2,10 @@ import React, { Key, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { Selection } from "@react-types/shared";
 import {
-  ActionButton,
-  ActionButtonWithMenu,
+  IconButton,
+  IconButtonWithMenu,
   ActionsProvider,
-  ActionToolbar,
+  Toolbar,
   Button,
   Checkbox,
   CommonActionId,
@@ -23,8 +23,8 @@ import {
   useNestedSelectionState,
   useTreeActions,
   WindowLayout,
+  ActionButton,
 } from "@intellij-platform/core";
-import { Action } from "@intellij-platform/core/ActionSystem/components";
 
 import { changesTreeNodesState } from "../ChangesView/ChangesView.state";
 import { getChangeListTreeItemProps } from "../ChangesView/changesTreeNodeRenderers";
@@ -116,11 +116,11 @@ export function RollbackWindow() {
             {({ shortcutHandlerProps }) => (
               <StyledContainer {...shortcutHandlerProps}>
                 <div style={{ display: "flex" }}>
-                  <ActionToolbar>
-                    <ActionButton isDisabled>
+                  <Toolbar>
+                    <IconButton isDisabled>
                       <PlatformIcon icon="actions/diff" />
-                    </ActionButton>
-                    <ActionButtonWithMenu
+                    </IconButton>
+                    <IconButtonWithMenu
                       renderMenu={({ menuProps }) => (
                         <Menu
                           {...menuProps}
@@ -140,13 +140,13 @@ export function RollbackWindow() {
                       )}
                     >
                       <PlatformIcon icon="actions/groupBy.svg" />
-                    </ActionButtonWithMenu>
-                  </ActionToolbar>
+                    </IconButtonWithMenu>
+                  </Toolbar>
                   <span style={{ flex: 1 }} />
-                  <ActionToolbar>
-                    <Action.Button actionId={CommonActionId.EXPAND_ALL} />
-                    <Action.Button actionId={CommonActionId.COLLAPSE_ALL} />
-                  </ActionToolbar>
+                  <Toolbar>
+                    <ActionButton actionId={CommonActionId.EXPAND_ALL} />
+                    <ActionButton actionId={CommonActionId.COLLAPSE_ALL} />
+                  </Toolbar>
                 </div>
 
                 <StyledFrame>

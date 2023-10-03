@@ -4,8 +4,8 @@ import { ModalWindow, ModalWindowProps } from "./ModalWindow";
 import { SpeedSearchTreeSample } from "@intellij-platform/core/story-components";
 import { Bounds, containedWithin } from "@intellij-platform/core/Overlay";
 import {
-  ActionButton,
-  ActionToolbar,
+  IconButton,
+  Toolbar,
   Button,
   Checkbox,
   PlatformIcon,
@@ -234,23 +234,23 @@ export const WithTallFooter: StoryObj<ModalWindowProps> = {
         content={
           <StyledContainer style={{ paddingBottom: 0 }}>
             <div style={{ display: "flex" }}>
-              <ActionToolbar>
-                <ActionButton>
+              <Toolbar>
+                <IconButton>
                   <PlatformIcon icon="actions/diff" />
-                </ActionButton>
-                <ActionButton>
+                </IconButton>
+                <IconButton>
                   <PlatformIcon icon="actions/groupBy" />
-                </ActionButton>
-              </ActionToolbar>
+                </IconButton>
+              </Toolbar>
               <span style={{ flex: 1 }} />
-              <ActionToolbar>
-                <ActionButton>
+              <Toolbar>
+                <IconButton>
                   <PlatformIcon icon="actions/expandall" />
-                </ActionButton>
-                <ActionButton>
+                </IconButton>
+                <IconButton>
                   <PlatformIcon icon="actions/collapseall" />
-                </ActionButton>
-              </ActionToolbar>
+                </IconButton>
+              </Toolbar>
             </div>
 
             <StyledFrame>

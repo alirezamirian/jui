@@ -28,7 +28,7 @@ export interface CheckboxProps
    *   a questionably better UX.
    * Note: Passing {@link excludeFromTabOrder} will still let the checkbox be focusable, while `preventFocus`, doesn't
    * let the component get focused at all.
-   * TODO(potential): it might be nicer to have a `preventFocusOnPress` prop consistent with ActionButton, instead.
+   * TODO(potential): it might be nicer to have a `preventFocusOnPress` prop consistent with IconButton, instead.
    *  In that case preventing focus completely would be achieved with `preventFocusOnPres` and `excludeFromTabOrder`.
    */
   preventFocus?: boolean;

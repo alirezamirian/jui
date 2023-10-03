@@ -5,7 +5,7 @@ import {
   showRelatedFilesState,
 } from "../ChangesView.state";
 import {
-  ActionButtonWithMenu,
+  IconButtonWithMenu,
   Item,
   Menu,
   PlatformIcon,
@@ -21,7 +21,7 @@ export const ViewOptionsActionButton = (): React.ReactElement => {
   const viewOptions = { showRelatedFiles, showIgnoredFiles };
 
   return (
-    <ActionButtonWithMenu
+    <IconButtonWithMenu
       renderMenu={({ menuProps }) => (
         <Menu
           {...menuProps}
@@ -45,6 +45,6 @@ export const ViewOptionsActionButton = (): React.ReactElement => {
       )}
     >
       <PlatformIcon icon="actions/show.svg" />
-    </ActionButtonWithMenu>
+    </IconButtonWithMenu>
   );
 };

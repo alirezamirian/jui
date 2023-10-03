@@ -1,6 +1,6 @@
 import React from "react";
-import { useAction } from "@intellij-platform/core/ActionSystem";
-import { ActionButton as ActionButtonUI } from "@intellij-platform/core/ActionButton";
+import { useAction } from "@intellij-platform/core/ActionSystem/ActionsProvider";
+import { IconButton } from "@intellij-platform/core/IconButton";
 import { ActionTooltip, TooltipTrigger } from "@intellij-platform/core/Tooltip";
 
 export const ActionButton = ({
@@ -18,12 +18,12 @@ export const ActionButton = ({
     return <></>;
   }
   const actionButton = (
-    <ActionButtonUI
+    <IconButton
       onPress={() => action?.perform()}
       isDisabled={action.isDisabled}
     >
       {action.icon || children}
-    </ActionButtonUI>
+    </IconButton>
   );
   if (action.title) {
     return (

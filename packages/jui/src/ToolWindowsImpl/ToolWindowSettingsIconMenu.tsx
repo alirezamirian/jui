@@ -8,7 +8,7 @@ import {
 import {
   ActionItem,
   ActionsMenu,
-} from "@intellij-platform/core/ActionSystem/components/ActionsMenu";
+} from "@intellij-platform/core/ActionSystem/components";
 import {
   MOVE_TO_ACTION_GROUP_ID,
   TOOL_WINDOW_RESIZE_ACTION_GROUP_ID,

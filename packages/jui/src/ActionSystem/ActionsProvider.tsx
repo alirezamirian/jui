@@ -1,12 +1,11 @@
-import {
-  Keymap,
-  useKeymap,
-} from "@intellij-platform/core/ActionSystem/KeymapProvider";
 import { pick, sortBy } from "ramda";
 import React, { HTMLAttributes, useContext, useEffect, useState } from "react";
-import { shortcutToString } from "@intellij-platform/core/ActionSystem/shortcutToString";
-import { useShortcuts } from "@intellij-platform/core/ActionSystem/useShortcut";
-import { Shortcut } from "@intellij-platform/core/ActionSystem/Shortcut";
+import { useEventCallback } from "@intellij-platform/core/utils/useEventCallback";
+import { dfsVisit } from "@intellij-platform/core/utils/tree-utils";
+
+import { Keymap, useKeymap } from "./KeymapProvider";
+import { shortcutToString } from "./shortcutToString";
+import { useShortcuts } from "./useShortcut";
 import {
   ActionGroup,
   ActionInResolvedGroup,
@@ -14,54 +13,20 @@ import {
   isActionGroupDefinition,
   MutableActionGroup,
 } from "./ActionGroup";
-import { useEventCallback } from "@intellij-platform/core/utils/useEventCallback";
-import { dfsVisit } from "@intellij-platform/core/utils/tree-utils";
+import {
+  Action,
+  ActionContext,
+  ActionDefinition,
+  MutableAction,
+} from "@intellij-platform/core/ActionSystem/Action";
 
-export interface ActionContext {
-  element: Element | null;
-  event:
-    | React.MouseEvent<HTMLElement>
-    | React.KeyboardEvent<HTMLElement>
-    | null;
-}
-
-export interface ActionDefinition {
-  id: string;
-  title: string;
-  actionPerformed: (
-    /**
-     * UI event that triggered the action, if a shortcut triggered the action.
-     */
-    context: ActionContext
-  ) => void;
-  icon?: React.ReactNode;
-  description?: string;
-  isDisabled?: boolean;
-}
-
-export interface MutableAction
-  extends Pick<
-    ActionDefinition,
-    "title" | "icon" | "description" | "isDisabled"
-  > {
-  id: string;
-  /**
-   * shortcuts assigned to this action based on the keymap context
-   */
-  shortcuts: readonly Shortcut[] | undefined;
-  /**
-   * string representation of the shortcuts
-   */
-  shortcut: string | undefined;
-
-  /**
-   * Performs the action, if it's enabled.
-   */
-  perform: (context?: ActionContext) => void;
-}
-export type Action = Readonly<MutableAction>;
-
+/**
+ * Represents the properties required for the ActionsProvider component.
+ */
 interface ActionsProviderProps {
+  /**
+   * A collection of action definitions.
+   */
   actions: ActionDefinition[];
   children: (args: {
     shortcutHandlerProps: HTMLAttributes<HTMLElement>;
@@ -83,6 +48,15 @@ function generateId() {
 const ACTION_PROVIDER_ID_ATTRIBUTE = "data-action-provider";
 const ACTION_PROVIDER_ID_DATA_PREFIX = "action_provider_id_";
 const actionProvidersMap = new Map<string, Action[]>();
+
+/**
+ * Provides a set of actions for the wrapped UI. Uses the currently provided keymap to find the shortcuts
+ * for each action, and passes the necessary event handlers for the shortcuts, to the `children` render function.
+ *
+ * @param {Array<Action>} props.actions - The actions to be provided.
+ * @param {boolean} [props.useCapture] - Specifies whether to use capture phase for event handling.
+ * @param {Function} props.children - Render function that accepts shortcutHandlerProps as argument.
+ */
 export function ActionsProvider(props: ActionsProviderProps): JSX.Element {
   const parentContext = useContext(ActionsContext);
   const keymap = useKeymap();

@@ -13,7 +13,7 @@ import {
 import { indexBy, map } from "ramda";
 import React, { useState } from "react";
 import packageJson from "../../../package.json";
-import { ActionButton } from "../../ActionButton";
+import { IconButton } from "../../IconButton";
 import { SpeedSearchTreeSample } from "../../story-components";
 import { styledComponentsControlsExclude } from "../../story-helpers";
 import { DefaultToolWindow } from "../../ToolWindowsImpl/DefaultToolWindow";
@@ -52,9 +52,9 @@ const windows = [
         headerContent="Project"
         additionalActions={
           <>
-            <ActionButton>
+            <IconButton>
               <PlatformIcon icon="actions/expandall" />
-            </ActionButton>
+            </IconButton>
           </>
         }
       >

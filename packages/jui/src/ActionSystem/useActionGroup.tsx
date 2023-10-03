@@ -1,8 +1,5 @@
 import { useAction } from "./ActionsProvider";
-import {
-  isResolvedActionGroup,
-  ResolvedActionGroup,
-} from "@intellij-platform/core/ActionSystem/ActionGroup";
+import { isResolvedActionGroup, ResolvedActionGroup } from "./ActionGroup";
 
 export const useActionGroup = (
   actionGroupId: string

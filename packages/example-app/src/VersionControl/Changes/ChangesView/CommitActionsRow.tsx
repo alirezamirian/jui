@@ -1,7 +1,7 @@
 import React from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
-  ActionButton,
+  IconButton,
   ActionHelpTooltip,
   ActionTooltip,
   Checkbox,
@@ -68,16 +68,16 @@ export function CommitActionsRow() {
       <TooltipTrigger
         tooltip={<ActionTooltip actionName="Show Commit Options" />}
       >
-        <ActionButton onPress={notImplemented}>
+        <IconButton onPress={notImplemented}>
           <PlatformIcon icon="general/gear.svg" />
-        </ActionButton>
+        </IconButton>
       </TooltipTrigger>
       <TooltipTrigger
         tooltip={<ActionTooltip actionName="Commit Message History" />}
       >
-        <ActionButton isDisabled onPress={notImplemented}>
+        <IconButton isDisabled onPress={notImplemented}>
           <PlatformIcon icon="vcs/historyInline.svg" />
-        </ActionButton>
+        </IconButton>
       </TooltipTrigger>
       <StyledChangesSummaryContainer>
         <ChangesViewChangesSummary />

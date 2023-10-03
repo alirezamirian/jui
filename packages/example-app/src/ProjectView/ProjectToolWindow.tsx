@@ -1,13 +1,13 @@
 import React from "react";
 import { useRecoilValue } from "recoil";
 import {
+  ActionButton,
   ActionDefinition,
   CommonActionId,
   DefaultToolWindow,
   PlatformIcon,
   useTreeActions,
 } from "@intellij-platform/core";
-import { Action } from "@intellij-platform/core/ActionSystem/components";
 
 import {
   projectViewTreeRefState,
@@ -33,9 +33,9 @@ export function ProjectToolWindow() {
       actions={[...actions, ...projectViewActions]}
       additionalActions={
         <>
-          <Action.Button actionId={SELECT_IN_PROJECT_VIEW} />
-          <Action.Button actionId={CommonActionId.EXPAND_ALL} />
-          <Action.Button actionId={CommonActionId.COLLAPSE_ALL} />
+          <ActionButton actionId={SELECT_IN_PROJECT_VIEW} />
+          <ActionButton actionId={CommonActionId.EXPAND_ALL} />
+          <ActionButton actionId={CommonActionId.COLLAPSE_ALL} />
         </>
       }
     >

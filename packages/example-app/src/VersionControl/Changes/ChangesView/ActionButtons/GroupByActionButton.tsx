@@ -6,7 +6,7 @@ import {
   GroupingIds,
 } from "../ChangesView.state";
 import {
-  ActionButtonWithMenu,
+  IconButtonWithMenu,
   Item,
   Menu,
   PlatformIcon,
@@ -27,7 +27,7 @@ export const GroupByActionButton = (): React.ReactElement => {
   );
 
   return (
-    <ActionButtonWithMenu
+    <IconButtonWithMenu
       renderMenu={({ menuProps }) => (
         <Menu
           {...menuProps}
@@ -52,6 +52,6 @@ export const GroupByActionButton = (): React.ReactElement => {
       )}
     >
       <PlatformIcon icon="actions/groupBy.svg" />
-    </ActionButtonWithMenu>
+    </IconButtonWithMenu>
   );
 };

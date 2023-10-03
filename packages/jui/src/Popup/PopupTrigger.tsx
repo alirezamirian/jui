@@ -22,7 +22,7 @@ export interface PopupTriggerProps
 
 /**
  * Popup opened by a trigger. `trigger` can be an element of any pressable component (such as {@link Button} or
- * {@link ActionButton}), and is rendered in place. Similar to {@link Popup component}, `children` defines the content
+ * {@link IconButton}), and is rendered in place. Similar to {@link Popup component}, `children` defines the content
  * of Popup.
  */
 export const PopupTrigger = React.forwardRef(function PopupTrigger(

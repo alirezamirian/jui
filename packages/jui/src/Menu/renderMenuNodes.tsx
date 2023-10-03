@@ -17,12 +17,17 @@ export function renderMenuNodes<T>(
         return <MenuItem key={node.key} item={node} state={state} />;
       case "section":
         return (
-          <MenuSection
-            key={node.key}
-            item={node}
-            state={state}
-            filter={filter}
-          />
+          <>
+            {node.props.hasDivider && (
+              <ListDivider key={node.key + "-divider"} />
+            )}
+            <MenuSection
+              key={node.key}
+              item={node}
+              state={state}
+              filter={filter}
+            />
+          </>
         );
       case "divider":
         return <ListDivider key={node.key} />;

@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
-import { Shortcut } from "@intellij-platform/core/ActionSystem/Shortcut";
-import { defaultKeymap } from "@intellij-platform/core/ActionSystem/defaultKeymap";
+import { Shortcut } from "./Shortcut";
+import { defaultKeymap } from "./defaultKeymap";
 
 export interface Keymap {
   [actionId: string]: ReadonlyArray<Shortcut>;

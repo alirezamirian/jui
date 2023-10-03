@@ -1,7 +1,7 @@
 import React from "react";
 import { Meta, StoryFn, StoryObj } from "@storybook/react";
 import {
-  ActionButton,
+  IconButton,
   Checkbox,
   FocusScope,
   PlatformIcon,
@@ -197,9 +197,9 @@ export const CustomHeader: StoryObj<PopupProps> = {
                 </StyledCustomHeaderMuted>
               </StyledCustomHeaderTitle>
               <span>6+ usages</span>
-              <ActionButton>
+              <IconButton>
                 <PlatformIcon icon="actions/moveToBottomLeft" />
-              </ActionButton>
+              </IconButton>
             </StyledCustomHeader>
           </Popup.Header>
         }

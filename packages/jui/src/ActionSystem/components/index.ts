@@ -1,13 +1,14 @@
-import { ActionButton } from "./ActionButton";
+/**
+ * Action system components. Intentionally re-exported only from the root index file, and not the index.ts in
+ * ActionSystem.
+ */
+export { ActionButton } from "./ActionButton";
 export {
   ActionsMenu,
+  renderActionAsMenuItem,
   type ActionMenuProps,
   type ActionItem,
 } from "./ActionsMenu";
 export { ActionGroupMenu, type ActionGroupMenuProps } from "./ActionGroupMenu";
-
-export const Action = {
-  Button: ActionButton,
-};
 
 export { useCreateDefaultActionGroup } from "./useCreateDefaultActionGroup";
