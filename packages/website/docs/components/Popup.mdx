@@ -115,10 +115,13 @@ Returns `PopupManagerAPI`, which has a `show` method to imperatively open a popu
 [PopupManager](#popupmanager) to be rendered above in the component hierarchy.
 
 ```jsx
+// import { Popup, usePopupManager } from "@intellij-platform/core";
 const { show } = usePopupManager();
 
 show(
-  <Popup.Layout>...</Popup.Layout>, // The content of the popup. Typically a PopupLayout element,
+  <Popup>
+    <Popup.Layout>...</Popup.Layout>
+  </Popup>, // The content of the popup. Typically a PopupLayout element,
   { interactions: "all" } // Other popup props
 );
 
@@ -137,60 +140,62 @@ const SomeComponent = () => {
   const showPopup = () => {
     show(
       ({ close }) => (
-        <Popup.Layout
-          header={<Popup.Header>Title</Popup.Header>}
-          content={
-            <SpeedSearchMenu
-              onClose={close}
-              autoFocus="first"
-              fillAvailableSpace
-            >
-              <Item textValue="File">
-                <MenuItemLayout
-                  icon={<PlatformIcon icon={"fileTypes/text"} />}
-                  content="File"
-                />
-              </Item>
-              <Item textValue="Directory">
-                <MenuItemLayout
-                  icon={<PlatformIcon icon={"nodes/folder"} />}
-                  content="Directory"
-                />
-              </Item>
-              <Divider />
-              <Item textValue="HTML File">
-                <MenuItemLayout
-                  icon={<PlatformIcon icon={"fileTypes/html"} />}
-                  content="HTML File"
-                />
-              </Item>
-              <Item textValue="Stylesheet">
-                <MenuItemLayout
-                  icon={<PlatformIcon icon={"fileTypes/css"} />}
-                  content="Stylesheet"
-                />
-              </Item>
-              <Item textValue="Javascript">
-                <MenuItemLayout
-                  icon={<PlatformIcon icon={"fileTypes/javaScript"} />}
-                  content="Javascript"
-                />
-              </Item>
-              <Item
-                title={
-                  <MenuItemLayout
-                    content=".ignore File"
-                    icon={<PlatformIcon icon={"fileTypes/text"} />}
-                  />
-                }
+        <Popup>
+          <Popup.Layout
+            header={<Popup.Header>Title</Popup.Header>}
+            content={
+              <SpeedSearchMenu
+                onClose={close}
+                autoFocus="first"
+                fillAvailableSpace
               >
-                <Item>.gitignore File (Git)</Item>
-                <Item>.bzrignore File (Bazaar)</Item>
-                <Item>.npmignore File (Npm)</Item>
-              </Item>
-            </SpeedSearchMenu>
-          }
-        />
+                <Item textValue="File">
+                  <MenuItemLayout
+                    icon={<PlatformIcon icon={"fileTypes/text"} />}
+                    content="File"
+                  />
+                </Item>
+                <Item textValue="Directory">
+                  <MenuItemLayout
+                    icon={<PlatformIcon icon={"nodes/folder"} />}
+                    content="Directory"
+                  />
+                </Item>
+                <Divider />
+                <Item textValue="HTML File">
+                  <MenuItemLayout
+                    icon={<PlatformIcon icon={"fileTypes/html"} />}
+                    content="HTML File"
+                  />
+                </Item>
+                <Item textValue="Stylesheet">
+                  <MenuItemLayout
+                    icon={<PlatformIcon icon={"fileTypes/css"} />}
+                    content="Stylesheet"
+                  />
+                </Item>
+                <Item textValue="Javascript">
+                  <MenuItemLayout
+                    icon={<PlatformIcon icon={"fileTypes/javaScript"} />}
+                    content="Javascript"
+                  />
+                </Item>
+                <Item
+                  title={
+                    <MenuItemLayout
+                      content=".ignore File"
+                      icon={<PlatformIcon icon={"fileTypes/text"} />}
+                    />
+                  }
+                >
+                  <Item>.gitignore File (Git)</Item>
+                  <Item>.bzrignore File (Bazaar)</Item>
+                  <Item>.npmignore File (Npm)</Item>
+                </Item>
+              </SpeedSearchMenu>
+            }
+          />
+        </Popup>
       ),
       { interactions: "all", allowScroll: false }
     );
