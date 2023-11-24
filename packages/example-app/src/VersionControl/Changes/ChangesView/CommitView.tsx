@@ -14,10 +14,10 @@ import {
   amendCommitState,
   commitErrorMessageState,
   commitMessageState,
+  commitTaskIdState,
   includedChangesState,
-  isCommitInProgressState,
 } from "./ChangesView.state";
-import { useCommit } from "./useCommit";
+import { useCommitChanges } from "./useCommitChanges";
 
 const StyledCommitMessageContainer = styled.div`
   background: ${({ theme }) =>
@@ -72,12 +72,12 @@ export function CommitView({
 }) {
   const commitMessageTextAreaRef = useRef<HTMLTextAreaElement>(null);
   const [commitMessage, setCommitMessage] = useRecoilState(commitMessageState);
-  const commit = useCommit();
+  const commit = useCommitChanges();
   const balloonManager = useBalloonManager();
   const [errorMessage, setErrorMessage] = useRecoilState(
     commitErrorMessageState
   );
-  const isCommitInProgress = useRecoilValue(isCommitInProgressState);
+  const commitTaskId = useRecoilValue(commitTaskIdState);
 
   useEffect(() => {
     if (commitMessage) {
@@ -107,37 +107,8 @@ export function CommitView({
         });
         return;
       }
-      set(isCommitInProgressState, true);
-      return commit(includedChanges, commitMessage)
-        .then(
-          () => {
-            balloonManager.show({
-              icon: "Info",
-              body: (
-                <>
-                  {`${commitSuccessfulMessage.format({
-                    count: includedChanges.length,
-                  })}: `}
-                  {commitMessage
-                    .split("\n")
-                    .flatMap((part, index) => [<br key={index} />, part])
-                    .slice(1)}
-                </>
-              ),
-            });
-          },
-          (e) => {
-            balloonManager.show({
-              icon: "Error",
-              title: "Commit failed!",
-              body: "Could not commit files.",
-            });
-            console.error("Commit error", e);
-          }
-        )
-        .finally(() => {
-          set(isCommitInProgressState, false);
-        });
+      commit(includedChanges, commitMessage);
+      // TODO: clear message and add an entry in commit message history
     };
   }, []);
 
@@ -174,7 +145,7 @@ export function CommitView({
           preventFocusOnPress
           variant={hasFocus ? "default" : undefined}
           onPress={commitSelectedChanges}
-          isDisabled={isCommitInProgress}
+          isDisabled={commitTaskId != null}
         >
           Commit
         </Button>

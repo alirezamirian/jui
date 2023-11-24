@@ -5,13 +5,13 @@ import {
   ActionTooltip,
   Divider,
   Item,
+  Link,
   Menu,
   MenuItemLayout,
   MenuTrigger,
   PlatformIcon,
   PopupTrigger,
   ProgressBar,
-  ProgressBarPauseButton,
   ProgressBarProps,
   ProgressBarStopButton,
   StatusBar,
@@ -19,12 +19,12 @@ import {
   TooltipTrigger,
 } from "@intellij-platform/core";
 import { editorCursorPositionState } from "../Editor/editor.state";
-import { switchToPersistentFsProcess } from "../usePersistenceFsNotification";
 import { BranchesPopup } from "../VersionControl/Branches/BranchesPopup";
 import { activeFileRepoHeadState } from "../VersionControl/active-file.state";
 import { notImplemented } from "../Project/notImplemented";
 import { useLatestRecoilValue } from "../recoil-utils";
-import { isCommitInProgressState } from "../VersionControl/Changes/ChangesView/ChangesView.state";
+import { firstTaskState, taskCountState, useCancelTask } from "../tasks";
+import { useShowGitTipIfNeeded } from "../VersionControl/useShowGitTipIfNeeded";
 
 const StyledLastMessage = styled.div`
   margin-left: 0.75rem;
@@ -37,39 +37,53 @@ function StatusBarProgress(
   return <ProgressBar dense namePosition="side" width={146} {...props} />;
 }
 
+const Spacer = styled.span`
+  width: 0.5rem;
+`;
+
 /**
  * Intentionally, "processes" haven't been abstracted as an extension point for different features, since the focus
  * here is not to create an IDE, but to demo UI components.
  */
 const StatusBarProcess = () => {
-  const process = useRecoilValue(switchToPersistentFsProcess);
-  const isCommitInProgress = useRecoilValue(isCommitInProgressState);
+  const firstTask = useRecoilValue(firstTaskState);
+  const tasksCount = useRecoilValue(taskCountState);
+  const cancel = useCancelTask();
 
   return (
     <>
-      {process && (
+      {firstTask && (
         <StatusBarProgress
-          name={process.name}
-          isIndeterminate={process.isIndeterminate}
-          value={process.progress}
+          name={firstTask.progress.text || firstTask.title}
+          isIndeterminate={firstTask.progress.isIndeterminate}
+          value={firstTask.progress.fraction}
+          maxValue={1}
           button={
             <>
-              {process.onPause && (
+              {/*
+              {task.canPause && (
                 <ProgressBarPauseButton
                   small
                   paused={false}
                   onPausedChange={() => {}}
                 />
               )}
-              {process.onCancel && (
-                <ProgressBarStopButton small onPress={process.onCancel} />
+              */}
+              {firstTask.isCancelable && (
+                <ProgressBarStopButton
+                  small
+                  onPress={() => cancel(firstTask.id)}
+                />
               )}
             </>
           }
         />
       )}
-      {isCommitInProgress && (
-        <StatusBarProgress name={"Committing..."} isIndeterminate />
+      {tasksCount > 1 && (
+        <>
+          <Spacer />
+          <Link onPress={notImplemented}>Show all ({tasksCount})</Link>
+        </>
       )}
     </>
   );
@@ -77,6 +91,7 @@ const StatusBarProcess = () => {
 
 export const IdeStatusBar = () => {
   const cursorPosition = useRecoilValue(editorCursorPositionState);
+  const maybeShowGitCloneTip = useShowGitTipIfNeeded();
 
   return (
     <StatusBar
@@ -145,6 +160,11 @@ export const IdeStatusBar = () => {
           </MenuTrigger>
           <PopupTrigger
             placement="top"
+            onOpenChange={(isOpen) => {
+              if (!isOpen) {
+                setTimeout(maybeShowGitCloneTip, 500);
+              }
+            }}
             popup={({ close }) => <BranchesPopup onClose={close} />}
           >
             <BranchPopupTrigger />

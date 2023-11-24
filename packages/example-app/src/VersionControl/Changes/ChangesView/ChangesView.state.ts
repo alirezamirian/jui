@@ -43,6 +43,7 @@ import {
   isChangeNode,
   isGroupNode,
 } from "./change-view-nodes";
+import { Task } from "../../../tasks";
 
 type MaybeRecoilValue<T> = T | RecoilValue<T>;
 
@@ -368,9 +369,9 @@ export const commitErrorMessageState = atom({
   default: "",
 });
 
-export const isCommitInProgressState = atom({
-  key: "changesView/commitInProgress",
-  default: false,
+export const commitTaskIdState = atom<Task["id"] | null>({
+  key: "changesView/commitTaskId",
+  default: null,
 });
 
 export const changesFromActivePaths = selector({

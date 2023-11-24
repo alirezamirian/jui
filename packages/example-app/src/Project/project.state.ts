@@ -1,4 +1,9 @@
-import { atom, selector, selectorFamily } from "recoil";
+import {
+  atom,
+  selector,
+  selectorFamily,
+  useRecoilRefresher_UNSTABLE,
+} from "recoil";
 import { dirContentState, FsItem } from "../fs/fs.state";
 import { filterPath } from "./project-utils";
 import { createFocusBasedSetterHook } from "../recoil-utils";
@@ -89,6 +94,9 @@ export const projectFilesState = selectorFamily({
       return files;
     },
 });
+
+export const useRefreshCurrentProjectFiles = () =>
+  useRecoilRefresher_UNSTABLE(currentProjectFilesState);
 
 /**
  * file/dir paths relevant to the currently active (focused) UI part. Different UI components such as Editor,

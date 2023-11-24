@@ -23,6 +23,7 @@ import { searchEverywhereState } from "../SearchEverywhere/searchEverywhere.stat
 import { useVcsActions } from "../VersionControl/useVcsActions";
 import { _balloonManagerRef } from "./notImplemented";
 import { PersistentStateProvider } from "./persistence/PersistentStateProvider";
+import { useTestActions } from "../testActions/useTestActions";
 
 const StyledWindowFrame = styled.div`
   display: flex;
@@ -50,6 +51,7 @@ export const Project = ({
   const allActions: ActionDefinition[] = [
     ...useProjectActions(),
     ...useVcsActions(),
+    ...useTestActions(),
   ];
 
   return (

@@ -26,7 +26,7 @@ const StyledDialogContent = styled.div`
   padding: 8px 16px;
 `;
 
-async function isSuccessfullyCloned(dir: string) {
+export async function isSuccessfullyCloned(dir: string) {
   try {
     const stats = await fs.promises.stat(dir);
     if (!stats.isDirectory()) {
@@ -57,7 +57,7 @@ export const SampleRepoInitializer: React.FC = ({ children }) => {
     async function init(dir: string, repoUrl: string) {
       if (!(await isSuccessfullyCloned(dir))) {
         setState("cloning");
-        await cloneRepo(dir, repoUrl);
+        await cloneRepo({ dir, url: repoUrl });
       }
     }
 
@@ -97,14 +97,19 @@ export const SampleRepoInitializer: React.FC = ({ children }) => {
   );
 };
 
-async function cloneRepo(dir: string, repoUrl: string) {
+export async function cloneRepo({
+  dir,
+  url,
+  onProgress,
+}: Pick<Parameters<typeof clone>[0], "url" | "dir" | "onProgress">) {
   console.log("cloning repo: ");
   await clone({
     fs,
-    url: repoUrl,
+    url,
     http,
     corsProxy: "https://cors.isomorphic-git.org",
     dir,
+    onProgress,
     singleBranch: true,
   });
 }

@@ -1,10 +1,9 @@
-import { atom, useSetRecoilState } from "recoil";
 import { BalloonActionLink, useBalloonManager } from "@intellij-platform/core";
-import React, { useEffect } from "react";
-// @ts-expect-error caf doesn't have typing :/
-import { CAF } from "caf";
-import { persistentFsPreference, switchToPersistentFS } from "./fs/fs";
 import path from "path";
+import React, { useEffect } from "react";
+
+import { persistentFsPreference, switchToPersistentFS } from "./fs/fs";
+import { useRunTask } from "./tasks";
 
 export interface ProcessState {
   state:
@@ -25,14 +24,10 @@ export interface ProcessState {
   onPause?: () => void;
 }
 
-export const switchToPersistentFsProcess = atom<ProcessState | null>({
-  key: "switchToPersistentFsProcess",
-  default: null,
-});
-
 export function usePersistenceFsNotification() {
   const balloons = useBalloonManager();
-  const setProcessState = useSetRecoilState(switchToPersistentFsProcess);
+
+  const runTask = useRunTask();
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -44,41 +39,25 @@ export function usePersistenceFsNotification() {
             <>
               <BalloonActionLink
                 onPress={() => {
-                  const token = new CAF.cancelToken();
-                  setProcessState({
-                    details: "Copying ...",
-                    isIndeterminate: true,
-                    state: "STARTED",
-                    progress: 0,
-                    onCancel: () => {
-                      token.abort("canceled");
-                    },
-                    name: "Switching to IndexedDB FS",
-                  });
-                  const update = (updates: Partial<ProcessState>) =>
-                    setProcessState((state) =>
-                      state ? { ...state, ...updates } : null
-                    );
-                  switchToPersistentFS({
-                    cancelSignal: token.signal,
-                    onCopy: (filepath) => {
-                      update({ name: `Copying ${path.dirname(filepath)}` });
-                    },
-                  })
-                    .then(() => {
-                      persistentFsPreference.set("yes");
-                    })
-                    .catch((e) => {
-                      if (e !== "canceled") {
-                        console.error(
-                          "Error during switch to persistent FS:",
-                          e
-                        );
-                      }
-                    })
-                    .finally(() => {
-                      setProcessState(null);
-                    });
+                  runTask(
+                    { title: "Switching to IndexedDB FS", isCancelable: true },
+                    async ({ setIndeterminate, setText }, cancelSignal) => {
+                      setText("Copying ...");
+                      setIndeterminate(true);
+                      await switchToPersistentFS({
+                        cancelSignal,
+                        onCopy: (filepath) => {
+                          setText(`Copying ${path.dirname(filepath)}`);
+                        },
+                      })
+                        .then(() => {
+                          persistentFsPreference.set("yes");
+                        })
+                        .catch(() => {
+                          // Do we need to do anything upon cancelation?
+                        });
+                    }
+                  );
                 }}
               >
                 Switch to IndexedDB FS
