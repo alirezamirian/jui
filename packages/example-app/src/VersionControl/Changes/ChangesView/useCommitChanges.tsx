@@ -12,6 +12,17 @@ import {
 import { Change, useRefreshChanges } from "../change-lists.state";
 import { useRunTask } from "../../../tasks";
 import { commitTaskIdState } from "./ChangesView.state";
+import { IntlMessageFormat } from "intl-messageformat";
+import { useBalloonManager } from "@intellij-platform/core";
+import React from "react";
+
+const commitSuccessfulMessage = new IntlMessageFormat(
+  `{count, plural,
+    =1 {1 file committed}
+    other {# files committed}
+  }`,
+  "en-US"
+);
 
 /**
  * Returns a commit callback to be used to commit a bunch of changes.
@@ -20,6 +31,7 @@ import { commitTaskIdState } from "./ChangesView.state";
 export function useCommitChanges() {
   const refreshChanges = useRefreshChanges();
   const refreshFileStatus = useUpdateVcsFileStatuses();
+  const balloonManager = useBalloonManager();
   const runTask = useRunTask();
 
   return useRecoilCallback(
@@ -79,14 +91,40 @@ export function useCommitChanges() {
                     });
                   }
                 )
+              ).then(
+                () => {
+                  // TODO: file status state and changes state separately use statusMatrix. It can be refactored for
+                  //  changes to be based on file status state.
+                  refreshChanges().catch(console.error);
+                  refreshFileStatus().catch(console.error);
+
+                  balloonManager.show({
+                    icon: "Info",
+                    body: (
+                      <>
+                        {`${commitSuccessfulMessage.format({
+                          count: changes.length,
+                        })}: `}
+                        {commitMessage
+                          .split("\n")
+                          .flatMap((part, index) => [<br key={index} />, part])
+                          .slice(1)}
+                      </>
+                    ),
+                  });
+                },
+                (e) => {
+                  balloonManager.show({
+                    icon: "Error",
+                    title: "Commit failed!",
+                    body: "Could not commit files.",
+                  });
+                  console.error("Commit error", e);
+                }
               );
             },
             onFinished: () => {
               set(commitTaskIdState, null);
-              // TODO: file status state and changes state separately use statusMatrix. It can be refactored for
-              //  changes to be based on file status state.
-              refreshChanges().catch(console.error);
-              refreshFileStatus().catch(console.error);
             },
           }
         );

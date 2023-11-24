@@ -5,6 +5,8 @@ import {
   selector,
   selectorFamily,
   useRecoilCallback,
+  useRecoilRefresher_UNSTABLE,
+  useResetRecoilState,
 } from "recoil";
 import { sampleRepos } from "../Project/project.state";
 import { findRoot, status, statusMatrix } from "isomorphic-git";
@@ -18,26 +20,37 @@ import { useEffect } from "react";
 import * as path from "path";
 import { asyncFilter } from "../async-utils";
 
-const temporaryVcsMappingsDefault = async (): Promise<
-  VcsDirectoryMapping[]
-> => {
-  return asyncFilter(
-    ({ dir }) => fs.promises.stat(dir).then(Boolean),
-    Object.values(sampleRepos).map(({ path }) => ({
-      dir: path,
-      vcs: "git",
-    }))
-  );
-};
-
 // This should be refactored to have the configuration file(s) as the source of truth.
+const temporaryVcsMappingsDefaultState = selector({
+  key: "vcsRoots/temporaryDefault",
+  get: async (): Promise<VcsDirectoryMapping[]> => {
+    return asyncFilter(
+      ({ dir }) => fs.promises.stat(dir).then(Boolean),
+      Object.values(sampleRepos).map(({ path }) => ({
+        dir: path,
+        vcs: "git",
+      }))
+    );
+  },
+});
 export const vcsRootsState = atom<VcsDirectoryMapping[]>({
   key: "vcsRoots",
-  default: selector({
-    key: "vcsRoots/temporaryDefault",
-    get: temporaryVcsMappingsDefault,
-  }),
+  default: temporaryVcsMappingsDefaultState,
 });
+
+/**
+ * temporary(?) hook to refresh vcs roots
+ */
+export const useRefreshVcsRoots = () => {
+  const refreshTemporaryVcsMappingsDefault = useRecoilRefresher_UNSTABLE(
+    temporaryVcsMappingsDefaultState
+  );
+  const refreshVcsRoots = useResetRecoilState(vcsRootsState);
+  return () => {
+    refreshTemporaryVcsMappingsDefault();
+    refreshVcsRoots();
+  };
+};
 
 /**
  * Given the absolute path of a file, returns the relevant VCS root path, if any.

@@ -54,13 +54,6 @@ const StyledErrorMessage = styled.div`
   position: sticky; // prevents commit message scroll jump when message is toggled on and off
   color: ${({ theme }) => theme.commonColors.red};
 `;
-const commitSuccessfulMessage = new IntlMessageFormat(
-  `{count, plural,
-    =1 {1 file committed}
-    other {# files committed}
-  }`,
-  "en-US"
-);
 
 /**
  * Commit message and commit buttons shown in the bottom/right split view of the commit toolwindow
@@ -85,7 +78,7 @@ export function CommitView({
     }
   }, [commitMessage]);
 
-  const commitSelectedChanges = useRecoilCallback(({ snapshot, set }) => {
+  const commitSelectedChanges = useRecoilCallback(({ snapshot }) => {
     const includedChanges = snapshot
       .getLoadable(includedChangesState)
       .getValue();
