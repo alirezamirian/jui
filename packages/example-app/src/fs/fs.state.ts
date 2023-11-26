@@ -6,10 +6,13 @@ import {
 } from "recoil";
 import { fs } from "./fs";
 import { Stats } from "@isomorphic-git/lightning-fs";
+import { basename } from "path";
 
 export interface FsItem {
   type: "dir" | "file";
+  name: string;
   path: string;
+  lastModification: number;
   size: number;
 }
 
@@ -40,7 +43,9 @@ export const dirContentState = selectorFamily({
     );
     return stats.map((stat) => ({
       type: stat.type,
+      name: basename(stat.filePath),
       path: stat.filePath,
+      lastModification: stat.mtimeMs,
       size: stat.size,
     }));
   },

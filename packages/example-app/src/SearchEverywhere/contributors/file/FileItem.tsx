@@ -31,7 +31,7 @@ export function FileItem({
   matches: null | TextRange[];
 }) {
   const { isSelected } = useContext(ItemStateContext) || {};
-  const title = path.basename(file.relativePath);
+  const title = file.name;
   const dir = path.dirname(file.relativePath);
 
   const [dirMatches, filenameMatches] = splitWhen<TextRange, TextRange>(

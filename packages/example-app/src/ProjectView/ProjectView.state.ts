@@ -12,7 +12,6 @@ import { currentProjectState, Project } from "../Project/project.state";
 import { dirContentState, FsItem } from "../fs/fs.state";
 import { filterPath } from "../Project/project-utils";
 import { getParentPaths } from "../file-utils";
-import * as path from "path";
 import { vcsRootsState } from "../VersionControl/file-status.state";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
 
@@ -73,6 +72,32 @@ export const currentProjectTreeState = selector({
   },
 });
 
+type FilesTreeSort = "name"; // more to be added
+
+// TODO: add more sort options and add "Tree Appearance" option in Project tool window settings menu.
+export const projectTreeSortState = atom<FilesTreeSort>({
+  key: "project.tree.sort",
+  default: "name",
+});
+
+/**
+ * NOTE: using in-place native sort for performance.
+ * See more https://www.measurethat.net/Benchmarks/Show/6698/0/ramda-sort-vs-js-native-sort
+ */
+function sortProjectTreeNodes(items: FileTreeNode[]): void {
+  // TODO: add sortBy: FileTreeSort parameter
+  // TODO: add directoriesOnTop: boolean parameter
+  items.sort((item1, item2) => {
+    if (item1.name < item2.name) {
+      return -1;
+    }
+    if (item1.name > item2.name) {
+      return 1;
+    }
+    return 0;
+  });
+}
+
 // NOTE: this function could be sync, and those `await`s before `get` are unnecessary. They are there simply because
 // I didn't realize `get` returns the value, not Promise. But interestingly, when this function is made sync,
 // performance drastically drops for some reason. That needs to be investigated.
@@ -84,10 +109,8 @@ async function createProjectTree(
   const mapItem =
     (parent: FileTreeDirNode | null) =>
     async (item: FsItem): Promise<FileTreeNode | null> => {
-      const name = path.basename(item.path);
       const node = {
         ...item,
-        name,
         parent,
       };
       const dirNode: FileTreeDirNode = { ...node, children: [] };
@@ -100,6 +123,7 @@ async function createProjectTree(
               )
             )
           ).filter(notNull);
+          sortProjectTreeNodes(dirNode.children);
           return dirNode;
         }
         return null;
@@ -107,14 +131,16 @@ async function createProjectTree(
       return node;
     };
 
+  const children = (
+    await Promise.all((rootItems || []).map(mapItem(null)))
+  ).filter(notNull);
+  sortProjectTreeNodes(children);
   return {
     type: "project",
     path: project.path,
     name: project.name,
     parent: null,
-    children: (await Promise.all((rootItems || []).map(mapItem(null)))).filter(
-      notNull
-    ),
+    children,
   };
 }
 
