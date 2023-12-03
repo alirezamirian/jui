@@ -284,3 +284,23 @@ export function useProgressBarPauseIconButton(
   }, [paused]);
   return useProgressBarIconButton(props, ref);
 }
+
+/**
+ * Experimenting with an idea of exposing parts on each component, to maximize styling customizability, similar to
+ * [classes](https://mui.com/joy-ui/api/button/#classes) API in MUI components. But instead of passing classes prop,
+ * one would be able to create custom versions of a component by doing something like this:
+ * const CustomComponent = styled(Component)`
+ *   ${Component.part1} {
+ *     // custom style here
+ *   }
+ * `;
+ * The question is if this type of customizability is actually a good thing in the balance between flexibility for
+ * catering for different use cases and not stepping out of the design system boundaries.
+ * Another potential downside is that the public API expands to the anatomy of the component.
+ */
+ProgressBar.Container = StyledProgressBarContainer;
+ProgressBar.Label = StyledProgressBarLabel;
+ProgressBar.LineContainer = StyledProgressBarLineContainer;
+ProgressBar.Track = StyledProgressBarTrack;
+ProgressBar.Progress = StyledProgressBarProgress;
+ProgressBar.Details = StyledProgressBarDetails;
