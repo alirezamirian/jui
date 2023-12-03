@@ -5,6 +5,10 @@ import { AriaBaseButtonProps, ButtonProps } from "@react-types/button";
 
 export interface BareButtonProps extends AriaBaseButtonProps, ButtonProps {
   children: React.ReactElement;
+
+  // NOTE: there is a chance of unchecked breaking change here, since this is not explicitly mentioned as public API
+  // of useButton, but it is passed to the underlying usePress.
+  preventFocusOnPress?: boolean; // Should this be become true by default?
 }
 
 /**
