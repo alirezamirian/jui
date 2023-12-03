@@ -1,14 +1,17 @@
 import React, { ForwardedRef } from "react";
 import { AriaLinkProps } from "@react-types/link";
-import { useLink } from "@react-aria/link";
 import useForwardedRef from "@intellij-platform/core/utils/useForwardedRef";
-import { FocusRing } from "@react-aria/focus";
+import { FocusRing, useFocusable } from "@react-aria/focus";
 import { StyledLink } from "@intellij-platform/core/Link/StyledLink";
+import { usePress } from "@react-aria/interactions";
+import { filterDOMProps, mergeProps } from "@react-aria/utils";
 
 export type LinkProps = AriaLinkProps & {
   isDisabled?: boolean;
   className?: string;
   children: React.ReactNode;
+  preventFocusOnPress?: boolean; // Should this be become true by default?
+  excludeFromTabOrder?: boolean;
 };
 
 /**
@@ -29,20 +32,27 @@ export const Link = React.forwardRef(
     forwardedRef: ForwardedRef<HTMLAnchorElement>
   ): React.ReactElement => {
     const ref = useForwardedRef(forwardedRef);
-    const { linkProps, isPressed } = useLink(
-      { ...props, elementType: "span" },
-      ref
-    );
+
+    const { focusableProps } = useFocusable(props, ref);
+    const { pressProps, isPressed } = usePress({ ...props, ref });
+    const domProps = filterDOMProps(props, { labelable: true });
+    const interactionHandlers = mergeProps(focusableProps, pressProps);
+
     return (
       <FocusRing focusRingClass="focus-visible">
         <StyledLink
-          {...linkProps}
+          {...mergeProps(focusableProps, interactionHandlers, domProps)}
           as="span"
+          role="link"
           ref={ref}
           // maybe use clsx
           className={`${props.isDisabled ? "disabled" : ""} ${
             isPressed ? "active" : ""
           } ${props.className || ""}`}
+          aria-disabled={props.isDisabled || undefined}
+          tabIndex={
+            !props.isDisabled ? (props.excludeFromTabOrder ? -1 : 0) : undefined
+          }
         >
           {props.children}
         </StyledLink>
