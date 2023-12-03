@@ -19,7 +19,13 @@ export const StatusBar = ({
   right,
 }: StatusBarProps): React.ReactElement => {
   return (
-    <StyledStatusBar>
+    <StyledStatusBar
+      onMouseDown={(e) => {
+        // stop focus from going out of the currently focused element, when status bar is clicked
+        // might be too intrusive to prevent default unconditionally :-? Also, it may make sense for it to be an option
+        e.preventDefault();
+      }}
+    >
       <StyledStatusBarLeft>{left}</StyledStatusBarLeft>
       <StyledStatusBarRight>{right}</StyledStatusBarRight>
     </StyledStatusBar>

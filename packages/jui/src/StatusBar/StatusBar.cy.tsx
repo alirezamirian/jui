@@ -9,6 +9,23 @@ describe("StatusBar", () => {
     cy.mount(<Default />);
     matchImageSnapshot("StatusBar-default");
   });
+
+  it("prevents focus from getting lost, when clicked", () => {
+    cy.mount(
+      <>
+        <input />
+        <div>
+          <Default />
+        </div>
+      </>
+    );
+    cy.get("input").focus();
+    cy.findByTestId("statusbar").click();
+    cy.get("input").should("be.focused");
+    // test both when the container is clicked and when something inside is clicked.
+    cy.findByTestId("statusbar").findByRole("button").click();
+    cy.get("input").should("be.focused");
+  });
 });
 
 function matchImageSnapshot(snapshotsName: string) {
