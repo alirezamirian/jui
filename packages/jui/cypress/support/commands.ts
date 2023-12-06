@@ -38,12 +38,12 @@ declare global {
     interface Chainable {
       /**
        * Custom command to perform resize action on an element with resize handle on `side`
-       * @example cy.resizeLeft('left', 50) // increase size by 50 pixels, using left resize handle.
-       * @example cy.resizeLeft('left', -50) // decrease size by 50 pixels, using left resize handle.
-       * @example cy.resizeLeft('top', 50) // increase size by 50 pixels, using top resize handle.
-       * @example cy.resizeLeft('top', -50) // decrease size by 50 pixels, using top resize handle.
+       * @example cy.resizeFromSide('left', 50) // increase size by 50 pixels, using left resize handle.
+       * @example cy.resizeFromSide('left', -50) // decrease size by 50 pixels, using left resize handle.
+       * @example cy.resizeFromSide('top', 50) // increase size by 50 pixels, using top resize handle.
+       * @example cy.resizeFromSide('top', -50) // decrease size by 50 pixels, using top resize handle.
        */
-      resize(
+      resizeFromSide(
         side: "left" | "right" | "top" | "bottom",
         value: number
       ): Chainable<JQuery<HTMLElement>>;
@@ -58,7 +58,7 @@ declare global {
 }
 
 Cypress.Commands.add(
-  "resize",
+  "resizeFromSide",
   { prevSubject: "element" },
   (subject, side, value) => {
     return cy

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import {
   DefaultToolWindow,
+  DefaultToolWindows,
   Theme,
   ThemeProvider,
   ToolWindowRefValue,
   ToolWindowsState,
-  ToolWindowState,
   toolWindowState,
-  DefaultToolWindows,
+  ToolWindowState,
 } from "@intellij-platform/core";
 import darculaThemeJson from "../../themes/darcula.theme.json";
 import { KeymapProvider } from "@intellij-platform/core/ActionSystem";
@@ -17,7 +17,10 @@ const window = (id: string) => ({
   title: id,
   icon: null,
   content: (
-    <DefaultToolWindow data-testid={`${id}`} headerContent={id}>
+    <DefaultToolWindow
+      data-testid={`${id}`}
+      headerContent={<span style={{ whiteSpace: "nowrap" }}>{id}</span>}
+    >
       <input />
       <input />
     </DefaultToolWindow>
@@ -55,6 +58,19 @@ const SimpleToolWindows = React.forwardRef(
     );
   }
 );
+
+describe("DefaultToolWindowHeader", () => {
+  beforeEach(() => {
+    cy.viewport("macbook-13");
+  });
+  it("overflows the header title out, in small sizes, without pushing the content", () => {
+    cy.mount(<SimpleToolWindows />);
+    cy.findByTestId("First window").resizeFromSide("right", -150);
+    cy.percySnapshot("DefaultToolWindowHeader--overflow", {
+      scope: '[data-testid="First window"]',
+    });
+  });
+});
 
 describe("DefaultToolWindowActions", () => {
   beforeEach(() => {

@@ -93,8 +93,14 @@ describe("Popup", () => {
           interactions="all"
         />
       );
-      cy.get("#popup").resize("left", -50).invoke("width").should("eq", 100);
-      cy.get("#popup").resize("left", 50).invoke("width").should("eq", 150);
+      cy.get("#popup")
+        .resizeFromSide("left", -50)
+        .invoke("width")
+        .should("eq", 100);
+      cy.get("#popup")
+        .resizeFromSide("left", 50)
+        .invoke("width")
+        .should("eq", 150);
       cy.wrap(onBoundsChange).should("be.calledTwice");
       cy.wrap(onBoundsChange).should(
         "be.calledWithMatch",
@@ -116,8 +122,14 @@ describe("Popup", () => {
           interactions="all"
         />
       );
-      cy.get("#popup").resize("right", -50).invoke("width").should("eq", 100);
-      cy.get("#popup").resize("right", 50).invoke("width").should("eq", 150);
+      cy.get("#popup")
+        .resizeFromSide("right", -50)
+        .invoke("width")
+        .should("eq", 100);
+      cy.get("#popup")
+        .resizeFromSide("right", 50)
+        .invoke("width")
+        .should("eq", 150);
       cy.wrap(onBoundsChange).should("be.calledTwice");
       cy.wrap(onBoundsChange).should(
         "be.calledWithMatch",
@@ -139,8 +151,14 @@ describe("Popup", () => {
           interactions="all"
         />
       );
-      cy.get("#popup").resize("top", -50).invoke("height").should("eq", 100);
-      cy.get("#popup").resize("top", 50).invoke("height").should("eq", 150);
+      cy.get("#popup")
+        .resizeFromSide("top", -50)
+        .invoke("height")
+        .should("eq", 100);
+      cy.get("#popup")
+        .resizeFromSide("top", 50)
+        .invoke("height")
+        .should("eq", 150);
       cy.wrap(onBoundsChange).should("be.calledTwice");
       cy.wrap(onBoundsChange).should(
         "be.calledWithMatch",
@@ -162,8 +180,14 @@ describe("Popup", () => {
           interactions="all"
         />
       );
-      cy.get("#popup").resize("bottom", -50).invoke("height").should("eq", 100);
-      cy.get("#popup").resize("bottom", 50).invoke("height").should("eq", 150);
+      cy.get("#popup")
+        .resizeFromSide("bottom", -50)
+        .invoke("height")
+        .should("eq", 100);
+      cy.get("#popup")
+        .resizeFromSide("bottom", 50)
+        .invoke("height")
+        .should("eq", 150);
       cy.wrap(onBoundsChange).should("be.calledTwice");
       cy.wrap(onBoundsChange).should(
         "be.calledWithMatch",
@@ -187,7 +211,10 @@ describe("Popup", () => {
           interactions="all"
         />
       );
-      cy.get("#popup").resize("right", -40).invoke("width").should("eq", 130);
+      cy.get("#popup")
+        .resizeFromSide("right", -40)
+        .invoke("width")
+        .should("eq", 130);
       cy.wrap(onBoundsChanging).should(
         "be.calledOnceWith",
         Cypress.sinon.match({ left: 50, top: 150, width: 130, height: 100 }),
@@ -224,7 +251,7 @@ describe("Popup", () => {
         />
       );
       cy.contains("Title").move(-50, 50);
-      cy.get("#popup").resize("bottom", -50);
+      cy.get("#popup").resizeFromSide("bottom", -50);
       cy.get("#popup")
         .invoke("offset")
         .should("deep.equal", { left: 100, top: 100 });
@@ -242,7 +269,7 @@ describe("Popup", () => {
         />
       );
       cy.contains("Title").move(-50, 50);
-      cy.get("#popup").resize("left", 50).move(-50, 50);
+      cy.get("#popup").resizeFromSide("left", 50).move(-50, 50);
       cy.get("#popup")
         .invoke("offset")
         .should("deep.equal", { left: 50, top: 150 });
