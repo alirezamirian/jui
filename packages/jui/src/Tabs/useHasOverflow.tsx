@@ -24,10 +24,10 @@ export function useHasOverflow<T extends HTMLElement>({
       const offsetBottom =
         element.scrollHeight - (element.offsetHeight + element.scrollTop);
       const newHasOverflow = {
-        top: offsetTop >= threshold,
-        bottom: offsetBottom >= threshold,
-        left: offsetLeft >= threshold,
-        right: offsetRight >= threshold,
+        top: offsetTop > threshold,
+        bottom: offsetBottom > threshold,
+        left: offsetLeft > threshold,
+        right: offsetRight > threshold,
       };
       if (
         hasOverflow.top !== newHasOverflow.top ||
