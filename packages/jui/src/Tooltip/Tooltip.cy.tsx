@@ -23,9 +23,9 @@ describe("TooltipTrigger", () => {
     workaroundHoverIssue();
     cy.get("button").first().realHover();
 
-    cy.get("[role=tooltip]") // waiting for tooltip to appear
+    cy.findByRole("tooltip") // waiting for tooltip to appear
       .realMouseMove(10, 10); // moving mouse out of the trigger and onto the tooltip.
-    cy.get("[role=tooltip]").should("not.exist"); //tooltip should be closed
+    cy.findByRole("tooltip").should("not.exist"); //tooltip should be closed
   });
 
   it("allows user to click links in a tooltip, if any", () => {
@@ -34,9 +34,9 @@ describe("TooltipTrigger", () => {
     workaroundHoverIssue();
     cy.get("button").realHover();
 
-    cy.get("[role=tooltip]") // waiting for tooltip to appear
+    cy.findByRole("tooltip") // waiting for tooltip to appear
       .realMouseMove(10, 10); // moving mouse out of the trigger and onto the tooltip.
-    cy.get("[role=tooltip]"); //tooltip should not be closed
+    cy.findByRole("tooltip"); //tooltip should not be closed
   });
 
   it("doesn't show the tooltip if tooltip is disabled", () => {
@@ -51,18 +51,18 @@ describe("TooltipTrigger", () => {
     cy.mount(<Default />);
     workaroundHoverIssue();
     cy.get("button").first().realHover();
-    cy.get("[role=tooltip]"); // waiting for tooltip to appear
+    cy.findByRole("tooltip"); // waiting for tooltip to appear
     cy.get("button").click();
-    cy.get("[role=tooltip]").should("not.exist"); // tooltip should not be closed
+    cy.findByRole("tooltip").should("not.exist"); // tooltip should not be closed
   });
 
   it("doesn't close the tooltip on click, if the trigger is an input", () => {
     cy.mount(<OnInput />);
     workaroundHoverIssue();
     cy.get("input").first().realHover();
-    cy.get("[role=tooltip]"); // waiting for tooltip to appear
+    cy.findByRole("tooltip"); // waiting for tooltip to appear
     cy.get("input").click();
-    cy.get("[role=tooltip]"); // tooltip should not be closed
+    cy.findByRole("tooltip"); // tooltip should not be closed
   });
 });
 
@@ -78,9 +78,9 @@ describe("PositionedTooltipTrigger", () => {
       </PositionedTooltipTrigger>
     );
     cy.get("input").first().focus();
-    cy.get("[role=tooltip]").should("exist");
+    cy.findByRole("tooltip").should("exist");
     cy.get("input").first().blur();
-    cy.get("[role=tooltip]").should("not.exist");
+    cy.findByRole("tooltip").should("not.exist");
   });
 
   it("closes the tooltip when the tooltip is disabled while being open", () => {
@@ -102,9 +102,15 @@ describe("PositionedTooltipTrigger", () => {
       );
     };
     cy.mount(<Example />);
-    cy.get("[role=tooltip]").should("exist");
+    cy.get("input").then((input) => {
+      // autofocus doesn't seem to work sometimes on CI runs, for some reason.
+      if (!input.is(":focused")) {
+        cy.get("input").focus();
+      }
+    });
+    cy.findByRole("tooltip").should("exist");
     cy.realType("a");
-    cy.get("[role=tooltip]").should("not.exist");
+    cy.findByRole("tooltip").should("not.exist");
   });
 });
 
