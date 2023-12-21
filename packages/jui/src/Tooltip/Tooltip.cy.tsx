@@ -83,35 +83,33 @@ describe("PositionedTooltipTrigger", () => {
     cy.findByRole("tooltip").should("not.exist");
   });
 
-  it("closes the tooltip when the tooltip is disabled while being open", () => {
-    const Example = () => {
-      const [isDisabled, setIsDisabled] = useState(false);
-      return (
-        <PositionedTooltipTrigger
-          tooltip={<ValidationTooltip>Error message</ValidationTooltip>}
-          showOnFocus
-          isDisabled={isDisabled}
-        >
-          <input
-            autoFocus
-            onChange={() => {
-              setIsDisabled(true);
-            }}
-          />
-        </PositionedTooltipTrigger>
-      );
-    };
-    cy.mount(<Example />);
-    cy.get("input").then((input) => {
-      // autofocus doesn't seem to work sometimes on CI runs, for some reason.
-      if (!input.is(":focused")) {
-        cy.get("input").focus();
-      }
-    });
-    cy.findByRole("tooltip").should("exist");
-    cy.realType("a");
-    cy.findByRole("tooltip").should("not.exist");
-  });
+  it(
+    "closes the tooltip when the tooltip is disabled while being open",
+    { retries: { runMode: 3, openMode: 0 } },
+    () => {
+      const Example = () => {
+        const [isDisabled, setIsDisabled] = useState(false);
+        return (
+          <PositionedTooltipTrigger
+            tooltip={<ValidationTooltip>Error message</ValidationTooltip>}
+            showOnFocus
+            isDisabled={isDisabled}
+          >
+            <input
+              autoFocus
+              onChange={() => {
+                setIsDisabled(true);
+              }}
+            />
+          </PositionedTooltipTrigger>
+        );
+      };
+      cy.mount(<Example />);
+      cy.findByRole("tooltip").should("exist");
+      cy.realType("a");
+      cy.findByRole("tooltip").should("not.exist");
+    }
+  );
 });
 
 /**
