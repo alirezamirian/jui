@@ -1,13 +1,13 @@
 import { RefObject, UIEventHandler, useEffect, useState } from "react";
 
-export function useIsScrolled<T extends HTMLElement>({
+export function useHasOverflow<T extends HTMLElement>({
   threshold = 5,
   ref,
 }: {
   threshold?: number;
   ref: RefObject<T>;
 }) {
-  const [isScrolled, setIsScrolled] = useState({
+  const [hasOverflow, setHasOverflow] = useState({
     left: false,
     right: false,
     top: false,
@@ -23,19 +23,19 @@ export function useIsScrolled<T extends HTMLElement>({
       const offsetTop = element.scrollTop;
       const offsetBottom =
         element.scrollHeight - (element.offsetHeight + element.scrollTop);
-      const newIsScrolled = {
-        top: offsetTop >= threshold,
-        bottom: offsetBottom >= threshold,
-        left: offsetLeft >= threshold,
-        right: offsetRight >= threshold,
+      const newHasOverflow = {
+        top: offsetTop > threshold,
+        bottom: offsetBottom > threshold,
+        left: offsetLeft > threshold,
+        right: offsetRight > threshold,
       };
       if (
-        isScrolled.top !== isScrolled.top ||
-        isScrolled.bottom !== newIsScrolled.bottom ||
-        isScrolled.left !== newIsScrolled.left ||
-        isScrolled.right !== newIsScrolled.right
+        hasOverflow.top !== newHasOverflow.top ||
+        hasOverflow.bottom !== newHasOverflow.bottom ||
+        hasOverflow.left !== newHasOverflow.left ||
+        hasOverflow.right !== newHasOverflow.right
       ) {
-        setIsScrolled(newIsScrolled);
+        setHasOverflow(newHasOverflow);
       }
     }
   };
@@ -45,6 +45,6 @@ export function useIsScrolled<T extends HTMLElement>({
     scrolledIndicatorProps: {
       onScroll: update as UIEventHandler<T>,
     },
-    isScrolled,
+    hasOverflow,
   };
 }
