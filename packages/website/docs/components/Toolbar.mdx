@@ -1,7 +1,250 @@
 ---
 ---
 
-import { RefToIntellijPlatform } from "@site/src/components/RefToIntellijPlatform.tsx";
-import { Example } from "@site/src/components/ExampleContext";
+import { ApiDescription } from "@site/src/components/ApiDescription";
+import { Toolbar } from "@intellij-platform/core";
 
 # Toolbar
+
+<ApiDescription of={Toolbar} />
+
+```jsx live themed
+<Toolbar>
+  <IconButton aria-label="Hide">
+    <PlatformIcon icon="actions/arrowCollapse" />
+  </IconButton>
+  <ToolbarSeparator />
+  <IconButton aria-label="Add">
+    <PlatformIcon icon="general/add" />
+  </IconButton>
+  <IconButton aria-label="Checkout">
+    <PlatformIcon icon="actions/checkOut" />
+  </IconButton>
+  <IconButton aria-label="Delete">
+    <PlatformIcon icon="actions/gc" />
+  </IconButton>
+  <IconButton aria-label="Show Diff">
+    <PlatformIcon icon="actions/diff" />
+  </IconButton>
+  <IconButton aria-label="Find">
+    <PlatformIcon icon="actions/find" />
+  </IconButton>
+  <ToolbarSeparator />
+  <IconButton aria-label="Expand All">
+    <PlatformIcon icon="actions/expandall" />
+  </IconButton>
+  <IconButton aria-label="Collapse All">
+    <PlatformIcon icon="actions/collapseall" />
+  </IconButton>
+</Toolbar>
+```
+
+## Orientation
+
+By default, toolbar is horizontal. To make it vertical, set `orientation` prop to `"vertical"`:
+
+```jsx live themed
+<Toolbar orientation="vertical">
+  <IconButton aria-label="Hide">
+    <PlatformIcon icon="actions/arrowCollapse" />
+  </IconButton>
+  <ToolbarSeparator />
+  <IconButton aria-label="Add">
+    <PlatformIcon icon="general/add" />
+  </IconButton>
+  <IconButton aria-label="Checkout">
+    <PlatformIcon icon="actions/checkOut" />
+  </IconButton>
+  <IconButton aria-label="Delete">
+    <PlatformIcon icon="actions/gc" />
+  </IconButton>
+</Toolbar>
+```
+
+## Overflow
+
+When there is not enough room to show all its items, an arrow icon will appear at the end.
+Hovering over this arrow will display the rest of the items in a popup.
+
+```jsx live themed
+function OverflowExample() {
+  const [orientation, setOrientation] = useState("horizontal");
+  const [size, setSize] = useState(140);
+  return (
+    <>
+      <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
+        <div>
+          <label>
+            <input
+              type="radio"
+              value="horizontal"
+              checked={orientation === "horizontal"}
+              onChange={(event) => setOrientation(event.target.value)}
+            />
+            Horizontal
+          </label>
+          <label>
+            <input
+              type="radio"
+              value="vertical"
+              checked={orientation === "vertical"}
+              onChange={(event) => setOrientation(event.target.value)}
+            />
+            Vertical
+          </label>
+        </div>
+        <label style={{ display: "inline-flex", gap: "0.25rem" }}>
+          Size
+          <input
+            type="range"
+            value={size}
+            step="10"
+            min="20"
+            max="500"
+            onChange={(event) => setSize(event.target.valueAsNumber)}
+          />
+        </label>
+      </div>
+      <div style={{ [orientation === "vertical" ? "height" : "width"]: size }}>
+        <Toolbar orientation={orientation}>
+          <IconButton aria-label="Hide">
+            <PlatformIcon icon="actions/arrowCollapse" />
+          </IconButton>
+          <ToolbarSeparator />
+          <IconButton aria-label="Add">
+            <PlatformIcon icon="general/add" />
+          </IconButton>
+          <IconButton aria-label="Checkout">
+            <PlatformIcon icon="actions/checkOut" />
+          </IconButton>
+          <IconButton aria-label="Delete">
+            <PlatformIcon icon="actions/gc" />
+          </IconButton>
+          <IconButton aria-label="Show Diff">
+            <PlatformIcon icon="actions/diff" />
+          </IconButton>
+          <IconButton aria-label="Find">
+            <PlatformIcon icon="actions/find" />
+          </IconButton>
+          <ToolbarSeparator />
+          <IconButton aria-label="Expand All">
+            <PlatformIcon icon="actions/expandall" />
+          </IconButton>
+          <IconButton aria-label="Collapse All">
+            <PlatformIcon icon="actions/collapseall" />
+          </IconButton>
+        </Toolbar>
+      </div>
+    </>
+  );
+}
+```
+
+### Wrapping overflowing children
+
+In horizontal toolbars, `overflowBehavior` prop can be set to `wrap` which allows overflowing items to wrap into
+multiple lines, instead of the default way of handling overflow in a popup.
+
+```jsx live themed
+<div style={{ width: 100 }}>
+  <Toolbar overflowBehavior="wrap">
+    <IconButton aria-label="Hide">
+      <PlatformIcon icon="actions/arrowCollapse" />
+    </IconButton>
+    <ToolbarSeparator />
+    <IconButton aria-label="Add">
+      <PlatformIcon icon="general/add" />
+    </IconButton>
+    <IconButton aria-label="Checkout">
+      <PlatformIcon icon="actions/checkOut" />
+    </IconButton>
+    <IconButton aria-label="Delete">
+      <PlatformIcon icon="actions/gc" />
+    </IconButton>
+    <IconButton aria-label="Show Diff">
+      <PlatformIcon icon="actions/diff" />
+    </IconButton>
+  </Toolbar>
+</div>
+```
+
+## Other children
+
+While toolbar is primarily used to render a list of action buttons,
+[other components](https://jetbrains.github.io/ui/controls/toolbar/#02) can also be rendered
+inside a toolbar, and the overflow behavior works regardless.
+
+```jsx live themed noInline
+const StyledToolbarDropdownButton = styled.button`
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding-left: 0.25rem;
+  background: ${({ theme }) => theme.color("ComboBoxButton.background")};
+  color: ${({ theme }) => theme.color("ComboBox.disabledForeground")};
+  &:hover {
+    color: ${({ theme }) => theme.color("*.foreground")};
+  }
+`;
+function ToolbarChildrenExample() {
+  return (
+    <div style={{ width: 140 }}>
+      <Toolbar>
+        <MenuTrigger
+          renderMenu={({ menuProps }) => (
+            <Menu {...menuProps}>
+              <Item>Select...</Item>
+              <Item>Last 24 hours</Item>
+              <Item>Last 7 days</Item>
+            </Menu>
+          )}
+        >
+          {(props, ref) => (
+            <StyledToolbarDropdownButton {...props} ref={ref}>
+              Date <PlatformIcon icon="general/arrowDownSmall.svg" />
+            </StyledToolbarDropdownButton>
+          )}
+        </MenuTrigger>
+        <MenuTrigger
+          renderMenu={({ menuProps }) => (
+            <Menu {...menuProps}>
+              <Item>Select...</Item>
+              <Item>me</Item>
+            </Menu>
+          )}
+        >
+          {(props, ref) => (
+            <StyledToolbarDropdownButton {...props} ref={ref}>
+              User <PlatformIcon icon="general/arrowDownSmall.svg" />
+            </StyledToolbarDropdownButton>
+          )}
+        </MenuTrigger>
+        <MenuTrigger
+          renderMenu={({ menuProps }) => (
+            <Menu {...menuProps}>
+              <Item>Select in...</Item>
+              <Item>Select in Tree...</Item>
+            </Menu>
+          )}
+        >
+          {(props, ref) => (
+            <StyledToolbarDropdownButton {...props} ref={ref}>
+              Paths <PlatformIcon icon="general/arrowDownSmall.svg" />
+            </StyledToolbarDropdownButton>
+          )}
+        </MenuTrigger>
+        <ToolbarSeparator />
+        <TooltipTrigger
+          tooltip={<ActionTooltip actionName={"Open New Git Log Tab"} />}
+        >
+          <IconButton aria-label="Checkout">
+            <PlatformIcon icon="actions/openNewTab.svg" />
+          </IconButton>
+        </TooltipTrigger>
+      </Toolbar>
+    </div>
+  );
+}
+render(<ToolbarChildrenExample />);
+```

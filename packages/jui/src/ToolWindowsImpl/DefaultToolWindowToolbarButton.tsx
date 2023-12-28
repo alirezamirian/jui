@@ -2,6 +2,7 @@ import React from "react";
 import { Shortcut, useAction } from "@intellij-platform/core/ActionSystem";
 import { ActionTooltip, TooltipTrigger } from "@intellij-platform/core/Tooltip";
 import { getActivateToolWindowActionId } from "./useToolWindowsActions";
+import styled from "styled-components";
 
 const getToolWindowNumberFromShortcut = (shortcut: Shortcut): number | null => {
   const num =
@@ -14,6 +15,10 @@ const getToolWindowNumberFromShortcut = (shortcut: Shortcut): number | null => {
   }
   return null;
 };
+
+const StyledWrapper = styled.span`
+  display: flex;
+`;
 
 /**
  * Default UI for the toolbar button (aka. stripe button) of the tool window.
@@ -42,7 +47,7 @@ export const DefaultToolWindowToolbarButton = ({
     <TooltipTrigger
       tooltip={<ActionTooltip actionName={title} shortcut={action?.shortcut} />}
     >
-      <span>
+      <StyledWrapper>
         {icon}
         &nbsp;
         {number != null && showNumber ? (
@@ -51,7 +56,7 @@ export const DefaultToolWindowToolbarButton = ({
           </>
         ) : null}
         {title}
-      </span>
+      </StyledWrapper>
     </TooltipTrigger>
   );
 };

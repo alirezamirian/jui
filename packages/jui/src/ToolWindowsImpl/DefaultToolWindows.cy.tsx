@@ -241,7 +241,7 @@ describe("DefaultToolWindowActions", () => {
 function WithActivateToolWindowKeymap({
   initialState,
 }: {
-  initialState?: { [id: string]: ToolWindowState };
+  initialState?: Record<string, ToolWindowState>;
 }) {
   return (
     <KeymapProvider

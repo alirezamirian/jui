@@ -15,7 +15,7 @@ const DarculaSeparatorUI: SeparatorUI = {
 const defaultSize =
   2 * DarculaSeparatorUI.STRIPE_INDENT + DarculaSeparatorUI.STRIPE_WIDTH;
 
-const StyledSeparator = styled.hr(({ theme }) => ({
+export const StyledSeparator = styled.hr(({ theme }) => ({
   backgroundColor: theme.color(
     "Separator.separatorColor",
     theme.dark ? "#cdcdcd" : "#515151"

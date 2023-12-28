@@ -74,7 +74,7 @@ export const FakeExecutionToolbar = ({
   execution: Execution;
   toggle: (executionId: string) => void;
 }) => (
-  <Toolbar hasBorder>
+  <Toolbar border="bottom">
     <IconButton onPress={() => toggle(id)}>
       <PlatformIcon icon={isRunning ? "actions/restart" : "actions/execute"} />
     </IconButton>

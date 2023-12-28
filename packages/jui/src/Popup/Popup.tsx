@@ -26,7 +26,7 @@ import { PopupContext, PopupControllerContext } from "./PopupContext";
 import { PopupLayout } from "./PopupLayout";
 import { StyledPopupHint } from "./StyledPopupHint";
 
-const StyledPopupContainer = styled.div`
+export const StyledPopupContainer = styled.div`
   position: fixed;
   box-sizing: border-box;
   // not checked if there should be a better substitute for * in the following colors. Maybe "Component"?
@@ -175,6 +175,7 @@ export const _Popup = (
   return (
     <Overlay>
       <OverlayInteractionHandler {...overlayInteractionHandlerProps}>
+        {/* TODO: FocusScope is redundant. Test focus restoration without it (in status bar progress), and remove it if unnecessary */}
         <FocusScope restoreFocus>
           <StyledPopupContainer
             ref={ref}
