@@ -53,6 +53,7 @@ const StyledToolWindowHeaderContent = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
+  overflow: hidden;
 `;
 
 export const DefaultToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({

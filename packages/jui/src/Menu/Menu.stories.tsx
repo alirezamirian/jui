@@ -260,7 +260,7 @@ export const ContextMenu: StoryObj<{
                 />
               </Item>
               <Divider />
-              <Item textValue="Go to">
+              <Item title="Go to">
                 <Item textValue="Navigation Bar">
                   <MenuItemLayout content="Navigation Bar" shortcut="`⌘↑`" />
                 </Item>

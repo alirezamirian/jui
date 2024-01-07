@@ -175,7 +175,9 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
           </div>
           <FirstResizer
             onResizeStarted={() => {
-              const size = getSize(firstViewRef.current!);
+              const size = firstViewRef.current
+                ? getSize(firstViewRef.current)
+                : 0;
               setFirstSizeState(firstSize ?? size);
               return size;
             }}

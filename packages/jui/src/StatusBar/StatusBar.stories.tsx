@@ -1,5 +1,5 @@
 import React from "react";
-import { Meta, StoryFn, StoryObj } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react";
 import styled from "styled-components";
 import { PlatformIcon } from "@intellij-platform/core/Icon";
 import { StatusBarWidget } from "@intellij-platform/core/StatusBar/StatusBarWidget";
@@ -98,7 +98,9 @@ export default {
   render: (props) => {
     return (
       <StyledContainer>
-        <StatusBar {...props} />
+        <div data-testid="statusbar">
+          <StatusBar {...props} />
+        </div>
       </StyledContainer>
     );
   },

@@ -5,9 +5,10 @@ import { useTabListState } from "@react-stately/tabs";
 import { AriaTabListProps } from "@react-types/tabs";
 import { StyledHorizontalOverflowShadows } from "./StyledHorizontalOverflowShadows";
 import { TabsOverflowMenu } from "./TabsOverflowMenu";
-import { useCollectionOverflowObserver } from "./useCollectionOverflowObserver";
+import { useOverflowObserver } from "../utils/overflow-utils/useOverflowObserver";
 import { useHasOverflow } from "./useHasOverflow";
-import { styled, css } from "@intellij-platform/core/styled";
+import { css, styled } from "@intellij-platform/core/styled";
+import { notNull } from "@intellij-platform/core/utils/array-utils";
 import { StyledDefaultTab } from "./StyledDefaultTab";
 import { StyledDefaultTabs } from "./StyledDefaultTabs";
 import { Tab } from "./Tab";
@@ -120,8 +121,14 @@ export const Tabs = <T extends object>({
   const { tabListProps } = useTabList(props, state, ref);
 
   const { scrolledIndicatorProps, hasOverflow } = useHasOverflow({ ref });
-  const { overflowedKeys, intersectionObserver } =
-    useCollectionOverflowObserver(ref);
+  const { overflowedElements } = useOverflowObserver(ref);
+  const overflowedKeys = new Set(
+    overflowedElements
+      .map((element) =>
+        element instanceof HTMLElement ? element.dataset["key"] : null
+      )
+      .filter(notNull)
+  );
 
   useEffect(() => {
     if (!noScroll) {
@@ -162,7 +169,6 @@ export const Tabs = <T extends object>({
               focusable={focusable}
               active={active}
               Component={TabComponent}
-              intersectionObserver={intersectionObserver}
             />
           ))}
         </StyledTabList>

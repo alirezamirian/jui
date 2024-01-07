@@ -3,28 +3,33 @@ import {
   RecoilValue,
   useRecoilCallback,
   useRecoilRefresher_UNSTABLE,
+  useRecoilState,
   useRecoilValueLoadable,
   useSetRecoilState,
 } from "recoil";
 import { FocusEvent, useEffect, useRef, useState } from "react";
 import { equals } from "ramda";
 
-export const createFocusBasedSetterHook =
-  <T extends unknown, N extends T = T>(state: RecoilState<T>, nullValue: N) =>
-  (value: T) => {
+export const createFocusBasedSetterHook = <T extends unknown, N extends T = T>(
+  state: RecoilState<T>,
+  nullValue: N
+) => {
+  let focusedElement: Element | null = null;
+  return (value: T, name: string = "unknown") => {
     const setValue = useSetRecoilState(state);
-    const isFocusedRef = useRef(false);
+    const elementRef = useRef<Element>();
     useEffect(() => {
-      if (isFocusedRef.current) {
+      if (focusedElement === elementRef.current) {
         setValue((currentValue) =>
           equals(value, currentValue) ? currentValue : value
         );
       }
     }, [value]);
     return {
-      onFocus: () => {
+      onFocus: (e: FocusEvent) => {
+        elementRef.current = e.currentTarget;
+        focusedElement = e.currentTarget;
         setValue(value);
-        isFocusedRef.current = true;
       },
       onBlur: (e: FocusEvent) => {
         if (
@@ -42,10 +47,10 @@ export const createFocusBasedSetterHook =
           return;
         }
         setValue(nullValue);
-        isFocusedRef.current = false;
       },
     };
   };
+};
 
 /**
  * Returns the latest value of a recoil value, or null, if the value is being loaded for the first time.

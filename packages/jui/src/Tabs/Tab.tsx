@@ -2,12 +2,12 @@ import { useTab } from "@react-aria/tabs";
 import { TabListState } from "@react-stately/tabs";
 import { Node } from "@react-types/shared";
 import { StyledDefaultTab } from "./StyledDefaultTab";
-import React, { useEffect } from "react";
+import React, { ForwardedRef, forwardRef, RefObject, useEffect } from "react";
+import useForwardedRef from "@intellij-platform/core/utils/useForwardedRef";
 
 type TabProps<T extends object> = {
   state: TabListState<object>;
   item: Node<T>;
-  intersectionObserver: IntersectionObserver | null;
   /**
    * {@see TabsProps#focusable}
    */
@@ -19,16 +19,12 @@ type TabProps<T extends object> = {
   Component?: typeof StyledDefaultTab;
 };
 
-export const Tab = <T extends object>({
-  state,
-  item,
-  focusable,
-  active,
-  Component = StyledDefaultTab,
-  intersectionObserver,
-}: TabProps<T>): React.ReactElement => {
+export const Tab = forwardRef(function Tab<T extends object>(
+  { state, item, focusable, active, Component = StyledDefaultTab }: TabProps<T>,
+  forwardedRef: ForwardedRef<HTMLDivElement>
+): React.ReactElement {
   const { key, rendered } = item;
-  const ref = React.useRef(null);
+  const ref = useForwardedRef(forwardedRef);
   const {
     tabProps: {
       /**
@@ -41,7 +37,6 @@ export const Tab = <T extends object>({
   } = useTab({ key }, state, ref);
   const isSelected = state.selectedKey === key;
   const isDisabled = state.disabledKeys.has(key);
-  useIntersectionObserver(ref, intersectionObserver);
 
   return (
     <Component
@@ -55,19 +50,4 @@ export const Tab = <T extends object>({
       {rendered}
     </Component>
   );
-};
-
-function useIntersectionObserver(
-  ref: React.MutableRefObject<null>,
-  intersectionObserver: IntersectionObserver | null
-) {
-  useEffect(() => {
-    const element = ref.current;
-    if (element) {
-      intersectionObserver?.observe(element);
-      return () => {
-        intersectionObserver?.unobserve(element);
-      };
-    }
-  }, [intersectionObserver]);
-}
+});

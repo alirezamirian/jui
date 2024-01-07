@@ -1,4 +1,4 @@
-import React, { HTMLProps, RefObject } from "react";
+import React, { HTMLAttributes, RefObject } from "react";
 import { useButton } from "@react-aria/button";
 import { useMenuTrigger } from "@react-aria/menu";
 import { useOverlay, useOverlayPosition } from "@react-aria/overlays";
@@ -7,6 +7,7 @@ import { useMenuTriggerState } from "@react-stately/menu";
 import { MenuTriggerProps as AriaMenuTriggerProps } from "@react-types/menu";
 
 import { MenuOverlay } from "./MenuOverlay";
+import { AriaButtonProps } from "@react-types/button";
 
 export interface MenuTriggerProps
   extends Omit<AriaMenuTriggerProps, "closeOnSelect"> {
@@ -14,7 +15,7 @@ export interface MenuTriggerProps
   // TODO: replace render function children with normal children, and utilize PressResponder. Add a story for the
   //  edge case of custom trigger, using PressResponder
   children: (
-    props: HTMLProps<HTMLElement>,
+    props: HTMLAttributes<HTMLButtonElement>,
     ref: RefObject<any> // Using a generic didn't seem to work for some reason
   ) => React.ReactNode;
   // NOTE: there is a chance of unchecked breaking change here, since this is not explicitly mentioned as public API
@@ -60,14 +61,12 @@ export const MenuTrigger: React.FC<MenuTriggerProps> = ({
     state,
     triggerRef
   );
-  const { buttonProps } = useButton(
-    {
-      ...triggerProps,
-      // @ts-expect-error: preventFocusOnPress is not defined in public API of useButton
-      preventFocusOnPress,
-    },
-    triggerRef
-  );
+  const ariaButtonProps: AriaButtonProps<"button"> = {
+    ...triggerProps,
+    // @ts-expect-error: preventFocusOnPress is not defined in public API of useButton
+    preventFocusOnPress,
+  };
+  const { buttonProps } = useButton(ariaButtonProps, triggerRef);
   const { overlayProps } = useOverlay(
     {
       onClose: () => {

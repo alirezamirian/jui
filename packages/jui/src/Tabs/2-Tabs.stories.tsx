@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { MenuItemLayout, PlatformIcon } from "@intellij-platform/core";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { TabContentLayout, TabItem, TabsProps } from ".";
 import { Tabs } from "./Tabs";
 import { DOMProps } from "@react-types/shared";
@@ -53,12 +53,14 @@ export const DynamicItems: StoryObj<StoryProps> = {
 
 export const Overflow: StoryObj<StoryProps & { maxWidth: number }> = {
   render: ({ maxWidth = 800, ...props }) => {
-    const tabs = Array(10)
-      .fill(null)
-      .map((_, index) => ({
-        title: `Big tab title #${index}`,
-        icon: "nodes/folder",
-      }));
+    const [tabs, setTabs] = useState(
+      Array(10)
+        .fill(null)
+        .map((_, index) => ({
+          title: `Big tab title #${index}`,
+          icon: "nodes/folder",
+        }))
+    );
     return (
       <div style={{ maxWidth }}>
         <Tabs {...props} items={tabs}>
@@ -66,7 +68,7 @@ export const Overflow: StoryObj<StoryProps & { maxWidth: number }> = {
             const icon = <PlatformIcon icon={tab.icon} />;
             return (
               <TabItem
-                key={tab.title}
+                key={tabs.indexOf(tab)}
                 textValue={tab.title}
                 inOverflowMenu={
                   <MenuItemLayout content={tab.title} icon={icon} />
@@ -77,6 +79,45 @@ export const Overflow: StoryObj<StoryProps & { maxWidth: number }> = {
             );
           }}
         </Tabs>
+        <div style={{ marginTop: "1rem" }}>
+          <button
+            onClick={() => {
+              setTabs((tabs) => [
+                ...tabs,
+                {
+                  title: `Big tab title #${tabs.length}`,
+                  icon: "nodes/folder",
+                },
+              ]);
+            }}
+          >
+            Add tab
+          </button>
+          <button
+            onClick={() => {
+              setTabs((tabs) =>
+                tabs.map((tab, index) => {
+                  if (index === 4) {
+                    const title = tab.title;
+                    return {
+                      ...tab,
+                      title:
+                        title.replace(/ \(.*\)/, "") +
+                        ` ( edited - ${
+                          title.includes("short")
+                            ? "long long long long"
+                            : "short"
+                        })`,
+                    };
+                  }
+                  return tab;
+                })
+              );
+            }}
+          >
+            Change title of tab #4
+          </button>
+        </div>
       </div>
     );
   },

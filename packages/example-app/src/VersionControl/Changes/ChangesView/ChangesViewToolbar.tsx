@@ -15,7 +15,7 @@ import { VcsActionIds } from "../../VcsActionIds";
 
 export function ChangesViewToolbar() {
   return (
-    <Toolbar hasBorder>
+    <Toolbar border="bottom">
       <ActionButton actionId={VcsActionIds.REFRESH} />
       <ActionButton actionId={VcsActionIds.ROLLBACK} />
       <ActionButton actionId={VcsActionIds.SHOW_DIFF} />

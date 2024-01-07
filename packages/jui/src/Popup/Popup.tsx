@@ -1,7 +1,7 @@
 import React, { ForwardedRef, RefObject, useContext, useState } from "react";
 import { DOMProps } from "@react-types/shared";
 import { useFocusWithin, useInteractOutside } from "@react-aria/interactions";
-import { useFocusable } from "@react-aria/focus";
+import { FocusScope, useFocusable } from "@react-aria/focus";
 import { useOverlay, usePreventScroll } from "@react-aria/overlays";
 import { filterDOMProps, useObjectRef } from "@react-aria/utils";
 import { pipe } from "ramda";
@@ -26,7 +26,7 @@ import { PopupContext, PopupControllerContext } from "./PopupContext";
 import { PopupLayout } from "./PopupLayout";
 import { StyledPopupHint } from "./StyledPopupHint";
 
-const StyledPopupContainer = styled.div`
+export const StyledPopupContainer = styled.div`
   position: fixed;
   box-sizing: border-box;
   // not checked if there should be a better substitute for * in the following colors. Maybe "Component"?
@@ -175,34 +175,37 @@ export const _Popup = (
   return (
     <Overlay>
       <OverlayInteractionHandler {...overlayInteractionHandlerProps}>
-        <StyledPopupContainer
-          ref={ref}
-          style={{
-            ...positionedBounds,
-            zIndex,
-          }}
-          tabIndex={-1}
-          {...mergeNonNullProps(
-            focusWithinProps,
-            focusableProps,
-            focusForwarderProps,
-            overlayProps,
-            propsContext.overlayProps || {},
-            dialogProps,
-            filterDOMProps(props)
-          )}
-        >
-          <PopupContext.Provider
-            value={{
-              isActive,
-              movable: interactions !== "none",
-              titleProps,
+        {/* TODO: FocusScope is redundant. Test focus restoration without it (in status bar progress), and remove it if unnecessary */}
+        <FocusScope restoreFocus>
+          <StyledPopupContainer
+            ref={ref}
+            style={{
+              ...positionedBounds,
+              zIndex,
             }}
+            tabIndex={-1}
+            {...mergeNonNullProps(
+              focusWithinProps,
+              focusableProps,
+              focusForwarderProps,
+              overlayProps,
+              propsContext.overlayProps || {},
+              dialogProps,
+              filterDOMProps(props)
+            )}
           >
-            <StyledInnerContainer>{props.children}</StyledInnerContainer>
-            {interactions === "all" && <OverlayResizeHandles />}
-          </PopupContext.Provider>
-        </StyledPopupContainer>
+            <PopupContext.Provider
+              value={{
+                isActive,
+                movable: interactions !== "none",
+                titleProps,
+              }}
+            >
+              <StyledInnerContainer>{props.children}</StyledInnerContainer>
+              {interactions === "all" && <OverlayResizeHandles />}
+            </PopupContext.Provider>
+          </StyledPopupContainer>
+        </FocusScope>
       </OverlayInteractionHandler>
     </Overlay>
   );

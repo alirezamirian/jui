@@ -35,11 +35,10 @@ export function useSvgIcon(
       if (svg) {
         if (!unmounted && ref?.current) {
           if (ref) {
-            // potential SSR issues here?
             ref.current?.querySelector("svg")?.remove();
             const svgElement = document.createElement("svg");
             ref.current?.appendChild(svgElement);
-            svgElement.outerHTML = svg;
+            svgElement.outerHTML = makeIdsUnique(svg); // UNSAFE! Would require sanitization, or icon sources must be trusted.
             delete ref.current?.dataset.loadingIcon;
           }
         }
@@ -52,4 +51,31 @@ export function useSvgIcon(
       unmounted = true;
     };
   }, [path, selected]);
+}
+
+/**
+ * If multiple instance of the same icon is rendered at the same time, and the SVG includes
+ * url(#...) references to locally defined ids, in some cases the icon is not rendered properly.
+ * because of ids colliding. We make sure the ids are unique in each rendered icon.
+ */
+function makeIdsUnique(svg: string): string {
+  const randomPostfix = (Math.random() * 1000).toFixed(0);
+  const idMatches = svg.matchAll(/id="(.*?)"/g);
+  return [...idMatches].reduce((modifiedSvg, [_, id]) => {
+    const newId = `${id}-${randomPostfix}`;
+    return replaceAll(
+      `id="${id}"`,
+      `id="${newId}"`,
+      replaceAll(`url(#${id})`, `url(#${newId})`, modifiedSvg)
+    );
+  }, svg);
+}
+
+function replaceAll(theOld: string, theNew: string, str: string): string {
+  const replaced = str.replace(theOld, theNew);
+  const replacedAgain = replaced.replace(theOld, theNew);
+  if (replaced === replacedAgain) {
+    return replaced;
+  }
+  return replaceAll(theOld, theNew, replacedAgain);
 }

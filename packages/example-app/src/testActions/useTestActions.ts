@@ -37,5 +37,5 @@ function getProcessName(num: number) {
   if (num / 10.0 == Math.round(num / 10.0)) {
     return "";
   }
-  return "Found: " + num / 20 + 1;
+  return "Found: " + Math.round(num / 20) + 1;
 }
