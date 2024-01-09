@@ -18,7 +18,7 @@ import {
   ActionContext,
   ActionDefinition,
   MutableAction,
-} from "@intellij-platform/core/ActionSystem/Action";
+} from "./Action";
 
 /**
  * Represents the properties required for the ActionsProvider component.
@@ -131,7 +131,11 @@ function recursivelyCreateActions(
   parent?: ActionGroup
 ): Array<Action | ActionInResolvedGroup | ActionGroup> {
   return actionDefinitions.map((actionDefinition: ActionDefinition): Action => {
-    const shortcuts = keymap?.[actionDefinition.id];
+    const shortcuts =
+      keymap?.[actionDefinition.id] ??
+      (actionDefinition.useShortcutsOf
+        ? keymap?.[actionDefinition.useShortcutsOf]
+        : undefined);
     const firstShortcut = shortcuts?.[0];
     const action: MutableAction | ActionInResolvedGroup = {
       ...actionDefinition,

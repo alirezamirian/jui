@@ -1,5 +1,5 @@
 import { groupByDirectory } from "./groupByDirectory";
-import { ChangeNode } from "./change-view-nodes";
+import { ChangeNode } from "../VersionControl/Changes/ChangesView/change-view-nodes";
 import { readFileSync } from "fs";
 import { performance } from "perf_hooks";
 

@@ -259,7 +259,7 @@ export const availableGroupingsState = selector({
           : grouping.isAvailable
       )
       .map((grouping) => ({
-        grouping,
+        ...grouping,
         isActive: get(changesGroupingState(grouping.id)),
       })),
 });
@@ -294,8 +294,8 @@ export const changesTreeNodesState = selector<{
     const changeLists = get(changeListsState);
     const groupFns = get(availableGroupingsState)
       .filter(({ isActive }) => isActive)
-      .map(({ grouping }) => {
-        return resolve(grouping.groupFn);
+      .map(({ groupFn }) => {
+        return resolve(groupFn);
       });
 
     const groupChanges = (changes: readonly ChangeNode[]) =>

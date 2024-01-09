@@ -39,9 +39,9 @@ export type RepoBranches = {
   remoteBranches: RemoteBranch[];
 };
 
-type BranchType = "LOCAL" | "REMOTE";
+export type BranchType = "LOCAL" | "REMOTE";
 
-type BranchInfo = {
+export type BranchInfo = {
   repoRoot: string;
   branchType: BranchType;
   branchName: string;
@@ -236,6 +236,7 @@ const branchInfoArrayChecker = array(
     repoRoot: string(),
   })
 );
+
 const favoriteBranchesState = atom<ReadonlyArray<BranchInfo>>({
   key: "vcs/branches/favorite",
   default: [],
@@ -258,6 +259,19 @@ const favoriteBranchesState = atom<ReadonlyArray<BranchInfo>>({
       },
     }),
   ],
+});
+
+export const isFavoriteBranchState = selectorFamily({
+  key: "vcs/branches/isFavorite",
+  get:
+    (branchInfo: BranchInfo) =>
+    ({ get }) => {
+      return isFavorite(
+        get(favoriteBranchesState),
+        get(excludedFromFavoriteBranchesState),
+        branchInfo
+      );
+    },
 });
 
 const excludedFromFavoriteBranchesState = atom<ReadonlyArray<BranchInfo>>({

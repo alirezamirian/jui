@@ -5,14 +5,18 @@ import {
   ToolWindowState,
   toolWindowState,
 } from "@intellij-platform/core";
+
 import { Terminal } from "../Terminal";
 import { ProjectToolWindow } from "../ProjectView/ProjectToolWindow";
 import {
   COMMIT_TOOLWINDOW_ID,
   CommitToolWindow,
 } from "../VersionControl/CommitToolWindow";
-
 import { UNSAFE_FocusRestoringSuspense } from "../UNSAFE_FocusRestoringSuspense";
+import {
+  VERSION_CONTROL_TOOLWINDOW_ID,
+  VersionControlToolWindow,
+} from "../VersionControl/VersionControlToolWindow/VersionControlToolWindow";
 
 export type ToolWindowDescriptor = {
   id: string;
@@ -50,5 +54,16 @@ export const toolWindows: ToolWindowDescriptor[] = [
       </Suspense>
     ),
     initialState: toolWindowState({ anchor: "left", isVisible: false }),
+  },
+  {
+    id: VERSION_CONTROL_TOOLWINDOW_ID,
+    title: "Version Control",
+    icon: <PlatformIcon icon="toolwindows/toolWindowChanges" />,
+    content: (
+      <Suspense fallback={<UNSAFE_FocusRestoringSuspense />}>
+        <VersionControlToolWindow />
+      </Suspense>
+    ),
+    initialState: toolWindowState({ anchor: "bottom", weight: 0.35 }),
   },
 ];
