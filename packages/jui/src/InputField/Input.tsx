@@ -7,10 +7,10 @@ import React, {
 } from "react";
 import { mergeProps, useObjectRef } from "@react-aria/utils";
 import { useFocusable } from "@react-aria/focus";
-import { styled } from "@intellij-platform/core/styled";
-import { UnknownThemeProp } from "@intellij-platform/core/Theme";
 import { ValidationState } from "@react-types/shared";
 import { useFocusWithin } from "@react-aria/interactions";
+import { UnknownThemeProp } from "@intellij-platform/core/Theme";
+import { styled } from "@intellij-platform/core/styled";
 
 const StyledInputBox = styled.div<{
   disabled?: boolean;
@@ -40,12 +40,15 @@ const StyledInputBox = styled.div<{
             focused: focused,
           })};
   border-radius: 1px;
+  cursor: text; // the whole box moves focus to the input
+  overflow: hidden;
 `;
 
 const StyledInput = styled.input<{ disabled?: boolean }>`
   all: unset;
   padding: 0.1875rem 0.375rem;
   flex: 1; // fill in the available space within the input box
+  min-width: 0;
   line-height: 1rem;
   color: ${({ theme }) =>
     theme.color(
@@ -76,12 +79,36 @@ const StyledInput = styled.input<{ disabled?: boolean }>`
   }
 `;
 
+const StyledAddons = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem; /* TODO: check */
+  padding: 1px 0;
+`;
+const StyledRightAddons = styled(StyledAddons)`
+  margin-right: 0.125rem; /* TODO: check */
+`;
+
+const StyledLeftAddons = styled(StyledAddons)`
+  margin-left: 0.375rem; /* TODO: check */
+`;
+
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   validationState?: ValidationState;
   /**
    * Whether to auto select the value initially
    */
   autoSelect?: boolean;
+
+  /**
+   * Rendered inside the input box and after the input element.
+   * Used to render [Built-in buttons](https://jetbrains.github.io/ui/controls/built_in_button/).
+   */
+  addonAfter?: React.ReactNode;
+  /**
+   * Rendered inside the input box and before the input element.
+   */
+  addonBefore?: React.ReactNode;
 }
 
 /**
@@ -89,11 +116,18 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
  * - Support for "invalid" state ({@param validationState}
  * - Support for autoSelect.
  * - Disables spell check by default. It can be overwritten.
- * - TODO: support for addons within the input box, before and after the input area.
  * Use {@link InputField} for more features like an associated label, error message and context help.
  */
 export const Input = React.forwardRef(function Input(
-  { validationState, autoSelect, ...props }: InputProps,
+  {
+    validationState,
+    autoSelect,
+    addonBefore,
+    addonAfter,
+    style,
+    className,
+    ...props
+  }: InputProps,
   forwardedRef: ForwardedRef<HTMLInputElement>
 ) {
   const ref = useObjectRef(forwardedRef);
@@ -118,12 +152,23 @@ export const Input = React.forwardRef(function Input(
   return (
     <StyledInputBox
       spellCheck={false}
-      {...mergeProps(focusWithinProps)}
+      {...mergeProps(focusWithinProps, {
+        className,
+        style,
+        onMouseDown: (event: MouseEvent) => {
+          if (event.target !== ref.current) {
+            event.preventDefault();
+            ref.current.focus();
+          }
+        },
+      })}
       focused={isFocused}
       validationState={validationState}
       disabled={props.disabled}
     >
+      {addonBefore && <StyledLeftAddons>{addonBefore}</StyledLeftAddons>}
       <StyledInput ref={ref} {...mergeProps(props, focusableProps)} />
+      {addonAfter && <StyledRightAddons>{addonAfter}</StyledRightAddons>}
     </StyledInputBox>
   );
 });

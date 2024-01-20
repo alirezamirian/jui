@@ -10,6 +10,7 @@ const {
   LabelAbove,
   WithPlaceholder,
   WithContextHelp,
+  WithBeforeAndAfterAddons,
 } = composeStories(stories);
 
 describe("InputField", () => {
@@ -28,6 +29,7 @@ describe("InputField", () => {
         <WithPlaceholder />
         <Disabled />
         <WithContextHelp />
+        <WithBeforeAndAfterAddons />
         <Invalid />
         <Invalid /> {/* Focused */}
       </div>

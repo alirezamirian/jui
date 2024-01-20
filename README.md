@@ -291,8 +291,39 @@ https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8
             <td>✅</td>
         </tr>
         <tr>
-            <td rowspan="1" colspan="3"><a href="https://jetbrains.github.io/ui/controls/input_field/">InputField</a></td>
-            <td><a href="https://github.com/alirezamirian/jui/issues/46">✅</a></td>
+            <td rowspan="4"><a href="https://jetbrains.github.io/ui/controls/input_field/">InputField</a></td>
+        </tr>
+        <tr>
+            <td colspan="2">Basic support (
+               <a href="https://jetbrains.github.io/ui/controls/input_field/#validation">validation</a>, 
+               <a href="https://jetbrains.github.io/ui/controls/input_field/#12">label placement</a>, 
+               <a href="https://jetbrains.github.io/ui/principles/context_help/">context help</a>, 
+               <a href="https://jetbrains.github.io/ui/controls/input_field/#label">disabled</a>)
+            </td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td colspan="2"><a href="https://jetbrains.github.io/ui/controls/built_in_button/">Built-in buttons</a></td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td colspan="2"><a href="https://jetbrains.github.io/ui/controls/input_field/#23">Expandable</a></td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td rowspan="3"><a href="https://jetbrains.github.io/ui/controls/search_field/">SearchField</a></td>
+        </tr>
+        <tr>
+            <td colspan="2">Basic SearchField</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td colspan="2">With history popup</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="3"><a href="https://jetbrains.github.io/ui/controls/link/">Link</a></td>
+            <td>✅</td>
         </tr>
     </tbody>
 

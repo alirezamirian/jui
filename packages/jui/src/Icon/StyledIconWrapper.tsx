@@ -6,6 +6,7 @@ const DEFAULT_ICON_SIZE: IconSize = 16;
 export const StyledIconWrapper = styled.span<{
   size?: IconSize;
   useCurrentColor?: boolean;
+  role?: string;
 }>`
   box-sizing: border-box;
   display: inline-flex;
@@ -15,4 +16,5 @@ export const StyledIconWrapper = styled.span<{
   width: ${({ size = DEFAULT_ICON_SIZE }) => `${size}px`};
   height: ${({ size = DEFAULT_ICON_SIZE }) => `${size}px`};
   position: relative; // to allow absolute positioned indicators and overlays on icon
+  cursor: ${({ role }) => (role === "button" ? "pointer" : undefined)};
 `;

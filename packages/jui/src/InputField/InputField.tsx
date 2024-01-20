@@ -13,13 +13,14 @@ import {
   PositionedTooltipTrigger,
   ValidationTooltip,
 } from "@intellij-platform/core/Tooltip";
-import { Input } from "@intellij-platform/core/InputField/Input";
+import { Input, InputProps } from "@intellij-platform/core/InputField/Input";
 
 type LabelPlacement = "above" | "before";
 
 export interface InputFieldProps
   extends Omit<AriaFieldProps, "labelElementType">,
-    FocusableProps {
+    FocusableProps,
+    Pick<InputProps, "addonBefore" | "addonAfter"> {
   /**
    * className applied on the field's wrapper div.
    */
@@ -110,6 +111,8 @@ export const InputField = React.forwardRef(function InputField(
     labelPlacement = "before",
     contextHelp,
     inputProps = {},
+    addonBefore,
+    addonAfter,
     ...props
   }: InputFieldProps,
   forwardedRef: ForwardedRef<HTMLInputElement>
@@ -147,6 +150,8 @@ export const InputField = React.forwardRef(function InputField(
             validationState={props.validationState}
             autoSelect={props.autoSelect}
             autoFocus={props.autoFocus}
+            addonAfter={addonAfter}
+            addonBefore={addonBefore}
             {...mergeProps(fieldProps, inputProps, {
               value: props.value,
               defaultValue: props.defaultValue,
