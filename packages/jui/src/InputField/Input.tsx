@@ -1,12 +1,11 @@
 import React, {
   ForwardedRef,
-  HTMLProps,
   InputHTMLAttributes,
   useEffect,
   useState,
 } from "react";
 import { mergeProps, useObjectRef } from "@react-aria/utils";
-import { useFocusable } from "@react-aria/focus";
+import { FocusableOptions, useFocusable } from "@react-aria/focus";
 import { ValidationState } from "@react-types/shared";
 import { useFocusWithin } from "@react-aria/interactions";
 import { UnknownThemeProp } from "@intellij-platform/core/Theme";
@@ -109,6 +108,11 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
    * Rendered inside the input box and before the input element.
    */
   addonBefore?: React.ReactNode;
+
+  /**
+   * Ref to the underlying input element
+   */
+  inputRef?: React.Ref<HTMLInputElement>;
 }
 
 /**
@@ -126,16 +130,27 @@ export const Input = React.forwardRef(function Input(
     addonAfter,
     style,
     className,
+    inputRef: inputRefProp,
+    onKeyDown,
+    onKeyUp,
+    onFocus,
+    onBlur,
+    autoFocus,
     ...props
   }: InputProps,
-  forwardedRef: ForwardedRef<HTMLInputElement>
+  forwardedRef: ForwardedRef<HTMLDivElement>
 ) {
   const ref = useObjectRef(forwardedRef);
+  const inputRef = useObjectRef(inputRefProp);
   const { focusableProps } = useFocusable(
     {
       isDisabled: props.disabled,
-      ...(props as HTMLProps<Element>),
-    },
+      autoFocus,
+      onFocus,
+      onBlur,
+      onKeyDown,
+      onKeyUp,
+    } as FocusableOptions,
     ref
   );
   const [isFocused, setIsFocused] = useState(false);
@@ -145,20 +160,21 @@ export const Input = React.forwardRef(function Input(
 
   useEffect(() => {
     if (autoSelect) {
-      ref.current.select();
+      inputRef.current.select();
     }
   }, [autoSelect]);
 
   return (
     <StyledInputBox
+      ref={ref}
       spellCheck={false}
       {...mergeProps(focusWithinProps, {
         className,
         style,
         onMouseDown: (event: MouseEvent) => {
-          if (event.target !== ref.current) {
+          if (event.target !== inputRef.current) {
             event.preventDefault();
-            ref.current.focus();
+            inputRef.current.focus();
           }
         },
       })}
@@ -167,7 +183,7 @@ export const Input = React.forwardRef(function Input(
       disabled={props.disabled}
     >
       {addonBefore && <StyledLeftAddons>{addonBefore}</StyledLeftAddons>}
-      <StyledInput ref={ref} {...mergeProps(props, focusableProps)} />
+      <StyledInput ref={inputRef} {...mergeProps(props, focusableProps)} />
       {addonAfter && <StyledRightAddons>{addonAfter}</StyledRightAddons>}
     </StyledInputBox>
   );

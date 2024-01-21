@@ -65,9 +65,15 @@ describe("InputField", () => {
   });
 
   describe("react API", () => {
-    it("forwards ref to the input element", () => {
+    it("forwards ref to the container div element", () => {
       const ref = React.createRef<HTMLInputElement>();
       cy.mount(<InputField ref={ref} />);
+      cy.wrap(ref).its("current").should("be.instanceOf", HTMLDivElement);
+    });
+
+    it("forwards inputRef to the input element", () => {
+      const ref = React.createRef<HTMLInputElement>();
+      cy.mount(<InputField inputRef={ref} />);
       cy.wrap(ref).its("current").should("be.instanceOf", HTMLInputElement);
     });
   });

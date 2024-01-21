@@ -44,7 +44,7 @@ describe("TooltipTrigger", () => {
     workaroundHoverIssue();
     cy.get("button").first().realHover();
 
-    cy.wait(100).get("[role=tooltip]").should("not.exist");
+    cy.wait(100).findByRole("tooltip").should("not.exist");
   });
 
   it("closes the tooltip when trigger is clicked", () => {

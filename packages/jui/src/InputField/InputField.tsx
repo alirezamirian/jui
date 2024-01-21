@@ -20,7 +20,7 @@ type LabelPlacement = "above" | "before";
 export interface InputFieldProps
   extends Omit<AriaFieldProps, "labelElementType">,
     FocusableProps,
-    Pick<InputProps, "addonBefore" | "addonAfter"> {
+    Pick<InputProps, "addonBefore" | "addonAfter" | "inputRef"> {
   /**
    * className applied on the field's wrapper div.
    */
@@ -113,9 +113,10 @@ export const InputField = React.forwardRef(function InputField(
     inputProps = {},
     addonBefore,
     addonAfter,
+    inputRef,
     ...props
   }: InputFieldProps,
-  forwardedRef: ForwardedRef<HTMLInputElement>
+  forwardedRef: ForwardedRef<HTMLDivElement>
 ): JSX.Element {
   const ref = useObjectRef(forwardedRef);
   const { fieldProps, errorMessageProps, labelProps, descriptionProps } =
@@ -123,6 +124,7 @@ export const InputField = React.forwardRef(function InputField(
 
   return (
     <StyledInputContainer
+      ref={ref}
       labelPlacement={labelPlacement}
       className={className}
       style={style}
@@ -144,7 +146,7 @@ export const InputField = React.forwardRef(function InputField(
           delay={0}
         >
           <Input
-            ref={ref}
+            inputRef={inputRef}
             placeholder={props.placeholder}
             disabled={props.isDisabled}
             validationState={props.validationState}
