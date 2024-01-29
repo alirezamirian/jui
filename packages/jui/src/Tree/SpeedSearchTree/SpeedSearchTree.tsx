@@ -1,9 +1,10 @@
-import React, { ForwardedRef, useRef } from "react";
+import React, { ForwardedRef } from "react";
 import { Node } from "@react-types/shared";
 import { Virtualizer } from "@react-aria/virtualizer";
 import { CollectionSpeedSearchContext } from "@intellij-platform/core/CollectionSpeedSearch";
 import { SpeedSearchProps } from "@intellij-platform/core/SpeedSearch";
-import { TreeRefValue } from "../useTreeRef";
+import { useCollectionRef } from "@intellij-platform/core/Collections/useCollectionRef";
+import useForwardedRef from "@intellij-platform/core/utils/useForwardedRef";
 import { StyledTree } from "../StyledTree";
 import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
 import { useTreeState } from "../useTreeState";
@@ -21,15 +22,17 @@ export const SpeedSearchTree = React.forwardRef(
     {
       fillAvailableSpace = false,
       alwaysShowAsFocused = false,
+      treeRef,
       ...props
     }: SpeedSearchTreeProps<T>,
-    forwardedRef: ForwardedRef<TreeRefValue>
+    forwardedRef: ForwardedRef<HTMLDivElement>
   ) => {
     const state = useTreeState(
       { ...props, disallowEmptySelection: !props.allowEmptySelection },
-      forwardedRef
+      treeRef
     );
-    const ref = useRef<HTMLDivElement>(null);
+    useCollectionRef(props, state);
+    const ref = useForwardedRef(forwardedRef);
     const {
       treeProps,
       treeContext,

@@ -24,7 +24,7 @@ export const SpeedSearchTreeWithCheckboxes = React.forwardRef(
     }: SpeedSearchTreeProps<T> & {
       nestedSelection: NestedSelectionState<T>;
     },
-    ref: ForwardedRef<TreeRefValue>
+    ref: ForwardedRef<HTMLDivElement>
   ): React.ReactElement => {
     const otherInvalidators =
       typeof cacheInvalidation === "object"

@@ -10,10 +10,16 @@ import { useTreeState } from "./useTreeState";
 import { SelectableTreeProps, useSelectableTree } from "./useSelectableTree";
 import { useTreeVirtualizer } from "./useTreeVirtualizer";
 import { CollectionCacheInvalidationProps } from "@intellij-platform/core/Collections/useCollectionCacheInvalidation";
+import {
+  CollectionRefProps,
+  useCollectionRef,
+} from "@intellij-platform/core/Collections/useCollectionRef";
+import { useObjectRef } from "@react-aria/utils";
 
 export interface TreeProps<T extends object>
   extends Omit<StatelyTreeProps<T>, "disallowEmptySelection">,
     CollectionCacheInvalidationProps,
+    CollectionRefProps,
     Omit<SelectableTreeProps<T>, "keyboardDelegate" | "isVirtualized"> {
   fillAvailableSpace?: boolean;
   /**
@@ -21,6 +27,7 @@ export interface TreeProps<T extends object>
    * special valid use cases.
    */
   alwaysShowAsFocused?: boolean;
+  treeRef?: RefObject<TreeRefValue>;
 }
 
 /**
@@ -35,12 +42,14 @@ export const Tree = React.forwardRef(
     {
       fillAvailableSpace = false,
       alwaysShowAsFocused = false,
+      treeRef,
       ...props
     }: TreeProps<T>,
-    forwardedRef: ForwardedRef<TreeRefValue>
+    forwardedRef: ForwardedRef<HTMLDivElement>
   ) => {
-    const state = useTreeState(props, forwardedRef);
-    const ref = useRef<HTMLDivElement>(null);
+    const state = useTreeState(props, treeRef);
+    useCollectionRef(props, state);
+    const ref = useObjectRef(forwardedRef);
 
     const { treeProps, treeContext } = useSelectableTree(
       {
