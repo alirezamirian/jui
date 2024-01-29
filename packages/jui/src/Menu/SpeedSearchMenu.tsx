@@ -200,6 +200,7 @@ export const SpeedSearchMenu = <T extends object>({
   submenuBehavior = "toggleOnPress",
   autoFocus = "first",
   emptyText = "Nothing to show",
+  minWidth,
   ...props
 }: SpeedSearchMenuProps<T>) => {
   const onAction = (key: React.Key) => {
@@ -239,6 +240,7 @@ export const SpeedSearchMenu = <T extends object>({
       <StyledSpeedSearchMenu
         as="div"
         ref={containerRef}
+        style={{ minWidth }}
         {...speedSearchContainerProps}
         fillAvailableSpace={props.fillAvailableSpace}
       >
