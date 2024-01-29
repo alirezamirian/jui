@@ -42,15 +42,21 @@ export const StyledIconButton = styled.button<{ minSize: number }>`
   &:disabled {
     opacity: 0.25; // not quite accurate implementation. There might be better ways to style disabled state.
   }
-  &:hover:not(:disabled),
-  &:focus:not(:disabled) /* in intellij platform, the button doesn't grab the focus after being active. This is not the case in web,
-  for better accessibility. But there is no existing UI spec for it in intellij platform obviously. So for now, we
-  fallback to the same UI as hover state. Perhaps it can be improved with a opacity or something.*/ {
-    outline: none;
+  &:hover:not(:disabled) {
     background: ${({ theme }) =>
       theme.color("ActionButton.hoverBackground", "#DFDFDF")};
     border-color: ${({ theme }) =>
       theme.color("ActionButton.hoverBorderColor", "#DFDFDF")};
+  }
+  &:focus-visible:not(:disabled) {
+    outline: none;
+    background: ${({ theme }) =>
+      theme.color("ActionButton.pressedBackground", "#CFCFCF")};
+    border-color: ${({ theme }) =>
+      theme.color(
+        "ActionButton.focusedBorderColor",
+        theme.dark ? "#5eacd0" : "#62b8de"
+      )};
   }
   &:active:not(:disabled),
   &.active:not(:disabled) {
