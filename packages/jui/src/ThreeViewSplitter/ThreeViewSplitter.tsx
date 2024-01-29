@@ -21,8 +21,10 @@ export interface ThreeViewSplitterProps {
   innerViewMinSize?: number;
   firstView?: React.ReactNode;
   firstSize?: number | null;
+  firstViewMinSize?: number;
   lastView?: React.ReactNode;
   lastSize?: number | null;
+  lastViewMinSize?: number;
   onFirstResize?: (size: number) => void;
   onLastResize?: (size: number) => void;
   style?: CSSProperties;
@@ -77,6 +79,8 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
   onLastResize,
   resizerProps: resizerPropsOverrides = {},
   innerView,
+  firstViewMinSize,
+  lastViewMinSize,
   innerViewMinSize,
   ...containerProps
 }: ThreeViewSplitterProps): React.ReactElement => {
@@ -168,7 +172,8 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
               // It may make sense to allow opting out of this behaviour, if it's considered a feature to be able to
               // "push" the other side too when expanding one side.
               [minSizeStyleProp]:
-                lastSizeState !== null ? currentFirstSize : undefined,
+                (lastSizeState !== null ? currentFirstSize : undefined) ??
+                firstViewMinSize,
             }}
           >
             {firstView}
@@ -200,7 +205,7 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
       {innerView && (
         <StyledSplitterInnerView
           style={{
-            [value("minWidth", "minHeight")]: innerViewMinSize,
+            [minSizeStyleProp]: innerViewMinSize,
           }}
         >
           {innerView}
@@ -236,7 +241,8 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
               // It may make sense to allow opting out of this behaviour, if it's considered a feature to be able to
               // "push" the other side too when expanding one side.
               [minSizeStyleProp]:
-                firstSizeState !== null ? currentLastSize : undefined,
+                (firstSizeState !== null ? currentLastSize : undefined) ??
+                lastViewMinSize,
             }}
           >
             {lastView}
