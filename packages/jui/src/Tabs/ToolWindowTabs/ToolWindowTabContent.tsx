@@ -2,8 +2,8 @@ import React, { ForwardedRef, HTMLProps } from "react";
 import { TabCloseButton } from "@intellij-platform/core/Tabs/TabCloseButton";
 import { TabContentLayout } from "@intellij-platform/core/Tabs/TabContentLayout";
 
-type Props = {
-  icon: React.ReactNode;
+type ToolWindowTabContentProps = {
+  icon?: React.ReactNode;
   title: React.ReactNode;
   /**
    * Close button for the tab. Use {@link TabCloseButton} to render the close button
@@ -22,13 +22,13 @@ type Props = {
    * />
    * ```
    */
-  closeButton?: React.ReactElement;
+  closeButton?: React.ReactNode;
   containerProps?: Omit<HTMLProps<HTMLDivElement>, "ref" | "as">;
 };
 
 export const ToolWindowTabContent = React.forwardRef(
   (
-    { icon, title, closeButton, containerProps }: Props,
+    { icon, title, closeButton, containerProps }: ToolWindowTabContentProps,
     ref: ForwardedRef<HTMLDivElement>
   ) => {
     return (

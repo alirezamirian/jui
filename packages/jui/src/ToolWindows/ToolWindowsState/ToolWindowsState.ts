@@ -45,12 +45,12 @@ export interface ToolWindowState {
    */
   isVisible: boolean;
   /**
-   * Relative size (in the scale of 0-1) of the tool window in its anchor, when rendered is primary group, i.e. when
+   * Relative size (in the scale of 0-1) of the tool window in its anchor, when rendered in the primary group, i.e. when
    * `isSplit` is false
    */
   weight: number;
   /**
-   * Relative size (in the scale of 0-1) of the tool window in its anchor, when rendered is the secondary group. i.e.
+   * Relative size (in the scale of 0-1) of the tool window in its anchor, when rendered in the secondary group. i.e.
    * when `isSplit` is true.
    */
   sideWeight: number;

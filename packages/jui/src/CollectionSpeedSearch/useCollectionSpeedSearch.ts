@@ -54,8 +54,7 @@ export function useCollectionSpeedSearch<T>({
   stickySearch?: boolean;
   focusBestMatch?: boolean;
 } & SpeedSearchStateProps): CollectionSpeedSearch {
-  const speedSearch = useSpeedSearchState(speedSearchStateProps); // maybe allow control over state
-  // via props?
+  const speedSearch = useSpeedSearchState(speedSearchStateProps);
 
   const { matches, selectionManager: speedSearchSelectionManager } =
     useCollectionSpeedSearchResult({
