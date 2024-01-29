@@ -59,6 +59,7 @@ export const StatusBarTaskProgressBar = () => {
         >
           <BareButton
             preventFocusOnPress
+            excludeFromTabOrder
             onPress={() => {
               setShowProgressPanel(true);
             }}

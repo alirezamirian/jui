@@ -1,4 +1,4 @@
-import React, { ForwardedRef } from "react";
+import React, { ForwardedRef, JSXElementConstructor } from "react";
 import { useButton } from "@react-aria/button";
 import { filterDOMProps, mergeProps, useObjectRef } from "@react-aria/utils";
 import { AriaBaseButtonProps, ButtonProps } from "@react-types/button";
@@ -16,7 +16,16 @@ export interface BareButtonProps extends AriaBaseButtonProps, ButtonProps {
  */
 export const BareButton: React.FC<BareButtonProps> = React.forwardRef(
   function BareButton(props: BareButtonProps, ref: ForwardedRef<HTMLElement>) {
-    const { buttonProps } = useButton(props, useObjectRef(ref));
+    const elementType = React.isValidElement(props.children)
+      ? (props.children.type as JSXElementConstructor<unknown>)
+      : undefined;
+    const { buttonProps } = useButton(
+      {
+        elementType,
+        ...props,
+      },
+      useObjectRef(ref)
+    );
     const domProps = filterDOMProps(props);
     const { autoFocus } = props;
 

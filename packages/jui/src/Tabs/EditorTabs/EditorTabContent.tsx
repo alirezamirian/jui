@@ -53,7 +53,11 @@ export const EditorTabContent = ({
       endIcon={
         pinned ? (
           <TooltipTrigger tooltip={<ActionTooltip actionName="Unpin Tab" />}>
-            <BareButton onPress={onUnpin}>
+            <BareButton
+              onPress={onUnpin}
+              excludeFromTabOrder
+              preventFocusOnPress
+            >
               <PlatformIcon icon="actions/pinTab" />
             </BareButton>
           </TooltipTrigger>
