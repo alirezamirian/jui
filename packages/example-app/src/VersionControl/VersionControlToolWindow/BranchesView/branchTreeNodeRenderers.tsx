@@ -1,3 +1,4 @@
+import { basename } from "path";
 import React from "react";
 import { ItemElement } from "@react-types/shared/src/collections";
 import {
@@ -9,11 +10,9 @@ import {
   Tooltip,
   TooltipTrigger,
 } from "@intellij-platform/core";
-import { basename } from "path";
 
-import { TrackingBranchInfo } from "../TrackingBranchInfo";
-import { RepoColorIcon } from "../Changes/ChangesView/StyledRepoColorSquare";
-
+import { TrackingBranchInfo } from "../../TrackingBranchInfo";
+import { RepoColorIcon } from "../../Changes/ChangesView/StyledRepoColorSquare";
 import { AnyBranchTreeNode } from "./BranchesTree.state";
 
 export const branchTreeNodeRenderers: {
@@ -128,3 +127,14 @@ export const branchTreeNodeRenderers: {
 function wordCase(input: string): string {
   return input[0].toUpperCase() + input.slice(1).toLowerCase();
 }
+
+export const keyToBranch = (key: string): string | null => {
+  const [type, _repo, branchName] = key.split(":");
+  if (type === "head") {
+    return "HEAD";
+  }
+  if (type === "localBranch" || type === "remoteBranch") {
+    return branchName ?? null;
+  }
+  return null;
+};

@@ -1,3 +1,10 @@
+import { basename } from "path";
+import { groupBy } from "ramda";
+import React, { Key, RefObject } from "react";
+import { atom, atomFamily, isRecoilValue, selector } from "recoil";
+import { Selection } from "@react-types/shared";
+import { PlatformIcon, TreeRefValue } from "@intellij-platform/core";
+
 import {
   allBranchesState,
   BranchType,
@@ -5,18 +12,12 @@ import {
   LocalBranch,
   RemoteBranch,
   RepoBranches,
-} from "../Branches/branches.state";
-import { atom, atomFamily, isRecoilValue, selector } from "recoil";
-import React, { Key, RefObject } from "react";
+} from "../../Branches/branches.state";
 import {
   DirectoryNode,
   groupByDirectory,
-} from "../../tree-utils/groupByDirectory";
-import { Selection } from "@react-types/shared";
-import { groupBy } from "ramda";
-import { basename } from "path";
-import { PlatformIcon, TreeRefValue } from "@intellij-platform/core";
-import { vcsRootsState } from "../file-status.state";
+} from "../../../tree-utils/groupByDirectory";
+import { vcsRootsState } from "../../file-status.state";
 
 type LocalBranchNode = {
   type: "localBranch";

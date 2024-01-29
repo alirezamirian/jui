@@ -95,6 +95,15 @@ export const exampleAppKeymap: Keymap = {
       },
     },
   ],
+  [VcsActionIds.FOCUS_TEXT_FILTER]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        code: "KeyL",
+      },
+    },
+  ],
   SafeDelete: [
     {
       type: "keyboard",

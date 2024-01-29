@@ -1,7 +1,7 @@
 import React from "react";
 import { useRecoilCallback, useRecoilValue } from "recoil";
 
-import { GroupByActionButton } from "../../GroupByActionButton";
+import { GroupByActionButton } from "../../../GroupByActionButton";
 import {
   availableGroupingsState,
   branchTreeGroupingState,
