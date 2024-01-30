@@ -315,11 +315,11 @@ https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8
         </tr>
         <tr>
             <td colspan="2">Basic SearchField</td>
-            <td>❌</td>
+            <td>✅</td>
         </tr>
         <tr>
             <td colspan="2">With history popup</td>
-            <td>❌</td>
+            <td>✅</td>
         </tr>
         <tr>
             <td rowspan="1" colspan="3"><a href="https://jetbrains.github.io/ui/controls/link/">Link</a></td>
