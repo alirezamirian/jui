@@ -16,5 +16,6 @@ export const ToolWindowTabs = <T extends object>(
     TabComponent={StyledToolWindowTab}
     TabsComponent={StyledToolWindowTabs}
     focusable={false}
+    shouldSelectOnPressUp
   />
 );

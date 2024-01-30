@@ -16,11 +16,19 @@ type TabProps<T extends object> = {
    * {@see TabsProps#active}
    */
   active?: boolean;
+  shouldSelectOnPressUp?: boolean;
   Component?: typeof StyledDefaultTab;
 };
 
 export const Tab = forwardRef(function Tab<T extends object>(
-  { state, item, focusable, active, Component = StyledDefaultTab }: TabProps<T>,
+  {
+    state,
+    item,
+    focusable,
+    active,
+    shouldSelectOnPressUp,
+    Component = StyledDefaultTab,
+  }: TabProps<T>,
   forwardedRef: ForwardedRef<HTMLDivElement>
 ): React.ReactElement {
   const { key, rendered } = item;
@@ -34,7 +42,15 @@ export const Tab = forwardRef(function Tab<T extends object>(
       tabIndex,
       ...tabProps
     },
-  } = useTab({ key }, state, ref);
+  } = useTab(
+    {
+      key,
+      // @ts-expect-error  TODO(@react-aria/tabs): update to ^3.6.0 to support this
+      shouldSelectOnPressUp,
+    },
+    state,
+    ref
+  );
   const isSelected = state.selectedKey === key;
   const isDisabled = state.disabledKeys.has(key);
 

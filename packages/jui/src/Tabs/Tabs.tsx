@@ -27,6 +27,12 @@ export type TabsProps<T> = Omit<
   focusable?: boolean;
 
   /**
+   * Whether selected tab should change on press up instead of press down.
+   * @default false.
+   */
+  shouldSelectOnPressUp?: boolean;
+
+  /**
    * Enables "active" style on tabs. Is usually related to a container having focus.
    */
   active?: boolean;
@@ -107,6 +113,7 @@ const StyledTabList = styled.div<{ multiRow?: boolean }>`
  */
 export const Tabs = <T extends object>({
   focusable,
+  shouldSelectOnPressUp,
   active,
   TabComponent,
   TabsComponent = StyledDefaultTabs,
@@ -167,6 +174,7 @@ export const Tabs = <T extends object>({
               item={item}
               state={state}
               focusable={focusable}
+              shouldSelectOnPressUp={shouldSelectOnPressUp}
               active={active}
               Component={TabComponent}
             />
