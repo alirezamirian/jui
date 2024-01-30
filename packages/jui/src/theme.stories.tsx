@@ -133,7 +133,7 @@ export const Theme: StoryFn = () => {
         <SpeedSearchTree
           defaultSelectedKeys={["index.jsx"]}
           selectionMode="multiple"
-          alwaysShowAsFocused
+          showAsFocused
         >
           <Item textValue="index.jsx" key="index.jsx">
             <ItemLayout>
@@ -187,7 +187,7 @@ export const Theme: StoryFn = () => {
           </Item>
         </SpeedSearchList>
         <br />
-        <SpeedSearchList selectionMode="single" alwaysShowAsFocused>
+        <SpeedSearchList selectionMode="single" showAsFocused>
           <Item textValue=".gitignore" key=".gitignore">
             <ItemLayout>
               <PlatformIcon icon="vcs/ignore_file" />

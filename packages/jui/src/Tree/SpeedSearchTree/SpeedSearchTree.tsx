@@ -19,12 +19,7 @@ export type SpeedSearchTreeProps<T extends object> = TreeProps<T> &
 
 export const SpeedSearchTree = React.forwardRef(
   <T extends object>(
-    {
-      fillAvailableSpace = false,
-      alwaysShowAsFocused = false,
-      treeRef,
-      ...props
-    }: SpeedSearchTreeProps<T>,
+    { fillAvailableSpace = false, treeRef, ...props }: SpeedSearchTreeProps<T>,
     forwardedRef: ForwardedRef<HTMLDivElement>
   ) => {
     const state = useTreeState(
@@ -59,7 +54,6 @@ export const SpeedSearchTree = React.forwardRef(
               <SpeedSearchTreeNode
                 key={(item as Node<T>).key}
                 item={item as Node<T>}
-                alwaysShowAsFocused={alwaysShowAsFocused}
               />
             )}
           </StyledTree>

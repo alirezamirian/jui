@@ -17,6 +17,7 @@ import {
   MenuItemLayout,
   PlatformIcon,
   Section,
+  styled,
 } from "@intellij-platform/core";
 
 export default {
@@ -42,14 +43,30 @@ export const Default: StoryObj<ListProps<typeof legends[number]>> = {
 
 export const WithConnectedInput = commonListStories.withConnectedInput(List);
 
-export const AlwaysShownAsFocused: StoryFn = () => {
+const StyledLabel = styled.label`
+  color: ${({ theme }) => theme.commonColors.label()};
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+`;
+export const shownAsFocused: StoryFn = () => {
+  const [shownAsFocused, setShowAsFocused] = useState(false);
   return (
     <Pane>
+      <StyledLabel>
+        <input
+          type="checkbox"
+          checked={shownAsFocused}
+          onChange={(e) => setShowAsFocused(e.target.checked)}
+        />
+        Show as focused
+      </StyledLabel>
+      <br />
       <List
         selectionMode="single"
         items={legends}
         fillAvailableSpace
-        // alwaysShowAsFocused
+        showAsFocused={shownAsFocused}
       >
         {itemRenderer(renderItemCustomUI)}
       </List>
@@ -74,11 +91,7 @@ export const WithStaticData: StoryFn = () => {
 };
 
 export const MultiSelect: StoryObj<ListProps<object>> = {
-  render: ({
-    fillAvailableSpace,
-    shouldFocusWrap,
-    alwaysShowAsFocused,
-  }: any) => {
+  render: ({ fillAvailableSpace, shouldFocusWrap, showAsFocused }: any) => {
     return (
       <Pane>
         <List
@@ -86,7 +99,7 @@ export const MultiSelect: StoryObj<ListProps<object>> = {
           items={legends}
           fillAvailableSpace={fillAvailableSpace}
           shouldFocusWrap={shouldFocusWrap}
-          alwaysShowAsFocused={alwaysShowAsFocused}
+          showAsFocused={showAsFocused}
         >
           {itemRenderer(renderItemText)}
         </List>

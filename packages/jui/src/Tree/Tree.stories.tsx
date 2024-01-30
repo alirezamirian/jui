@@ -9,6 +9,7 @@ import {
   Menu,
   MenuItemLayout,
   PlatformIcon,
+  styled,
 } from "@intellij-platform/core";
 
 export default {
@@ -142,6 +143,44 @@ export const ScrollAndContainerWidth: StoryObj<{ width: number }> = {
 
   args: { width: 400 },
   name: "Scroll & Container Width",
+};
+
+const StyledLabel = styled.label`
+  color: ${({ theme }) => theme.commonColors.label()};
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+`;
+
+export const shownAsFocused: StoryFn = () => {
+  const [shownAsFocused, setShowAsFocused] = useState(false);
+  return (
+    <Pane>
+      <StyledLabel>
+        <input
+          type="checkbox"
+          checked={shownAsFocused}
+          onChange={(e) => setShowAsFocused(e.target.checked)}
+        />
+        Show as focused
+      </StyledLabel>
+      <br />
+      <Tree
+        fillAvailableSpace
+        selectionMode="multiple"
+        defaultSelectedKeys={["List"]}
+        defaultExpandedKeys={["List", "Theme", "BasicList", "Foo"]}
+        items={treeItems}
+        showAsFocused={shownAsFocused}
+      >
+        {(item) => (
+          <Item key={item.name} title={item.name} childItems={item.children}>
+            {item.name}
+          </Item>
+        )}
+      </Tree>
+    </Pane>
+  );
 };
 
 export const WithContextMenu: StoryFn = () => {

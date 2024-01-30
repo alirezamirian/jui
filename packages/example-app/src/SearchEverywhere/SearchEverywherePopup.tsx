@@ -386,7 +386,7 @@ export function SearchEverywherePopup() {
                         selectionManagerRef={selectionManagerRef}
                         items={visibleSearchResult}
                         selectionMode="single"
-                        alwaysShowAsFocused
+                        showAsFocused
                         shouldFocusWrap
                         fillAvailableSpace
                         selectedKeys={selectedKeys}

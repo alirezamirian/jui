@@ -74,7 +74,7 @@ export const commonListStories = {
             ref={listRef}
             selectionMode="single"
             items={legends}
-            alwaysShowAsFocused={isFocused}
+            showAsFocused={isFocused}
             fillAvailableSpace
             {...props}
           >

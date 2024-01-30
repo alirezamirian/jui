@@ -1,4 +1,4 @@
-import React, { ForwardedRef, useRef } from "react";
+import React, { ForwardedRef, RefObject, useRef } from "react";
 import { Node } from "@react-types/shared";
 import { Virtualizer } from "@react-aria/virtualizer";
 import { TreeProps as StatelyTreeProps } from "@react-stately/tree";
@@ -23,10 +23,11 @@ export interface TreeProps<T extends object>
     Omit<SelectableTreeProps<T>, "keyboardDelegate" | "isVirtualized"> {
   fillAvailableSpace?: boolean;
   /**
-   * Shows the tree in focused style, even when it's not focused. Should be avoided in general, but there might be
-   * special valid use cases.
+   * When true, shows the tree in focused style, even when it's not focused. A common use case is when the tree
+   * is virtually focused. i.e. the focus is physically on some other element (like a search input) which handles
+   * keyboard events as if the tree was focused.
    */
-  alwaysShowAsFocused?: boolean;
+  showAsFocused?: boolean;
   treeRef?: RefObject<TreeRefValue>;
 }
 
@@ -39,12 +40,7 @@ export interface TreeProps<T extends object>
  */
 export const Tree = React.forwardRef(
   <T extends object>(
-    {
-      fillAvailableSpace = false,
-      alwaysShowAsFocused = false,
-      treeRef,
-      ...props
-    }: TreeProps<T>,
+    { fillAvailableSpace = false, treeRef, ...props }: TreeProps<T>,
     forwardedRef: ForwardedRef<HTMLDivElement>
   ) => {
     const state = useTreeState(props, treeRef);
@@ -71,11 +67,7 @@ export const Tree = React.forwardRef(
           {...treeProps}
         >
           {(itemType: string, item: object) => (
-            <TreeNode
-              key={(item as Node<T>).key}
-              item={item as Node<T>}
-              alwaysShowAsFocused={alwaysShowAsFocused}
-            />
+            <TreeNode key={(item as Node<T>).key} item={item as Node<T>} />
           )}
         </StyledTree>
       </TreeContext.Provider>
