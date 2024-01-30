@@ -2,7 +2,7 @@ import React from "react";
 import { styled } from "../styled";
 import { DOMAttributes } from "@react-types/shared";
 
-const GAP = "0.125rem";
+const GAP = "0.1875rem";
 const StyledItemLayout = styled.div`
   display: flex;
   align-items: center;
