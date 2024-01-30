@@ -151,7 +151,7 @@ export const Input = React.forwardRef(function Input(
       onKeyDown,
       onKeyUp,
     } as FocusableOptions,
-    ref
+    inputRef
   );
   const [isFocused, setIsFocused] = useState(false);
   const { focusWithinProps } = useFocusWithin({
