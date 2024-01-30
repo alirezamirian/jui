@@ -155,7 +155,7 @@ export function RollbackWindow() {
                     style={{ height: "100%" }}
                   >
                     <SpeedSearchTreeWithCheckboxes
-                      ref={treeRef}
+                      treeRef={treeRef}
                       items={rootNodes}
                       selectionMode="multiple"
                       selectedKeys={selectedKeys}

@@ -208,4 +208,14 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
+
+  [CommonActionId.SHOW_SEARCH_HISTORY]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Alt"],
+        code: "ArrowDown",
+      },
+    },
+  ],
 };

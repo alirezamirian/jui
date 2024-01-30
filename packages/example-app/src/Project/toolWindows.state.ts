@@ -7,6 +7,11 @@ export const toolWindowsState = atom({
   default: new ToolWindowsState(
     Object.fromEntries(
       toolWindows.map(({ id, initialState }) => [id, initialState])
-    )
+    ),
+    {
+      removedFromSideBarIds: toolWindows
+        .filter(({ showStripeButton }) => showStripeButton === false)
+        .map(({ id }) => id),
+    }
   ),
 });

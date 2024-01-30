@@ -20,4 +20,13 @@ export const VcsActionIds = {
 
   GIT_CREATE_NEW_BRANCH: "Git.CreateNewBranch",
   GIT_BRANCHES: "Git.Branches",
+
+  GIT_LOG_HIDE_BRANCHES: "Git.Log.Hide.Branches",
+  GIT_LOG_NAVIGATE_TO_SELECTED_BRANCH:
+    "Git.Log.Branches.Navigate.Log.To.Selected.Branch",
+  GIT_UPDATE_SELECTED: "Git.Update.Selected",
+
+  FOCUS_TEXT_FILTER: "Vcs.Log.FocusTextFilter",
+  MATCH_CASE: "Vcs.Log.MatchCaseAction",
+  REG_EXP: "Vcs.Log.EnableFilterByRegexAction",
 };

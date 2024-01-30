@@ -5,16 +5,12 @@ import { SpeedSearchItemHighlightsProvider } from "@intellij-platform/core/Colle
 
 export const SpeedSearchTreeNode = <T extends object>({
   item,
-  alwaysShowAsFocused,
 }: {
   item: Node<T>;
-  alwaysShowAsFocused?: boolean;
-}) => (
-  <SpeedSearchItemHighlightsProvider itemKey={item.key}>
-    <TreeNode
-      key={item.key}
-      item={item}
-      alwaysShowAsFocused={alwaysShowAsFocused}
-    />
-  </SpeedSearchItemHighlightsProvider>
-);
+}) => {
+  return (
+    <SpeedSearchItemHighlightsProvider itemKey={item.key}>
+      <TreeNode key={item.key} item={item} />
+    </SpeedSearchItemHighlightsProvider>
+  );
+};

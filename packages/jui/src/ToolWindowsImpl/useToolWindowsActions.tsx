@@ -9,7 +9,6 @@ import {
   HIDE_ALL_WINDOWS_ACTION_ID,
   JUMP_TO_LAST_WINDOW_ACTION_ID,
 } from "./ToolWindowActionIds";
-import { zipObj } from "ramda";
 
 interface DefaultToolWindowActionsProps {
   toolWindowsState: Readonly<ToolWindowsState>;

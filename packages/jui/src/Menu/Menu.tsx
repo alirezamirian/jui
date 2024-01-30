@@ -1,4 +1,4 @@
-import React, { Key, RefObject, useContext } from "react";
+import React, { CSSProperties, Key, RefObject, useContext } from "react";
 import { AriaMenuOptions, useMenu as useMenuAria } from "@react-aria/menu";
 import { TreeState } from "@react-stately/tree";
 import { AriaMenuProps } from "@react-types/menu";
@@ -49,6 +49,12 @@ export interface MenuProps<T>
    * fills the available horizontal or vertical space, when rendered in a flex container.
    */
   fillAvailableSpace?: boolean;
+
+  /**
+   * Minimum width of the menu
+   * @default: 120px
+   */
+  minWidth?: CSSProperties["minWidth"];
 }
 
 /**
@@ -167,7 +173,7 @@ export function useMenuState<T extends object>(
  *    be a workaround for it.
  *  - when a parent menu item which has an open submenu is hovered, it gets focus.
  */
-export function Menu<T extends object>(props: MenuProps<T>) {
+export function Menu<T extends object>({ minWidth, ...props }: MenuProps<T>) {
   const ref = React.useRef<HTMLUListElement>(null);
   const state = useMenuState(props);
   const { menuContextValue, menuProps } = useMenu(props, state, ref);
@@ -184,6 +190,7 @@ export function Menu<T extends object>(props: MenuProps<T>) {
       <StyledMenu
         {...menuProps}
         ref={ref}
+        style={{ minWidth }}
         fillAvailableSpace={props.fillAvailableSpace}
       >
         {renderMenuNodes(state, [...state.collection])}

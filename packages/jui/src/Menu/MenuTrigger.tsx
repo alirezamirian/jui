@@ -21,6 +21,12 @@ export interface MenuTriggerProps
   // NOTE: there is a chance of unchecked breaking change here, since this is not explicitly mentioned as public API
   // of useButton, but it is passed to the underlying usePress.
   preventFocusOnPress?: boolean;
+  /**
+   * By default, the menu is positioned relative to the trigger. `positioningTargetRef` can be used to have the menu
+   * positioned to another element. An example use case is when the menu trigger is a button inside some list item or
+   * text box, but the menu semantically belongs to the container list item or text box.
+   */
+  positioningTargetRef?: React.RefObject<HTMLElement>;
   renderMenu: (props: {
     menuProps: React.HTMLAttributes<HTMLElement>;
   }) => React.ReactNode;
@@ -43,6 +49,7 @@ export const MenuTrigger: React.FC<MenuTriggerProps> = ({
   shouldFlip = true,
   restoreFocus = true,
   preventFocusOnPress = true,
+  positioningTargetRef,
   ...otherProps
 }) => {
   const menuTriggerProps: AriaMenuTriggerProps = {
@@ -85,7 +92,7 @@ export const MenuTrigger: React.FC<MenuTriggerProps> = ({
   );
 
   const { overlayProps: positionProps } = useOverlayPosition({
-    targetRef: triggerRef,
+    targetRef: positioningTargetRef ?? triggerRef,
     overlayRef,
     placement: getPlacement(direction, align),
     shouldFlip,

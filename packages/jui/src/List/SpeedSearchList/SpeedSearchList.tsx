@@ -32,7 +32,7 @@ export const SpeedSearchList = React.forwardRef(function SpeedSearchList<
 >(
   {
     allowEmptySelection = false,
-    alwaysShowAsFocused = false,
+    showAsFocused = false,
     fillAvailableSpace = false,
     onAction,
     ...inputProps
@@ -66,7 +66,7 @@ export const SpeedSearchList = React.forwardRef(function SpeedSearchList<
                     key={item.key}
                     item={item}
                     state={state}
-                    listFocused={alwaysShowAsFocused || focused}
+                    listFocused={showAsFocused || focused}
                     onAction={() => onAction?.(item.key)}
                   />
                 </SpeedSearchItemHighlightsProvider>

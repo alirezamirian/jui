@@ -14,7 +14,7 @@ import { TreeActionsWrapper } from "@intellij-platform/core/TreeActions/story-an
     <TreeActionsWrapper>
       {(treeRef) => (
         <Component
-          ref={treeRef}
+          treeRef={treeRef}
           selectionMode="multiple"
           defaultExpandedKeys={["List", "Theme", "BasicList", "Foo"]}
         >
@@ -232,7 +232,7 @@ import { TreeActionsWrapper } from "@intellij-platform/core/TreeActions/story-an
         <TreeActionsWrapper>
           {(treeRef) => (
             <Component
-              ref={treeRef}
+              treeRef={treeRef}
               selectionMode="multiple"
               defaultExpandedKeys={["List", "Theme", "BasicList", "Foo"]}
             >

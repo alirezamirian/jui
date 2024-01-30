@@ -2,11 +2,12 @@ import React from "react";
 import { styled } from "../styled";
 import { DOMAttributes } from "@react-types/shared";
 
+const GAP = "0.1875rem";
 const StyledItemLayout = styled.div`
   display: flex;
   align-items: center;
   padding-right: 0.25rem;
-  gap: 0.2rem;
+  gap: ${GAP};
 `;
 
 const StyledHint = styled.span<{ small?: boolean }>`
@@ -17,6 +18,14 @@ const StyledHint = styled.span<{ small?: boolean }>`
   font-size: ${({ small }) => small && "0.9em"};
 `;
 
+const StyledGroup = styled.span.attrs({
+  role: "presentation" as string,
+})`
+  display: inline-flex;
+  display: flex;
+  align-items: center;
+  gap: ${GAP};
+`;
 /**
  * Generic layout component capturing common use cases of tree or list items.
  * It handles the spacing between parts, and provides styled components for parts that need specific styling.
@@ -45,3 +54,10 @@ export const ItemLayout = (
  * @example: "library root" rendered next to "node_modules" folders in project view.
  */
 ItemLayout.Hint = StyledHint;
+
+/**
+ * Useful when a number of items need to be grouped by a wrapper, e.g. to have a tooltip.
+ * @example: project path in project root node, in project view
+ * @example: "library root" rendered next to "node_modules" folders in project view.
+ */
+ItemLayout.Group = StyledGroup;

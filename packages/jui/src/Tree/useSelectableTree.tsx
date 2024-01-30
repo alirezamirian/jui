@@ -33,6 +33,8 @@ export interface SelectableTreeProps<T>
   allowEmptySelection?: boolean;
 
   autoFocus?: boolean | FocusStrategy;
+
+  showAsFocused?: boolean;
 }
 
 /**
@@ -40,7 +42,14 @@ export interface SelectableTreeProps<T>
  * react-aria, it makes sense to refactor this and use that. There will still be something on top of it here.
  */
 export function useSelectableTree<T>(
-  { onAction, onFocus, onBlur, autoFocus, ...props }: SelectableTreeProps<T>,
+  {
+    onAction,
+    onFocus,
+    onBlur,
+    autoFocus,
+    showAsFocused,
+    ...props
+  }: SelectableTreeProps<T>,
   state: TreeState<T>,
   ref: RefObject<HTMLElement>
 ) {
@@ -153,7 +162,7 @@ export function useSelectableTree<T>(
         disabledKeys,
         toggleKey,
       },
-      focused,
+      focused: Boolean(focused || showAsFocused),
       onActionRef,
     }),
     [
@@ -163,6 +172,7 @@ export function useSelectableTree<T>(
       disabledKeys,
       toggleKey,
       focused,
+      showAsFocused,
       onActionRef,
     ]
   );

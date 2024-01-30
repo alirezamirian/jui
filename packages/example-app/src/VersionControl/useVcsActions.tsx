@@ -5,6 +5,8 @@ import {
   usePopupManager,
   useWindowManager,
 } from "@intellij-platform/core";
+
+import { notImplemented } from "../Project/notImplemented";
 import { BranchesPopup } from "./Branches/BranchesPopup";
 import { useChangesViewActionDefinitions } from "./Changes/useChangesViewActionDefinitions";
 import { VcsActionIds } from "./VcsActionIds";
@@ -33,6 +35,15 @@ export function useVcsActions(): ActionDefinition[] {
       icon: <PlatformIcon icon="vcs/branch.svg" />,
       actionPerformed: () => {
         popupManager.show(({ close }) => <BranchesPopup onClose={close} />);
+      },
+    },
+    {
+      id: VcsActionIds.GIT_LOG_NAVIGATE_TO_SELECTED_BRANCH,
+      title: "Navigate Log to Selected Branch Head",
+      useShortcutsOf: "SelectIn",
+      icon: <PlatformIcon icon="general/locate.svg" />,
+      actionPerformed: () => {
+        notImplemented();
       },
     },
   ];

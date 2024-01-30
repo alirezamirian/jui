@@ -8,7 +8,7 @@ const StyledRepoColorSquare = styled.span`
   width: 14px;
   height: 14px;
   align-self: center;
-  margin-right: 0.1rem;
+  margin-right: 0.2rem;
   position: relative;
 
   //  after pseudo element is used to create the color mixing implemented here:

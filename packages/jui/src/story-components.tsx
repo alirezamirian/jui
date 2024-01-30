@@ -47,7 +47,7 @@ export const SpeedSearchTreeSample = ({
 }): React.ReactElement => {
   return (
     <SpeedSearchTree
-      ref={treeRef}
+      treeRef={treeRef}
       autoFocus
       fillAvailableSpace
       selectionMode="multiple"

@@ -131,7 +131,7 @@ https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8
             <td>✅</td>
         </tr>
         <tr>
-            <td rowspan="3"><a href="https://jetbrains.github.io/ui/controls/menu_list/">Menu List</a> <sup>2</sup></td>
+            <td rowspan="3"><a href="https://jetbrains.github.io/ui/controls/menu_list/">Menu List</a> <sup>1</sup></td>
         </tr>
         <tr>
             <td colspan="2">Basic</td>
@@ -271,7 +271,7 @@ https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8
             <td>✅</td>
         </tr>
         <tr>
-            <td colspan="2">View Mode - Window <sup>4</sup></td>
+            <td colspan="2">View Mode - Window <sup>2</sup></td>
             <td>❌</td>
         </tr>
         <tr>
@@ -284,15 +284,46 @@ https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8
         </tr>
         <tr>
             <td colspan="2">Gear icon actions</td>
-            <td>✅<sup>5</sup></td>
+            <td>✅</td>
         </tr>
         <tr>
             <td rowspan="1" colspan="3"><a href="https://jetbrains.github.io/ui/components/dialog_window/">ModalWindow</a></td>
             <td>✅</td>
         </tr>
         <tr>
-            <td rowspan="1" colspan="3"><a href="https://jetbrains.github.io/ui/controls/input_field/">InputField</a></td>
-            <td><a href="https://github.com/alirezamirian/jui/issues/46">✅</a></td>
+            <td rowspan="4"><a href="https://jetbrains.github.io/ui/controls/input_field/">InputField</a></td>
+        </tr>
+        <tr>
+            <td colspan="2">Basic support (
+               <a href="https://jetbrains.github.io/ui/controls/input_field/#validation">validation</a>, 
+               <a href="https://jetbrains.github.io/ui/controls/input_field/#12">label placement</a>, 
+               <a href="https://jetbrains.github.io/ui/principles/context_help/">context help</a>, 
+               <a href="https://jetbrains.github.io/ui/controls/input_field/#label">disabled</a>)
+            </td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td colspan="2"><a href="https://jetbrains.github.io/ui/controls/built_in_button/">Built-in buttons</a></td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td colspan="2"><a href="https://jetbrains.github.io/ui/controls/input_field/#23">Expandable</a></td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td rowspan="3"><a href="https://jetbrains.github.io/ui/controls/search_field/">SearchField</a></td>
+        </tr>
+        <tr>
+            <td colspan="2">Basic SearchField</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td colspan="2">With history popup</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="3"><a href="https://jetbrains.github.io/ui/controls/link/">Link</a></td>
+            <td>✅</td>
         </tr>
     </tbody>
 
@@ -300,12 +331,9 @@ https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8
 
 🧬: higher level "molecule" components that capture a common usage of two or more atomic components, together.
 
-1. Not exactly a list feature. But more about checking feasibility of it
-2. It seems in Intellij UI, such menu lists are only used in popups. Maybe only
+1. It seems in Intellij UI, such menu lists are only used in popups. Maybe only
    FlatSpeedSearchPopup
-3. Most probably will not be implemented.
-4. Keyboard shortcuts for resizing windows depend on action system implementation and not done yet.
-   Also "Remove from sidebar" doesn't fit with how tool windows is implemented at the moment.
+2. Most probably will not be implemented.
 
 [//]: # "TODO: Contribution: - document code generation commands"
 

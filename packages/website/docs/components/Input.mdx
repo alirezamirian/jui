@@ -7,15 +7,20 @@ import { Input } from "@intellij-platform/core";
 # Input
 
 A themed [input](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input), with a few extra features.
-See [InputField](./InputField.mdx), for a [labeled](https://jetbrains.github.io/ui/controls/input_field/#label)
-input with support for [context help](https://jetbrains.github.io/ui/principles/context_help/#07) and
-[error message](https://jetbrains.github.io/ui/controls/input_field/#27).
+
+See also:
+
+- [InputField](./InputField.mdx), for a [labeled](https://jetbrains.github.io/ui/controls/input_field/#label)
+  input with support for [context help](https://jetbrains.github.io/ui/principles/context_help/#07) and
+  [error message](https://jetbrains.github.io/ui/controls/input_field/#27).
+- [SearchInput](./SearchInput.mdx)
 
 ### Features
 
 - Support for "invalid" state (red outline). [See spec](https://jetbrains.github.io/ui/controls/input_field/#27).
 - Support for auto selecting the text when the input is focused.
 - Disables spell check by default. It can be overwritten.
+- before and after addons, aka. [built-in buttons][builtin-buttons]
 
 #### Remaining
 
@@ -30,5 +35,61 @@ input with support for [context help](https://jetbrains.github.io/ui/principles/
   <br />
   <br />
   <Input placeholder="Invalid" validationState="invalid" />
+  <br />
 </>
 ```
+
+### Addons
+
+`addonBefore` and `addonAfter` can be used to render icons and icon buttons within the input box, before and after
+the input element. Buttons rendered in `addonAfter` are also known as
+[Built-in buttons][builtin-buttons].
+
+```jsx live themed
+<>
+  <Input
+    addonBefore={<PlatformIcon icon="actions/search.svg" />}
+    addonAfter={
+      <>
+        <TooltipTrigger tooltip={<ActionTooltip actionName="Match Case" />}>
+          <StyledHoverContainer as={IconButton} excludeFromTabOrder={false}>
+            <AutoHoverPlatformIcon
+              icon="actions/regex"
+              hoverIcon="actions/regexHovered"
+            />
+          </StyledHoverContainer>
+        </TooltipTrigger>
+        <TooltipTrigger tooltip={<ActionTooltip actionName="Regex" />}>
+          <StyledHoverContainer as={IconButton} excludeFromTabOrder={false}>
+            <AutoHoverPlatformIcon
+              icon="actions/matchCase.svg"
+              hoverIcon="actions/matchCaseHovered.svg"
+            />
+          </StyledHoverContainer>
+        </TooltipTrigger>
+      </>
+    }
+  />
+  <br /> <br />
+  <Input
+    placeholder="Environment variables"
+    style={{ width: "min(300px, 90vw)" }}
+    addonAfter={
+      <TooltipTrigger
+        tooltip={<ActionTooltip actionName="Edit environment Variables (⇧⏎)" />}
+      >
+        {(props) => (
+          <AutoHoverPlatformIcon
+            {...props}
+            style={{ marginRight: ".2rem" }}
+            role="button"
+            icon="general/inlineVariables"
+          />
+        )}
+      </TooltipTrigger>
+    }
+  />
+</>
+```
+
+[builtin-buttons]: https://jetbrains.github.io/ui/controls/built_in_button/

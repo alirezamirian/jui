@@ -1,5 +1,5 @@
 import React from "react";
-import path from "path";
+import { selector, useRecoilValue } from "recoil";
 import {
   ActionTooltip,
   MultiViewToolWindow,
@@ -8,25 +8,32 @@ import {
 import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 import { ChangesViewPane } from "./Changes/ChangesView/ChangesViewPane";
-import { RecoilValue, selector, useRecoilValue } from "recoil";
 import { allChangesState } from "./Changes/change-lists.state";
 import { vcsRootForFile } from "./file-status.state";
-import { repoBranchesState } from "./Branches/branches.state";
+import { LocalBranch, repoBranchesState } from "./Branches/branches.state";
 import { changesGroupingState } from "./Changes/ChangesView/ChangesView.state";
+import { TrackingBranchInfo } from "./TrackingBranchInfo";
 
 export const COMMIT_TOOLWINDOW_ID = "Commit";
 
 const changesBranchesState = selector({
   key: "vcs/commitToolWindow/changedRepos",
-  get: ({ get }) => {
+  get: ({ get }): Array<{ repoRoot: string; branch: LocalBranch }> => {
     const changesRepoRoots = get(allChangesState)
       .map((change) => get(vcsRootForFile(change.after.path)))
       .filter(notNull);
 
-    return changesRepoRoots.map((repoRoot) => ({
-      repoRoot,
-      branch: get(repoBranchesState(repoRoot)).currentBranch,
-    }));
+    return changesRepoRoots
+      .map((repoRoot) => {
+        const branch = get(repoBranchesState(repoRoot)).currentBranch;
+        return branch
+          ? {
+              repoRoot,
+              branch,
+            }
+          : null;
+      })
+      .filter(notNull);
   },
 });
 
@@ -48,9 +55,7 @@ export const CommitToolWindow = () => {
             isDisabled={areChangesGroupedByRepo || changesBranches.length === 0}
             tooltip={
               <ActionTooltip
-                actionName={
-                  <ChangesBranches changesBranches={changesBranches} />
-                }
+                actionName={<TrackingBranchInfo branches={changesBranches} />}
               />
             }
           >
@@ -64,43 +69,3 @@ export const CommitToolWindow = () => {
     </MultiViewToolWindow>
   );
 };
-
-type RecoilValueType<T extends RecoilValue<any>> = T extends RecoilValue<
-  infer R
->
-  ? R
-  : never;
-
-function ChangesBranches({
-  changesBranches,
-}: {
-  changesBranches: RecoilValueType<typeof changesBranchesState>;
-}) {
-  return (
-    <table>
-      {changesBranches
-        .map(({ branch, repoRoot }) => {
-          if (branch) {
-            const mapping = branch.trackingBranch
-              ? `${branch.name} → ${branch.trackingBranch}`
-              : changesBranches.length > 1
-              ? `${branch.name} (no tracking branch)`
-              : "No tracking branch";
-
-            return changesBranches.length > 1 ? (
-              <tr key={repoRoot}>
-                <td>{path.basename(repoRoot)}: &nbsp;</td>
-                <td>{mapping}</td>
-              </tr>
-            ) : (
-              <tr key={repoRoot}>
-                <td>{mapping}</td>
-              </tr>
-            );
-          }
-          return null;
-        })
-        .filter(notNull)}
-    </table>
-  );
-}

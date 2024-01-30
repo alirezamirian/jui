@@ -58,7 +58,7 @@ export const ProjectViewPane = (): React.ReactElement => {
   return (
     <DefaultSuspense>
       <SpeedSearchTree
-        ref={treeRef}
+        treeRef={treeRef}
         {...activePathsProviderProps}
         items={[projectTree] as ProjectTreeNode[]}
         onAction={(path) => {

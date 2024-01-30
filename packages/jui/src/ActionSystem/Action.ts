@@ -46,6 +46,11 @@ export interface ActionDefinition {
    * If set to `true`, this action would be in disabled state and cannot be performed.
    */
   isDisabled?: boolean;
+
+  /**
+   * Allows reusing the shortcut of another action, if no shortcut is set for this action.
+   */
+  useShortcutsOf?: string;
 }
 
 export interface MutableAction

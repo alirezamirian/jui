@@ -19,15 +19,13 @@ export type ListProps<T extends object> = Omit<
      */
     fillAvailableSpace?: boolean;
     /**
-     * By default, if list is not focused, it shows a different style on the selected item,
-     * which acts as a visual clue for list's focus state. This behaviour can be suppressed by setting
-     * `alwaysShowAsFocused` to `true`. One use case is in master-detail views where you don't
-     * want the list to appear as blurred, when interacting with the details view of the selected
-     * list item. Note that in such use cases, there won't be any visual clue to distinguish focused
-     * state of the link, which is not great from UX perspective, but it's kept like this to match
-     * Jetbrains UI behaviour.
+     * When true, shows the list in focused style, even when it's not focused. A common use case is when the list
+     * is virtually focused. i.e. the focus is physically on some other element (like a search input) which handles
+     * keyboard events as if the list was focused.
+     * Another (maybe questionable) use case is master detail views, where the master view is shown as focused, even
+     * when the details view has physical focus.
      */
-    alwaysShowAsFocused?: boolean;
+    showAsFocused?: boolean;
     allowEmptySelection?: boolean;
     /**
      * Called when the action for the item should be triggered, which can be by double click or pressing Enter.
@@ -46,7 +44,7 @@ export type ListProps<T extends object> = Omit<
 export const List = React.forwardRef(function List<T extends object>(
   {
     allowEmptySelection = false,
-    alwaysShowAsFocused = false,
+    showAsFocused = false,
     fillAvailableSpace = false,
     onAction,
     ...inputProps
@@ -75,7 +73,7 @@ export const List = React.forwardRef(function List<T extends object>(
               item={item}
               state={state}
               onAction={() => onAction?.(item.key)}
-              listFocused={alwaysShowAsFocused || focused}
+              listFocused={showAsFocused || focused}
             />
           ),
         })

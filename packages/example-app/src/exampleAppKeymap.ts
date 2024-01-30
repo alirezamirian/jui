@@ -15,6 +15,12 @@ export const exampleAppKeymap: Keymap = {
       firstKeyStroke: { code: "Digit0", modifiers: ["Meta"] },
     },
   ],
+  ActivateVersionControlWindow: [
+    {
+      type: "keyboard",
+      firstKeyStroke: { code: "Digit9", modifiers: ["Meta"] },
+    },
+  ],
   ActivateTerminalWindow: [
     { type: "keyboard", firstKeyStroke: { code: "F12", modifiers: ["Alt"] } },
   ],
@@ -86,6 +92,24 @@ export const exampleAppKeymap: Keymap = {
       firstKeyStroke: {
         modifiers: ["Meta"],
         code: "KeyK",
+      },
+    },
+  ],
+  [VcsActionIds.FOCUS_TEXT_FILTER]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        code: "KeyL",
+      },
+    },
+  ],
+  SafeDelete: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        code: "Backspace" /* TODO: in intellij, it's DELETE. Check if it's a special key which matches both backspace and Delete*/,
       },
     },
   ],

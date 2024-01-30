@@ -283,6 +283,12 @@ export class Theme<P extends string = string> {
         "Component.focusedBorderColor",
         !theme.dark ? "#87AFDA" : "#466D94"
       ),
+      // comes from JBColor.border() which is used in many places in the original impl. Not clear how/if it's different
+      // from the other "border" color here.
+      borderColor: theme.color(
+        "Borders.color",
+        theme.dark ? "rgb(50,50,50)" : "rgb(192, 192, 192)"
+      ),
       border: ({
         focused,
         disabled,

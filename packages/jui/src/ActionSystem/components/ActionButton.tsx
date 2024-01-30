@@ -1,28 +1,36 @@
 import React from "react";
 import { useAction } from "@intellij-platform/core/ActionSystem/ActionsProvider";
-import { IconButton } from "@intellij-platform/core/IconButton";
+import {
+  IconButton,
+  IconButtonProps,
+} from "@intellij-platform/core/IconButton";
 import { ActionTooltip, TooltipTrigger } from "@intellij-platform/core/Tooltip";
 
 export const ActionButton = ({
   actionId,
   children,
+  ...otherProps
 }: {
   actionId: string;
   /**
-   * Content to show if `action.icon` is not set.
+   * Content to show instead of `action.icon`.
    */
   children?: React.ReactNode;
-}): JSX.Element => {
+} & IconButtonProps): JSX.Element => {
   const action = useAction(actionId);
   if (!action) {
     return <></>;
   }
   const actionButton = (
     <IconButton
-      onPress={() => action?.perform()}
       isDisabled={action.isDisabled}
+      {...otherProps}
+      onPress={(e) => {
+        action?.perform();
+        otherProps.onPress?.(e);
+      }}
     >
-      {action.icon || children}
+      {children || action.icon}
     </IconButton>
   );
   if (action.title) {

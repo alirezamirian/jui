@@ -10,13 +10,10 @@ import { StyledTreeNode } from "@intellij-platform/core/Tree/StyledTreeNode";
 
 type TreeNodeProps<T> = {
   item: Node<T>;
-  alwaysShowAsFocused?: boolean;
+  showAsFocused?: boolean;
 };
 
-export function TreeNode<T>({
-  item,
-  alwaysShowAsFocused = false,
-}: TreeNodeProps<T>) {
+export function TreeNode<T>({ item }: TreeNodeProps<T>) {
   const ref = useRef(null);
   const {
     state: {
@@ -67,7 +64,7 @@ export function TreeNode<T>({
       <StyledTreeNode
         ref={ref}
         {...treeNodeProps}
-        containerFocused={containerFocused || alwaysShowAsFocused}
+        containerFocused={containerFocused}
         disabled={isDisabled}
         selected={isSelected}
         aria-disabled={isDisabled}

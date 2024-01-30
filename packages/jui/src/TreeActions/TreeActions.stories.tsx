@@ -15,7 +15,7 @@ export const OnTree: StoryFn = () => (
   <TreeActionsWrapper>
     {(treeRef) => (
       <Tree
-        ref={treeRef}
+        treeRef={treeRef}
         selectionMode="multiple"
         defaultExpandedKeys={["List", "Theme", "BasicList", "Foo"]}
       >
@@ -28,7 +28,7 @@ export const OnSpeedSearchTree: StoryFn = () => (
   <TreeActionsWrapper>
     {(treeRef) => (
       <SpeedSearchTree
-        ref={treeRef}
+        treeRef={treeRef}
         selectionMode="multiple"
         defaultExpandedKeys={["List", "Theme", "BasicList", "Foo"]}
       >

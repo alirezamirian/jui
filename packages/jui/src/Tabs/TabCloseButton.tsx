@@ -23,7 +23,7 @@ const StyledIconWrapper = styled.span`
 export const TabCloseButton = (props: Omit<BareButtonProps, "children">) => {
   // using useHover proved to be unstable.
   return (
-    <BareButton {...props}>
+    <BareButton {...props} excludeFromTabOrder preventFocusOnPress>
       <StyledIconWrapper>
         <PlatformIcon icon={"actions/closeHovered"} className="icon hover" />
         <PlatformIcon icon={"actions/close"} className="icon" />

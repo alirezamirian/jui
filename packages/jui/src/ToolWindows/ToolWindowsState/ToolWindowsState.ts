@@ -45,12 +45,12 @@ export interface ToolWindowState {
    */
   isVisible: boolean;
   /**
-   * Relative size (in the scale of 0-1) of the tool window in its anchor, when rendered is primary group, i.e. when
+   * Relative size (in the scale of 0-1) of the tool window in its anchor, when rendered in the primary group, i.e. when
    * `isSplit` is false
    */
   weight: number;
   /**
-   * Relative size (in the scale of 0-1) of the tool window in its anchor, when rendered is the secondary group. i.e.
+   * Relative size (in the scale of 0-1) of the tool window in its anchor, when rendered in the secondary group. i.e.
    * when `isSplit` is true.
    */
   sideWeight: number;
@@ -137,6 +137,9 @@ export class ToolWindowsState {
     this.lastFocusedKey = lastFocusedKey;
     this.layoutToRestore = layoutToRestore;
     this.removedFromSideBarIds = new Set(removedFromSideBarIds);
+    // TODO: instead of keeping a set of removedFromSideBarIds showStripeButton can be a boolean on each window state.
+    //  if we want to avoid the invalid combination of `{ isVisible: true, showStripeButton: false }`, we can have a
+    //  a single property like : visibility: 'open' | 'closed' | 'removed'
     const invalidWindows = Object.keys(this.windows).filter(
       (key) =>
         this.removedFromSideBarIds.has(key) && this.windows[key].isVisible

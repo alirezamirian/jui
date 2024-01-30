@@ -1,0 +1,59 @@
+---
+---
+
+import { ApiDescription } from "@site/src/components/ApiDescription";
+import { SearchInput, CommonActionId } from "@intellij-platform/core";
+import { DefaultShortcut } from "../../src/components/DefaultShortcut";
+
+# SearchInput
+
+<ApiDescription of={SearchInput} />
+
+See also:
+
+- [Input](./Input.mdx)
+- [InputField](./InputField.mdx)
+
+#### Remaining
+
+- [ ] 🚧 Support for [multiline search strings](https://jetbrains.github.io/ui/controls/search_field/#15)
+
+### Live example
+
+```jsx live themed
+<>
+  <SearchInput
+    style={{ width: 250 }}
+    onSubmit={alert}
+    onClear={() => console.log("onClear")}
+    addonAfter={
+      <>
+        <TooltipTrigger tooltip={<ActionTooltip actionName="Match Case" />}>
+          <StyledHoverContainer as={IconButton} excludeFromTabOrder={false}>
+            <AutoHoverPlatformIcon
+              icon="actions/regex"
+              hoverIcon="actions/regexHovered"
+            />
+          </StyledHoverContainer>
+        </TooltipTrigger>
+      </>
+    }
+  />
+</>
+```
+
+## With search history
+
+Use `searchHistory` prop to pass a list of search queries, which will be available as a menu on the search icon.
+
+```jsx live themed
+<>
+  <SearchInput
+    style={{ width: 250 }}
+    searchHistory={["Expand", "Deprecated", "break", "overr"]}
+  />
+</>
+```
+
+`SearchInput` also provides an action to allow opening search history menu via a `CommonActionId.SHOW_SEARCH_HISTORY`
+shortcut, which by default is mapped to <DefaultShortcut actionId={CommonActionId.SHOW_SEARCH_HISTORY} />.

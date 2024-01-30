@@ -7,7 +7,7 @@ import {
   ActionButton,
 } from "@intellij-platform/core";
 import { ChangeListsActionButton } from "./ActionButtons/ChangeListsActionButton";
-import { GroupByActionButton } from "./ActionButtons/GroupByActionButton";
+import { ChangesGroupByActionButton } from "./ActionButtons/ChangesGroupByActionButton";
 import { ViewOptionsActionButton } from "./ActionButtons/ViewOptionsActionButton";
 import React from "react";
 
@@ -25,7 +25,7 @@ export function ChangesViewToolbar() {
       <ActionButton actionId={VcsActionIds.SHELVE_SILENTLY} />
       <ToolbarSeparator />
       <TooltipTrigger tooltip={<ActionTooltip actionName="Group By" />}>
-        <GroupByActionButton />
+        <ChangesGroupByActionButton />
       </TooltipTrigger>
       <TooltipTrigger tooltip={<ActionTooltip actionName="View Options" />}>
         <ViewOptionsActionButton />

@@ -1,7 +1,8 @@
 import { ItemLayout, styled } from "@intellij-platform/core";
 
 export const StyledIconWrapper = styled.span`
-  width: 1.125rem;
+  width: 0.9375rem;
+  margin-right: 0.25rem;
   display: inline-flex;
   justify-content: center;
 `;

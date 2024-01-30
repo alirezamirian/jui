@@ -1,2 +1,2 @@
-export * from "./InputField";
-export { Input } from "@intellij-platform/core/InputField/Input";
+export { InputField, type InputFieldProps } from "./InputField";
+export { Input, type InputProps } from "./Input";

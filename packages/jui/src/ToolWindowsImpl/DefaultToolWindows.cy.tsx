@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ComponentProps, useState } from "react";
 import {
   DefaultToolWindow,
   DefaultToolWindows,
@@ -30,17 +30,24 @@ const window = (id: string) => ({
 const SimpleToolWindows = React.forwardRef(
   (
     {
+      removedFromSideBarIds,
       initialState = {
-        "First window": toolWindowState({ isVisible: true }),
-        "Second window": toolWindowState({ anchor: "bottom", isVisible: true }),
+        "First window": toolWindowState({
+          isVisible: !removedFromSideBarIds?.includes("First window"),
+        }),
+        "Second window": toolWindowState({
+          anchor: "bottom",
+          isVisible: !removedFromSideBarIds?.includes("Second window"),
+        }),
       },
     }: {
       initialState?: { [key: string]: ToolWindowState };
+      removedFromSideBarIds?: string[];
     },
     ref: React.ForwardedRef<ToolWindowRefValue>
   ) => {
     const [state, setState] = useState(
-      () => new ToolWindowsState(initialState)
+      () => new ToolWindowsState(initialState, { removedFromSideBarIds })
     );
 
     return (
@@ -235,14 +242,25 @@ describe("DefaultToolWindowActions", () => {
       cy.realPress(["Meta", "2"]);
       cy.findByTestId("main content focusable").should("have.focus");
     });
+
+    it("adds the tool window to the sidebar and opens it, if it's currently removed from sidebar", () => {
+      cy.mount(
+        <ThemeProvider theme={new Theme(darculaThemeJson as any)}>
+          <WithActivateToolWindowKeymap
+            removedFromSideBarIds={["First window"]}
+          />
+        </ThemeProvider>
+      );
+      cy.realPress(["Meta", "1"]);
+      cy.findByTestId("First window").should("exist");
+      cy.findByTestId("First window").find("input").eq(0).should("be.focused");
+    });
   });
 });
 
-function WithActivateToolWindowKeymap({
-  initialState,
-}: {
-  initialState?: Record<string, ToolWindowState>;
-}) {
+function WithActivateToolWindowKeymap(
+  props: ComponentProps<typeof SimpleToolWindows>
+) {
   return (
     <KeymapProvider
       keymap={{
@@ -266,7 +284,7 @@ function WithActivateToolWindowKeymap({
         ],
       }}
     >
-      <SimpleToolWindows initialState={initialState} />
+      <SimpleToolWindows {...props} />
     </KeymapProvider>
   );
 }

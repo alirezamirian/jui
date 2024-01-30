@@ -1,5 +1,6 @@
 import React from "react";
 import { Meta, StoryObj } from "@storybook/react";
+import * as inputStories from "./Input.stories";
 import { InputField, InputFieldProps } from "./InputField";
 
 export default {
@@ -16,47 +17,52 @@ const render = (props: InputFieldProps) => {
 };
 
 export const Default: StoryObj<InputFieldProps> = {
-  render: render,
+  render,
 };
 
 export const LabelAbove: StoryObj<InputFieldProps> = {
-  render: render,
-
+  render,
   args: {
     labelPlacement: "above",
   },
 };
 
 export const Invalid: StoryObj<InputFieldProps> = {
-  render: render,
-
+  render,
   args: {
     validationState: "invalid",
   },
 };
 
 export const Disabled: StoryObj<InputFieldProps> = {
-  render: render,
-
+  render,
   args: {
     isDisabled: true,
   },
 };
 
 export const WithPlaceholder: StoryObj<InputFieldProps> = {
-  render: render,
-
+  render,
   args: {
     placeholder: "Optional",
   },
 };
 
 export const WithContextHelp: StoryObj<InputFieldProps> = {
-  render: render,
-
+  render,
   args: {
     contextHelp: "*.domain.com",
   },
+};
+
+export const WithAfterAddons: StoryObj<InputFieldProps> = {
+  render,
+
+  args: inputStories.WithAfterAddons.args as Partial<InputFieldProps>,
+};
+export const WithBeforeAndAfterAddons: StoryObj<InputFieldProps> = {
+  render,
+  args: inputStories.WithBeforeAndAfterAddons.args as Partial<InputFieldProps>,
 };
 
 export const WithErrorMessage: StoryObj<InputFieldProps> = {

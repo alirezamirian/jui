@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 
-import { styled } from "../styled";
+import { styled, css } from "../styled";
 import {
   StyledHorizontalSeparator,
   StyledSeparator,
@@ -17,7 +17,6 @@ import { useOverflowObserver } from "@intellij-platform/core/utils/overflow-util
 import { PlatformIcon } from "@intellij-platform/core/Icon";
 import { Overlay, useOverlayPosition } from "@react-aria/overlays";
 import { StyledPopupContainer } from "@intellij-platform/core/Popup/Popup";
-import { css } from "styled-components";
 import { mergeProps } from "@react-aria/utils";
 
 type ToolbarBorderProp =
@@ -56,11 +55,7 @@ const borderStyle = ({ border }: { border?: ToolbarBorderProp }) =>
   border &&
   css`
     border-style: solid;
-    border-color: ${({ theme }) =>
-      theme.color(
-        "Borders.color",
-        theme.dark ? "rgb(50,50,50)" : "rgb(192, 192, 192)"
-      )};
+    border-color: ${({ theme }) => theme.commonColors.borderColor};
     border-width: ${border === true ? "1px" : borderPropToCssProp[border]};
   `;
 
@@ -155,7 +150,9 @@ const StyledToolbarContent = styled.div<{
      * - remains accessible to screen readers.
      */
     css`
-      > :nth-child(${firstOverflowedIndex}) ~ * {
+      > ${firstOverflowedIndex === 0
+          ? "*"
+          : `:nth-child(${firstOverflowedIndex}) ~ *`} {
         opacity: 0 !important;
         pointer-events: none !important;
       }
@@ -319,6 +316,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         {overflowedElements.length > 0 && (
           <StyledShowMoreButton
             ref={showMoreButtonRef}
+            tabIndex={-1}
             onMouseEnter={showOverflowPopup}
           >
             <PlatformIcon icon="ide/link" />
