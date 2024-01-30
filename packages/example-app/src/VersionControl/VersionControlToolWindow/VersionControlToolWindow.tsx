@@ -50,6 +50,9 @@ const StyledToolWindowHeader = styled.span`
 const StyledContainer = styled.div`
   height: 100%;
   display: flex;
+  :focus-visible {
+    outline: none;
+  }
 `;
 
 export const searchInputRefState = atom<RefObject<HTMLInputElement>>({
@@ -140,7 +143,9 @@ function VcsTab({ tabKey }: { tabKey: string }) {
   return (
     <ActionsProvider actions={actions}>
       {({ shortcutHandlerProps }) => (
-        <StyledContainer {...shortcutHandlerProps}>
+        // tabIndex is added to make the whole container focusable, which means the focus can go away from the currently
+        // focused element, when background is clicked. This is to follow the original implementation.
+        <StyledContainer {...shortcutHandlerProps} tabIndex={0}>
           {!showBranches && (
             <ShowBranchesButton onPress={() => setShowBranches(true)} />
           )}
