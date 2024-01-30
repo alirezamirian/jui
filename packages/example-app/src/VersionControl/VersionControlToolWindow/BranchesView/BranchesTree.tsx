@@ -1,6 +1,11 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { PlatformIcon, SpeedSearchTree, styled } from "@intellij-platform/core";
+import {
+  PlatformIcon,
+  SpeedSearchTree,
+  styled,
+  useCollectionSearchInput,
+} from "@intellij-platform/core";
 
 import {
   branchTreeNodeRenderers,
@@ -14,6 +19,8 @@ import {
 } from "./BranchesTree.state";
 import { StyledHeader } from "../styled-components";
 import { vcsLogFilterCurrentTab } from "../vcs-logs.state";
+import { TreeSelectionManager } from "@intellij-platform/core/Tree/TreeSelectionManager";
+import { mergeProps } from "@react-aria/utils";
 
 const StyledSearchInput = styled.input`
   all: unset;
@@ -39,7 +46,14 @@ export function BranchesTree() {
   const [selectedKeys, setSelectedKeys] = useRecoilState(selectedKeysState);
   const [expandedKeys, setExpandedKeys] = useRecoilState(expandedKeysState);
   const treeRef = useRecoilValue(branchesTreeRefState);
+  const ref = useRef<HTMLDivElement>(null);
+  const selectionManagerRef = useRef<TreeSelectionManager>(null);
+  const [isInputFocused, setInputFocused] = useState(false);
   const setBranchFilter = useSetRecoilState(vcsLogFilterCurrentTab.branch);
+  const { collectionSearchInputProps } = useCollectionSearchInput({
+    collectionRef: ref,
+    selectionManager: selectionManagerRef.current,
+  });
   // FIXME: selectedKeys and expandedKeys can become invalid due to changes in nodes, which makes the tree view
   //  not react to the key events. Ideally, the tree view should be robust regarding invalid keys, and otherwise
   //  the keys should be validated everytime nodes change.
@@ -50,10 +64,18 @@ export function BranchesTree() {
           <PlatformIcon icon="actions/search" />
         </StyledSearchIconContainer>
         {/* FIXME: tabIndex -1 is a workaround to not get the input focused when the toolwindow opens. Not ideal.*/}
-        <StyledSearchInput tabIndex={-1} />
+        <StyledSearchInput
+          tabIndex={-1}
+          {...mergeProps(collectionSearchInputProps, {
+            onFocus: () => setInputFocused(true),
+            onBlur: () => setInputFocused(false),
+          })}
+        />
       </StyledHeader>
       <SpeedSearchTree
-        ref={treeRef}
+        ref={ref}
+        treeRef={treeRef}
+        selectionManagerRef={selectionManagerRef}
         items={branchesTreeNodes}
         selectionMode="multiple"
         selectedKeys={selectedKeys}
@@ -67,6 +89,7 @@ export function BranchesTree() {
           }
         }}
         fillAvailableSpace
+        showAsFocused={isInputFocused}
       >
         {(node) => {
           // @ts-expect-error we need to somehow infer the type of `node.type`
