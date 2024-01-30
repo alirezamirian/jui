@@ -23,6 +23,7 @@ export type ToolWindowDescriptor = {
   title: string;
   icon: React.ReactNode;
   content: React.ReactElement;
+  showStripeButton?: boolean;
   initialState: ToolWindowState;
 };
 export const toolWindows: ToolWindowDescriptor[] = [
@@ -64,6 +65,10 @@ export const toolWindows: ToolWindowDescriptor[] = [
         <VersionControlToolWindow />
       </Suspense>
     ),
-    initialState: toolWindowState({ anchor: "bottom", weight: 0.35 }),
+    showStripeButton: false,
+    initialState: toolWindowState({
+      anchor: "bottom",
+      weight: 0.35,
+    }),
   },
 ];

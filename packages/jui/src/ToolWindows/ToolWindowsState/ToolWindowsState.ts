@@ -137,6 +137,9 @@ export class ToolWindowsState {
     this.lastFocusedKey = lastFocusedKey;
     this.layoutToRestore = layoutToRestore;
     this.removedFromSideBarIds = new Set(removedFromSideBarIds);
+    // TODO: instead of keeping a set of removedFromSideBarIds showStripeButton can be a boolean on each window state.
+    //  if we want to avoid the invalid combination of `{ isVisible: true, showStripeButton: false }`, we can have a
+    //  a single property like : visibility: 'open' | 'closed' | 'removed'
     const invalidWindows = Object.keys(this.windows).filter(
       (key) =>
         this.removedFromSideBarIds.has(key) && this.windows[key].isVisible
