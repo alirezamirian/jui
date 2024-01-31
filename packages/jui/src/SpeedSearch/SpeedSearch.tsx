@@ -10,7 +10,7 @@ import {
 
 interface Props extends SpeedSearchStateProps {
   children: React.ReactNode;
-  stickySearch?: boolean;
+  keepSearchActiveOnBlur?: boolean;
   match?: boolean;
   className?: string;
   containerProps?: Omit<HTMLProps<HTMLDivElement>, "as" | "ref">;
@@ -21,7 +21,7 @@ interface Props extends SpeedSearchStateProps {
 export const SpeedSearch = React.forwardRef(function SpeedSearch(
   {
     children,
-    stickySearch = false,
+    keepSearchActiveOnBlur = false,
     className,
     containerProps = {},
     match,
@@ -32,7 +32,7 @@ export const SpeedSearch = React.forwardRef(function SpeedSearch(
   const ref = useObjectRef(forwardedRef);
   const speedSearchState = useSpeedSearchState(otherProps);
   const { containerProps: speedSearchContainerProps } = useSpeedSearch(
-    { stickySearch },
+    { keepSearchActiveOnBlur: keepSearchActiveOnBlur },
     speedSearchState,
     ref
   );

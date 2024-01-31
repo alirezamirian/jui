@@ -2,12 +2,12 @@ import { useGhostInput } from "./useGhostInput";
 import { useFocusWithin, useKeyboard } from "@react-aria/interactions";
 import { useControlledState } from "@react-stately/utils";
 import { ControlledStateProps } from "../type-utils";
-import { RefObject } from "react";
+import React, { RefObject } from "react";
 
 export interface SpeedSearchState {
   /**
    * Whether speed search is active. Speed search becomes active when the user starts to type and becomes inactive
-   * when Escape is pressed, or when the speed search container is blurred and `stickySearch` is false.
+   * when Escape is pressed, or when the speed search container is blurred and `keepSearchActiveOnBlur` is false.
    * Whenever speed search becomes inactive, search text is also cleared.
    * Note that speed search can be active while search term is empty.
    */
@@ -54,7 +54,7 @@ export function useSpeedSearchState(
 }
 
 export interface SpeedSearchProps {
-  stickySearch?: boolean;
+  keepSearchActiveOnBlur?: boolean | ((e: React.FocusEvent) => boolean);
 }
 
 /**
@@ -66,7 +66,7 @@ export interface SpeedSearchProps {
  * it is NOT this hook's responsibility anymore.
  */
 export function useSpeedSearch(
-  { stickySearch }: SpeedSearchProps,
+  { keepSearchActiveOnBlur }: SpeedSearchProps,
   { searchTerm, active, setActive, setSearchTerm }: SpeedSearchState,
   ref: RefObject<HTMLElement>
 ) {
@@ -111,8 +111,12 @@ export function useSpeedSearch(
   const {
     focusWithinProps: { onFocus, onBlur },
   } = useFocusWithin({
-    onFocusWithinChange: (focused) => {
-      if (!focused && !stickySearch) {
+    onBlurWithin: (event) => {
+      if (
+        !(typeof keepSearchActiveOnBlur === "function"
+          ? keepSearchActiveOnBlur(event)
+          : keepSearchActiveOnBlur)
+      ) {
         clear();
       }
     },

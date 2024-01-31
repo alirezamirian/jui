@@ -26,7 +26,7 @@ export function useSpeedSearchTree<T>(
   } = useCollectionSpeedSearch({
     collection: state.collection,
     selectionManager: state.selectionManager,
-    stickySearch: props.stickySearch,
+    keepSearchActiveOnBlur: props.keepSearchActiveOnBlur,
     keyboardDelegate: new TreeKeyboardDelegate(
       state.collection,
       state.disabledKeys,

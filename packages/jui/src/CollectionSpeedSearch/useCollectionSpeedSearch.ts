@@ -1,7 +1,10 @@
 import { HTMLAttributes, RefObject, useMemo } from "react";
 import { Collection, KeyboardDelegate, Node } from "@react-types/shared";
 import { SelectionManager } from "@react-stately/selection";
-import { SpeedSearchPopupProps } from "@intellij-platform/core/SpeedSearch";
+import {
+  SpeedSearchPopupProps,
+  SpeedSearchProps,
+} from "@intellij-platform/core/SpeedSearch";
 import {
   SpeedSearchState,
   SpeedSearchStateProps,
@@ -41,7 +44,7 @@ export interface CollectionSpeedSearch {
 export function useCollectionSpeedSearch<T>({
   collection,
   selectionManager,
-  stickySearch,
+  keepSearchActiveOnBlur,
   keyboardDelegate,
   focusBestMatch,
   ref,
@@ -51,9 +54,9 @@ export function useCollectionSpeedSearch<T>({
   selectionManager: SelectionManager;
   keyboardDelegate: KeyboardDelegate;
   ref: RefObject<HTMLElement>;
-  stickySearch?: boolean;
   focusBestMatch?: boolean;
-} & SpeedSearchStateProps): CollectionSpeedSearch {
+} & SpeedSearchStateProps &
+  Pick<SpeedSearchProps, "keepSearchActiveOnBlur">): CollectionSpeedSearch {
   const speedSearch = useSpeedSearchState(speedSearchStateProps);
 
   const { matches, selectionManager: speedSearchSelectionManager } =
@@ -63,7 +66,11 @@ export function useCollectionSpeedSearch<T>({
       speedSearch,
       focusBestMatch,
     });
-  const { containerProps } = useSpeedSearch({ stickySearch }, speedSearch, ref);
+  const { containerProps } = useSpeedSearch(
+    { keepSearchActiveOnBlur },
+    speedSearch,
+    ref
+  );
   const speedSearchKeyboardDelegate = useMemo(
     () =>
       createSpeedSearchKeyboardDelegate(
