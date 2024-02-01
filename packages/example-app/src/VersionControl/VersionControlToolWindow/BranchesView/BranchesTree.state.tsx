@@ -18,6 +18,7 @@ import {
   groupByDirectory,
 } from "../../../tree-utils/groupByDirectory";
 import { vcsRootsState } from "../../file-status.state";
+import { vcsLogTabState } from "../vcs-logs.state";
 
 type LocalBranchNode = {
   type: "localBranch";
@@ -159,7 +160,7 @@ function getRemoteBranchNodes(
 }
 
 export const branchesTreeNodeState = selector({
-  key: "vcs/branchesTree/nodes",
+  key: "vcs/logs/branchesTree/nodes",
   get: ({ get }): AnyBranchTreeNode[] => {
     // TODO: sorting. favorite should be on top. Others should be alphabetical
     const repoBranches = get(allBranchesState);
@@ -218,26 +219,39 @@ export const branchTreeGroupingState = atomFamily<
   boolean,
   "directory" | "repository"
 >({
-  key: "vcs/branchesTree/grouping",
+  key: "vcs/logs/branchesTree/grouping",
   default: true,
 });
 export const isGroupByRepositoryAvailableState = selector<boolean>({
-  key: "vcs/branchesTree/grouping/repo/available",
+  key: "vcs/logs/branchesTree/grouping/repo/available",
   get: ({ get }) => get(vcsRootsState).length > 0,
 });
-export const branchesTreeRefState = atom<RefObject<TreeRefValue>>({
-  key: "vcs/branchesTree/ref",
-  default: React.createRef(),
-  dangerouslyAllowMutability: true,
-});
-export const selectedKeysState = atom<Selection>({
-  key: "vcs/branchesTree/selectedKeys",
-  default: new Set(),
-});
-export const expandedKeysState = atom<Set<Key>>({
-  key: "vcs/branchesTree/expandedKeys",
-  default: new Set(),
-});
+export const branchesTreeRefState = vcsLogTabState(
+  atomFamily<RefObject<TreeRefValue>, string>({
+    key: "vcs/logs/branchesTree/ref",
+    default: React.createRef(),
+    dangerouslyAllowMutability: true,
+  })
+);
+export const selectedKeysState = vcsLogTabState(
+  atomFamily<Selection, string>({
+    key: "vcs/logs/branchesTree/selectedKeys",
+    default: new Set(),
+  })
+);
+export const expandedKeysState = vcsLogTabState(
+  atomFamily<Set<Key>, string>({
+    key: "vcs/logs/branchesTree/expandedKeys",
+    default: new Set(),
+  })
+);
+
+export const searchInputState = vcsLogTabState(
+  atomFamily<string, string>({
+    key: "vcs/logs/branchesTree/searchInput",
+    default: "",
+  })
+);
 
 const groupings = [
   {
@@ -255,7 +269,7 @@ const groupings = [
   },
 ];
 export const availableGroupingsState = selector({
-  key: "vcs/branchesTree/availableGroupings",
+  key: "vcs/logs/branchesTree/availableGroupings",
   get: ({ get }) =>
     groupings
       .filter((grouping) =>

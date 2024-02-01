@@ -24,7 +24,7 @@ import { VcsLogCommitsView } from "./CommitsView/VcsLogCommitsView";
 import { VcsBranchesView } from "./BranchesView/VcsBranchesView";
 import { VcsActionIds } from "../VcsActionIds";
 import {
-  useResetFilters,
+  useCloseVcsTab,
   vcsActiveTabKeyState,
   vcsLogFilter,
   vcsLogTabShowBranches,
@@ -134,7 +134,7 @@ function VcsTab({ tabKey }: { tabKey: string }) {
 
   const firstViewProps: Partial<ThreeViewSplitterProps> = showBranches
     ? {
-        firstView: <VcsBranchesView />,
+        firstView: <VcsBranchesView tabKey={tabKey} />,
         firstSize: firstViewSize,
         onFirstResize: setFirstViewSize,
         firstViewMinSize: 85,
@@ -145,7 +145,10 @@ function VcsTab({ tabKey }: { tabKey: string }) {
       {({ shortcutHandlerProps }) => (
         // tabIndex is added to make the whole container focusable, which means the focus can go away from the currently
         // focused element, when background is clicked. This is to follow the original implementation.
-        <StyledContainer {...shortcutHandlerProps} tabIndex={0}>
+        <StyledContainer
+          {...shortcutHandlerProps}
+          tabIndex={showBranches ? -1 : 0}
+        >
           {!showBranches && (
             <ShowBranchesButton onPress={() => setShowBranches(true)} />
           )}
@@ -236,36 +239,14 @@ function useVcsLogsToolWindowActions() {
 }
 
 function VcsToolWindowTabTitle({ tabKey }: { tabKey: string }) {
-  const resetFilters = useResetFilters();
-  const closeTab = useRecoilCallback(
-    ({ set, snapshot, reset }) =>
-      () => {
-        const tabs = snapshot.getLoadable(vcsTabKeysState).getValue();
-        const currentActiveTabKey = snapshot
-          .getLoadable(vcsActiveTabKeyState)
-          .getValue();
-        if (currentActiveTabKey === tabKey) {
-          // make sure the active tab key remains valid, by switching to previous tab. In the reference implementation
-          // the previously activated tab will be activated instead of the previous one index-wise, but it's a
-          // negligible and easy-to-fix difference.
-          set(
-            vcsActiveTabKeyState,
-            tabs[tabs.findIndex((key) => key === tabKey) - 1] || tabs[0]
-          );
-        }
-        set(vcsTabKeysState, (keys) => keys.filter((key) => key !== tabKey));
-        resetFilters(tabKey);
-        reset(vcsLogTabShowBranches(tabKey));
-      },
-    []
-  );
+  const closeTab = useCloseVcsTab();
   return (
     <ToolWindowTabContent
       title={useRecoilValue(vcsTabTitleState(tabKey))}
       closeButton={
         tabKey !== "MAIN" && (
           <TooltipTrigger tooltip={<ActionTooltip actionName="Close Tab" />}>
-            <TabCloseButton onPress={closeTab} />
+            <TabCloseButton onPress={() => closeTab(tabKey)} />
           </TooltipTrigger>
         )
       }
