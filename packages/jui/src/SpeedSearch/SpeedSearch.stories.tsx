@@ -20,13 +20,13 @@ const SpeedSearchContainer = styled(SpeedSearch)`
 export const Default: StoryObj<typeof SpeedSearch> = {
   render: ({
     onSearchTermChange,
-    onActiveChange,
+    onIsSearchActiveChange,
   }: {
     onSearchTermChange?: (searchTerm: string) => void;
-    onActiveChange?: (active: boolean) => void;
+    onIsSearchActiveChange?: (active: boolean) => void;
   }) => {
     const [searchTerm, setSearchTerm] = useState("");
-    const [active, setActive] = useState(false);
+    const [isActive, setIsActive] = useState(false);
 
     return (
       <SpeedSearchContainer
@@ -35,10 +35,10 @@ export const Default: StoryObj<typeof SpeedSearch> = {
           setSearchTerm(searchTerm);
           onSearchTermChange?.(searchTerm);
         }}
-        active={active}
-        onActiveChange={(active) => {
-          setActive(active);
-          onActiveChange?.(active);
+        isSearchActive={isActive}
+        onIsSearchActiveChange={(active) => {
+          setIsActive(active);
+          onIsSearchActiveChange?.(active);
         }}
         match // search is done within the searchable text component in this dummy example, and we don't have information about match.
         keepSearchActiveOnBlur

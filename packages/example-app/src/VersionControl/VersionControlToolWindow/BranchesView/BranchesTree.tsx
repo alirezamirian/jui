@@ -47,8 +47,10 @@ export function BranchesTree() {
   const [expandedKeys, setExpandedKeys] = useRecoilState(expandedKeysState);
   const treeRef = useRecoilValue(branchesTreeRefState);
   const ref = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const selectionManagerRef = useRef<TreeSelectionManager>(null);
   const [isInputFocused, setInputFocused] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const setBranchFilter = useSetRecoilState(vcsLogFilterCurrentTab.branch);
   const { collectionSearchInputProps } = useCollectionSearchInput({
     collectionRef: ref,
@@ -65,10 +67,17 @@ export function BranchesTree() {
         </StyledSearchIconContainer>
         {/* FIXME: tabIndex -1 is a workaround to not get the input focused when the toolwindow opens. Not ideal.*/}
         <StyledSearchInput
+          ref={searchInputRef}
           tabIndex={-1}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           {...mergeProps(collectionSearchInputProps, {
-            onFocus: () => setInputFocused(true),
-            onBlur: () => setInputFocused(false),
+            onFocus: () => {
+              setInputFocused(true);
+            },
+            onBlur: () => {
+              setInputFocused(false);
+            },
           })}
         />
       </StyledHeader>
@@ -89,7 +98,13 @@ export function BranchesTree() {
           }
         }}
         fillAvailableSpace
+        // speed search related props
         showAsFocused={isInputFocused}
+        searchTerm={searchTerm}
+        onSearchTermChange={setSearchTerm}
+        keepSearchActiveOnBlur
+        hideSpeedSearchPopup
+        isSearchActive
       >
         {(node) => {
           // @ts-expect-error we need to somehow infer the type of `node.type`

@@ -3,13 +3,17 @@ import { useKeyboard } from "@react-aria/interactions";
 import { mergeProps } from "@react-aria/utils";
 import { TreeState } from "@react-stately/tree";
 import { useCollectionSpeedSearch } from "../../CollectionSpeedSearch/useCollectionSpeedSearch";
-import { SpeedSearchProps } from "../../SpeedSearch/useSpeedSearch";
+import {
+  SpeedSearchProps,
+  SpeedSearchStateProps,
+} from "../../SpeedSearch/useSpeedSearch";
 import { TreeKeyboardDelegate } from "../TreeKeyboardDelegate";
 import { SelectableTreeProps, useSelectableTree } from "../useSelectableTree";
 import { hasAnyModifier } from "@intellij-platform/core/utils/keyboard-utils";
 
 interface UseSpeedSearchTreeProps<T>
   extends SpeedSearchProps,
+    SpeedSearchStateProps,
     SelectableTreeProps<T> {}
 
 export function useSpeedSearchTree<T>(
@@ -24,9 +28,9 @@ export function useSpeedSearchTree<T>(
     speedSearch,
     ...collectionSpeedSearch
   } = useCollectionSpeedSearch({
+    ...props,
     collection: state.collection,
     selectionManager: state.selectionManager,
-    keepSearchActiveOnBlur: props.keepSearchActiveOnBlur,
     keyboardDelegate: new TreeKeyboardDelegate(
       state.collection,
       state.disabledKeys,

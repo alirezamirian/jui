@@ -24,16 +24,16 @@ export interface SpeedSearchState {
 export interface SpeedSearchStateProps
   extends ControlledStateProps<{
     searchTerm: string;
-    active: boolean;
+    isSearchActive: boolean;
   }> {}
 
 export function useSpeedSearchState(
   props: SpeedSearchStateProps
 ): SpeedSearchState {
   const [active, setActive] = useControlledState(
-    props.active!,
-    props.active || false,
-    props.onActiveChange!
+    props.isSearchActive!,
+    props.defaultIsSearchActive ?? false,
+    props.onIsSearchActiveChange!
   );
   const [searchTerm, setSearchTerm] = useControlledState(
     props.searchTerm!,
