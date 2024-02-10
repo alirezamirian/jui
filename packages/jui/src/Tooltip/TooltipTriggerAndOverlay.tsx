@@ -1,6 +1,5 @@
 import React, {
   HTMLAttributes,
-  HTMLProps,
   ReactElement,
   RefObject,
   useState,
@@ -8,19 +7,16 @@ import React, {
 import { useTooltipTrigger as useAriaTooltipTrigger } from "@react-aria/tooltip";
 import { TooltipTriggerState } from "@react-stately/tooltip";
 import { FocusableProvider } from "@react-aria/focus";
-import { Overlay } from "@react-aria/overlays";
+import { Overlay, PositionAria } from "@react-aria/overlays";
 import { mergeProps, useLayoutEffect } from "@react-aria/utils";
-import { TooltipContext } from "@intellij-platform/core/Tooltip/TooltipContext";
+
+import { TooltipContext } from "./TooltipContext";
 
 interface TooltipTriggerBaseProps {
   /**
    * Tooltip content. The value should be an element of type {@link Tooltip}.
    */
   tooltip: ReactElement;
-  /**
-   * props to be applied on the tooltip overlay, for positioning.
-   */
-  tooltipOverlayProps: HTMLProps<HTMLDivElement>;
   /**
    * Either a focusable component, or a render function which accepts trigger props and passes it to some component.
    */
@@ -33,7 +29,7 @@ interface TooltipTriggerBaseProps {
   state: TooltipTriggerState;
 
   showOnFocus?: boolean;
-
+  positionAria: PositionAria;
   overlayRef: RefObject<HTMLDivElement>;
   triggerRef: RefObject<HTMLElement>;
   isDisabled?: boolean;
@@ -50,10 +46,10 @@ export const TooltipTriggerAndOverlay = ({
   tooltip,
   trigger,
   state,
-  tooltipOverlayProps,
   overlayRef,
   triggerRef,
   showOnFocus,
+  positionAria,
   ...props
 }: TooltipTriggerBaseProps): JSX.Element => {
   const [isInteractive, setInteractive] = useState(false);
@@ -81,10 +77,17 @@ export const TooltipTriggerAndOverlay = ({
       {normalizeChildren(trigger, { ...triggerProps, ref: triggerRef })}
       {state.isOpen && !props.isDisabled && (
         <Overlay>
-          <TooltipContext.Provider value={{ state, isInteractive }}>
+          <TooltipContext.Provider
+            value={{
+              state,
+              isInteractive,
+              placement: positionAria.placement,
+              pointerPositionStyle: positionAria.arrowProps.style,
+            }}
+          >
             <div
               {...mergeProps(
-                tooltipOverlayProps,
+                positionAria.overlayProps,
                 // Is it ok to apply tooltip props on this wrapper?
                 tooltipProps
               )}

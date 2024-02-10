@@ -1,25 +1,56 @@
-import React, { ForwardedRef, useContext } from "react";
+import React, { ForwardedRef, MutableRefObject, useContext } from "react";
 import { AriaTooltipProps, useTooltip } from "@react-aria/tooltip";
 import { useObjectRef } from "@react-aria/utils";
-import { styled } from "@intellij-platform/core/styled";
+import { PositionAria } from "@react-aria/overlays";
+import { css, styled } from "@intellij-platform/core/styled";
 import { UnknownThemeProp } from "@intellij-platform/core/Theme";
 import { WINDOW_SHADOW } from "@intellij-platform/core/style-constants";
 import { TooltipContext } from "./TooltipContext";
+import { TooltipPointer, TooltipPointerPosition } from "./TooltipPointer";
+import {
+  tooltipBackground,
+  tooltipBorderColor,
+  WITH_POINTER_BORDER_RADIUS,
+} from "./tooltip-styles";
 
 export interface TooltipProps extends Omit<AriaTooltipProps, "isOpen"> {
   children: React.ReactNode;
   multiline?: boolean;
   className?: string;
+  /**
+   * Whether (and in what position) the arrow pointer should be shown.
+   * When using {@link TooltipTrigger} or {@link PositionedTooltipTrigger}, the position of the pointer is calculated
+   * based on the target element, and a boolean value to define whether the arrow should be shown or not would suffice.
+   *
+   * Tooltips with pointer have slight style difference.
+   * {@see https://www.figma.com/file/nfDfMAdV7j2fnQlpYNAOfP/IntelliJ-Platform-UI-Kit-(Community)?type=design&node-id=15-51&mode=design&t=7PplrxG8ZfXB4hIK-0}
+   *
+   * @example
+   * <Tooltip withPointer />
+   * // shows the pointer in the position controlled by {@link TooltipTrigger} or {@link PositionedTooltipTrigger}
+   * // If there is not `TooltipTrigger` or `PositionedTooltipTrigger`, the arrow is shown on top center by default.
+   *
+   * @example
+   * <Tooltip withPointer={{side: 'top', offset: 30}} />
+   * // shows the pointer on the top side, with horizontal offset of 30px from the left of tooltip, regardless
+   * // of whether `TooltipTrigger` or `PositionedTooltipTrigger` is used.
+   *
+   * @example
+   * <Tooltip withPointer={{side: 'left', offset: -30}} />
+   * // shows the pointer on the left side, with vertidcal offset of 30px from the bottom of the tooltip, regardless
+   * // of whether `TooltipTrigger` or `PositionedTooltipTrigger` is used.
+   */
+  withPointer?: boolean | TooltipPointerPosition;
 }
 
 // Providing default value for paddings, based on intellijlaf theme. In Intellij Platform, themes extend either
 // intellijlaf or darcula. Which means some properties can be omitted in the custom theme, relying on the values
 // in the base theme. This is not how theming works here, at the moment, and there are other similar issues, but
 // this is just a mitigation for one case, spacing in tooltip.
-const DEFAULT_TEXT_BORDER_INSETS = "0.5rem 0.8125rem 0.625rem 0.625rem";
-const DEFAULT_SMALL_TEXT_BORDER_INSETS = "0.375rem 0.75rem 0.4375rem 0.625rem";
-
-const StyledTooltip = styled.div<{ multiline?: boolean }>`
+export const DEFAULT_TEXT_BORDER_INSETS = "0.5rem 0.8125rem 0.625rem 0.625rem";
+export const DEFAULT_SMALL_TEXT_BORDER_INSETS =
+  "0.375rem 0.75rem 0.4375rem 0.625rem";
+const StyledTooltip = styled.div<{ multiline?: boolean; hasPointer?: boolean }>`
   box-sizing: content-box;
   max-width: ${
     /**
@@ -46,8 +77,7 @@ const StyledTooltip = styled.div<{ multiline?: boolean }>`
     theme.value<number>(
       "HelpToolTip.verticalGap" as UnknownThemeProp<"HelpToolTip.verticalGap">
     ) ?? 4}px;
-  background: ${({ theme }) =>
-    theme.color("ToolTip.background", !theme.dark ? "#f2f2f2" : "#3c3f41")};
+  background: ${tooltipBackground};
   color: ${({ theme }) =>
     theme.color("ToolTip.foreground", !theme.dark ? "#000" : "#bfbfbf")};
   padding: ${({ theme, multiline }) =>
@@ -58,11 +88,16 @@ const StyledTooltip = styled.div<{ multiline?: boolean }>`
         DEFAULT_SMALL_TEXT_BORDER_INSETS};
   line-height: 1.2;
   border-style: solid;
-  border-width: ${({ theme }) =>
-    theme.value<boolean>("ToolTip.paintBorder") ? "1px" : "0px"};
-  border-color: ${({ theme }) =>
-    theme.color("ToolTip.borderColor", !theme.dark ? "#adadad" : "#636569")};
+  border-width: ${({ theme, hasPointer }) =>
+    theme.value<boolean>("ToolTip.paintBorder") || hasPointer ? "1px" : "0px"};
+  border-color: ${tooltipBorderColor};
   ${WINDOW_SHADOW};
+  ${({ hasPointer }) =>
+    hasPointer &&
+    css`
+      position: relative; // needed for absolute positioning of the pointer
+      border-radius: ${WITH_POINTER_BORDER_RADIUS}px;
+    `}
 `;
 
 const StyledShortcut = styled.kbd`
@@ -102,6 +137,16 @@ const StyledLink = styled.div`
   }
 `;
 
+export const placementToPointerSide: Record<
+  PositionAria["placement"],
+  TooltipPointerPosition["side"]
+> = {
+  bottom: "top",
+  top: "bottom",
+  left: "right",
+  right: "left",
+  center: "top", // doesn't make sense :-?
+};
 /**
  * Implements the UI of a Tooltip. For tooltip to be shown for a trigger, on hover, use {@link TooltipTrigger}.
  * The following components can be used to compose the content of a tooltip.
@@ -119,11 +164,17 @@ const StyledLink = styled.div`
  * in the original impl.
  */
 const Tooltip = React.forwardRef(function Tooltip(
-  { children, multiline, ...props }: TooltipProps,
+  { children, multiline, withPointer, ...props }: TooltipProps,
   forwardedRef: ForwardedRef<HTMLDivElement>
 ): JSX.Element {
-  const ref = useObjectRef(forwardedRef);
-  const { state, isInteractive } = useContext(TooltipContext) || {};
+  const ref: MutableRefObject<HTMLDivElement | null> =
+    useObjectRef(forwardedRef);
+  const {
+    state,
+    isInteractive,
+    pointerPositionStyle,
+    placement = "bottom",
+  } = useContext(TooltipContext) || {};
   const { tooltipProps } = useTooltip(
     props,
     state
@@ -135,13 +186,30 @@ const Tooltip = React.forwardRef(function Tooltip(
       : state
   );
 
+  const { side, offset } =
+    typeof withPointer === "object"
+      ? withPointer
+      : { side: placementToPointerSide[placement], offset: undefined };
+
   return (
     <StyledTooltip
+      hasPointer={Boolean(withPointer)}
       multiline={multiline}
       {...tooltipProps}
       className={props.className}
       ref={ref}
     >
+      {withPointer && (
+        <TooltipPointer
+          tooltipRef={ref}
+          side={side}
+          offset={
+            offset || !pointerPositionStyle
+              ? { type: "specific", value: offset }
+              : { type: "calculated", value: pointerPositionStyle }
+          }
+        />
+      )}
       {children}
     </StyledTooltip>
   );

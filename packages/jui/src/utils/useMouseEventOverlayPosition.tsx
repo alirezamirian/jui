@@ -28,7 +28,7 @@ import {
  * ```
  */
 let globalMoveHandler: null | ((e: MouseEvent) => void) = null;
-let lastMouseClientPos = { x: 0, y: 0 };
+let lastMouseClientPos = { clientX: 0, clientY: 0 };
 
 export function useMouseEventOverlayPosition(
   options: Omit<AriaPositionProps, "targetRef">
@@ -40,8 +40,8 @@ export function useMouseEventOverlayPosition(
   useLayoutEffect(() => {
     if (!globalMoveHandler) {
       // After the first use of the hook, the listener will be attached forever. Not a big deal but can be improved.
-      globalMoveHandler = (e) => {
-        lastMouseClientPos = { x: e.clientX, y: e.clientY };
+      globalMoveHandler = ({ clientX, clientY }) => {
+        lastMouseClientPos = { clientX, clientY };
       };
       document.addEventListener("mousemove", globalMoveHandler);
     }
@@ -66,8 +66,8 @@ export function useMouseEventOverlayPosition(
 
   useLayoutEffect(() => {
     if (options.isOpen && targetRef.current) {
-      targetRef.current.style.left = `${lastMouseClientPos.x}px`;
-      targetRef.current.style.top = `${lastMouseClientPos.y}px`;
+      targetRef.current.style.left = `${lastMouseClientPos.clientX}px`;
+      targetRef.current.style.top = `${lastMouseClientPos.clientY}px`;
       updatePosition();
     }
   }, [options.isOpen, targetRef.current]);

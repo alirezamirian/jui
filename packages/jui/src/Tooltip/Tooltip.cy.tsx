@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { composeStories } from "@storybook/react";
-import * as stories from "./TooltipTrigger.stories";
+import * as tooltipTriggerStories from "./TooltipTrigger.stories";
 import * as helpTooltipStories from "./HelpTooltip.stories";
 import * as actionHelpTooltipStories from "./ActionHelpTooltip.stories";
 import * as actionTooltipStories from "./ActionTooltip.stories";
@@ -9,8 +9,8 @@ import {
   ValidationTooltip,
 } from "@intellij-platform/core";
 
-const { Default, OnInput, All, Interactive, Disabled } =
-  composeStories(stories);
+const { Default, OnInput, All, Interactive, Disabled, WithPointer } =
+  composeStories(tooltipTriggerStories);
 const HelpTooltipStories = composeStories(helpTooltipStories);
 const ActionHelpTooltipStories = composeStories(actionHelpTooltipStories);
 const ActionTooltipStories = composeStories(actionTooltipStories);
@@ -63,6 +63,18 @@ describe("TooltipTrigger", () => {
     cy.findByRole("tooltip"); // waiting for tooltip to appear
     cy.get("input").click();
     cy.findByRole("tooltip"); // tooltip should not be closed
+  });
+
+  it("renders the arrow in the right position", () => {
+    cy.mount(
+      <div style={{ padding: 40 }}>
+        <WithPointer />
+      </div>
+    );
+    workaroundHoverIssue();
+    cy.get("button").first().realHover({ position: "bottom" });
+    cy.findByRole("tooltip");
+    matchImageSnapshot("TooltipTrigger-WithPointer");
   });
 });
 
@@ -161,6 +173,101 @@ describe("Tooltip", () => {
       </>
     );
     matchImageSnapshot("AllTooltips");
+  });
+
+  it("renders the arrow in the right position", () => {
+    cy.viewport(350, 1200);
+    cy.mount(
+      <>
+        <div style={{ padding: 16 }}>
+          <HelpTooltipStories.Default
+            withPointer
+            helpText="enabled with default pointer position"
+          />
+        </div>
+        {(["right", "left", "top", "bottom"] as const).map((side) => (
+          <div key={side} style={{ padding: 16 }}>
+            <HelpTooltipStories.Default
+              withPointer={{ side }}
+              helpText={
+                <>
+                  Pointer on {side}. <br /> offset unset
+                </>
+              }
+            />
+          </div>
+        ))}
+        <div style={{ padding: 16 }}>
+          <HelpTooltipStories.Default
+            withPointer={{ side: "top", offset: 0 }}
+            helpText={
+              <>
+                Too small horizontal offset edge case. The arrow should not go
+                outside the tooltip boundary
+              </>
+            }
+          />
+        </div>
+        <div style={{ padding: 16 }}>
+          <HelpTooltipStories.Default
+            withPointer={{ side: "top", offset: 400 }}
+            helpText={
+              <>
+                Too large horizontal offset edge case. The arrow should not go
+                outside the tooltip boundary
+              </>
+            }
+          />
+        </div>
+        <div style={{ padding: 16 }}>
+          <HelpTooltipStories.Default
+            withPointer={{ side: "right", offset: 0 }}
+            helpText={
+              <>
+                Too small vertical offset edge case. The arrow should not go
+                outside the tooltip boundary
+              </>
+            }
+          />
+        </div>
+        <div style={{ padding: 16 }}>
+          <HelpTooltipStories.Default
+            withPointer={{ side: "right", offset: 400 }}
+            helpText={
+              <>
+                Too large vertical offset edge case. The arrow should not go
+                outside the tooltip boundary
+              </>
+            }
+          />
+        </div>
+        <div style={{ padding: 16 }}>
+          <HelpTooltipStories.Default
+            withPointer={{
+              side: "top",
+              offset: "20%",
+            }}
+            helpText={<>Percentage offset</>}
+          />
+        </div>
+        <div style={{ padding: 16 }}>
+          <HelpTooltipStories.Default
+            withPointer={{ side: "top", offset: { invert: true, value: 20 } }}
+            helpText={<>Inverted offset</>}
+          />
+        </div>
+        <div style={{ padding: 16 }}>
+          <HelpTooltipStories.Default
+            withPointer={{
+              side: "top",
+              offset: { invert: true, value: "20%" },
+            }}
+            helpText={<>Inverted percentage offset</>}
+          />
+        </div>
+      </>
+    );
+    matchImageSnapshot("Tooltip-WithPointer");
   });
 });
 

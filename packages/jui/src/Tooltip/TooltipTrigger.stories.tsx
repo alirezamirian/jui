@@ -56,6 +56,20 @@ export const Disabled: StoryObj<TooltipTriggerProps> = {
   },
 };
 
+export const WithPointer: StoryObj<TooltipTriggerProps> = {
+  args: {
+    placement: "bottom",
+    tooltip: (
+      <ActionHelpTooltip
+        actionName="Switch Task"
+        helpText="Tasks are stored locally only. Connect your issue tracker to link your commits with the corresponding issues."
+        shortcut="⌥⇧T"
+        withPointer
+      />
+    ),
+  },
+};
+
 export const All: StoryFn<TooltipTriggerProps> = () => {
   return (
     <div
