@@ -31,6 +31,7 @@ import {
   vcsTabKeysState,
   vcsTabTitleState,
 } from "./vcs-logs.state";
+import { useCommitsTableActions } from "./CommitsView/useCommitsTableActions";
 
 export const VERSION_CONTROL_TOOLWINDOW_ID = "Version Control";
 
@@ -85,7 +86,6 @@ export const VersionControlToolWindow = () => {
 const StyledExpandStripeButton = styled.button.attrs({ tabIndex: -1 })`
   box-sizing: border-box;
   all: unset;
-  height: 100%;
   width: 1.71875rem;
   align-items: center;
   display: flex;
@@ -209,6 +209,7 @@ function useVcsLogsToolWindowActions() {
   );
 
   const actions: ActionDefinition[] = [
+    ...useCommitsTableActions(),
     {
       id: VcsActionIds.FOCUS_TEXT_FILTER,
       title: "Focus Text Filter",

@@ -4,19 +4,24 @@ import {
   ActionButton,
   ActionTooltip,
   CommonActionId,
+  Divider,
   IconButton,
   IconButtonWithMenu,
   Item,
-  Menu,
   PlatformIcon,
   Section,
+  SpeedSearchMenu,
   ThreeViewSplitter,
   Toolbar,
   TooltipTrigger,
 } from "@intellij-platform/core";
 
+import { notImplemented } from "../../Project/notImplemented";
 import { StyledHeader, StyledSpacer } from "./styled-components";
-import { CommitChangedFiles, CommitDetails } from "./CommitsView/CommitsTable";
+import {
+  CommitChangedFiles,
+  CommitDetails,
+} from "./CommitsView/CommitsChangedFiles";
 
 const splitViewSizeState = atom({
   key: "vcs/toolwindow/splitViewSize",
@@ -45,11 +50,16 @@ export function VcsLogDetailsView() {
           <IconButtonWithMenu
             renderMenu={({ menuProps }) => {
               return (
-                <Menu {...menuProps}>
-                  <Section title="Show">
-                    <Item>Compact References View</Item>
+                <SpeedSearchMenu {...menuProps} onAction={notImplemented}>
+                  <Section title="Group By">
+                    <Item>Directory</Item>
                   </Section>
-                </Menu>
+                  <Divider />
+                  <Section title="Layout">
+                    <Item>Show Details</Item>
+                    <Item>Show Diff Preview</Item>
+                  </Section>
+                </SpeedSearchMenu>
               );
             }}
           >

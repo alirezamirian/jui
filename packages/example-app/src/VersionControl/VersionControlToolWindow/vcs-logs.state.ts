@@ -90,6 +90,8 @@ export const vcsLogTabShowBranches = vcsLogTabState(
     default: false,
   })
 );
+
+export const CURRENT_USER_FILTER_VALUE = "*";
 export const vcsLogFilter = {
   /**
    * The state of search query, for a VCS log tab

@@ -13,10 +13,10 @@ export const StyledSpacer = styled.div`
 export const StyledPlaceholderContainer = styled.div`
   color: ${({ theme }) => theme.commonColors.inactiveTextColor};
   display: flex;
-  flex: 1;
   flex-direction: column;
   justify-content: end;
   align-items: center;
   gap: 0.25rem;
   min-height: 37%;
+  overflow: hidden;
 `;

@@ -19,6 +19,7 @@
     "@recoiljs/refine": "^0.1.1",
     "browserfs": "^2.0.0",
     "caf": "^15.0.0-preB",
+    "clipboard-copy": "^4.0.1",
     "fast-xml-parser": "^4.2.7",
     "intl-messageformat": "^9.11.2",
     "isomorphic-git": "^1.24.3",
