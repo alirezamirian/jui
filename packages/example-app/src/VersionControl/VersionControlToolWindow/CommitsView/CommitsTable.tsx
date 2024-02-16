@@ -1,13 +1,14 @@
 import React from "react";
-import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { Item, Link, List, ProgressBar } from "@intellij-platform/core";
 import { StyledPlaceholderContainer } from "../styled-components";
 import { useResetFilters, vcsActiveTabKeyState } from "../vcs-logs.state";
+import { useLatestRecoilValue } from "../../../recoil-utils";
 import { CommitsTableRow } from "./CommitsTableRow";
 import { GitRef } from "./GitRef";
 import {
-  allCommitsState,
   allResolvedRefsState,
+  commitsTableRowsState,
   selectedCommitsState,
 } from "./CommitsTable.state";
 
@@ -25,22 +26,21 @@ export function CommitsTable() {
   const currentTabKey = useRecoilValue(vcsActiveTabKeyState);
   const resetFilters = useResetFilters();
 
-  const allCommitsLoadable = useRecoilValueLoadable(allCommitsState);
-  const allCommits = allCommitsLoadable.valueMaybe() ?? [];
-  const allResolvedRefsLoadable = useRecoilValueLoadable(allResolvedRefsState);
-  const allResolvedRefs = allResolvedRefsLoadable.valueMaybe() ?? {};
+  const [commitRows, commitRowsState] = useLatestRecoilValue(
+    commitsTableRowsState
+  );
+  const [allResolvedRefs] = useLatestRecoilValue(allResolvedRefsState);
   const [selectedCommits, setSelectedCommits] =
     useRecoilState(selectedCommitsState);
-  console.log("all commits", allCommits, "allResolvedRefs", allResolvedRefs);
 
   return (
-    <ResolvedRefsContext.Provider value={allResolvedRefs}>
-      {allCommitsLoadable.state === "loading" && (
-        <ProgressBar isIndeterminate />
+    <ResolvedRefsContext.Provider value={allResolvedRefs ?? {}}>
+      {commitRowsState === "loading" && (
+        <ProgressBar aria-label="Loading commits" isIndeterminate />
       )}
-      {allCommits.length > 0 && (
+      {commitRows && commitRows.length > 0 && (
         <List
-          items={allCommits}
+          items={commitRows}
           fillAvailableSpace
           selectionMode="multiple"
           selectedKeys={selectedCommits}
@@ -62,12 +62,16 @@ export function CommitsTable() {
           )}
         </List>
       )}
-      {allCommitsLoadable.state === "hasValue" && allCommits.length === 0 && (
-        <StyledPlaceholderContainer>
-          No commits matching filters
-          <Link onPress={() => resetFilters(currentTabKey)}>Reset filters</Link>
-        </StyledPlaceholderContainer>
-      )}
+      {commitRowsState === "hasValue" &&
+        commitRows &&
+        commitRows.length === 0 && (
+          <StyledPlaceholderContainer>
+            No commits matching filters
+            <Link onPress={() => resetFilters(currentTabKey)}>
+              Reset filters
+            </Link>
+          </StyledPlaceholderContainer>
+        )}
     </ResolvedRefsContext.Provider>
   );
 }

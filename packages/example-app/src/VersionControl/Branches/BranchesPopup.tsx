@@ -63,7 +63,7 @@ export const branchesPopupSizeState = atom<
 });
 
 export function BranchesPopup({ onClose }: { onClose: () => void }) {
-  const repoBranches = useLatestRecoilValue(allBranchesState);
+  const [repoBranches] = useLatestRecoilValue(allBranchesState);
   const [branchesPopupPersistedSize, setBranchesPopupPersistedSize] =
     useRecoilState(branchesPopupSizeState);
   const [branchesPopupBounds, setBranchesPopupBounds] = useState<

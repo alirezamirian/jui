@@ -8,15 +8,12 @@ import {
   MenuItemLayout,
   MenuTrigger,
   PlatformIcon,
-  PopupTrigger,
   StatusBar,
   StatusBarWidget,
 } from "@intellij-platform/core";
 
 import { editorCursorPositionState } from "../Editor/editor.state";
-import { BranchesPopup } from "../VersionControl/Branches/BranchesPopup";
 import { notImplemented } from "../Project/notImplemented";
-import { useShowGitTipIfNeeded } from "../VersionControl/useShowGitTipIfNeeded";
 import { StatusBarTaskProgressBar } from "./StatusBarTaskProgressBar";
 import { BranchPopupTrigger } from "./BranchPopupTrigger";
 
@@ -26,7 +23,6 @@ const StyledLastMessage = styled.div`
 `;
 export const IdeStatusBar = () => {
   const cursorPosition = useRecoilValue(editorCursorPositionState);
-  const maybeShowGitCloneTip = useShowGitTipIfNeeded();
 
   return (
     <StatusBar
@@ -93,17 +89,7 @@ export const IdeStatusBar = () => {
               <StatusBarWidget {...props} ref={ref} label="TypeScript 4.4.3" />
             )}
           </MenuTrigger>
-          <PopupTrigger
-            placement="top"
-            onOpenChange={(isOpen) => {
-              if (!isOpen) {
-                setTimeout(maybeShowGitCloneTip, 500);
-              }
-            }}
-            popup={({ close }) => <BranchesPopup onClose={close} />}
-          >
-            <BranchPopupTrigger />
-          </PopupTrigger>
+          <BranchPopupTrigger />
           <StatusBarWidget icon={<PlatformIcon icon="ide/readwrite.svg" />} />
           <StatusBarWidget icon={<PlatformIcon icon="ide/fatalError.svg" />} />
         </>

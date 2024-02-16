@@ -1,9 +1,9 @@
 import {
+  Loadable,
   RecoilState,
   RecoilValue,
   useRecoilCallback,
   useRecoilRefresher_UNSTABLE,
-  useRecoilState,
   useRecoilValueLoadable,
   useSetRecoilState,
 } from "recoil";
@@ -55,8 +55,17 @@ export const createFocusBasedSetterHook = <T extends unknown, N extends T = T>(
 /**
  * Returns the latest value of a recoil value, or null, if the value is being loaded for the first time.
  * Useful for when stale data is ok, but may get synced soon.
+ *
+ * TODO: returning a tuple here is not the best API. Ideally we could have a fourth type of Lodable which would be
+ *  similar to LoadingLoadale, but would hold a previous value as well. Then we could have a hook like similar to
+ *  useRecoilValueLoadable, but returning that specific type of Loadable. The only difference with
+ *  useRecoilValueLoadable would be calling getValue() would return the previous value if state is loading, making it
+ *  easy to implement the common pattern of keeping the previous data plus a loading indicator, when new data is being
+ *  loaded.
  */
-export function useLatestRecoilValue<T>(recoilValue: RecoilValue<T>): T | null {
+export function useLatestRecoilValue<T>(
+  recoilValue: RecoilValue<T>
+): [T | null, Loadable<unknown>["state"]] {
   const [state, setState] = useState<T | null>(null);
   let loadable = useRecoilValueLoadable(recoilValue);
 
@@ -66,7 +75,10 @@ export function useLatestRecoilValue<T>(recoilValue: RecoilValue<T>): T | null {
     }
   }, [loadable]);
 
-  return state;
+  return [
+    loadable.state === "hasValue" ? loadable.getValue() : state,
+    loadable.state,
+  ];
 }
 
 /**
