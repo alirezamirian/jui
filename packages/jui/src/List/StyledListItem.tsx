@@ -7,7 +7,7 @@ export type StyledListItemProps = {
   disabled: boolean;
 };
 
-export const StyledListItem = styled.li<StyledListItemProps>(
+export const StyledListItem = styled.div<StyledListItemProps>(
   ({ containerFocused, selected, disabled, theme }) => {
     let backgroundColor;
     let color = disabled

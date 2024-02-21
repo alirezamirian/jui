@@ -23,23 +23,33 @@ import {
 export default {
   title: "Components/List (Basic)",
   component: List,
-} as Meta;
+  args: {
+    items: legends,
+    children: itemRenderer(renderItemText),
+    fillAvailableSpace: true,
+  },
+} as Meta<ListProps<object>>;
 
-export const Default: StoryObj<ListProps<typeof legends[number]>> = {
-  render: (props) => (
-    <Pane>
-      <List
-        selectionMode="single"
-        items={legends}
-        fillAvailableSpace
-        {...props}
-      >
-        {itemRenderer(renderItemText)}
-      </List>
-    </Pane>
-  ),
-  args: {},
+const renderInPane = (props: ListProps<typeof legends[number]>) => (
+  <Pane>
+    <List {...props} />
+  </Pane>
+);
+export const SingleSelection: StoryObj<ListProps<typeof legends[number]>> = {
+  render: renderInPane,
+  args: {
+    selectionMode: "single",
+  },
 };
+
+export const allowEmptySelection: StoryObj<ListProps<typeof legends[number]>> =
+  {
+    render: renderInPane,
+    args: {
+      selectionMode: "single",
+      allowEmptySelection: true,
+    },
+  };
 
 export const WithConnectedInput = commonListStories.withConnectedInput(List);
 
@@ -66,6 +76,7 @@ export const shownAsFocused: StoryFn = () => {
         selectionMode="single"
         items={legends}
         fillAvailableSpace
+        estimatedItemHeight={40}
         showAsFocused={shownAsFocused}
       >
         {itemRenderer(renderItemCustomUI)}

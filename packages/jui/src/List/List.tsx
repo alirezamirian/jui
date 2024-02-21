@@ -1,13 +1,16 @@
 import { AriaListBoxProps } from "@react-types/listbox";
-import { AsyncLoadable } from "@react-types/shared";
+import { AsyncLoadable, Node } from "@react-types/shared";
 import React, { ForwardedRef, Key } from "react";
 import { useList } from "./useList";
 import { ListItem } from "./ListItem";
 import { StyledList } from "./StyledList";
-import { listItemRenderer } from "./listItemRenderer";
 import { useListState } from "./useListState";
 import { useObjectRef } from "@react-aria/utils";
+
 import { CollectionRefProps } from "@intellij-platform/core/Collections/useCollectionRef";
+import { Virtualizer } from "@react-aria/virtualizer";
+import { useListVirtualizer } from "@intellij-platform/core/List/useListVirtualizer";
+import { ListContext } from "@intellij-platform/core/List/ListContext";
 
 export type ListProps<T extends object> = Omit<
   Omit<AriaListBoxProps<T>, "disallowEmptySelection">,
@@ -32,24 +35,28 @@ export type ListProps<T extends object> = Omit<
      * Enter not implemented yet :D
      */
     onAction?: (key: Key) => void;
+
+    /**
+     * Useful when list items have a custom height, to hint layout calculation logic about the item height which
+     * increases rendering efficiency and also prevents flash of items with wrong height.
+     */
+    estimatedItemHeight?: number;
+
+    className?: string;
   };
 
 /**
- * List view with speedSearch instead of default typeahead.
- * TODO:
- *  - Support virtualization
- *  - Support custom rendering
- *  -
+ * List view
  */
 export const List = React.forwardRef(function List<T extends object>(
   {
     allowEmptySelection = false,
-    showAsFocused = false,
     fillAvailableSpace = false,
-    onAction,
+    estimatedItemHeight,
+    className,
     ...inputProps
   }: ListProps<T>,
-  forwardedRef: ForwardedRef<HTMLUListElement>
+  forwardedRef: ForwardedRef<HTMLDivElement>
 ) {
   const props: AriaListBoxProps<T> & CollectionRefProps = {
     ...inputProps,
@@ -57,27 +64,35 @@ export const List = React.forwardRef(function List<T extends object>(
   };
   const ref = useObjectRef(forwardedRef);
   const state = useListState(props);
-  const { listProps, focused } = useList(props, state, ref);
+  const { listProps, listContext } = useList(
+    {
+      ...props,
+      isVirtualized: true,
+    },
+    state,
+    ref
+  );
+
+  const {
+    virtualizerProps: { children: renderNode, ...virtualizerProps },
+  } = useListVirtualizer({
+    state,
+    estimatedItemHeight,
+    renderItem: (item) => <ListItem key={item.key} item={item} />,
+  });
 
   return (
-    <StyledList
-      fillAvailableSpace={fillAvailableSpace}
-      {...listProps}
-      ref={ref}
-    >
-      {[...state.collection].map(
-        listItemRenderer({
-          item: (item) => (
-            <ListItem
-              key={item.key}
-              item={item}
-              state={state}
-              onAction={() => onAction?.(item.key)}
-              listFocused={showAsFocused || focused}
-            />
-          ),
-        })
-      )}
-    </StyledList>
+    <ListContext.Provider value={listContext}>
+      <StyledList
+        as={Virtualizer<Node<any>, any>}
+        {...virtualizerProps}
+        {...listProps}
+        fillAvailableSpace={fillAvailableSpace}
+        className={className}
+        ref={ref}
+      >
+        {renderNode}
+      </StyledList>
+    </ListContext.Provider>
   );
 });

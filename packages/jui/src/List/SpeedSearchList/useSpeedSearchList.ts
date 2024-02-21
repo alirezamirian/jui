@@ -20,8 +20,7 @@ export function useSpeedSearchList<T>(
   props: UseListProps,
   listState: ListState<T>,
   ref: RefObject<HTMLElement>
-): {
-  listProps: Omit<HTMLProps<HTMLUListElement>, "as" | "ref">;
+): ReturnType<typeof useList<T>> & {
   searchPopupProps: SpeedSearchPopupProps;
   focused: boolean;
   selectionManager: SelectionManager;
@@ -48,7 +47,7 @@ export function useSpeedSearchList<T>(
     keepSearchActiveOnBlur,
     ref,
   });
-  const { listProps, focused } = useList(
+  const { listProps, ...otherOutputs } = useList(
     {
       ...props,
       disallowTypeAhead: true,
@@ -59,9 +58,9 @@ export function useSpeedSearchList<T>(
   );
 
   return {
+    ...otherOutputs,
     listProps: mergeProps(listProps, speedSearchContainerProps),
     matches: speedSearch.matches,
-    focused,
     selectionManager,
     speedSearchContextValue,
     searchPopupProps,

@@ -42,7 +42,7 @@ https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8
         </tr>
         <tr>
             <td colspan="2">Virtualization</td>
-            <td>❌</td>
+            <td>✅</td>
         </tr>
         <tr>
             <td colspan="2">Sections (with title)</td>

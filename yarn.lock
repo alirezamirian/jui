@@ -7610,21 +7610,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-stately/layout@patch:@react-stately/layout@npm:3.4.4#.yarn/patches/@react-stately-layout-npm-3.4.4-75ff8d9e5d.patch::locator=root-workspace-0b6124%40workspace%3A.":
-  version: 3.4.4
-  resolution: "@react-stately/layout@patch:@react-stately/layout@npm%3A3.4.4#.yarn/patches/@react-stately-layout-npm-3.4.4-75ff8d9e5d.patch::version=3.4.4&hash=28a1ee&locator=root-workspace-0b6124%40workspace%3A."
-  dependencies:
-    "@babel/runtime": ^7.6.2
-    "@react-stately/virtualizer": ^3.1.7
-    "@react-types/grid": ^3.0.2
-    "@react-types/shared": ^3.11.1
-    "@react-types/table": ^3.1.2
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1
-  checksum: 85c8dab7dfca21c32ecaf92e00bf6dc52bbddb9d092467a2949d647b08e9df7d6a057b9321378ae363ef39df804eb16e9eff04586dc13eb14d2359a99a966b5e
-  languageName: node
-  linkType: hard
-
 "@react-stately/list@npm:^3.4.3":
   version: 3.4.3
   resolution: "@react-stately/list@npm:3.4.3"

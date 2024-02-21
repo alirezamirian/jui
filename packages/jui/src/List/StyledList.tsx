@@ -1,7 +1,7 @@
 import { css } from "styled-components";
 import { styled } from "../styled";
 
-export const StyledList = styled.ul.withConfig<{
+export const StyledList = styled.div.withConfig<{
   fillAvailableSpace?: boolean;
 }>({
   shouldForwardProp: (prop) => prop !== "fillAvailableSpace",

@@ -1,6 +1,15 @@
-import { LayoutNode, ListLayout } from "@react-stately/layout";
+import {
+  LayoutNode,
+  ListLayout,
+  ListLayoutOptions,
+} from "@react-stately/layout";
 import React, { Key } from "react";
-import { InvalidationContext, Rect, Size } from "@react-stately/virtualizer";
+import {
+  InvalidationContext,
+  LayoutInfo,
+  Rect,
+  Size,
+} from "@react-stately/virtualizer";
 import { Node } from "@react-types/shared";
 
 /**
@@ -19,6 +28,14 @@ export class VariableWidthListLayout<T> extends ListLayout<T> {
    */
   keyToWidth = new Map<Key, number>();
   private visibleContentWidth: number = 0;
+  private dividerHeight: number = 2;
+
+  constructor(options: ListLayoutOptions<T> & { dividerHeight?: number }) {
+    super(options);
+    if (options.dividerHeight != undefined) {
+      this.dividerHeight = options.dividerHeight;
+    }
+  }
 
   buildItem(node: Node<T>, x: number, y: number): LayoutNode {
     const layoutNode = super.buildItem(node, x, y);
@@ -26,6 +43,33 @@ export class VariableWidthListLayout<T> extends ListLayout<T> {
       layoutNode.layoutInfo.rect.width = this.visibleContentWidth;
     }
     return layoutNode;
+  }
+
+  buildNode(node: Node<T>, x: number, y: number): LayoutNode {
+    if (node.type === "divider") {
+      return this.buildDivider(node, x, y);
+    }
+    return super.buildNode(node, x, y);
+  }
+
+  buildDivider(node: Node<T>, x: number, y: number): LayoutNode {
+    let width = this.virtualizer.visibleRect.width;
+    let rectHeight = this.dividerHeight;
+
+    let rect = new Rect(x, y, width - x, rectHeight);
+    let layoutInfo = new LayoutInfo(node.type, node.key, rect);
+    layoutInfo.estimatedSize = false;
+    return {
+      layoutInfo,
+      // validRect: layoutInfo.rect,
+    };
+  }
+
+  /**
+   * Allows for overriding buildCollection in a sub-class
+   */
+  protected doBuildCollection() {
+    return super.buildCollection();
   }
 
   buildCollection(): LayoutNode[] {
@@ -37,7 +81,7 @@ export class VariableWidthListLayout<T> extends ListLayout<T> {
     // UPDATE: using getFinalLayoutInfo seems to be a legitimate last minute way to mutate layout infos.
     this.invalidateEverything =
       this.contentSize?.width !== this.visibleContentWidth;
-    const layoutNodes = super.buildCollection();
+    const layoutNodes = this.doBuildCollection();
     this.contentSize.width = this.visibleContentWidth;
     return layoutNodes;
   }
