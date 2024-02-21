@@ -19,6 +19,7 @@ export type UnknownThemeProp<T> = T extends KnownThemePropertyPath
 
 enum CssProperties {
   CURRENT_FOREGROUND = "--jui-foreground",
+  CURRENT_BACKGROUND = "--jui-background",
 }
 
 const defaultValues: { [key in KnownThemePropertyPath]?: string } = {
@@ -125,7 +126,7 @@ export class Theme<P extends string = string> {
     /**
      * fallback that will take precedence over *-based fallback mechanism.
      */
-    fallback?: T
+    fallback?: T | { light: T; dark: T }
   ): undefined extends T ? string | undefined : string {
     // There is a fallback mechanism that uses *.prop key if some key that ends with .prop
     // doesn't exist in the theme. In Intellij Platform implementation, all such fallback keys
@@ -151,7 +152,9 @@ export class Theme<P extends string = string> {
       // At least for now, one should use theme.color like this, if *-based fallback is to be prioritized:
       // theme.color('x.y') ?? 'fallback'
       // then priority will be: 'x.y' -> '*.y' -> 'fallback'
-      (fallback as any) ||
+      (fallback && typeof fallback === "object"
+        ? (fallback[this.dark ? "dark" : "light"] as any)
+        : fallback) ||
       dereference(this.getFallbackFromStar(path) as string)
     );
   }
@@ -189,6 +192,39 @@ export class Theme<P extends string = string> {
       `${colorValue}; ${this.CssProperties.CURRENT_FOREGROUND}: currentColor`
     );
   }
+  /**
+   * Returns the input color, concatenated with a css rule, setting the "current background" color as a css property.
+   * The returned value is a drop-in replacement for the input value, in terms of usage as css property value.
+   * @example
+   * ```ts
+   * const MyComponent = styled.div`
+   *   color: ${ ({theme}) => theme.commonColors.red};
+   * `;
+   * ```
+   * results:
+   * ```css
+   * color: rgb(255,100,100);
+   * ```
+   *
+   * While
+   * ```ts
+   * const MyComponent = styled.div`
+   *   color: ${ ({theme}) => theme.asCurrentBackground(theme.commonColors.red)}
+   * `;
+   * ```
+   * results:
+   * ```css
+   * color: rgb(255,100,100);
+   * --jui-background: currentColor;
+   * ```
+   * @see currentBackgroundAware
+   */
+  asCurrentBackground(colorValue: string | undefined) {
+    return (
+      colorValue &&
+      `${colorValue}; ${this.CssProperties.CURRENT_BACKGROUND}: ${colorValue}`
+    );
+  }
 
   /**
    * Given a color, returns a css var(...) expression which resolves to that color, only if the element is not used
@@ -202,6 +238,21 @@ export class Theme<P extends string = string> {
     return (
       colorValue &&
       `var(${this.CssProperties.CURRENT_FOREGROUND}, ${colorValue})`
+    );
+  }
+
+  /**
+   * Given a color, returns a css var(...) expression which resolves to that color, only if the element is not used
+   * where {@link CssProperties.CURRENT_BACKGROUND} is set. For example, items in tree/menu/list/etc., set
+   * {@link CssProperties.CURRENT_BACKGROUND} when in active state. That's because they have a contrasted background
+   * (blue by default), in such states, and the corresponding background should take precedence over other backgrounds,
+   * to ensure enough contrast required for accessibility.
+   * @param colorValue
+   */
+  currentBackgroundAware(colorValue: string | undefined) {
+    return (
+      colorValue &&
+      `var(${this.CssProperties.CURRENT_BACKGROUND}, ${colorValue})`
     );
   }
 

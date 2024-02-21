@@ -37,7 +37,7 @@ export const StyledListItem = styled.div<StyledListItemProps>(
       }
     }
     return {
-      backgroundColor,
+      backgroundColor: theme.asCurrentBackground(backgroundColor),
       color,
       position: "relative",
       display: "flex",
