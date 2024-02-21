@@ -47,7 +47,6 @@ export const StyledListItem = styled.div<StyledListItemProps>(
       lineHeight: "20px",
       outline: "none",
       cursor: "default",
-      minWidth: "min-content", // ?
     };
   }
 );
