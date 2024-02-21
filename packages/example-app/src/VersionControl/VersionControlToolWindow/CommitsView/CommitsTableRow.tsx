@@ -52,7 +52,7 @@ const StyledRefsContainer = styled.div<{ asOverlay?: boolean }>`
       ? css`
           position: absolute;
           right: 0;
-          top: 0;
+          top: 1px;
           max-width: calc(100% - 100px);
         `
       : css`
@@ -102,7 +102,7 @@ export function CommitsTableRow({
   refs,
   commit: {
     oid,
-    commit: { tree, author, committer, message },
+    commit: { author, committer, message },
   },
   repoRoot,
 }: {

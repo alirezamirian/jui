@@ -12,8 +12,9 @@ import { resolvedRefState } from "../../refs.state";
 const cache = {};
 const repoCommitsState = selectorFamily({
   key: "vcs/repoCommits",
-  get: (repoRoot: string) => () =>
-    git.log({ fs, dir: repoRoot, depth: 50 /* FIXME */, cache }),
+  get: (repoRoot: string) => () => {
+    return git.log({ fs, dir: repoRoot, cache });
+  },
 });
 const commitDateComparator = (a: ReadCommitResult, b: ReadCommitResult) =>
   b.commit.author.timestamp - a.commit.author.timestamp;
@@ -40,25 +41,20 @@ export const allCommitsState = selector<
   key: "vcs/allRepoCommits",
   get: ({ get }) => {
     get(vcsRootsState);
-    const result =
-      JSON.parse(localStorage.getItem("TMP_ALL_COMMITS") ?? "null") ??
-      get(vcsRootsState)
-        .filter(({ vcs }) => vcs === "git")
-        .flatMap((repo) =>
-          get(repoCommitsState(repo.dir)).map((commit) => ({
-            commit,
-            repoRoot: repo.dir,
-          }))
-        );
-    localStorage.setItem("TMP_ALL_COMMITS", JSON.stringify(result));
-    return result;
+    return get(vcsRootsState)
+      .filter(({ vcs }) => vcs === "git")
+      .flatMap((repo) =>
+        get(repoCommitsState(repo.dir)).map((commit) => ({
+          commit,
+          repoRoot: repo.dir,
+        }))
+      );
   },
 });
 
 export const commitsTableRowsState = selector({
   key: "vcs/log/rows",
   get: ({ get }) => {
-    console.log("getting commit table rows");
     const searchQuery = get(vcsLogFilterCurrentTab.searchQuery);
     const flags = {
       matchCase: get(vcsLogFilterCurrentTab.matchCase),
@@ -141,14 +137,6 @@ export const vcsTableHighlightMyCommitsState = atom<boolean>({
   key: "vcs/log/commits/highlightMyCommits",
   default: false,
 });
-
-type CommitTableColumn = {
-  id: string;
-  /**
-   * column name shown in the UI.
-   */
-  name: string;
-};
 
 export const authorColumn = {
   id: "Default.Author",
