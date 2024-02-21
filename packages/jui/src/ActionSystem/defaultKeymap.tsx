@@ -208,13 +208,30 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
-
   [CommonActionId.SHOW_SEARCH_HISTORY]: [
     {
       type: "keyboard",
       firstKeyStroke: {
         modifiers: ["Alt"],
         code: "ArrowDown",
+      },
+    },
+  ],
+  [CommonActionId.COPY_REFERENCE]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta", "Shift", "Alt"],
+        code: "KeyC",
+      },
+    },
+  ],
+  [CommonActionId.REFRESH]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        code: "KeyR",
       },
     },
   ],

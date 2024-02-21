@@ -8,4 +8,6 @@ export const CommonActionId = {
   SHOW_INTENTION_ACTIONS: "ShowIntentionActions",
   EDIT_SOURCE: "Documentation.EditSource",
   SHOW_SEARCH_HISTORY: "ShowSearchHistory",
+  COPY_REFERENCE: "CopyReference",
+  REFRESH: "Refresh",
 };

@@ -105,12 +105,6 @@ function limitPointerPositionStyles(
     width ? withMax(width - WIDTH_OFFSET) : identity,
     withMin(WIDTH_OFFSET)
   );
-  console.log({
-    top: applyVerticalMinMax(top),
-    bottom: applyVerticalMinMax(bottom),
-    left: applyHorizontalMinMax(left),
-    right: applyHorizontalMinMax(right),
-  });
   return {
     top: applyVerticalMinMax(top),
     bottom: applyVerticalMinMax(bottom),
