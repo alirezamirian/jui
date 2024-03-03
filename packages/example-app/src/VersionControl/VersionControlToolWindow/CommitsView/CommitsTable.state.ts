@@ -1,23 +1,14 @@
-import { atom, atomFamily, selector, selectorFamily } from "recoil";
+import { ReadCommitResult } from "isomorphic-git";
+import { atom, atomFamily, selector } from "recoil";
 import { Selection } from "@react-types/shared";
-import { vcsLogFilterCurrentTab } from "../vcs-logs.state";
-import git, { ReadCommitResult } from "isomorphic-git";
-import { vcsRootsState } from "../../file-status.state";
-import { sort } from "ramda";
-import { fs } from "../../../fs/fs";
-import { allBranchesState } from "../../Branches/branches.state";
-import { GitRef } from "./GitRef";
-import { resolvedRefState } from "../../refs.state";
 
-const cache = {};
-const repoCommitsState = selectorFamily({
-  key: "vcs/repoCommits",
-  get: (repoRoot: string) => () => {
-    return git.log({ fs, dir: repoRoot, cache });
-  },
-});
-const commitDateComparator = (a: ReadCommitResult, b: ReadCommitResult) =>
-  b.commit.author.timestamp - a.commit.author.timestamp;
+import { fs } from "../../../fs/fs";
+import { vcsLogFilterCurrentTab } from "../vcs-logs.state";
+import { allBranchesState } from "../../Branches/branches.state";
+import { resolvedRefState } from "../../refs.state";
+import { readCommits } from "./readCommits";
+import { GitRef } from "./GitRef";
+
 function match(
   input: string,
   query: string,
@@ -35,21 +26,25 @@ function match(
 export const allCommitsState = selector<
   Array<{
     commit: ReadCommitResult;
-    repoRoot: string;
+    refs: Set<string>;
+    repoPath: string;
   }>
 >({
   key: "vcs/allRepoCommits",
-  get: ({ get }) => {
-    get(vcsRootsState);
-    return get(vcsRootsState)
-      .filter(({ vcs }) => vcs === "git")
-      .flatMap((repo) =>
-        get(repoCommitsState(repo.dir)).map((commit) => ({
-          commit,
-          repoRoot: repo.dir,
-        }))
-      );
-  },
+  get: ({ get }) =>
+    readCommits(
+      fs,
+      ...get(allBranchesState).map(
+        ({ repoRoot, localBranches, remoteBranches }) => ({
+          repoPath: repoRoot,
+          refs: ["HEAD"]
+            .concat(localBranches.map((branch) => branch.name))
+            .concat(
+              remoteBranches.map((branch) => `${branch.remote}/${branch.name}`)
+            ),
+        })
+      )
+    ),
 });
 
 export const commitsTableRowsState = selector({
@@ -62,10 +57,7 @@ export const commitsTableRowsState = selector({
     };
     const dateFilter = get(vcsLogFilterCurrentTab.date);
 
-    return sort(
-      ({ commit: c1 }, { commit: c2 }) => commitDateComparator(c1, c2),
-      get(allCommitsState)
-    )
+    return get(allCommitsState)
       .filter(
         ({ commit: { commit } }) =>
           (!dateFilter?.from ||
@@ -81,6 +73,7 @@ export const commitsTableRowsState = selector({
       );
   },
 });
+
 export const allResolvedRefsState = selector({
   key: "vcs/logs/all-refs",
   get: ({ get }) => {

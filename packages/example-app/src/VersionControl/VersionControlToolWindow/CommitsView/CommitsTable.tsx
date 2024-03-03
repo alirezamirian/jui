@@ -59,14 +59,14 @@ export function CommitsTable() {
             onSelectionChange={setSelectedCommits}
             estimatedItemHeight={24}
           >
-            {({ commit, repoRoot }) => (
+            {({ commit, repoPath }) => (
               <Item key={commit.oid} textValue={commit.commit.message}>
                 {/* Using context here due to rendering optimizations of collection API */}
                 <ResolvedRefsContext.Consumer>
                   {(refs) => (
                     <CommitsTableRow
                       commit={commit}
-                      repoRoot={repoRoot}
+                      repoRoot={repoPath}
                       refs={refs[commit.oid]}
                     />
                   )}

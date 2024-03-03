@@ -10,6 +10,6 @@ export const resolvedRefState = selectorFamily<
   get:
     ({ repoRoot, ref }: { repoRoot: string; ref: string }) =>
     () => {
-      return git.resolveRef({ fs, dir: repoRoot, ref });
+      return git.resolveRef({ fs, dir: repoRoot, ref, depth: 3 });
     },
 });

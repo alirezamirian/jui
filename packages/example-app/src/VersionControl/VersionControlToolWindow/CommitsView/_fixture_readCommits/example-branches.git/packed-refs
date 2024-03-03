@@ -1,0 +1,9 @@
+# pack-refs with: peeled fully-peeled sorted 
+5b1b99986a0096c774f26a4917dbad0ac31d2d26 refs/heads/RC1.0
+8dbd80de7185d12e6b6e58fcab18900a7c88d3af refs/heads/enhancement
+9d037db880dc2e11ac4aa1d80c322aed65269089 refs/heads/featureGreen
+7be5c69bb17c73d37af6f076a9a9442b22c76a13 refs/heads/featureRed
+dd6d5a5085d7bec5850eef36b7e0b7059fc68be1 refs/heads/gh-pages
+14d63f8c757e52f7e60e13765031a7fdf0768195 refs/heads/master
+5086927860395c3a173df36eabe9f2525c357bc2 refs/heads/topic1
+d5ed0e6a098710ad9dfe08bc7039fc6e61d00fa3 refs/heads/topic2
