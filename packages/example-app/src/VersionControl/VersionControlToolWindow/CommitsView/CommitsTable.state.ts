@@ -8,6 +8,7 @@ import { allBranchesState } from "../../Branches/branches.state";
 import { resolvedRefState } from "../../refs.state";
 import { readCommits } from "./readCommits";
 import { GitRef } from "./GitRef";
+import { filter } from "ramda";
 
 function match(
   input: string,
@@ -51,6 +52,7 @@ export const commitsTableRowsState = selector({
   key: "vcs/log/rows",
   get: ({ get }) => {
     const searchQuery = get(vcsLogFilterCurrentTab.searchQuery);
+    const branches = get(vcsLogFilterCurrentTab.branch);
     const flags = {
       matchCase: get(vcsLogFilterCurrentTab.matchCase),
       regExp: get(vcsLogFilterCurrentTab.regExp),
@@ -58,6 +60,10 @@ export const commitsTableRowsState = selector({
     const dateFilter = get(vcsLogFilterCurrentTab.date);
 
     return get(allCommitsState)
+      .filter(
+        ({ refs }) =>
+          !branches?.length || branches.some((branch) => refs.has(branch))
+      )
       .filter(
         ({ commit: { commit } }) =>
           (!dateFilter?.from ||

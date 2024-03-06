@@ -19,7 +19,6 @@ type RepoDescriptor = {
   repoPath: string;
   isBare?: boolean;
 };
-// TODO: apply branch filter in commitsTableRowsState
 /**
  * Similar to git.log(...), but:
  * - supports multiple repos and multiple refs per repo.
