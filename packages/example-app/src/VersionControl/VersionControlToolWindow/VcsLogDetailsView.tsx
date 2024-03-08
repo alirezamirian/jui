@@ -11,6 +11,7 @@ import {
   PlatformIcon,
   Section,
   SpeedSearchMenu,
+  styled,
   ThreeViewSplitter,
   Toolbar,
   TooltipTrigger,
@@ -18,19 +19,22 @@ import {
 
 import { notImplemented } from "../../Project/notImplemented";
 import { StyledHeader, StyledSpacer } from "./styled-components";
-import {
-  CommitChangedFiles,
-  CommitDetails,
-} from "./CommitsView/CommitsChangedFiles";
+import { CommitChangedFiles } from "./CommitsView/CommitsChangedFiles";
+import { CommitDetails } from "./CommitsView/CommitDetails";
 
 const splitViewSizeState = atom({
   key: "vcs/toolwindow/splitViewSize",
   default: 0.5,
 });
+const StyledContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`;
 export function VcsLogDetailsView() {
   const [splitViewSize, setSplitViewSize] = useRecoilState(splitViewSizeState);
   return (
-    <>
+    <StyledContainer>
       <StyledHeader>
         <Toolbar>
           <TooltipTrigger
@@ -72,13 +76,16 @@ export function VcsLogDetailsView() {
           <ActionButton actionId={CommonActionId.COLLAPSE_ALL} />
         </Toolbar>
       </StyledHeader>
-      <ThreeViewSplitter
-        orientation="vertical"
-        firstSize={splitViewSize}
-        onFirstResize={setSplitViewSize}
-        firstView={<CommitChangedFiles />}
-        innerView={<CommitDetails />}
-      />
-    </>
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <ThreeViewSplitter
+          orientation="vertical"
+          firstSize={splitViewSize}
+          onFirstResize={setSplitViewSize}
+          firstView={<CommitChangedFiles />}
+          firstViewMinSize={10}
+          innerView={<CommitDetails />}
+        />
+      </div>
+    </StyledContainer>
   );
 }

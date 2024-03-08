@@ -3,7 +3,7 @@ import { css, styled, Tooltip, TooltipTrigger } from "@intellij-platform/core";
 import { ReadCommitResult } from "isomorphic-git";
 
 import { GitRef } from "./GitRef";
-import { RefLabel, RefLabelIcon } from "./RefLabel";
+import { RefLabel, RefIcon } from "./RefLabel";
 import { useRecoilValue } from "recoil";
 import {
   authorColumn,
@@ -23,15 +23,12 @@ import {
   CURRENT_USER_FILTER_VALUE,
   vcsLogFilterCurrentTab,
 } from "../vcs-logs.state";
+import {
+  formatCommitDateTime,
+  parseCommitMessage,
+  shortenOid,
+} from "../commit-utils";
 
-const commitDateFormatter = new Intl.DateTimeFormat([], {
-  day: "numeric",
-  month: "numeric",
-  year: "2-digit",
-  hour: "numeric",
-  minute: "numeric",
-  hour12: true,
-});
 const StyledCommitRow = styled.div`
   display: flex;
   height: 1.5rem;
@@ -98,16 +95,17 @@ const useCurrentUserHighlightStyle = ({
 
   return { fontWeight: shouldHighlight ? "bold" : undefined };
 };
+
 export function CommitsTableRow({
   refs,
-  commit: {
+  readCommitResult: {
     oid,
     commit: { author, committer, message },
   },
   repoRoot,
 }: {
   repoRoot: string;
-  commit: ReadCommitResult;
+  readCommitResult: ReadCommitResult;
   refs: GitRef[] | undefined;
 }) {
   const showCommitTimestamp = useRecoilValue(vcsTableShowCommitTimestampState);
@@ -128,7 +126,9 @@ export function CommitsTableRow({
       <StyledCommitCell style={{ flexBasis: "0%", flexGrow: 1, flexShrink: 1 }}>
         <StyledMessageContainer>
           {refs && <CommitRefs onLeft={referencesOnTheLeft} refs={refs} />}
-          <span style={highlightStyles}>{message.split("\n")[0]}</span>
+          <span style={highlightStyles}>
+            {parseCommitMessage(message).subject}
+          </span>
         </StyledMessageContainer>
       </StyledCommitCell>
       {isAuthorVisible && (
@@ -153,10 +153,8 @@ export function CommitsTableRow({
             ...highlightStyles,
           }}
         >
-          {commitDateFormatter.format(
-            new Date(
-              (showCommitTimestamp ? committer : author).timestamp * 1000
-            )
+          {formatCommitDateTime(
+            (showCommitTimestamp ? committer : author).timestamp * 1000
           )}
         </StyledCommitCell>
       )}
@@ -169,7 +167,7 @@ export function CommitsTableRow({
             ...highlightStyles,
           }}
         >
-          {oid.slice(0, 8)}
+          {shortenOid(oid)}
         </StyledCommitCell>
       )}
     </StyledCommitRow>
@@ -210,7 +208,7 @@ function CommitRefs({ refs, onLeft }: { refs: GitRef[]; onLeft?: boolean }) {
         <Tooltip withPointer>
           {refs.map((ref) => (
             <StyledRefTooltipRow key={refKey(ref)}>
-              <RefLabelIcon type={ref.type} />
+              <RefIcon type={ref.type} />
               {ref.name}
             </StyledRefTooltipRow>
           ))}

@@ -61,7 +61,7 @@ const StyledLabelSvg = styled.svg.attrs({ viewBox: "0 0 14.5 14.5" })<{
   }
 `;
 
-const StyledRefLabelGroup = styled.span`
+const StyledRefIconGroup = styled.span`
   display: inline-flex;
   flex-direction: row-reverse;
 `;
@@ -71,10 +71,21 @@ const StyledLabelText = styled.span`
   overflow: hidden;
 `;
 
-export function RefLabelIcon({ type }: { type: GitRef["type"] }) {
+export function RefIcon({ type }: { type: GitRef["type"] }) {
   return <StyledLabelSvg type={type}>{labelIcon}</StyledLabelSvg>;
 }
 
+export function RefIconGroup({ types }: { types: Array<GitRef["type"]> }) {
+  return (
+    <StyledRefIconGroup>
+      {types.map((type, index) => (
+        <StyledLabelSvg key={index} type={type}>
+          {labelIcon}
+        </StyledLabelSvg>
+      ))}
+    </StyledRefIconGroup>
+  );
+}
 export function RefLabel({
   types,
   children,
@@ -84,13 +95,7 @@ export function RefLabel({
 }) {
   return (
     <StyledRef>
-      <StyledRefLabelGroup>
-        {types.map((type, index) => (
-          <StyledLabelSvg key={index} type={type}>
-            {labelIcon}
-          </StyledLabelSvg>
-        ))}
-      </StyledRefLabelGroup>
+      <RefIconGroup types={types} />
       <StyledLabelText>{children}</StyledLabelText>
     </StyledRef>
   );

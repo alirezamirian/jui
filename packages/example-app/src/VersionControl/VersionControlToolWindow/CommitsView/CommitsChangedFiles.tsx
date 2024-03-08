@@ -9,8 +9,3 @@ export function CommitChangedFiles() {
     </StyledPlaceholderContainer>
   );
 }
-export function CommitDetails() {
-  return (
-    <StyledPlaceholderContainer>No commits selected</StyledPlaceholderContainer>
-  );
-}

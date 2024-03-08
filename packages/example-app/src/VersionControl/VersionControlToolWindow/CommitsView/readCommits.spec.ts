@@ -17,7 +17,7 @@ describe("readCommits", () => {
       refs: ["master"],
     });
     expect(result).toHaveLength(12);
-    expect(result.map(({ commit: { oid } }) => oid)).toEqual([
+    expect(result.map(({ readCommitResult: { oid } }) => oid)).toEqual([
       "14d63f8c757e52f7e60e13765031a7fdf0768195",
       "18c380ebf2b05773262e576946349d5d6deaa18a",
       "5b1b99986a0096c774f26a4917dbad0ac31d2d26",
@@ -40,7 +40,7 @@ describe("readCommits", () => {
       refs: ["master", "topic1", "topic2"],
     });
     expect(result).toHaveLength(15);
-    expect(result.map(({ commit: { oid } }) => oid)).toEqual([
+    expect(result.map(({ readCommitResult: { oid } }) => oid)).toEqual([
       "14d63f8c757e52f7e60e13765031a7fdf0768195",
       "18c380ebf2b05773262e576946349d5d6deaa18a",
       "5b1b99986a0096c774f26a4917dbad0ac31d2d26",
@@ -65,18 +65,12 @@ describe("readCommits", () => {
       isBare: true,
       refs: ["topic1", "topic2"],
     });
-    expect(result.filter(({ refs }) => refs.has("topic2"))).toHaveLength(9);
-    expect(result.map(({ refs }) => refs.has("topic1"))).toEqual([
-      false,
-      false,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-    ]);
+    expect(
+      result.filter(({ containingRefs }) => containingRefs.has("topic2"))
+    ).toHaveLength(9);
+    expect(
+      result.map(({ containingRefs }) => containingRefs.has("topic1"))
+    ).toEqual([false, false, true, true, true, true, true, true, true]);
   });
 
   it("includes all refs for commits that exist in multiple branches (more complex)", async () => {
@@ -97,7 +91,7 @@ describe("readCommits", () => {
       refs: [...almostAllBranches, "gh-pages"],
     });
 
-    expect(result.map(({ refs }) => refs)).toEqual([
+    expect(result.map(({ containingRefs }) => containingRefs)).toEqual([
       new Set(["HEAD", "master"]),
       new Set(["HEAD", "master"]),
       new Set(["enhancement"]),
@@ -145,7 +139,7 @@ describe("readCommits", () => {
       isBare: true,
       refs: ["topic1", "topic2"],
     });
-    expect(new Set(result.map(({ refs }) => refs)).size)
+    expect(new Set(result.map(({ containingRefs }) => containingRefs)).size)
       // It can actually be 2 in this case, but it's three because ["topic1", "topic2"] and
       // ["topic2", "topic1"] are created twice.
       .toBeLessThanOrEqual(3);

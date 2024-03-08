@@ -3,7 +3,7 @@ import { sort } from "ramda";
 
 type Fs = Parameters<typeof git["readCommit"]>[0]["fs"];
 
-export const cache = {};
+const cache = {};
 export const commitDateComparator = (
   a: ReadCommitResult,
   b: ReadCommitResult
@@ -11,8 +11,11 @@ export const commitDateComparator = (
 
 type CommitWithMeta = {
   repoPath: string;
-  refs: Set<string>;
-  commit: ReadCommitResult;
+  /**
+   * refs this commit contains in
+   */
+  containingRefs: Set<string>;
+  readCommitResult: ReadCommitResult;
 };
 
 type RepoDescriptor = {
@@ -38,7 +41,7 @@ export async function readCommits(
   let commitsToProcess: Array<CommitWithMeta & RepoDescriptor> = [];
 
   commitsToProcess.forEach((item) => {
-    commitsMap[item.commit.oid] = item;
+    commitsMap[item.readCommitResult.oid] = item;
   });
   const initialCommits = await Promise.all(
     sources.flatMap(({ refs, repoPath, isBare }) =>
@@ -69,12 +72,16 @@ export async function readCommits(
 
   while (commitsToProcess.length > 0) {
     const {
-      commit: latestCommit,
+      readCommitResult: latestCommit,
       repoPath,
       isBare,
-      refs,
+      containingRefs,
     } = commitsToProcess.shift()!; // non-null assertion because of length>0;
-    allCommits.push({ repoPath, commit: latestCommit, refs });
+    allCommits.push({
+      repoPath,
+      readCommitResult: latestCommit,
+      containingRefs: containingRefs,
+    });
     const parentCommits = await Promise.all(
       latestCommit.commit.parent.map((oid) =>
         git.readCommit({
@@ -86,9 +93,10 @@ export async function readCommits(
     // insert new parents in the right place so that commitsToProcess remains sorted.
     parentCommits.forEach((commit) => {
       const index = commitsToProcess.findIndex(
-        ({ commit: aCommit }) => commitDateComparator(aCommit, commit) > 0
+        ({ readCommitResult: aCommit }) =>
+          commitDateComparator(aCommit, commit) > 0
       );
-      addCommit({ repoPath, isBare }, commit, index, refs);
+      addCommit({ repoPath, isBare }, commit, index, containingRefs);
     });
   }
   return allCommits;
@@ -100,15 +108,15 @@ export async function readCommits(
     refs: Set<string>
   ) {
     if (commitsMap[commit.oid]) {
-      commitsMap[commit.oid].refs = new Set([
-        ...commitsMap[commit.oid].refs,
+      commitsMap[commit.oid].containingRefs = new Set([
+        ...commitsMap[commit.oid].containingRefs,
         ...refs,
       ]);
     } else {
       const entry: CommitWithMeta & RepoDescriptor = {
-        commit,
-        refs: commitsMap[commit.oid]
-          ? new Set([...commitsMap[commit.oid].refs, ...refs])
+        readCommitResult: commit,
+        containingRefs: commitsMap[commit.oid]
+          ? new Set([...commitsMap[commit.oid].containingRefs, ...refs])
           : refs,
         repoPath,
         isBare,

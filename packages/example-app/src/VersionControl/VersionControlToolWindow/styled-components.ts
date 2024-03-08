@@ -6,6 +6,7 @@ export const StyledHeader = styled.div`
   align-items: center;
   height: 2.0625rem;
   border-bottom: 1px solid ${({ theme }) => theme.commonColors.borderColor};
+  flex-shrink: 0;
 `;
 export const StyledSpacer = styled.div`
   flex-grow: 1;

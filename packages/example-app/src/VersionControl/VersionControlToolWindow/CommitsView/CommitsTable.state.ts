@@ -8,7 +8,7 @@ import { allBranchesState } from "../../Branches/branches.state";
 import { resolvedRefState } from "../../refs.state";
 import { readCommits } from "./readCommits";
 import { GitRef } from "./GitRef";
-import { filter } from "ramda";
+import { indexBy } from "ramda";
 
 function match(
   input: string,
@@ -24,13 +24,12 @@ function match(
   return input.includes(query);
 }
 
-export const allCommitsState = selector<
-  Array<{
-    commit: ReadCommitResult;
-    refs: Set<string>;
-    repoPath: string;
-  }>
->({
+type CommitLogItem = {
+  readCommitResult: ReadCommitResult;
+  containingRefs: Set<string>;
+  repoPath: string;
+};
+export const allCommitsState = selector<Array<CommitLogItem>>({
   key: "vcs/allRepoCommits",
   get: ({ get }) =>
     readCommits(
@@ -59,24 +58,29 @@ export const commitsTableRowsState = selector({
     };
     const dateFilter = get(vcsLogFilterCurrentTab.date);
 
-    return get(allCommitsState)
+    const rows = get(allCommitsState)
       .filter(
-        ({ refs }) =>
-          !branches?.length || branches.some((branch) => refs.has(branch))
+        ({ containingRefs }) =>
+          !branches?.length ||
+          branches.some((branch) => containingRefs.has(branch))
       )
       .filter(
-        ({ commit: { commit } }) =>
+        ({ readCommitResult: { commit } }) =>
           (!dateFilter?.from ||
             commit.author.timestamp * 1000 > dateFilter.from.getTime()) &&
           (!dateFilter?.to ||
             commit.author.timestamp * 1000 < dateFilter.to.getTime())
       )
       .filter(
-        ({ commit: { commit } }) =>
+        ({ readCommitResult: { commit } }) =>
           !searchQuery ||
           match(commit.message, searchQuery, flags) ||
           match(commit.tree, searchQuery, { matchCase: false })
       );
+    return {
+      rows,
+      byOid: indexBy(({ readCommitResult: commit }) => commit.oid, rows),
+    };
   },
 });
 
@@ -118,10 +122,41 @@ export const allResolvedRefsState = selector({
   },
 });
 
-export const selectedCommitsState = atom<Selection>({
-  key: "vcs/log/commits/selected",
-  default: new Set(),
+/**
+ * selection state of the commits table
+ */
+export const commitsSelectionState = atom<Selection>({
+  key: "vcs/log/commits/selection",
+  default: new Set([]),
 });
+
+/**
+ * OIDs of the selected commits in commits table.
+ */
+export const selectedCommitOids = selector({
+  key: `${commitsSelectionState.key}/keys`,
+  get: ({ get }) => {
+    const selection = get(commitsSelectionState);
+    if (selection === "all") {
+      return get(commitsTableRowsState).rows.map(
+        ({ readCommitResult: { oid } }) => oid
+      );
+    }
+    return [...selection].map((i) => `${i}`);
+  },
+});
+
+/**
+ * Selected commit in the commits table. The first row, if multiple rows are selected
+ */
+export const selectedCommitState = selector({
+  key: "vcs/log/details/selectedCommit",
+  get: ({ get }) => {
+    const oid = get(selectedCommitOids)[0];
+    return (oid && get(commitsTableRowsState).byOid[oid]) || null;
+  },
+});
+
 export const vcsTableShowCommitTimestampState = atom<boolean>({
   key: "vcs/log/commits/showCommitTimestamp",
   default: false,

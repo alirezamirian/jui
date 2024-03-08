@@ -8,20 +8,20 @@ import {
 } from "@intellij-platform/core";
 import { notImplemented } from "../../../Project/notImplemented";
 import { VcsActionIds } from "../../VcsActionIds";
-import { allCommitsState, selectedCommitsState } from "./CommitsTable.state";
+import {
+  allCommitsState,
+  commitsSelectionState,
+  selectedCommitOids,
+} from "./CommitsTable.state";
 
 export const useCommitsTableActions = (): ActionDefinition[] => {
   const copyRevisionNumber = useRecoilCallback(
     ({ snapshot }) =>
       () => {
         const selectedCommits = snapshot
-          .getLoadable(selectedCommitsState)
+          .getLoadable(selectedCommitOids)
           .getValue();
-        if (selectedCommits === "all") {
-          notImplemented();
-        } else {
-          copyToClipboard([...selectedCommits].join(" ")).catch(console.error);
-        }
+        copyToClipboard(selectedCommits.join(" ")).catch(console.error);
       },
     []
   );

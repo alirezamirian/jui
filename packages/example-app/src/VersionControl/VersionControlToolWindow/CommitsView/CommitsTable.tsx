@@ -8,8 +8,8 @@ import { CommitsTableRow } from "./CommitsTableRow";
 import { GitRef } from "./GitRef";
 import {
   allResolvedRefsState,
+  commitsSelectionState,
   commitsTableRowsState,
-  selectedCommitsState,
 } from "./CommitsTable.state";
 
 // const StyledList = styled(List)`
@@ -37,12 +37,12 @@ export function CommitsTable() {
   const currentTabKey = useRecoilValue(vcsActiveTabKeyState);
   const resetFilters = useResetFilters();
 
-  const [commitRows, commitRowsState] = useLatestRecoilValue(
-    commitsTableRowsState
-  );
+  const [result, commitRowsState] = useLatestRecoilValue(commitsTableRowsState);
+  const rows = result?.rows;
   const [allResolvedRefs] = useLatestRecoilValue(allResolvedRefsState);
-  const [selectedCommits, setSelectedCommits] =
-    useRecoilState(selectedCommitsState);
+  const [selectedCommits, setSelectedCommits] = useRecoilState(
+    commitsSelectionState
+  );
 
   return (
     <ResolvedRefsContext.Provider value={allResolvedRefs ?? {}}>
@@ -50,24 +50,27 @@ export function CommitsTable() {
         {commitRowsState === "loading" && (
           <StyledProgressBar aria-label="Loading commits" isIndeterminate />
         )}
-        {commitRows && commitRows.length > 0 && (
+        {rows && rows.length > 0 && (
           <List
-            items={commitRows}
+            items={rows}
             fillAvailableSpace
             selectionMode="multiple"
             selectedKeys={selectedCommits}
             onSelectionChange={setSelectedCommits}
             estimatedItemHeight={24}
           >
-            {({ commit, repoPath }) => (
-              <Item key={commit.oid} textValue={commit.commit.message}>
+            {({ readCommitResult, repoPath }) => (
+              <Item
+                key={readCommitResult.oid}
+                textValue={readCommitResult.commit.message}
+              >
                 {/* Using context here due to rendering optimizations of collection API */}
                 <ResolvedRefsContext.Consumer>
                   {(refs) => (
                     <CommitsTableRow
-                      commit={commit}
+                      readCommitResult={readCommitResult}
                       repoRoot={repoPath}
-                      refs={refs[commit.oid]}
+                      refs={refs[readCommitResult.oid]}
                     />
                   )}
                 </ResolvedRefsContext.Consumer>
@@ -75,16 +78,14 @@ export function CommitsTable() {
             )}
           </List>
         )}
-        {commitRowsState === "hasValue" &&
-          commitRows &&
-          commitRows.length === 0 && (
-            <StyledPlaceholderContainer>
-              No commits matching filters
-              <Link onPress={() => resetFilters(currentTabKey)}>
-                Reset filters
-              </Link>
-            </StyledPlaceholderContainer>
-          )}
+        {commitRowsState === "hasValue" && rows && rows.length === 0 && (
+          <StyledPlaceholderContainer>
+            No commits matching filters
+            <Link onPress={() => resetFilters(currentTabKey)}>
+              Reset filters
+            </Link>
+          </StyledPlaceholderContainer>
+        )}
       </StyledContainer>
     </ResolvedRefsContext.Provider>
   );
