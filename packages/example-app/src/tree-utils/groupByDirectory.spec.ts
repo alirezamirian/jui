@@ -1,7 +1,8 @@
-import { groupByDirectory } from "./groupByDirectory";
-import { ChangeNode } from "../VersionControl/Changes/ChangesView/change-view-nodes";
+import { DirectoryNode, createGroupByDirectory } from "./groupByDirectory";
+import { ChangeNode } from "../VersionControl/Changes/ChangesTree/ChangeTreeNode";
 import { readFileSync } from "fs";
 import { performance } from "perf_hooks";
+import { Change } from "../VersionControl/Changes/Change";
 
 const change = (path: string): ChangeNode => ({
   key: path,
@@ -10,6 +11,19 @@ const change = (path: string): ChangeNode => ({
     after: { path, isDir: false },
     before: { path, isDir: false },
   },
+  showPath: false,
+});
+
+const groupByDirectory = createGroupByDirectory<ChangeNode, DirectoryNode>({
+  getPath: (node) => Change.path(node.change),
+});
+
+const groupByDirectoryMergingPaths = createGroupByDirectory<
+  ChangeNode,
+  DirectoryNode
+>({
+  getPath: (node) => Change.path(node.change),
+  shouldCollapseDirectories: true,
 });
 
 describe("groupByDirectory", () => {
@@ -36,7 +50,7 @@ describe("groupByDirectory", () => {
   });
 
   it("merges directories all the way through", () => {
-    const groups = groupByDirectory([change("/a/b/c/d/x.js")]);
+    const groups = groupByDirectoryMergingPaths([change("/a/b/c/d/x.js")]);
     expect(groups).toMatchObject([
       {
         dirPath: "/a/b/c/d",
@@ -47,7 +61,7 @@ describe("groupByDirectory", () => {
   });
 
   it("merges directories when possible", () => {
-    const groups = groupByDirectory([
+    const groups = groupByDirectoryMergingPaths([
       change("/a/b/bc/h/g/x.js"),
       change("/e/f/g/u.js"),
       change("/a/b/bc/d/y.js"),

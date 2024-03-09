@@ -1,6 +1,9 @@
 import path from "path";
 import { groupBy } from "ramda";
 import { useRecoilCallback } from "recoil";
+import { IntlMessageFormat } from "intl-messageformat";
+import React from "react";
+import { useBalloonManager } from "@intellij-platform/core";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 import { fs } from "../../../fs/fs";
@@ -9,12 +12,10 @@ import {
   useUpdateVcsFileStatuses,
   vcsRootForFile,
 } from "../../file-status.state";
-import { Change, useRefreshChanges } from "../change-lists.state";
+import { useRefreshChanges } from "../change-lists.state";
 import { useRunTask } from "../../../tasks";
 import { commitTaskIdState } from "./ChangesView.state";
-import { IntlMessageFormat } from "intl-messageformat";
-import { useBalloonManager } from "@intellij-platform/core";
-import React from "react";
+import { Change } from "../Change";
 
 const commitSuccessfulMessage = new IntlMessageFormat(
   `{count, plural,
@@ -47,7 +48,7 @@ export function useCommitChanges() {
                 (
                   await Promise.all(
                     changes.map(async (change) => {
-                      const filePath = change.after.path;
+                      const filePath = Change.path(change);
                       const repoRoot = snapshot
                         .getLoadable(vcsRootForFile(filePath))
                         .getValue();

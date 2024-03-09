@@ -1,7 +1,7 @@
 import { styled, Theme } from "@intellij-platform/core";
 import React from "react";
 
-import { StyledCurrentBranchTag } from "../../Changes/ChangesView/StyledCurrentBranchTag";
+import { StyledCurrentBranchTag } from "../../Changes/StyledCurrentBranchTag";
 import { GitRef } from "./GitRef";
 
 const labelIcon = (

@@ -1,6 +1,6 @@
 import React from "react";
-import { Change } from "./change-lists.state";
 import { StatusColor } from "../FileStatusColor";
+import { Change } from "./Change";
 
 export const ChangesSummary = ({
   changes,
@@ -8,13 +8,13 @@ export const ChangesSummary = ({
   changes: ReadonlyArray<Change>;
 }) => {
   const modifiedCount = changes.filter(
-    (change) => change.after.path && change.before.path
+    (change) => change.after && change.before
   ).length;
   const addedCount = changes.filter(
-    (change) => change.after.path && !change.before.path
+    (change) => change.after && !change.before
   ).length;
   const deletedCount = changes.filter(
-    (change) => change.before.path && !change.after.path
+    (change) => change.before && !change.after
   ).length;
 
   return (

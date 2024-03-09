@@ -9,22 +9,24 @@ import {
 } from "@intellij-platform/core";
 import {
   changesTreeNodesState,
+  ChangesViewTreeNode,
   expandedKeysState,
   includedChangesNestedSelection,
   selectedKeysState,
 } from "./ChangesView.state";
 import { ChangesViewTreeContextMenu } from "./ChangesViewTreeContextMenu";
-import { getChangeListTreeItemProps } from "./changesTreeNodeRenderers";
 import { useActivePathsProvider } from "../../../Project/project.state";
 import { useEditorStateManager } from "../../../Editor/editor.state";
-import { AnyNode, isGroupNode } from "./change-view-nodes";
+import { Change } from "../Change";
+import { isGroupNode } from "../ChangesTree/ChangeTreeNode";
+import { changesViewTreeNodeRenderer } from "./changesViewTreeNodeRenderer";
 
-function findPathsUnderNode(node: AnyNode): string[] {
+function findPathsUnderNode(node: ChangesViewTreeNode): string[] {
   if (node?.type === "directory") {
     return [node.dirPath];
   }
   if (node?.type === "change") {
-    return [node.change.after.path];
+    return [Change.path(node.change)];
   }
   if (isGroupNode(node)) {
     return node.children.flatMap(findPathsUnderNode);
@@ -51,14 +53,14 @@ export const ChangeViewTree = ({
   const openChangeInEditor = useRecoilCallback(
     ({ snapshot }) =>
       (key: Key) => {
-        const change = snapshot
+        const changeNode = snapshot
           .getLoadable(changesTreeNodesState)
           .getValue()
           .byKey.get(key);
-        if (change?.type === "change") {
-          openPath(change.change.after.path);
+        if (changeNode?.type === "change") {
+          openPath(Change.path(changeNode.change));
         }
-        return change;
+        return changeNode;
       },
     []
   );
@@ -92,7 +94,7 @@ export const ChangeViewTree = ({
         {...activePathsProviderProps}
       >
         {(node) => {
-          const props = getChangeListTreeItemProps({
+          const props = changesViewTreeNodeRenderer.getItemProps({
             fileCountsMap,
             node,
           });

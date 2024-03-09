@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "types": []
+  },
+  "include": ["src"],
+  "exclude": ["src/**/*.cy.tsx", "src/**/*.stories.tsx", "src/**/*.spec.ts"]
+}

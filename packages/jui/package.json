@@ -116,7 +116,7 @@
     "storybook-addon-theme-provider": "^0.1.10",
     "stream-browserify": "^3.0.0",
     "ts-loader": "^8",
-    "typescript": "*",
+    "typescript": "workspace:*",
     "webpack": "5"
   },
   "peerDependencies": {

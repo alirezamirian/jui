@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "serve": "../../node_modules/.bin/parcel serve",
+    "jest:type-check": "tsc --project tsconfig.jest.json",
+    "test": "jest",
+    "type-check": "tsc --project tsconfig.app.json && yarn run jest:type-check",
     "build": "../../node_modules/.bin/parcel build"
   },
   "source": "src/index.html",
@@ -24,6 +27,7 @@
     "intl-messageformat": "^9.11.2",
     "isomorphic-git": "^1.24.3",
     "monaco-editor": "^0.28.1",
+    "nodegit": "^0.27.0",
     "pify": "^5.0.0",
     "ramda": "^0.27.1",
     "react": "17",
@@ -37,6 +41,7 @@
   "devDependencies": {
     "@types/jest": "^29.5.2",
     "@types/uuid": "^9.0.7",
-    "jest": "^29.5.0"
+    "jest": "^29.5.0",
+    "typescript": "workspace:*"
   }
 }

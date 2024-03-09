@@ -1,7 +1,7 @@
 import { styled, Theme } from "@intellij-platform/core";
 import React, { HTMLAttributes } from "react";
 import { useRecoilValue } from "recoil";
-import { vcsRootsState } from "../../file-status.state";
+import { vcsRootsState } from "../file-status.state";
 import { useTheme } from "styled-components";
 
 const StyledRepoColorSquare = styled.span`

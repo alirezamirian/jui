@@ -15,7 +15,7 @@ import {
 } from "../../Branches/branches.state";
 import {
   DirectoryNode,
-  groupByDirectory,
+  createGroupByDirectory,
 } from "../../../tree-utils/groupByDirectory";
 import { vcsRootsState } from "../../file-status.state";
 import { vcsLogTabState } from "../vcs-logs.state";
@@ -208,7 +208,7 @@ export const branchesTreeNodeState = selector({
     ];
   },
 });
-const groupNodesByDirectory = groupByDirectory<
+const groupNodesByDirectory = createGroupByDirectory<
   LocalBranchNode | RemoteBranchNode,
   BranchDirectoryNode
 >({

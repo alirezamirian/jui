@@ -39,7 +39,7 @@ export const getExpandedToNodesKeys = <T>(
    * a function that converts each node into a key
    */
   getKey: (t: T) => Key,
-  roots: T[],
+  roots: ReadonlyArray<T>,
   targetNodeKeys: Iterable<Key>
 ) => {
   const targetNodeKeySet = new Set(targetNodeKeys);
@@ -64,7 +64,7 @@ export const getExpandedToNodesKeys = <T>(
 export const dfsVisit = <T, R>(
   getChildren: TreeNodeFn<T>,
   visit: (node: T, childrenValues: null | R[]) => R,
-  roots: T[]
+  roots: ReadonlyArray<T>
 ) => {
   const dfs = (node: T): R => {
     const children = getChildren(node);
@@ -77,7 +77,7 @@ export const dfsVisit = <T, R>(
 export const bfsVisit = <T, R>(
   getChildren: TreeNodeFn<T>,
   visit: (node: T, parentValue: R | null) => R,
-  roots: T[]
+  roots: ReadonlyArray<T>
 ) => {
   const bfs: typeof visit = (node, parentValue) => {
     const result = visit(node, parentValue);

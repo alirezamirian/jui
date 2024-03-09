@@ -12,7 +12,7 @@ import {
 } from "@intellij-platform/core";
 
 import { TrackingBranchInfo } from "../../TrackingBranchInfo";
-import { RepoColorIcon } from "../../Changes/ChangesView/StyledRepoColorSquare";
+import { RepoColorIcon } from "../../Changes/StyledRepoColorSquare";
 import { AnyBranchTreeNode } from "./BranchesTree.state";
 
 export const branchTreeNodeRenderers: {

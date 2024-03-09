@@ -11,8 +11,9 @@ import { ChangesViewPane } from "./Changes/ChangesView/ChangesViewPane";
 import { allChangesState } from "./Changes/change-lists.state";
 import { vcsRootForFile } from "./file-status.state";
 import { LocalBranch, repoBranchesState } from "./Branches/branches.state";
-import { changesGroupingState } from "./Changes/ChangesView/ChangesView.state";
+import { changesGroupingActiveState } from "./Changes/ChangesView/ChangesView.state";
 import { TrackingBranchInfo } from "./TrackingBranchInfo";
+import { Change } from "./Changes/Change";
 
 export const COMMIT_TOOLWINDOW_ID = "Commit";
 
@@ -20,7 +21,7 @@ const changesBranchesState = selector({
   key: "vcs/commitToolWindow/changedRepos",
   get: ({ get }): Array<{ repoRoot: string; branch: LocalBranch }> => {
     const changesRepoRoots = get(allChangesState)
-      .map((change) => get(vcsRootForFile(change.after.path)))
+      .map((change) => get(vcsRootForFile(Change.path(change))))
       .filter(notNull);
 
     return changesRepoRoots
@@ -39,7 +40,7 @@ const changesBranchesState = selector({
 
 export const CommitToolWindow = () => {
   const areChangesGroupedByRepo = useRecoilValue(
-    changesGroupingState("repository")
+    changesGroupingActiveState("repository")
   );
   const changesBranches = useRecoilValue(changesBranchesState);
   const title =

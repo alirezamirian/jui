@@ -12,7 +12,7 @@ import {
   parseCommitMessage,
   shortenOid,
 } from "../commit-utils";
-import { RepoColorIcon } from "../../Changes/ChangesView/StyledRepoColorSquare";
+import { RepoColorIcon } from "../../Changes/StyledRepoColorSquare";
 import { vcsRootsState } from "../../file-status.state";
 import { useLatestRecoilValue } from "../../../recoil-utils";
 import { RefLabel, RefIcon, RefIconGroup } from "./RefLabel";

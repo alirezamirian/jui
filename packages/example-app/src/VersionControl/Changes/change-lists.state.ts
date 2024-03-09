@@ -11,16 +11,7 @@ import {
   vcsRootForFile,
   vcsRootsState,
 } from "../file-status.state";
-
-export type Revision = {
-  path: string;
-  isDir: boolean;
-};
-
-export interface Change {
-  before: Revision;
-  after: Revision;
-}
+import { Change } from "./Change";
 
 export interface ChangeListObj {
   id: string;
@@ -85,13 +76,13 @@ const refreshChangesCallback =
       })
     );
     const unversionedPaths = []; // FIXME: handle unversioned files
-    const changes = allStatusMatrices
-      .flat()
-      .map(([path, head, workdir, stage]) => ({
+    const changes = allStatusMatrices.flat().map(
+      ([path, head, workdir, stage]): Change => ({
         // FIXME: change object creation doesn't cover all kind of changes.
         after: { path, isDir: false },
         before: { path, isDir: false },
-      }));
+      })
+    );
 
     // FIXME: changes now all go to default change list on each refresh. fix it.
     set(changeListsState, (changeLists) =>
@@ -122,15 +113,15 @@ export const useRollbackChanges = () => {
 
       const changesWithRepoRoots = await Promise.all(
         changes
-          .filter((change) => !change.after.isDir)
+          .filter((change) => !change.after?.isDir)
           .map(async (change) => {
             const repoRoot = (await snapshot.getPromise(
-              vcsRootForFile(change.after.path)
+              vcsRootForFile(Change.path(change))
             ))!; // FIXME: handle null
             return {
               repoRoot,
-              fullPath: change.after.path,
-              relativePath: path.relative(repoRoot, change.after.path),
+              fullPath: Change.path(change),
+              relativePath: path.relative(repoRoot, Change.path(change)),
             };
           })
       );
