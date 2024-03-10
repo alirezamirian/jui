@@ -46,7 +46,7 @@ const fileCountMsg = new IntlMessageFormat(
 export function formatFileCount(fileCount: number) {
   return fileCountMsg.format({ fileCount });
 }
-const repoNodeItemProps: NodeRenderer<RepositoryNode> = (
+const repoNodeRenderer: NodeRenderer<RepositoryNode> = (
   node,
   { fileCount }
 ) => ({
@@ -62,7 +62,7 @@ const repoNodeItemProps: NodeRenderer<RepositoryNode> = (
     </ItemLayout>
   ),
 });
-const directoryNodeItemProps: NodeRenderer<DirectoryNode> = (
+const directoryNodeRenderer: NodeRenderer<DirectoryNode> = (
   node,
   { fileCount }
 ) => ({
@@ -84,7 +84,7 @@ const ChangeNodeHint = ({ node }: { node: ChangeNode }): React.ReactElement => {
     </ItemLayout.Hint>
   );
 };
-const changeNodeItemProps: NodeRenderer<ChangeNode> = (node) => ({
+const changeNodeRenderer: NodeRenderer<ChangeNode> = (node) => ({
   textValue: path.basename(Change.path(node.change)),
   rendered: (
     <ItemLayout>
@@ -100,19 +100,40 @@ type NodeRenderersMap<T extends ChangesTreeNode<any>> = {
 };
 
 const defaultNodeRenderers: NodeRenderersMap<DefaultChangesTreeNode> = {
-  repo: repoNodeItemProps,
-  directory: directoryNodeItemProps,
-  change: changeNodeItemProps,
+  repo: repoNodeRenderer,
+  directory: directoryNodeRenderer,
+  change: changeNodeRenderer,
 };
+
+export const simpleGroupingRenderer =
+  <T extends ChangesTreeNode<any>>(
+    getText: (node: T) => string
+  ): NodeRenderer<T> =>
+  (node, { fileCount }) => ({
+    textValue: getText(node),
+    rendered: (
+      <ItemLayout>
+        <HighlightedTextValue />
+        <ItemLayout.Hint>{formatFileCount(fileCount)}</ItemLayout.Hint>
+      </ItemLayout>
+    ),
+  });
 
 export const createChangesTreeNodeRenderer = <T extends ChangesTreeNode<any>>(
   renderers: Omit<
     NodeRenderersMap<T>,
     keyof NodeRenderersMap<DefaultChangesTreeNode>
-  >
+  >,
+  /**
+   * Not so nice signature, but couldn't make it work with a single argument in a way that:
+   * - allows for optionally overriding the default renderers
+   * - infers the type of the resulting renderer based on additional keys passed in `renderers`
+   */
+  defaultRendererOverrides?: Partial<NodeRenderersMap<DefaultChangesTreeNode>>
 ) => {
   const nodeRenderers: NodeRenderersMap<T> = {
     ...defaultNodeRenderers,
+    ...defaultRendererOverrides,
     ...renderers,
   };
   const getItemProps = ({

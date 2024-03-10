@@ -264,7 +264,9 @@ const groupChildren = <
   G extends ChangesTreeNode<any>
 >(
   node: T,
-  groupFn: GroupFn<GroupNodes<G>>
+  groupFn: (
+    nodes: ReadonlyArray<ChangeNode>
+  ) => ReturnType<GroupFn<GroupNodes<G>>> | ReadonlyArray<ChangeNode>
 ) => ({
   ...node,
   children: groupFn(node.children),
@@ -281,15 +283,13 @@ export const changesTreeNodesState = selector<{
       ({ active }) => !active,
       get(changeListsState)
     ).map(changeListNode);
-    const groupFn: GroupFn<any> = getChangesGroupFn({
+    const groupFn = getChangesGroupFn({
       get,
+      groupings: defaultChangeGroupings,
       isActive: changesGroupingActiveState,
     });
     const rootNodes = changeListNodes.map((changeListNode) =>
-      groupChildren<ChangeListNode<ChangeNode>, ChangesViewTreeNode>(
-        changeListNode,
-        groupFn
-      )
+      groupChildren(changeListNode, groupFn)
     );
     return changesTreeNodesResult(rootNodes);
   },

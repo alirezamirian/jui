@@ -15,7 +15,6 @@ import {
   RepositoryNode,
   repositoryNode,
 } from "./ChangeTreeNode";
-import { ChangesViewTreeNode } from "../ChangesView/ChangesView.state";
 
 export type MaybeRecoilValue<T> = T | RecoilValue<T>;
 
@@ -76,7 +75,9 @@ export const directoryGrouping: ChangeGrouping<DirectoryNode, "directory"> = {
   }),
 };
 
-export const defaultChangeGroupings = [repositoryGrouping, directoryGrouping];
+export const defaultChangeGroupings: ReadonlyArray<
+  ChangeGrouping<DirectoryNode | RepositoryNode, "directory" | "repository">
+> = [repositoryGrouping, directoryGrouping];
 
 export const defaultChangeGroupingsState = selector<
   ReadonlyArray<Omit<typeof defaultChangeGroupings[number], "isAvailable">>
@@ -92,8 +93,8 @@ export const defaultChangeGroupingsState = selector<
 
 export const recursiveGrouping = <T extends ChangesTreeNode<any>>(
   groupingFns: Array<GroupFn<any>> /* Typing could be improved? */,
-  nodes: ReadonlyArray<T>
-): ReadonlyArray<T> => {
+  nodes: ReadonlyArray<ChangeNode>
+): ReadonlyArray<T> | ReadonlyArray<ChangeNode> => {
   if (groupingFns.length === 0 || nodes.length === 0) {
     return nodes;
   }
@@ -112,15 +113,16 @@ export const recursiveGrouping = <T extends ChangesTreeNode<any>>(
   });
   return groups.filter((group) => group.children.length > 0);
 };
-export const getChangesGroupFn = <G extends ChangeGrouping<any>>({
+
+export function getChangesGroupFn<G extends ChangesTreeGroupNode<any>>({
   get,
   isActive,
-  groupings = defaultChangeGroupings as any /* FIXME */,
+  groupings,
 }: {
   get: GetRecoilValue;
   isActive: (groupingId: string) => MaybeRecoilValue<boolean>;
-  groupings?: ReadonlyArray<G>;
-}) => {
+  groupings: ReadonlyArray<ChangeGrouping<G, any>>;
+}) {
   const resolve = <T>(value: MaybeRecoilValue<T>): T =>
     isRecoilValue(value) ? get(value) : value;
   const groupFns = groupings
@@ -130,7 +132,6 @@ export const getChangesGroupFn = <G extends ChangeGrouping<any>>({
     .map(({ groupFn }) => {
       return resolve(groupFn);
     });
-  return (changes: readonly ChangeNode[]) => {
-    return recursiveGrouping<ChangesViewTreeNode>(groupFns, changes);
-  };
-};
+  return (changes: readonly ChangeNode[]) =>
+    recursiveGrouping<G>(groupFns, changes);
+}

@@ -13,7 +13,7 @@ export const getExpandAllKeys = <T>(
    * a function that converts each node into a key
    */
   getKey: (t: T) => Key,
-  roots: T[]
+  roots: ReadonlyArray<T>
 ) => {
   const keys: Key[] = roots.map(getKey);
   const processItem = (node: T | null) => {

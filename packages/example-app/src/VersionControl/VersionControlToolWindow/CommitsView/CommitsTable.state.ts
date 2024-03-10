@@ -146,6 +146,12 @@ export const selectedCommitOids = selector({
   },
 });
 
+export const selectedCommitsState = selector({
+  key: `${commitsSelectionState.key}/items`,
+  get: ({ get }) =>
+    get(selectedCommitOids).map((oid) => get(commitsTableRowsState).byOid[oid]),
+});
+
 /**
  * Selected commit in the commits table. The first row, if multiple rows are selected
  */

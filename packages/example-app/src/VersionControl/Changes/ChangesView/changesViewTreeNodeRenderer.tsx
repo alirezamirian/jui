@@ -7,7 +7,7 @@ import {
   NodeRenderer,
 } from "../ChangesTree/changesTreeNodeRenderers";
 
-const changeListNodeItemProps: NodeRenderer<ChangeListNode> = (
+const changeListNodeRenderer: NodeRenderer<ChangeListNode> = (
   node,
   { fileCount }
 ) => ({
@@ -27,5 +27,5 @@ const changeListNodeItemProps: NodeRenderer<ChangeListNode> = (
 
 export const changesViewTreeNodeRenderer =
   createChangesTreeNodeRenderer<ChangesViewTreeNode>({
-    changelist: changeListNodeItemProps,
+    changelist: changeListNodeRenderer,
   });
