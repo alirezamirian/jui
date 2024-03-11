@@ -18,7 +18,7 @@ function match(
   if (flags.regExp) {
     return new RegExp(query, flags.matchCase ? "" : "i").test(input);
   }
-  if (flags.matchCase) {
+  if (!flags.matchCase) {
     return input.toLowerCase().includes(query.toLowerCase());
   }
   return input.includes(query);

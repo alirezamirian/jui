@@ -31,4 +31,5 @@ export const VcsActionIds = {
   REG_EXP: "Vcs.Log.EnableFilterByRegexAction",
   COPY_REVISION_NUMBER: "Vcs.CopyRevisionNumberAction",
   LOG_REFRESH: "Vcs.Log.Refresh",
+  SHOW_DETAILS: "Vcs.Log.ShowDetailsAction",
 };

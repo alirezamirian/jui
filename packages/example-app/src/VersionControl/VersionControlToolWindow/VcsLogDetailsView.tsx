@@ -21,6 +21,7 @@ import {
   ThreeViewSplitter,
   Toolbar,
   TooltipTrigger,
+  useAction,
   useTreeActions,
 } from "@intellij-platform/core";
 
@@ -33,6 +34,8 @@ import {
   changesGroupingActiveState,
   commitChangesTreeRefState,
 } from "./CommitsView/CommitsChangedFiles.state";
+import { vcsLogTabShowCommitDetails } from "./vcs-logs.state";
+import { VcsActionIds } from "../VcsActionIds";
 
 const splitViewSizeState = atom({
   key: "vcs/toolwindow/splitViewSize",
@@ -45,8 +48,10 @@ const StyledContainer = styled.div`
   height: 100%;
 `;
 
-export function VcsLogDetailsView() {
+export function VcsLogDetailsView({ tabKey }: { tabKey: string }) {
   const [splitViewSize, setSplitViewSize] = useRecoilState(splitViewSizeState);
+  const isDetailsVisible = useRecoilValue(vcsLogTabShowCommitDetails(tabKey));
+  const toggleDetailsAction = useAction(VcsActionIds.SHOW_DETAILS);
 
   const toggleGroupBy = useRecoilCallback(({ set }) => (id: string) => {
     set(changesGroupingActiveState(id), (currentValue) => !currentValue);
@@ -62,6 +67,11 @@ export function VcsLogDetailsView() {
 
   const treeRef = useRecoilValue(commitChangesTreeRefState);
   const actions = useTreeActions({ treeRef });
+
+  const selectedKeys = [
+    ...groupBySelectedKeys,
+    ...(isDetailsVisible ? [VcsActionIds.SHOW_DETAILS] : []),
+  ];
 
   return (
     <ActionsProvider actions={actions}>
@@ -88,13 +98,15 @@ export function VcsLogDetailsView() {
                   return (
                     <SpeedSearchMenu
                       {...menuProps}
-                      selectedKeys={groupBySelectedKeys}
+                      selectedKeys={selectedKeys}
                       onAction={(key) => {
                         const groupByItem = groupByMenuItems.find(
                           (item) => item.key === key
                         );
                         if (groupByItem) {
                           toggleGroupBy(`${key}`.split(":")[1]);
+                        } else if (key === toggleDetailsAction?.id) {
+                          toggleDetailsAction?.perform();
                         } else {
                           notImplemented();
                         }
@@ -107,7 +119,13 @@ export function VcsLogDetailsView() {
                       </Section>
                       <Divider />
                       <Section title="Layout">
-                        <Item>Show Details</Item>
+                        {toggleDetailsAction ? (
+                          <Item key={toggleDetailsAction?.id}>
+                            {toggleDetailsAction.title}
+                          </Item>
+                        ) : (
+                          (null as any)
+                        )}
                         <Item>Show Diff Preview</Item>
                       </Section>
                     </SpeedSearchMenu>
@@ -124,18 +142,24 @@ export function VcsLogDetailsView() {
             </Toolbar>
           </StyledHeader>
           <div style={{ flex: 1, minHeight: 0 }}>
-            <ThreeViewSplitter
-              orientation="vertical"
-              firstSize={splitViewSize}
-              onFirstResize={setSplitViewSize}
-              firstViewMinSize={10}
-              firstView={
-                <CommitChangedFiles
-                  treeShortcutHandlerProps={shortcutHandlerProps}
-                />
-              }
-              innerView={<CommitDetails />}
-            />
+            {isDetailsVisible ? (
+              <ThreeViewSplitter
+                orientation="vertical"
+                firstSize={splitViewSize}
+                onFirstResize={setSplitViewSize}
+                firstViewMinSize={10}
+                firstView={
+                  <CommitChangedFiles
+                    treeShortcutHandlerProps={shortcutHandlerProps}
+                  />
+                }
+                innerView={<CommitDetails />}
+              />
+            ) : (
+              <CommitChangedFiles
+                treeShortcutHandlerProps={shortcutHandlerProps}
+              />
+            )}
           </div>
         </StyledContainer>
       )}

@@ -1,6 +1,7 @@
 import React, { RefObject } from "react";
 import {
   atom,
+  RecoilState,
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
@@ -28,6 +29,7 @@ import {
   vcsActiveTabKeyState,
   vcsLogFilter,
   vcsLogTabShowBranches,
+  vcsLogTabShowCommitDetails,
   vcsTabKeysState,
   vcsTabTitleState,
 } from "./vcs-logs.state";
@@ -156,7 +158,7 @@ function VcsTab({ tabKey }: { tabKey: string }) {
             {...firstViewProps}
             innerView={<VcsLogCommitsView tabKey={tabKey} />}
             innerViewMinSize={200}
-            lastView={<VcsLogDetailsView />}
+            lastView={<VcsLogDetailsView tabKey={tabKey} />}
             lastSize={lastViewSize}
             onLastResize={setLastViewSize}
             lastViewMinSize={40}
@@ -164,6 +166,21 @@ function VcsTab({ tabKey }: { tabKey: string }) {
         </StyledContainer>
       )}
     </ActionsProvider>
+  );
+}
+
+function useToggleCurrentTabSettings(
+  toggleState: (activeTab: string) => RecoilState<boolean>
+) {
+  return useRecoilCallback(
+    ({ set, snapshot }) =>
+      () => {
+        set(
+          toggleState(snapshot.getLoadable(vcsActiveTabKeyState).getValue()),
+          (value) => !value
+        );
+      },
+    []
   );
 }
 
@@ -182,31 +199,10 @@ function useVcsLogsToolWindowActions() {
       },
     []
   );
-  const toggleMatchCaseAction = useRecoilCallback(
-    ({ set, snapshot }) =>
-      () => {
-        set(
-          vcsLogFilter.matchCase(
-            snapshot.getLoadable(vcsActiveTabKeyState).getValue()
-          ),
-          (value) => !value
-        );
-      },
-    []
-  );
 
-  const toggleRegExpAction = useRecoilCallback(
-    ({ set, snapshot }) =>
-      () => {
-        set(
-          vcsLogFilter.regExp(
-            snapshot.getLoadable(vcsActiveTabKeyState).getValue()
-          ),
-          (value) => !value
-        );
-      },
-    []
-  );
+  const toggleMatchCase = useToggleCurrentTabSettings(vcsLogFilter.matchCase);
+  const toggleRegExp = useToggleCurrentTabSettings(vcsLogFilter.regExp);
+  const toggleDetails = useToggleCurrentTabSettings(vcsLogTabShowCommitDetails);
 
   const actions: ActionDefinition[] = [
     ...useCommitsTableActions(),
@@ -227,13 +223,19 @@ function useVcsLogsToolWindowActions() {
       id: VcsActionIds.MATCH_CASE,
       title: "Match Case",
       icon: <PlatformIcon icon="actions/matchCase.svg" />,
-      actionPerformed: toggleMatchCaseAction,
+      actionPerformed: toggleMatchCase,
     },
     {
       id: VcsActionIds.REG_EXP,
       title: "Regex",
       icon: <PlatformIcon icon="actions/regex" />,
-      actionPerformed: toggleRegExpAction,
+      actionPerformed: toggleRegExp,
+    },
+    {
+      id: VcsActionIds.SHOW_DETAILS,
+      title: "Show Details",
+      description: "Display details panel",
+      actionPerformed: toggleDetails,
     },
   ];
   return actions;

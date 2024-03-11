@@ -90,6 +90,15 @@ export const vcsLogTabShowBranches = vcsLogTabState(
     default: false,
   })
 );
+/**
+ * Whether the commit details is shown (in a split view together with commit changes).
+ */
+export const vcsLogTabShowCommitDetails = vcsLogTabState(
+  atomFamily<boolean, string>({
+    key: "vcs/logs/showCommitDetails",
+    default: true,
+  })
+);
 
 export const CURRENT_USER_FILTER_VALUE = "*";
 export const vcsLogFilter = {
