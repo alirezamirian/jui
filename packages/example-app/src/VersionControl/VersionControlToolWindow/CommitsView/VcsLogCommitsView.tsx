@@ -21,6 +21,7 @@ import { StyledHeader, StyledSpacer } from "../styled-components";
 import { VcsFilterDropdown } from "../VcsLogDropdown";
 import {
   atom,
+  RecoilState,
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
@@ -88,10 +89,24 @@ export function VcsLogCommitsView({ tabKey }: { tabKey: string }) {
   }, [searchQuery]);
 
   const createNewTab = useRecoilCallback(
-    ({ set }) =>
+    ({ set, snapshot }) =>
       () => {
         const newTabId = uuid();
         set(vcsTabKeysState, (value) => [...value, newTabId]);
+        Object.values(vcsLogFilter).forEach(
+          (filterState: (tabKey: string) => RecoilState<any>) => {
+            set(
+              filterState(newTabId),
+              snapshot
+                .getLoadable(
+                  filterState(
+                    snapshot.getLoadable(vcsActiveTabKeyState).getValue()
+                  )
+                )
+                .getValue()
+            );
+          }
+        );
         set(vcsActiveTabKeyState, newTabId);
       },
     []
