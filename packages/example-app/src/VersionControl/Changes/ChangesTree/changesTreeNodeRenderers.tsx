@@ -22,6 +22,7 @@ import {
   isGroupNode,
   RepositoryNode,
 } from "./ChangeTreeNode";
+import { StatusColor } from "../../FileStatusColor";
 
 /**
  * Necessary properties for each node, to be passed to `Item`s rendered in tree.
@@ -89,7 +90,9 @@ const changeNodeRenderer: NodeRenderer<ChangeNode> = (node) => ({
   rendered: (
     <ItemLayout>
       <PlatformIcon icon={getIconForFile(Change.path(node.change))} />
-      <HighlightedTextValue />
+      <StatusColor status={Change.type(node.change)}>
+        <HighlightedTextValue />
+      </StatusColor>
       <ChangeNodeHint node={node} />
     </ItemLayout>
   ),
@@ -161,6 +164,17 @@ export const createChangesTreeNodeRenderer = <T extends ChangesTreeNode<any>>(
   };
   return {
     getItemProps,
+    getTextValue: (
+      node: T,
+      { fileCountsMap }: { fileCountsMap: Map<Key, number> }
+    ) => {
+      const nodeRenderer: NodeRenderer<T> =
+        nodeRenderers[node.type as T["type"] /* Why is this cast needed?!*/];
+      return nodeRenderer(node, {
+        fileCount: fileCountsMap.get(node.key) || 0,
+        dirCount: 0, // It seems it's only used for ignored files subtree
+      }).textValue;
+    },
     itemRenderer:
       ({ fileCountsMap }: { fileCountsMap: Map<Key, number> }) =>
       (node: T) =>

@@ -1,3 +1,5 @@
+import { FileStatus } from "../file-status";
+
 export type Revision = {
   path: string;
   isDir: boolean;
@@ -15,5 +17,17 @@ export interface Change {
 export class Change {
   static path(change: Change): string {
     return (change.after ?? change.before)?.path ?? "";
+  }
+  static type(
+    change: Change
+  ): // Making sure the return value is a subset of FileStatus
+  Extract<FileStatus, "MODIFIED" | "ADDED" | "DELETED"> {
+    if (change.after) {
+      if (change.before) {
+        return "MODIFIED";
+      }
+      return "ADDED";
+    }
+    return "DELETED";
   }
 }

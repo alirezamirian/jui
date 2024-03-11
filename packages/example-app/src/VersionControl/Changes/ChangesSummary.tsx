@@ -8,13 +8,13 @@ export const ChangesSummary = ({
   changes: ReadonlyArray<Change>;
 }) => {
   const modifiedCount = changes.filter(
-    (change) => change.after && change.before
+    (change) => Change.type(change) === "MODIFIED"
   ).length;
   const addedCount = changes.filter(
-    (change) => change.after && !change.before
+    (change) => Change.type(change) === "ADDED"
   ).length;
   const deletedCount = changes.filter(
-    (change) => change.before && !change.after
+    (change) => Change.type(change) === "DELETED"
   ).length;
 
   return (

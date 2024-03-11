@@ -1,6 +1,18 @@
 import { Key } from "react";
+import { Ord } from "ramda";
 
 type TreeNodeFn<T> = (root: T) => null | readonly T[];
+type MutableTreeNodeFn<T> = (root: T) => null | T[];
+
+type Tree<T> = {
+  getChildren: TreeNodeFn<T>;
+  roots: ReadonlyArray<T>;
+};
+
+type MutableTree<T> = {
+  getChildren: MutableTreeNodeFn<T>;
+  roots: Array<T>;
+};
 
 export const getExpandAllKeys = <T>(
   /**
@@ -86,4 +98,26 @@ export const bfsVisit = <T, R>(
     return result;
   };
   return roots.map((root) => bfs(root, null));
+};
+
+export const sortTreeNodesInPlace = <T>(
+  by: (t: T) => Ord,
+  tree: MutableTree<T>
+) => {
+  const compareFn = (a: T, b: T) => {
+    const aa = by(a);
+    const bb = by(b);
+    return aa < bb ? -1 : aa > bb ? 1 : 0;
+  };
+  tree.roots.sort(compareFn);
+  bfsVisit(
+    tree.getChildren,
+    (node) => {
+      const children = tree.getChildren(node);
+      if (children) {
+        children.sort(compareFn);
+      }
+    },
+    tree.roots
+  );
 };

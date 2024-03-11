@@ -24,6 +24,8 @@ import {
   selectedCommitsState,
 } from "./CommitsTable.state";
 import { TreeRefValue } from "@intellij-platform/core";
+import { sortTreeNodesInPlace } from "@intellij-platform/core/utils/tree-utils";
+import { commitChangesTreeNodeRenderer } from "./commitChangesTreeNodeRenderer";
 
 const cache = {}; // FIXME: find a better caching strategy. Per project?
 async function getCommitChanges({
@@ -35,7 +37,7 @@ async function getCommitChanges({
   fromRef: string;
   toRef: string;
 }): Promise<Change[]> {
-  const items = await git.walk({
+  let items: Change[] = await git.walk({
     fs,
     dir: dir,
     trees: [git.TREE({ ref: fromRef }), git.TREE({ ref: toRef })],
@@ -62,7 +64,7 @@ async function getCommitChanges({
       );
     },
   });
-  return await (items || []).filter((item: boolean | Change) => item);
+  return (items || []).filter((item: boolean | Change) => item);
 }
 
 export const changesGroupingActiveState = atomFamily<boolean, string>({
@@ -96,7 +98,6 @@ export interface CommitParentChangeTreeNode
   oid: string;
   subject: string;
 }
-
 /**
  * Changes corresponding to the currently selected commits.
  * NOTE: it could be refactored into a selectorFamily, where the selected OIds are
@@ -136,13 +137,33 @@ export const changedFilesState = selector({
           )
         )
       );
-      const { expandAllKeys, ...result } = changesTreeNodesResult(
-        rootNodes.length === 1
-          ? rootNodes[0].children
-          : rootNodes.filter(({ children }) => children.length > 0)
+      const { expandAllKeys, fileCountsMap, ...result } =
+        changesTreeNodesResult(
+          rootNodes.length === 1
+            ? rootNodes[0].children
+            : rootNodes.filter(({ children }) => children.length > 0)
+        );
+
+      type Writeable<T> = { -readonly [P in keyof T]: T[P] };
+      sortTreeNodesInPlace(
+        (node) =>
+          commitChangesTreeNodeRenderer
+            .getTextValue(node, { fileCountsMap })
+            .toLowerCase(),
+        {
+          // cheating with the types by removing readonly constraints to use the inplace sort tree util.
+          // it should be ok, since the ReadonlyArray is only a compile-time thing.
+          roots: result.rootNodes as Writeable<typeof result.rootNodes>,
+          getChildren: (node) =>
+            "children" in node
+              ? (node.children as Writeable<typeof node.children>)
+              : null,
+        }
       );
+
       return {
         ...result,
+        fileCountsMap,
         expandAllKeys: new Set(
           [...expandAllKeys].filter(
             (key) => !`${key}`.startsWith(COMMIT_PARENT_ID)

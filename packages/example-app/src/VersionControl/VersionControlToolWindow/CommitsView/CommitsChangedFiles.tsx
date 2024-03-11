@@ -1,65 +1,21 @@
-import path from "path";
 import React, { HTMLAttributes, useEffect } from "react";
 import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from "recoil";
 
 import {
   HelpTooltip,
-  HighlightedTextValue,
-  ItemLayout,
   PlatformIcon,
   PositionedTooltipTrigger,
   SpeedSearchTree,
 } from "@intellij-platform/core";
-import {
-  createChangesTreeNodeRenderer,
-  formatFileCount,
-  NodeRenderer,
-  simpleGroupingRenderer,
-} from "../../Changes/ChangesTree/changesTreeNodeRenderers";
-import { RepositoryNode } from "../../Changes/ChangesTree/ChangeTreeNode";
-import { RepoColorIcon } from "../../Changes/StyledRepoColorSquare";
 import { StyledPlaceholderContainer } from "../styled-components";
 import {
   changedFilesState,
-  CommitChangesTreeNode,
   commitChangesTreeRefState,
-  CommitParentChangeTreeNode,
   expandedKeysState,
   selectionState,
 } from "./CommitsChangedFiles.state";
 import { selectedCommitsState } from "./CommitsTable.state";
-import { shortenOid } from "../commit-utils";
-
-const repoNodeRenderer: NodeRenderer<RepositoryNode> = (
-  node,
-  { fileCount }
-) => ({
-  textValue: path.basename(node.repository.dir),
-  rendered: (
-    <ItemLayout>
-      <RepoColorIcon rootPath={node.repository.dir} />
-      <HighlightedTextValue />
-      <ItemLayout.Hint>{formatFileCount(fileCount)}</ItemLayout.Hint>
-    </ItemLayout>
-  ),
-});
-
-const commitParentNodeRenderer = simpleGroupingRenderer(
-  (node: CommitParentChangeTreeNode) =>
-    `Changes to ${shortenOid(path.basename(node.oid))} ${node.subject.slice(
-      0,
-      50
-    )}`
-);
-
-const nodeRenderer = createChangesTreeNodeRenderer<CommitChangesTreeNode>(
-  {
-    commitParent: commitParentNodeRenderer,
-  },
-  {
-    repo: repoNodeRenderer,
-  }
-);
+import { commitChangesTreeNodeRenderer } from "./commitChangesTreeNodeRenderer";
 
 /**
  * TODO: handle multiple selected commits (check Changes.ShowChangesFromParents https://github.com/JetBrains/intellij-community/blob/ac57611a0612bd65ba2a19c841a4f95b40591134/platform/vcs-log/impl/src/com/intellij/vcs/log/ui/frame/VcsLogChangesBrowser.java#L255-L254)
@@ -110,7 +66,7 @@ export function CommitChangedFiles({
         onSelectionChange={setSelection}
         fillAvailableSpace
       >
-        {nodeRenderer.itemRenderer({ fileCountsMap })}
+        {commitChangesTreeNodeRenderer.itemRenderer({ fileCountsMap })}
       </SpeedSearchTree>
       {selectedCommits.length > 1 && (
         <PositionedTooltipTrigger

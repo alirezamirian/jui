@@ -36,6 +36,7 @@ export const StatusColor: React.FC<{ status: FileStatus }> = ({
   children,
   status,
 }) => {
-  const color = useStatusColor(status);
+  const theme = useTheme() as Theme;
+  const color = theme.currentForegroundAware(useStatusColor(status));
   return <span style={{ color }}>{children}</span>;
 };
