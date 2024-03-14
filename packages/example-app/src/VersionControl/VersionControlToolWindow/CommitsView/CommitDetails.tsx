@@ -56,7 +56,7 @@ const StyledRefsContainer = styled.span`
 `;
 
 export function CommitDetails() {
-  const firstSelectedCommit = useRecoilValue(selectedCommitState);
+  const [firstSelectedCommit] = useLatestRecoilValue(selectedCommitState);
   const [allResolvedRefs] = useLatestRecoilValue(allResolvedRefsState);
   const isMultiRepo = useRecoilValue(vcsRootsState).length > 0;
   if (!firstSelectedCommit) {

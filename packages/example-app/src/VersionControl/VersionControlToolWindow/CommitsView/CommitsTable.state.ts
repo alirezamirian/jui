@@ -29,9 +29,13 @@ type CommitLogItem = {
   containingRefs: Set<string>;
   repoPath: string;
 };
+
 export const allCommitsState = selector<Array<CommitLogItem>>({
   key: "vcs/allRepoCommits",
   get: ({ get }) =>
+    // TODO: readCommit can take too long. Suspending anything that depends on it leads to poor UX. would be nicer
+    //  to have the state updated (like an atom instead of selector) when commits are read, instead of query inside
+    //  the selector. But the challenge is that it does depend on another piece of state, allBranchesState
     readCommits(
       fs,
       ...get(allBranchesState).map(

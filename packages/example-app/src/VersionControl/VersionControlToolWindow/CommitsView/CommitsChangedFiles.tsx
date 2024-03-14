@@ -1,4 +1,4 @@
-import React, { HTMLAttributes, useEffect } from "react";
+import React, { HTMLAttributes, ReactNode, useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from "recoil";
 
 import {
@@ -6,7 +6,10 @@ import {
   PlatformIcon,
   PositionedTooltipTrigger,
   SpeedSearchTree,
+  styled,
 } from "@intellij-platform/core";
+import { useLatestRecoilValue } from "../../../recoil-utils";
+import { LoadingGif } from "../../../LoadingGif";
 import { StyledPlaceholderContainer } from "../styled-components";
 import {
   changedFilesState,
@@ -17,6 +20,17 @@ import {
 import { selectedCommitsState } from "./CommitsTable.state";
 import { commitChangesTreeNodeRenderer } from "./commitChangesTreeNodeRenderer";
 
+const DEFAULT_LOADING_DELAY_MS = 300;
+
+const StyledLoadingWrapper = styled.div`
+  position: absolute;
+  inset: 0;
+  gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
 /**
  * TODO: handle multiple selected commits (check Changes.ShowChangesFromParents https://github.com/JetBrains/intellij-community/blob/ac57611a0612bd65ba2a19c841a4f95b40591134/platform/vcs-log/impl/src/com/intellij/vcs/log/ui/frame/VcsLogChangesBrowser.java#L255-L254)
  */
@@ -25,10 +39,11 @@ export function CommitChangedFiles({
 }: {
   treeShortcutHandlerProps: HTMLAttributes<HTMLElement>;
 }) {
-  const selectedCommits = useRecoilValue(selectedCommitsState);
+  const [selectedCommits] = useLatestRecoilValue(selectedCommitsState);
   const treeRef = useRecoilValue(commitChangesTreeRefState);
-  const nothingSelected = !selectedCommits.length;
-  const state = useRecoilValueLoadable(changedFilesState).valueMaybe();
+  const nothingSelected = !selectedCommits?.length;
+  const stateLoadable = useRecoilValueLoadable(changedFilesState);
+  const state = stateLoadable.valueMaybe();
   const [expandedKeys, setExpandedKeys] = useRecoilState(expandedKeysState);
   const [selection, setSelection] = useRecoilState(selectionState);
 
@@ -47,10 +62,6 @@ export function CommitChangedFiles({
       </StyledPlaceholderContainer>
     );
   }
-  if (!state) {
-    return null; // TODO: show loading spinner
-  }
-  const { fileCountsMap, rootNodes } = state;
   return (
     <div
       {...treeShortcutHandlerProps}
@@ -60,18 +71,30 @@ export function CommitChangedFiles({
         position: "relative",
       }}
     >
-      <SpeedSearchTree
-        treeRef={treeRef}
-        items={rootNodes}
-        selectionMode="multiple"
-        expandedKeys={expandedKeys}
-        onExpandedChange={setExpandedKeys}
-        selectedKeys={selection}
-        onSelectionChange={setSelection}
-        fillAvailableSpace
-      >
-        {commitChangesTreeNodeRenderer.itemRenderer({ fileCountsMap })}
-      </SpeedSearchTree>
+      {stateLoadable.state === "loading" && (
+        <Delayed>
+          <StyledLoadingWrapper>
+            <LoadingGif style={{ width: "1.5rem" }} />
+            Loading...
+          </StyledLoadingWrapper>
+        </Delayed>
+      )}
+      {state && (
+        <SpeedSearchTree
+          treeRef={treeRef}
+          items={state.rootNodes}
+          selectionMode="multiple"
+          expandedKeys={expandedKeys}
+          onExpandedChange={setExpandedKeys}
+          selectedKeys={selection}
+          onSelectionChange={setSelection}
+          fillAvailableSpace
+        >
+          {commitChangesTreeNodeRenderer.itemRenderer({
+            fileCountsMap: state.fileCountsMap,
+          })}
+        </SpeedSearchTree>
+      )}
       {selectedCommits.length > 1 && (
         <PositionedTooltipTrigger
           placement="top"
@@ -103,4 +126,18 @@ export function CommitChangedFiles({
       )}
     </div>
   );
+}
+
+function Delayed({ children }: { children: ReactNode }) {
+  const [waitedEnough, setWaitedEnough] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setWaitedEnough(true);
+    }, DEFAULT_LOADING_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
+  if (waitedEnough) {
+    return <>{children}</>;
+  }
+  return null;
 }
