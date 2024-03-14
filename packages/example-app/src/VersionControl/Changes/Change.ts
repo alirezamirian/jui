@@ -41,17 +41,18 @@ export class Change {
     return "DELETED";
   }
   static isAddition(change: Change): change is AdditionChange {
-    return this.type(change) === "ADDED";
+    return Change.type(change) === "ADDED";
   }
   static isModification(change: Change): change is ModificationChange {
-    return this.type(change) === "MODIFIED";
+    return Change.type(change) === "MODIFIED";
   }
   static isDeletion(change: Change): change is DeletionChange {
-    return this.type(change) === "DELETED";
+    return Change.type(change) === "DELETED";
   }
   static isRename(change: Change): change is ModificationChange {
     return (
-      this.isModification(change) && change.before?.path !== change.after?.path
+      Change.isModification(change) &&
+      change.before?.path !== change.after?.path
     );
   }
 }
