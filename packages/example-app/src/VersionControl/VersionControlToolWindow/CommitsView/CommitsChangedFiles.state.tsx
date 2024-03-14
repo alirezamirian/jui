@@ -26,8 +26,10 @@ import {
 import { TreeRefValue } from "@intellij-platform/core";
 import { sortTreeNodesInPlace } from "@intellij-platform/core/utils/tree-utils";
 import { commitChangesTreeNodeRenderer } from "./commitChangesTreeNodeRenderer";
+import { detectRenames } from "../../Changes/detectRenames";
 
 const cache = {}; // FIXME: find a better caching strategy. Per project?
+
 async function getCommitChanges({
   dir,
   fromRef,
@@ -44,27 +46,44 @@ async function getCommitChanges({
     cache,
     map: async function map(
       filepath,
-      [after, before]
+      [before, after]
     ): Promise<null | boolean | Change> {
       const afterOid = await after?.oid();
       const beforeOid = await before?.oid();
-      const type = await after?.type();
+      const afterType = await after?.type();
+      const beforeType = await before?.type();
       if (afterOid === beforeOid) {
         return null;
       }
-      const revision: Revision = {
+      const afterRevision: Revision = {
         path: path.join(dir, filepath),
-        isDir: type === "tree",
+        isDir: afterType === "tree",
+        content: async () =>
+          new TextDecoder().decode(
+            (await after?.content()) ?? new Uint8Array()
+          ),
       };
+      const beforeRevision: Revision = {
+        path: path.join(dir, filepath),
+        isDir: beforeType === "tree",
+        content: async () =>
+          new TextDecoder().decode(
+            (await before?.content()) ?? new Uint8Array()
+          ),
+      };
+      const type = afterType ?? beforeType;
       return (
         type === "blob" && {
-          ...(afterOid ? { after: revision } : null),
-          ...(beforeOid ? { before: revision } : null),
+          ...(afterOid ? { after: afterRevision } : null),
+          ...(beforeOid ? { before: beforeRevision } : null),
         }
       );
     },
   });
-  return (items || []).filter((item: boolean | Change) => item);
+
+  return await detectRenames(
+    (items || []).filter((item: boolean | Change) => item)
+  );
 }
 
 export const changesGroupingActiveState = atomFamily<boolean, string>({
@@ -126,13 +145,13 @@ export const changedFilesState = selector({
             toRef,
             dir: commitLogItem.repoPath,
           }).then(
-            (nodes) =>
+            (changes) =>
               ({
                 type: COMMIT_PARENT_ID,
                 key: changesTreeNodeKey(COMMIT_PARENT_ID, parent),
                 oid: parent,
                 subject: byOid[parent]?.readCommitResult.commit.message || "",
-                children: groupFn(nodes.map((node) => changeNode(node))),
+                children: groupFn([...changes].map((node) => changeNode(node))),
               } as CommitParentChangeTreeNode)
           )
         )

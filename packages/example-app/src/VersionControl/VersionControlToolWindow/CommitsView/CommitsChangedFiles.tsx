@@ -54,7 +54,11 @@ export function CommitChangedFiles({
   return (
     <div
       {...treeShortcutHandlerProps}
-      style={{ height: "100%", position: "relative" }}
+      style={{
+        height: "-webkit-fill-available",
+        marginBottom: "1rem",
+        position: "relative",
+      }}
     >
       <SpeedSearchTree
         treeRef={treeRef}

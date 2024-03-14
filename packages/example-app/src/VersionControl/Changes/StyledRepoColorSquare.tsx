@@ -1,5 +1,5 @@
 import { styled, Theme } from "@intellij-platform/core";
-import React, { HTMLAttributes } from "react";
+import React, { ForwardedRef, HTMLAttributes } from "react";
 import { useRecoilValue } from "recoil";
 import { vcsRootsState } from "../file-status.state";
 import { useTheme } from "styled-components";
@@ -32,14 +32,20 @@ const useRepoRootColor = (rootPath: string) => {
   return colors[index % colors.length] ?? colors[0];
 };
 
-export const RepoColorIcon = ({
-  rootPath,
-  ...props
-}: {
-  rootPath: string;
-} & HTMLAttributes<HTMLSpanElement>) => (
-  <StyledRepoColorSquare
-    {...props}
-    style={{ ...props.style, backgroundColor: useRepoRootColor(rootPath) }}
-  />
+export const RepoColorIcon = React.forwardRef(
+  (
+    {
+      rootPath,
+      ...props
+    }: {
+      rootPath: string;
+    } & HTMLAttributes<HTMLSpanElement>,
+    ref: ForwardedRef<HTMLElement>
+  ) => (
+    <StyledRepoColorSquare
+      ref={ref}
+      {...props}
+      style={{ ...props.style, backgroundColor: useRepoRootColor(rootPath) }}
+    />
+  )
 );

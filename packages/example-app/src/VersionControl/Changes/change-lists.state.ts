@@ -79,8 +79,20 @@ const refreshChangesCallback =
     const changes = allStatusMatrices.flat().map(
       ([path, head, workdir, stage]): Change => ({
         // FIXME: change object creation doesn't cover all kind of changes.
-        after: { path, isDir: false },
-        before: { path, isDir: false },
+        after: {
+          path,
+          isDir: false,
+          content(): Promise<string> {
+            throw new Error("Not implemented");
+          },
+        },
+        before: {
+          path,
+          isDir: false,
+          content(): Promise<string> {
+            throw new Error("Not implemented");
+          },
+        },
       })
     );
 

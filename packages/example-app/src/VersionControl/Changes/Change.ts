@@ -3,12 +3,22 @@ import { FileStatus } from "../file-status";
 export type Revision = {
   path: string;
   isDir: boolean;
+  content(): Promise<string>;
 };
 
 export interface Change {
   before?: Revision;
   after?: Revision;
 }
+export type ModificationChange = Required<Change>;
+export type DeletionChange = {
+  before: Revision;
+  after: undefined;
+};
+export type AdditionChange = {
+  before: undefined;
+  after: Revision;
+};
 
 /**
  * Experimenting a pattern of exporting both a type and a value under the same name, to collocate behavior and interface
@@ -29,5 +39,19 @@ export class Change {
       return "ADDED";
     }
     return "DELETED";
+  }
+  static isAddition(change: Change): change is AdditionChange {
+    return this.type(change) === "ADDED";
+  }
+  static isModification(change: Change): change is ModificationChange {
+    return this.type(change) === "MODIFIED";
+  }
+  static isDeletion(change: Change): change is DeletionChange {
+    return this.type(change) === "DELETED";
+  }
+  static isRename(change: Change): change is ModificationChange {
+    return (
+      this.isModification(change) && change.before?.path !== change.after?.path
+    );
   }
 }

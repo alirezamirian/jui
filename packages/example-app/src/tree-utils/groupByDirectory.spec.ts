@@ -8,8 +8,20 @@ const change = (path: string): ChangeNode => ({
   key: path,
   type: "change",
   change: {
-    after: { path, isDir: false },
-    before: { path, isDir: false },
+    after: {
+      path,
+      isDir: false,
+      content(): Promise<string> {
+        throw new Error("Not implemented");
+      },
+    },
+    before: {
+      path,
+      isDir: false,
+      content(): Promise<string> {
+        throw new Error("Not implemented");
+      },
+    },
   },
   showPath: false,
 });

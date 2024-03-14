@@ -1,5 +1,5 @@
 import { IntlMessageFormat } from "intl-messageformat";
-import path from "path";
+import path, { basename } from "path";
 import React, { Key } from "react";
 import { ItemProps } from "@react-types/shared";
 import {
@@ -93,6 +93,8 @@ const changeNodeRenderer: NodeRenderer<ChangeNode> = (node) => ({
       <StatusColor status={Change.type(node.change)}>
         <HighlightedTextValue />
       </StatusColor>
+      {Change.isRename(node.change) &&
+        ` - renamed from ${basename(node.change.before.path)}`}
       <ChangeNodeHint node={node} />
     </ItemLayout>
   ),
