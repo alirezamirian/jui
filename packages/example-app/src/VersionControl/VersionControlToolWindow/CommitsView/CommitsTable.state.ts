@@ -7,7 +7,7 @@ import { vcsLogFilterCurrentTab } from "../vcs-logs.state";
 import { allBranchesState } from "../../Branches/branches.state";
 import { resolvedRefState } from "../../refs.state";
 import { readCommits } from "./readCommits";
-import { GitRef } from "./GitRef";
+import { GitRef } from "../GitRef";
 import { indexBy } from "ramda";
 
 function match(

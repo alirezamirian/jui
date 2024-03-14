@@ -1,6 +1,10 @@
 import React, { Key, RefObject } from "react";
 import { atom, atomFamily, selector } from "recoil";
 import { Selection } from "@react-types/shared";
+import { TreeRefValue } from "@intellij-platform/core";
+import { sortTreeNodesInPlace } from "@intellij-platform/core/utils/tree-utils";
+
+import { fs } from "../../../fs/fs";
 import {
   defaultChangeGroupings,
   directoryGrouping,
@@ -17,12 +21,9 @@ import { ChangeListObj } from "../../Changes/change-lists.state";
 import {
   commitsTableRowsState,
   selectedCommitsState,
-} from "./CommitsTable.state";
-import { TreeRefValue } from "@intellij-platform/core";
-import { sortTreeNodesInPlace } from "@intellij-platform/core/utils/tree-utils";
+} from "../CommitsView/CommitsTable.state";
 import { commitChangesTreeNodeRenderer } from "./commitChangesTreeNodeRenderer";
 import { getCommitChanges } from "./getCommitChanges";
-import { fs } from "../../../fs/fs";
 
 export const changesGroupingActiveState = atomFamily<boolean, string>({
   key: "vcs/log/commits/changes/isGroupingActive",

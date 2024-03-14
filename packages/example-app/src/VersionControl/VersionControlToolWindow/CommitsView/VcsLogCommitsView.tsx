@@ -18,7 +18,7 @@ import {
 } from "@intellij-platform/core";
 
 import { StyledHeader, StyledSpacer } from "../styled-components";
-import { VcsFilterDropdown } from "../VcsLogDropdown";
+import { VcsFilterDropdown } from "./VcsLogDropdown";
 import {
   atom,
   RecoilState,

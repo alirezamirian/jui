@@ -5,7 +5,7 @@ import { StyledPlaceholderContainer } from "../styled-components";
 import { useResetFilters, vcsActiveTabKeyState } from "../vcs-logs.state";
 import { useLatestRecoilValue } from "../../../recoil-utils";
 import { CommitsTableRow } from "./CommitsTableRow";
-import { GitRef } from "./GitRef";
+import { GitRef } from "../GitRef";
 import {
   allResolvedRefsState,
   commitsSelectionState,

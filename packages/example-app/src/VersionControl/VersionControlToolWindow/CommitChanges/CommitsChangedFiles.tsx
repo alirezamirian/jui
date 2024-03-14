@@ -8,16 +8,17 @@ import {
   SpeedSearchTree,
   styled,
 } from "@intellij-platform/core";
+
 import { useLatestRecoilValue } from "../../../recoil-utils";
 import { LoadingGif } from "../../../LoadingGif";
 import { StyledPlaceholderContainer } from "../styled-components";
+import { selectedCommitsState } from "../CommitsView/CommitsTable.state";
 import {
   changedFilesState,
   commitChangesTreeRefState,
   expandedKeysState,
   selectionState,
 } from "./CommitsChangedFiles.state";
-import { selectedCommitsState } from "./CommitsTable.state";
 import { commitChangesTreeNodeRenderer } from "./commitChangesTreeNodeRenderer";
 
 const DEFAULT_LOADING_DELAY_MS = 300;

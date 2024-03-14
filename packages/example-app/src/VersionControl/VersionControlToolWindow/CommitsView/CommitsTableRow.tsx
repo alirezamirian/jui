@@ -2,8 +2,8 @@ import React, { CSSProperties, RefObject, useMemo } from "react";
 import { css, styled, Tooltip, TooltipTrigger } from "@intellij-platform/core";
 import { ReadCommitResult } from "isomorphic-git";
 
-import { GitRef } from "./GitRef";
-import { RefLabel, RefIcon } from "./RefLabel";
+import { GitRef } from "../GitRef";
+import { RefLabel, RefIcon } from "../RefLabel";
 import { useRecoilValue } from "recoil";
 import {
   authorColumn,

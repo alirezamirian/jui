@@ -20,7 +20,7 @@ import {
   ToolWindowTabContent,
 } from "@intellij-platform/core";
 
-import { VcsLogDetailsView } from "./VcsLogDetailsView";
+import { VcsLogDetailsView } from "./DetailsView/VcsLogDetailsView";
 import { VcsLogCommitsView } from "./CommitsView/VcsLogCommitsView";
 import { VcsBranchesView } from "./BranchesView/VcsBranchesView";
 import { VcsActionIds } from "../VcsActionIds";

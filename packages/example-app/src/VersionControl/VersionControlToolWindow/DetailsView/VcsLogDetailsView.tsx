@@ -25,17 +25,17 @@ import {
   useTreeActions,
 } from "@intellij-platform/core";
 
-import { notImplemented } from "../../Project/notImplemented";
-import { StyledHeader, StyledSpacer } from "./styled-components";
-import { CommitChangedFiles } from "./CommitsView/CommitsChangedFiles";
-import { CommitDetails } from "./CommitsView/CommitDetails";
-import { defaultChangeGroupings } from "../Changes/ChangesTree/changesGroupings";
+import { notImplemented } from "../../../Project/notImplemented";
+import { StyledHeader, StyledSpacer } from "../styled-components";
+import { CommitChangedFiles } from "../CommitChanges/CommitsChangedFiles";
+import { CommitDetails } from "./CommitDetails";
+import { defaultChangeGroupings } from "../../Changes/ChangesTree/changesGroupings";
 import {
   changesGroupingActiveState,
   commitChangesTreeRefState,
-} from "./CommitsView/CommitsChangedFiles.state";
-import { vcsLogTabShowCommitDetails } from "./vcs-logs.state";
-import { VcsActionIds } from "../VcsActionIds";
+} from "../CommitChanges/CommitsChangedFiles.state";
+import { vcsLogTabShowCommitDetails } from "../vcs-logs.state";
+import { VcsActionIds } from "../../VcsActionIds";
 
 const splitViewSizeState = atom({
   key: "vcs/toolwindow/splitViewSize",

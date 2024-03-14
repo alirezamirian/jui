@@ -1,23 +1,24 @@
+import { groupBy } from "ramda";
 import { useRecoilValue } from "recoil";
-import {
-  allResolvedRefsState,
-  selectedCommitState,
-} from "./CommitsTable.state";
-import { StyledPlaceholderContainer } from "../styled-components";
 import React, { ReactNode } from "react";
+
 import { Link, styled, Tooltip, TooltipTrigger } from "@intellij-platform/core";
+import { StyledPlaceholderContainer } from "../styled-components";
+import { RepoColorIcon } from "../../Changes/StyledRepoColorSquare";
+import { vcsRootsState } from "../../file-status.state";
+import { useLatestRecoilValue } from "../../../recoil-utils";
 import {
   formatCommitDate,
   formatCommitTime,
   parseCommitMessage,
   shortenOid,
 } from "../commit-utils";
-import { RepoColorIcon } from "../../Changes/StyledRepoColorSquare";
-import { vcsRootsState } from "../../file-status.state";
-import { useLatestRecoilValue } from "../../../recoil-utils";
-import { RefIconGroup } from "./RefLabel";
-import { groupBy } from "ramda";
-import { GitRef } from "./GitRef";
+import {
+  allResolvedRefsState,
+  selectedCommitState,
+} from "../CommitsView/CommitsTable.state";
+import { RefIconGroup } from "../RefLabel";
+import { GitRef } from "../GitRef";
 
 const StyledContainer = styled.div`
   padding: 0.875rem;
