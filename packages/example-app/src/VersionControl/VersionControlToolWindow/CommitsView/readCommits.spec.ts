@@ -6,7 +6,7 @@ import { readCommits } from "./readCommits";
 const repoPath = path.resolve(
   // eslint-disable-next-line no-undef
   __dirname,
-  "./_fixture_readCommits/example-branches.git"
+  "../../../../fixture/git/example-branches.git"
 );
 
 describe("readCommits", () => {
