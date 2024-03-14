@@ -37,7 +37,7 @@ const repositoryGrouping: ChangeGrouping<RepositoryNode, "repository"> = {
   title: "Repository",
   isAvailable: selector({
     key: "repositoryGrouping/isAvailable",
-    get: ({ get }) => get(vcsRootsState).length > 0,
+    get: ({ get }) => get(vcsRootsState).length > 1,
   }),
   groupFn: selector({
     key: "repositoryGrouping/groupFn",

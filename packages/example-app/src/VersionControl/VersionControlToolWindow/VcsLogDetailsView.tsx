@@ -56,14 +56,15 @@ export function VcsLogDetailsView({ tabKey }: { tabKey: string }) {
   const toggleGroupBy = useRecoilCallback(({ set }) => (id: string) => {
     set(changesGroupingActiveState(id), (currentValue) => !currentValue);
   });
-  const groupByMenuItems = defaultChangeGroupings.map((grouping) => ({
-    title: grouping.title,
-    key: `groupBy:${grouping.id}`,
-    isActive: useRecoilValue(changesGroupingActiveState(grouping.id)),
-  }));
-  const groupBySelectedKeys = groupByMenuItems
-    .filter(({ isActive }) => isActive)
-    .map(({ key }) => key);
+  const groupByMenuItems = defaultChangeGroupings
+    .filter((grouping) =>
+      useRecoilValue(changesGroupingActiveState(grouping.id))
+    )
+    .map((grouping) => ({
+      title: grouping.title,
+      key: `groupBy:${grouping.id}`,
+    }));
+  const groupBySelectedKeys = groupByMenuItems.map(({ key }) => key);
 
   const treeRef = useRecoilValue(commitChangesTreeRefState);
   const actions = useTreeActions({ treeRef });

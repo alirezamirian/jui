@@ -15,7 +15,7 @@ import {
 import { RepoColorIcon } from "../../Changes/StyledRepoColorSquare";
 import { vcsRootsState } from "../../file-status.state";
 import { useLatestRecoilValue } from "../../../recoil-utils";
-import { RefLabel, RefIcon, RefIconGroup } from "./RefLabel";
+import { RefIconGroup } from "./RefLabel";
 import { groupBy } from "ramda";
 import { GitRef } from "./GitRef";
 

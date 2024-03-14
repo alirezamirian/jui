@@ -224,7 +224,7 @@ export const branchTreeGroupingState = atomFamily<
 });
 export const isGroupByRepositoryAvailableState = selector<boolean>({
   key: "vcs/logs/branchesTree/grouping/repo/available",
-  get: ({ get }) => get(vcsRootsState).length > 0,
+  get: ({ get }) => get(vcsRootsState).length > 1,
 });
 export const branchesTreeRefState = vcsLogTabState(
   atomFamily<RefObject<TreeRefValue>, string>({
