@@ -11,6 +11,7 @@ import {
   commitsSelectionState,
   commitsTableRowsState,
 } from "./CommitsTable.state";
+import { StyledListItem } from "@intellij-platform/core/List/StyledListItem";
 
 // const StyledList = styled(List)`
 //   display: grid;
@@ -30,6 +31,11 @@ const StyledContainer = styled.div`
   position: relative;
   min-height: 0;
   flex: 1;
+  ${StyledListItem} {
+    // the default "min-width: min-content", which is necessary for sizing overlays (e.g. Popup) containing list/tree,
+    // results in horizontally scrollable table. Probably not an issue when a proper Table component is implemented.
+    min-width: unset;
+  }
 `;
 
 const ResolvedRefsContext = React.createContext<Record<string, GitRef[]>>({});

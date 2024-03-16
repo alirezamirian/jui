@@ -50,4 +50,5 @@ export const StyledListItem = styled.div.attrs<StyledListItemProps>({
   line-height: 1.25rem;
   outline: none;
   cursor: default;
+  min-width: min-content; // Needed for content sizing for when list/tree is used inside popup or modal window
 `;
