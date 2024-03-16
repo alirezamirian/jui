@@ -128,6 +128,7 @@ export const allResolvedRefsState = selector({
 
 /**
  * selection state of the commits table
+ * TODO: make it per-tab
  */
 export const commitsSelectionState = atom<Selection>({
   key: "vcs/log/commits/selection",

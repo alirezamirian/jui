@@ -21,7 +21,7 @@ import {
 } from "./CommitsChangedFiles.state";
 import { commitChangesTreeNodeRenderer } from "./commitChangesTreeNodeRenderer";
 
-const DEFAULT_LOADING_DELAY_MS = 300;
+const DEFAULT_LOADING_DELAY_MS = 500; // To be shared later in more places.
 
 const StyledLoadingWrapper = styled.div`
   position: absolute;
