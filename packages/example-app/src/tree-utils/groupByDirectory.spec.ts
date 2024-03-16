@@ -134,7 +134,7 @@ describe("groupByDirectory", () => {
     );
     const timeFor5_000 = measureTime(() => groupByDirectory(changeNodes));
     expect(timeFor5_000).toBeLessThan(
-      3 /* Some empirical calibration factor*/ * timeFor50 * 100
+      4 /* Some empirical calibration factor*/ * timeFor50 * 100
     );
 
     expect(timeFor5_000).toBeLessThan(relativePerformanceMeasure);

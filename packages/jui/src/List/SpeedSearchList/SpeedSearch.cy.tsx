@@ -4,10 +4,11 @@ import * as stories from "./SpeedSearchList.stories";
 
 const { WithHighlight, WithConnectedInput } = composeStories(stories);
 
-describe("SpeedSearch", () => {
+describe("SpeedSearchList", () => {
   it("renders as expected", () => {
     cy.mount(<WithHighlight />);
     cy.findByRole("list").focus().realType("g");
+    cy.findAllByRole("listitem").should("have.length", 9);
     matchImageSnapshot("SpeedSearchList-searched");
   });
 

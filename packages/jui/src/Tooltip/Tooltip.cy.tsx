@@ -74,7 +74,7 @@ describe("TooltipTrigger", () => {
     workaroundHoverIssue();
     cy.get("button").first().realHover({ position: "bottom" });
     cy.findByRole("tooltip");
-    matchImageSnapshot("TooltipTrigger-WithPointer");
+    matchImageSnapshot("TooltipTrigger-WithPointer"); // the percy snapshot is not accurate :/
   });
 });
 

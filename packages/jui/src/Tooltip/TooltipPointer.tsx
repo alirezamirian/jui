@@ -1,10 +1,5 @@
 import { compose, identity } from "ramda";
-import React, {
-  CSSProperties,
-  RefObject,
-  useLayoutEffect,
-  useState,
-} from "react";
+import React, { CSSProperties, RefObject, useEffect, useState } from "react";
 import { css, styled } from "@intellij-platform/core/styled";
 
 import {
@@ -149,7 +144,7 @@ export function TooltipPointer({
     height: number | undefined;
     width: number | undefined;
   }>({ height: undefined, width: undefined });
-  useLayoutEffect(() => {
+  useEffect(() => {
     const { offsetHeight, offsetWidth } = tooltipRef.current || {};
     if (offsetHeight != size?.height || offsetWidth != size?.width) {
       setSize({ height: offsetHeight, width: offsetWidth });

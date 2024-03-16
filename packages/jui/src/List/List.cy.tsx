@@ -8,6 +8,8 @@ const { SingleSelection, WithConnectedInput } = composeStories(stories);
 describe("List", () => {
   it("renders as expected", () => {
     cy.mount(<SingleSelection />);
+    cy.findByRole("list");
+    cy.findAllByRole("listitem").should("have.length", 9);
     matchImageSnapshot("List-default");
   });
 
