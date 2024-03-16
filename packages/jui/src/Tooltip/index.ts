@@ -14,3 +14,4 @@ export {
   ValidationTooltip,
   type ValidationTooltipProps,
 } from "./ValidationTooltip";
+export { TooltipPointerPosition } from "./TooltipPointer";

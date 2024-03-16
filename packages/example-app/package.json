@@ -28,7 +28,6 @@
     "intl-messageformat": "^9.11.2",
     "isomorphic-git": "^1.24.3",
     "monaco-editor": "^0.28.1",
-    "nodegit": "^0.27.0",
     "pify": "^5.0.0",
     "ramda": "^0.27.1",
     "react": "17",

@@ -40,7 +40,9 @@ const groupByDirectoryMergingPaths = createGroupByDirectory<
 
 describe("groupByDirectory", () => {
   it("groups by directory", () => {
-    const groups = groupByDirectory([change("/a/b/x.js"), change("/a/c/y.js")]);
+    const y = change("/a/c/y.js");
+    const x = change("/a/b/x.js");
+    const groups = groupByDirectory([x, y]);
     expect(groups).toMatchObject([
       {
         dirPath: "/a",
@@ -49,12 +51,12 @@ describe("groupByDirectory", () => {
           expect.objectContaining({
             dirPath: "/a/b",
             parentNodePath: "/a",
-            children: [change("/a/b/x.js")],
+            children: [x],
           }),
           expect.objectContaining({
             dirPath: "/a/c",
             parentNodePath: "/a",
-            children: [change("/a/c/y.js")],
+            children: [y],
           }),
         ]),
       },
@@ -62,29 +64,29 @@ describe("groupByDirectory", () => {
   });
 
   it("merges directories all the way through", () => {
-    const groups = groupByDirectoryMergingPaths([change("/a/b/c/d/x.js")]);
+    const x = change("/a/b/c/d/x.js");
+    const groups = groupByDirectoryMergingPaths([x]);
     expect(groups).toMatchObject([
       {
         dirPath: "/a/b/c/d",
         parentNodePath: "",
-        children: [change("/a/b/c/d/x.js")],
+        children: [x],
       },
     ]);
   });
 
   it("merges directories when possible", () => {
-    const groups = groupByDirectoryMergingPaths([
-      change("/a/b/bc/h/g/x.js"),
-      change("/e/f/g/u.js"),
-      change("/a/b/bc/d/y.js"),
-      change("/a/z.js"),
-    ]);
+    const x = change("/a/b/bc/h/g/x.js");
+    const u = change("/e/f/g/u.js");
+    const y = change("/a/b/bc/d/y.js");
+    const z = change("/a/z.js");
+    const groups = groupByDirectoryMergingPaths([x, u, y, z]);
     expect(groups).toMatchObject([
       {
         dirPath: "/a",
         parentNodePath: "",
         children: expect.arrayContaining([
-          change("/a/z.js"),
+          z,
           expect.objectContaining({
             dirPath: "/a/b/bc",
             parentNodePath: "/a",
@@ -92,12 +94,12 @@ describe("groupByDirectory", () => {
               expect.objectContaining({
                 dirPath: "/a/b/bc/d",
                 parentNodePath: "/a/b/bc",
-                children: [change("/a/b/bc/d/y.js")],
+                children: [y],
               }),
               expect.objectContaining({
                 dirPath: "/a/b/bc/h/g",
                 parentNodePath: "/a/b/bc",
-                children: [change("/a/b/bc/h/g/x.js")],
+                children: [x],
               }),
             ]),
           }),
@@ -106,7 +108,7 @@ describe("groupByDirectory", () => {
       {
         dirPath: "/e/f/g",
         parentNodePath: "",
-        children: [change("/e/f/g/u.js")],
+        children: [u],
       },
     ]);
   });
