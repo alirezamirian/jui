@@ -81,15 +81,19 @@ describe("TooltipTrigger", () => {
 describe("PositionedTooltipTrigger", () => {
   it("shows/hides the tooltip on focus/blur if showOnFocus is true", () => {
     cy.mount(
-      <PositionedTooltipTrigger
-        tooltip={<ValidationTooltip>tooltip</ValidationTooltip>}
-        showOnFocus
-        delay={0}
-      >
-        <input />
-      </PositionedTooltipTrigger>
+      <>
+        <button>button</button>
+        <PositionedTooltipTrigger
+          tooltip={<ValidationTooltip>tooltip</ValidationTooltip>}
+          showOnFocus
+          delay={0}
+        >
+          <input />
+        </PositionedTooltipTrigger>
+      </>
     );
-    cy.get("input").first().focus();
+    // Note: just focusing the input via .focus() didn't consistently work for some reason.
+    cy.get("button").focus().realPress("Tab");
     cy.findByRole("tooltip").should("exist");
     cy.get("input").first().blur();
     cy.findByRole("tooltip").should("not.exist");
@@ -102,21 +106,24 @@ describe("PositionedTooltipTrigger", () => {
       const Example = () => {
         const [isDisabled, setIsDisabled] = useState(false);
         return (
-          <PositionedTooltipTrigger
-            tooltip={<ValidationTooltip>Error message</ValidationTooltip>}
-            showOnFocus
-            isDisabled={isDisabled}
-          >
-            <input
-              autoFocus
-              onChange={() => {
-                setIsDisabled(true);
-              }}
-            />
-          </PositionedTooltipTrigger>
+          <>
+            <button>button</button>
+            <PositionedTooltipTrigger
+              tooltip={<ValidationTooltip>Error message</ValidationTooltip>}
+              showOnFocus
+              isDisabled={isDisabled}
+            >
+              <input
+                onChange={() => {
+                  setIsDisabled(true);
+                }}
+              />
+            </PositionedTooltipTrigger>
+          </>
         );
       };
       cy.mount(<Example />);
+      cy.get("button").focus().realPress("Tab");
       cy.findByRole("tooltip").should("exist");
       cy.realType("a");
       cy.findByRole("tooltip").should("not.exist");
