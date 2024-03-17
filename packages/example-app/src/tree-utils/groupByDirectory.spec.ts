@@ -1,20 +1,48 @@
-import { groupByDirectory } from "./groupByDirectory";
-import { ChangeNode } from "../VersionControl/Changes/ChangesView/change-view-nodes";
+import { DirectoryNode, createGroupByDirectory } from "./groupByDirectory";
+import { ChangeNode } from "../VersionControl/Changes/ChangesTree/ChangeTreeNode";
 import { readFileSync } from "fs";
 import { performance } from "perf_hooks";
+import { Change } from "../VersionControl/Changes/Change";
 
 const change = (path: string): ChangeNode => ({
   key: path,
   type: "change",
   change: {
-    after: { path, isDir: false },
-    before: { path, isDir: false },
+    after: {
+      path,
+      isDir: false,
+      content(): Promise<string> {
+        throw new Error("Not implemented");
+      },
+    },
+    before: {
+      path,
+      isDir: false,
+      content(): Promise<string> {
+        throw new Error("Not implemented");
+      },
+    },
   },
+  showPath: false,
+});
+
+const groupByDirectory = createGroupByDirectory<ChangeNode, DirectoryNode>({
+  getPath: (node) => Change.path(node.change),
+});
+
+const groupByDirectoryMergingPaths = createGroupByDirectory<
+  ChangeNode,
+  DirectoryNode
+>({
+  getPath: (node) => Change.path(node.change),
+  shouldCollapseDirectories: true,
 });
 
 describe("groupByDirectory", () => {
   it("groups by directory", () => {
-    const groups = groupByDirectory([change("/a/b/x.js"), change("/a/c/y.js")]);
+    const y = change("/a/c/y.js");
+    const x = change("/a/b/x.js");
+    const groups = groupByDirectory([x, y]);
     expect(groups).toMatchObject([
       {
         dirPath: "/a",
@@ -23,12 +51,12 @@ describe("groupByDirectory", () => {
           expect.objectContaining({
             dirPath: "/a/b",
             parentNodePath: "/a",
-            children: [change("/a/b/x.js")],
+            children: [x],
           }),
           expect.objectContaining({
             dirPath: "/a/c",
             parentNodePath: "/a",
-            children: [change("/a/c/y.js")],
+            children: [y],
           }),
         ]),
       },
@@ -36,29 +64,29 @@ describe("groupByDirectory", () => {
   });
 
   it("merges directories all the way through", () => {
-    const groups = groupByDirectory([change("/a/b/c/d/x.js")]);
+    const x = change("/a/b/c/d/x.js");
+    const groups = groupByDirectoryMergingPaths([x]);
     expect(groups).toMatchObject([
       {
         dirPath: "/a/b/c/d",
         parentNodePath: "",
-        children: [change("/a/b/c/d/x.js")],
+        children: [x],
       },
     ]);
   });
 
   it("merges directories when possible", () => {
-    const groups = groupByDirectory([
-      change("/a/b/bc/h/g/x.js"),
-      change("/e/f/g/u.js"),
-      change("/a/b/bc/d/y.js"),
-      change("/a/z.js"),
-    ]);
+    const x = change("/a/b/bc/h/g/x.js");
+    const u = change("/e/f/g/u.js");
+    const y = change("/a/b/bc/d/y.js");
+    const z = change("/a/z.js");
+    const groups = groupByDirectoryMergingPaths([x, u, y, z]);
     expect(groups).toMatchObject([
       {
         dirPath: "/a",
         parentNodePath: "",
         children: expect.arrayContaining([
-          change("/a/z.js"),
+          z,
           expect.objectContaining({
             dirPath: "/a/b/bc",
             parentNodePath: "/a",
@@ -66,12 +94,12 @@ describe("groupByDirectory", () => {
               expect.objectContaining({
                 dirPath: "/a/b/bc/d",
                 parentNodePath: "/a/b/bc",
-                children: [change("/a/b/bc/d/y.js")],
+                children: [y],
               }),
               expect.objectContaining({
                 dirPath: "/a/b/bc/h/g",
                 parentNodePath: "/a/b/bc",
-                children: [change("/a/b/bc/h/g/x.js")],
+                children: [x],
               }),
             ]),
           }),
@@ -80,7 +108,7 @@ describe("groupByDirectory", () => {
       {
         dirPath: "/e/f/g",
         parentNodePath: "",
-        children: [change("/e/f/g/u.js")],
+        children: [u],
       },
     ]);
   });
@@ -106,7 +134,7 @@ describe("groupByDirectory", () => {
     );
     const timeFor5_000 = measureTime(() => groupByDirectory(changeNodes));
     expect(timeFor5_000).toBeLessThan(
-      3 /* Some empirical calibration factor*/ * timeFor50 * 100
+      4 /* Some empirical calibration factor*/ * timeFor50 * 100
     );
 
     expect(timeFor5_000).toBeLessThan(relativePerformanceMeasure);

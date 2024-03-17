@@ -56,7 +56,7 @@ export const commonListStories = {
   withConnectedInput: (ListCmp: typeof List) => {
     const WithConnectedInput: Story<ListProps<any>> = (props) => {
       const [isFocused, setIsFocused] = React.useState(false);
-      const listRef = React.useRef<HTMLUListElement>(null);
+      const listRef = React.useRef<HTMLDivElement>(null);
       const selectionManagerRef = React.useRef<SelectionManager>(null);
       const { collectionSearchInputProps } = useCollectionSearchInput({
         collectionRef: listRef,

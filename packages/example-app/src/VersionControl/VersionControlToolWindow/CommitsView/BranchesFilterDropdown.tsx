@@ -13,6 +13,7 @@ import {
   SpeedSearchMenu,
 } from "@intellij-platform/core";
 
+import { notImplemented } from "../../../Project/notImplemented";
 import {
   allBranchesState,
   BranchType,
@@ -20,8 +21,7 @@ import {
 } from "../../Branches/branches.state";
 import { BranchFavoriteButton } from "../../Branches/BranchFavoriteButton";
 import { vcsLogFilter } from "../vcs-logs.state";
-import { VcsFilterDropdown } from "../VcsLogDropdown";
-import { notImplemented } from "../../../Project/notImplemented";
+import { VcsFilterDropdown } from "./VcsLogDropdown";
 
 export function BranchesFilterDropdown({ tabKey }: { tabKey: string }) {
   const [selectedBranches, setSelectedBranches] = useRecoilState(

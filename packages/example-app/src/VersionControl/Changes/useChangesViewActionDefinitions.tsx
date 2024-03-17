@@ -7,6 +7,7 @@ import {
   changeListsUnderSelection,
   changesTreeNodesState,
   changesUnderSelectedKeys,
+  ChangesViewTreeNode,
   expandedKeysState,
   includedChangeKeysState,
   openRollbackWindowForSelectionCallback,
@@ -18,6 +19,10 @@ import {
   useRefreshChanges,
   useSetActiveChangeList,
 } from "./change-lists.state";
+import path from "path";
+import { IntlMessageFormat } from "intl-messageformat";
+import { getExpandedToNodesKeys } from "@intellij-platform/core/utils/tree-utils";
+
 import { COMMIT_TOOLWINDOW_ID } from "../CommitToolWindow";
 import { VcsActionIds } from "../VcsActionIds";
 import { useToolWindowManager } from "../../Project/useToolWindowManager";
@@ -26,15 +31,9 @@ import {
   activePathsState,
   currentProjectFilesState,
 } from "../../Project/project.state";
-import path from "path";
-import { IntlMessageFormat } from "intl-messageformat";
 import { useEditorStateManager } from "../../Editor/editor.state";
-import {
-  AnyNode,
-  getNodeKeyForChange,
-  isGroupNode,
-} from "./ChangesView/change-view-nodes";
-import { getExpandedToNodesKeys } from "@intellij-platform/core/utils/tree-utils";
+import { getNodeKeyForChange, isGroupNode } from "./ChangesTree/ChangeTreeNode";
+import { Change } from "./Change";
 
 export const useChangesViewActionDefinitions = (): ActionDefinition[] => {
   const openRollbackWindow = useRecoilCallback(
@@ -117,7 +116,7 @@ function useCheckInActionDefinition(): ActionDefinition {
   );
   const allChanges = useRecoilValue(allChangesState);
   const containsChange = roots.some((root) =>
-    allChanges.find((change) => isPathInside(root, change.after.path))
+    allChanges.find((change) => isPathInside(root, Change.path(change)))
   );
 
   return {
@@ -162,7 +161,7 @@ function useCheckInProjectAction(): ActionDefinition {
               ...getExpandedToNodesKeys(
                 (node) => (isGroupNode(node) ? node.children : null),
                 (node) => node.key,
-                rootNodes as AnyNode[],
+                rootNodes as ChangesViewTreeNode[],
                 [keyToSelect]
               ),
             ])
@@ -194,9 +193,9 @@ function useJumpToSourceAction(): ActionDefinition {
     icon: <PlatformIcon icon="actions/editSource.svg" />,
     actionPerformed: () => {
       [...selectedChanges].forEach((change, index, arr) => {
-        if (!change.after.isDir) {
+        if (!change.after?.isDir) {
           editorStateManager.openPath(
-            change.after.path,
+            Change.path(change),
             index === arr.length - 1
           );
         }

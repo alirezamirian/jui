@@ -1,16 +1,18 @@
 import { atom, selector } from "recoil";
-import { Change } from "../change-lists.state";
-import { changesTreeNodesState } from "../ChangesView/ChangesView.state";
+import {
+  changesTreeNodesState,
+  ChangesViewTreeNode,
+} from "../ChangesView/ChangesView.state";
 import {
   getExpandAllKeys,
   getExpandedToNodesKeys,
 } from "@intellij-platform/core/utils/tree-utils";
 import { Bounds } from "@intellij-platform/core/Overlay";
 import {
-  AnyNode,
   getNodeKeyForChange,
   isGroupNode,
-} from "../ChangesView/change-view-nodes";
+} from "../ChangesTree/ChangeTreeNode";
+import { Change } from "../Change";
 
 const isOpen = atom<boolean>({
   key: "rollbackView.isOpen",
@@ -41,7 +43,7 @@ const initiallyExpandedKeys = selector({
   get: ({ get }) => {
     const includedChanges = get(initiallyIncludedChanges);
     const nodes = get(rootNodes);
-    const expandedKeys = getExpandedToNodesKeys<AnyNode>(
+    const expandedKeys = getExpandedToNodesKeys<ChangesViewTreeNode>(
       (node) => (isGroupNode(node) ? node.children : null),
       (node) => node.key,
       nodes,
@@ -50,7 +52,7 @@ const initiallyExpandedKeys = selector({
     return new Set(
       expandedKeys.length
         ? expandedKeys
-        : getExpandAllKeys<AnyNode>(
+        : getExpandAllKeys<ChangesViewTreeNode>(
             (node) => (isGroupNode(node) ? node.children : null),
             (node) => node.key,
             nodes

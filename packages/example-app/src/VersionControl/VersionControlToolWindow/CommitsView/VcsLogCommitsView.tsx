@@ -5,13 +5,10 @@ import {
   ActionTooltip,
   AutoHoverPlatformIcon,
   IconButton,
-  IconButtonWithMenu,
   Item,
-  Link,
   Menu,
   PlatformIcon,
   SearchInput,
-  Section,
   styled,
   StyledHoverContainer,
   Toolbar,
@@ -20,14 +17,11 @@ import {
   useGetActionShortcut,
 } from "@intellij-platform/core";
 
-import {
-  StyledHeader,
-  StyledPlaceholderContainer,
-  StyledSpacer,
-} from "../styled-components";
-import { VcsFilterDropdown } from "../VcsLogDropdown";
+import { StyledHeader, StyledSpacer } from "../styled-components";
+import { VcsFilterDropdown } from "./VcsLogDropdown";
 import {
   atom,
+  RecoilState,
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
@@ -36,7 +30,7 @@ import {
 import { searchInputRefState } from "../VersionControlToolWindow";
 import { VcsActionIds } from "../../VcsActionIds";
 import {
-  useResetFilters,
+  CURRENT_USER_FILTER_VALUE,
   vcsActiveTabKeyState,
   vcsLogFilter,
   vcsTabKeysState,
@@ -44,6 +38,8 @@ import {
 import { notImplemented } from "../../../Project/notImplemented";
 import { DateRange, dateToString } from "../DateRange";
 import { BranchesFilterDropdown } from "./BranchesFilterDropdown";
+import { CommitsTable } from "./CommitsTable";
+import { CommitsTableViewOptionsMenuIconButton } from "./CommitsTableViewOptionsMenuIconButton";
 
 const StyledSearchInput = styled(SearchInput)`
   border-radius: 2px;
@@ -54,6 +50,8 @@ const StyledSearchInput = styled(SearchInput)`
 
 const StyledContainer = styled.div`
   height: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 
 const searchHistoryState = atom<string[]>({
@@ -91,10 +89,24 @@ export function VcsLogCommitsView({ tabKey }: { tabKey: string }) {
   }, [searchQuery]);
 
   const createNewTab = useRecoilCallback(
-    ({ set }) =>
+    ({ set, snapshot }) =>
       () => {
         const newTabId = uuid();
         set(vcsTabKeysState, (value) => [...value, newTabId]);
+        Object.values(vcsLogFilter).forEach(
+          (filterState: (tabKey: string) => RecoilState<any>) => {
+            set(
+              filterState(newTabId),
+              snapshot
+                .getLoadable(
+                  filterState(
+                    snapshot.getLoadable(vcsActiveTabKeyState).getValue()
+                  )
+                )
+                .getValue()
+            );
+          }
+        );
         set(vcsActiveTabKeyState, newTabId);
       },
     []
@@ -107,11 +119,11 @@ export function VcsLogCommitsView({ tabKey }: { tabKey: string }) {
   const predefinedDateRanges = [
     {
       name: "Last 24 hours",
-      value: { from: sevenDaysAgo },
+      value: { from: yesterday },
     },
     {
       name: "Last 7 days",
-      value: { from: yesterday },
+      value: { from: sevenDaysAgo },
     },
   ];
   return (
@@ -131,6 +143,7 @@ export function VcsLogCommitsView({ tabKey }: { tabKey: string }) {
             onChange={setSearchInputValue}
             onSubmit={submitSearchQuery}
             onBlur={() => submitSearchQuery()}
+            onClear={() => submitSearchQuery("")}
             searchHistory={searchHistory}
             addonAfter={
               <>
@@ -171,7 +184,7 @@ export function VcsLogCommitsView({ tabKey }: { tabKey: string }) {
         <Toolbar>
           <BranchesFilterDropdown tabKey={tabKey} />
           <VcsFilterDropdown
-            value={user}
+            value={user === CURRENT_USER_FILTER_VALUE ? "me" : user}
             onClear={resetUser}
             renderMenu={({ menuProps }) => (
               <Menu
@@ -184,7 +197,7 @@ export function VcsLogCommitsView({ tabKey }: { tabKey: string }) {
                 }}
               >
                 <Item key="select">Select...</Item>
-                <Item key="me">me</Item>
+                <Item key={CURRENT_USER_FILTER_VALUE}>me</Item>
               </Menu>
             )}
             label="User"
@@ -236,33 +249,13 @@ export function VcsLogCommitsView({ tabKey }: { tabKey: string }) {
         </Toolbar>
         <StyledSpacer />
         <Toolbar style={{ flexShrink: 0 }}>
-          <TooltipTrigger
-            tooltip={<ActionTooltip actionName="Refresh" shortcut="⌘R" />}
-          >
-            <IconButton>
-              <PlatformIcon icon="actions/refresh.svg" />
-            </IconButton>
-          </TooltipTrigger>
+          <ActionButton actionId={VcsActionIds.LOG_REFRESH} />
           <TooltipTrigger tooltip={<ActionTooltip actionName="Cherry-Pick" />}>
             <IconButton isDisabled>
               <PlatformIcon icon="/platform/dvcs-impl/resources/icons/cherryPick.svg" />
             </IconButton>
           </TooltipTrigger>
-          <TooltipTrigger tooltip={<ActionTooltip actionName="View Options" />}>
-            <IconButtonWithMenu
-              renderMenu={({ menuProps }) => {
-                return (
-                  <Menu {...menuProps}>
-                    <Section title="Show">
-                      <Item>Compact References View</Item>
-                    </Section>
-                  </Menu>
-                );
-              }}
-            >
-              <PlatformIcon icon="actions/groupBy.svg" />
-            </IconButtonWithMenu>
-          </TooltipTrigger>
+          <CommitsTableViewOptionsMenuIconButton />
           <TooltipTrigger
             tooltip={
               <ActionTooltip actionName="Go To Hash/Branch/Tag" shortcut="⌘F" />
@@ -276,18 +269,6 @@ export function VcsLogCommitsView({ tabKey }: { tabKey: string }) {
       </StyledHeader>
       <CommitsTable />
     </StyledContainer>
-  );
-}
-
-function CommitsTable() {
-  const currentTabKey = useRecoilValue(vcsActiveTabKeyState);
-  const resetFilters = useResetFilters();
-
-  return (
-    <StyledPlaceholderContainer>
-      No commits matching filters
-      <Link onPress={() => resetFilters(currentTabKey)}>Reset filters</Link>
-    </StyledPlaceholderContainer>
   );
 }
 

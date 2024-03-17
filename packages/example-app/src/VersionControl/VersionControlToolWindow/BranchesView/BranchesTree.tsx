@@ -15,6 +15,7 @@ import {
   branchesTreeNodeState,
   branchesTreeRefState,
   expandedKeysState,
+  searchInputState,
   selectedKeysState,
 } from "./BranchesTree.state";
 import { StyledHeader } from "../styled-components";
@@ -41,12 +42,18 @@ const StyledSearchIconContainer = styled.span`
   cursor: text;
 `;
 
-export function BranchesTree() {
+export function BranchesTree({ tabKey }: { tabKey: string }) {
   const branchesTreeNodes = useRecoilValue(branchesTreeNodeState);
-  const [selectedKeys, setSelectedKeys] = useRecoilState(selectedKeysState);
-  const [expandedKeys, setExpandedKeys] = useRecoilState(expandedKeysState);
-  const treeRef = useRecoilValue(branchesTreeRefState);
+  const [selectedKeys, setSelectedKeys] = useRecoilState(
+    selectedKeysState(tabKey)
+  );
+  const [expandedKeys, setExpandedKeys] = useRecoilState(
+    expandedKeysState(tabKey)
+  );
+  const [searchTerm, setSearchTerm] = useRecoilState(searchInputState(tabKey));
+  const treeRef = useRecoilValue(branchesTreeRefState(tabKey));
   const ref = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const selectionManagerRef = useRef<TreeSelectionManager>(null);
   const [isInputFocused, setInputFocused] = useState(false);
   const setBranchFilter = useSetRecoilState(vcsLogFilterCurrentTab.branch);
@@ -54,6 +61,26 @@ export function BranchesTree() {
     collectionRef: ref,
     selectionManager: selectionManagerRef.current,
   });
+  /**
+   * TODO: remaining from search:
+   * - Make the search input red when there is no match
+   * - filter non-matching tree nodes out
+   * - search in the whole tree, not just nodes that are currently visible based on expandedKeys
+   *   - update expanded keys to show matches, as a side effect, every time matches are updated.
+   * The above items are postponed to think more about flexibility of SpeedSearchTree API.
+   * Some rough thoughts about different approaches:
+   * - Provide generic tree utilities to search in the whole tree. In SpeedSearchTree allow for full control over
+   * `matches`. It will be in usage side that matches are calculated based on search input value, and passed to
+   * SpeedSearchTree as an input.
+   * - In SpeedSearchTree, allow for passing a custom search function, which would accept the tree collection object,
+   *   the search query, and the default match function (minusculeMatch).
+   * - Make Tree more flexible or introduce a more flexible base component, so that speed search for tree can be
+   *   implementated in a more composable way. Tree (or TreeBase) would accept props for intercepting `state` creation,
+   *   and it would also allow passing additional props to the tree container. Then a more generic CollectionSpeedSearch
+   *   component would offer options on how to control and customize speed search, and would return props to be passed
+   *   to collection components.
+   */
+
   // FIXME: selectedKeys and expandedKeys can become invalid due to changes in nodes, which makes the tree view
   //  not react to the key events. Ideally, the tree view should be robust regarding invalid keys, and otherwise
   //  the keys should be validated everytime nodes change.
@@ -65,10 +92,17 @@ export function BranchesTree() {
         </StyledSearchIconContainer>
         {/* FIXME: tabIndex -1 is a workaround to not get the input focused when the toolwindow opens. Not ideal.*/}
         <StyledSearchInput
+          ref={searchInputRef}
           tabIndex={-1}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           {...mergeProps(collectionSearchInputProps, {
-            onFocus: () => setInputFocused(true),
-            onBlur: () => setInputFocused(false),
+            onFocus: () => {
+              setInputFocused(true);
+            },
+            onBlur: () => {
+              setInputFocused(false);
+            },
           })}
         />
       </StyledHeader>
@@ -89,7 +123,13 @@ export function BranchesTree() {
           }
         }}
         fillAvailableSpace
+        // speed search related props
         showAsFocused={isInputFocused}
+        searchTerm={searchTerm}
+        onSearchTermChange={setSearchTerm}
+        keepSearchActiveOnBlur
+        hideSpeedSearchPopup
+        isSearchActive
       >
         {(node) => {
           // @ts-expect-error we need to somehow infer the type of `node.type`

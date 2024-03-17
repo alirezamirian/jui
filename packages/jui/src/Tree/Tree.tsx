@@ -60,14 +60,14 @@ export const Tree = React.forwardRef(
     return (
       <TreeContext.Provider value={treeContext}>
         <StyledTree
-          as={Virtualizer}
+          as={Virtualizer<Node<any>, unknown>}
           ref={ref}
           fillAvailableSpace={fillAvailableSpace}
           {...virtualizerProps}
           {...treeProps}
         >
-          {(itemType: string, item: object) => (
-            <TreeNode key={(item as Node<T>).key} item={item as Node<T>} />
+          {(itemType: string, item: Node<any>) => (
+            <TreeNode key={item.key} item={item as Node<T>} />
           )}
         </StyledTree>
       </TreeContext.Provider>

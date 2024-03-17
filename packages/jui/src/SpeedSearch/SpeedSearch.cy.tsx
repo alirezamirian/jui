@@ -21,7 +21,7 @@ describe("SpeedSearch", () => {
     cy.mount(
       <Default
         onSearchTermChange={onSearchTermChange}
-        onActiveChange={onActiveChange}
+        onIsSearchActiveChange={onActiveChange}
       />
     );
 

@@ -42,14 +42,18 @@ const StyledSplitterContainer = styled.div<{
     orientation === "vertical" ? "column" : "row"};
 `;
 
-const StyledSplitterInnerView = styled.div`
+const StyledView = styled.div`
   // The default overflow visible should be changed obviously. Not sure if there is any layout implication
   // in using 'auto' instead of hidden, to provide scroll behaviour by default, but even if we realize later
   // that we need to set overflow to hidden here, we can have scrollable content inside the inner view via an
   // intermediate element inside the inner view, with overflow set to auto and width set to 100%.
   overflow: auto;
+`;
+
+const StyledSplitterInnerView = styled(StyledView)`
   flex: 1;
 `;
+
 /**
  * Corresponding to
  * [ThreeComponentsSplitter](https://github.com/JetBrains/intellij-community/blob/58dbd93e9ea527987466072fa0bfbf70864cd35f/platform/platform-api/src/com/intellij/openapi/ui/ThreeComponentsSplitter.java#L40-L40)
@@ -164,7 +168,7 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
     >
       {firstView && (
         <>
-          <div
+          <StyledView
             ref={firstViewRef}
             style={{
               [sizeStyleProp]: currentFirstSize,
@@ -177,7 +181,7 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
             }}
           >
             {firstView}
-          </div>
+          </StyledView>
           <FirstResizer
             onResizeStarted={() => {
               const size = firstViewRef.current
@@ -233,7 +237,7 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
             }}
             {...resizerProps}
           />
-          <div
+          <StyledView
             ref={lastViewRef}
             style={{
               [sizeStyleProp]: currentLastSize,
@@ -246,7 +250,7 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
             }}
           >
             {lastView}
-          </div>
+          </StyledView>
         </>
       )}
     </StyledSplitterContainer>

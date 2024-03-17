@@ -109,7 +109,7 @@ function useSpeedSearchMenu<T>(
       state.disabledKeys,
       ref
     ),
-    stickySearch: true,
+    keepSearchActiveOnBlur: true,
     focusBestMatch: true,
     ref,
   });

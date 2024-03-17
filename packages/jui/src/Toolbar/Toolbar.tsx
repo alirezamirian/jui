@@ -129,13 +129,13 @@ const StyledVerticalToolbar = styled(StyledToolbar)`
 `;
 
 const StyledToolbarContent = styled.div<{
-  wrap?: boolean;
+  shouldWrap?: boolean;
   firstOverflowedIndex: number;
 }>`
   box-sizing: inherit;
   display: inherit;
   flex-direction: inherit;
-  flex-wrap: ${({ wrap }) => (wrap ? "wrap" : "nowrap")};
+  flex-wrap: ${({ shouldWrap }) => (shouldWrap ? "wrap" : "nowrap")};
   gap: inherit;
   max-height: inherit;
   max-width: inherit;
@@ -309,7 +309,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           ref={ref}
           role="presentation"
           firstOverflowedIndex={firstOverflowedChildIndex}
-          wrap={overflowBehavior === "wrap"}
+          shouldWrap={overflowBehavior === "wrap"}
         >
           {props.children}
         </StyledToolbarContent>

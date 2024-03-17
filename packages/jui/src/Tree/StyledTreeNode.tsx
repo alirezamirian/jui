@@ -3,9 +3,12 @@ import { UnknownThemeProp } from "@intellij-platform/core/Theme";
 import { StyledListItem } from "@intellij-platform/core/List/StyledListItem";
 import { TREE_ICON_SIZE } from "./TreeNodeIcon";
 
-export const StyledTreeNode = styled(StyledListItem).attrs({ as: "div" })<{
+type StyledListItemProps = {
   level: number;
-}>`
+};
+export const StyledTreeNode = styled(StyledListItem).attrs<StyledListItemProps>(
+  { role: "treeitem" }
+)<StyledListItemProps>`
   // There are some theme properties for tree node padding (theme.ui.Tree.leftChildIndent and
   // theme.ui.Tree.leftChildIndent), but they doesn't seem to be applicable.
   padding-left: ${({ level }) => `${(level + 1) * TREE_ICON_SIZE + 8}px`};

@@ -1,25 +1,21 @@
 import { sortBy } from "ramda";
 import { Key } from "react";
-import {
-  atom,
-  atomFamily,
-  CallbackInterface,
-  isRecoilValue,
-  RecoilValue,
-  selector,
-} from "recoil";
+import { atom, atomFamily, CallbackInterface, selector } from "recoil";
 import { Selection } from "@react-types/shared";
 
 import {
   allChangesState,
-  Change,
   ChangeListObj,
   changeListsState,
 } from "../change-lists.state";
-import { groupings } from "./changesGroupings";
+import {
+  defaultChangeGroupings,
+  defaultChangeGroupingsState,
+  getChangesGroupFn,
+  GroupFn,
+} from "../ChangesTree/changesGroupings";
 import {
   bfsVisit,
-  dfsVisit,
   getExpandedToNodesKeys,
 } from "@intellij-platform/core/utils/tree-utils";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
@@ -31,32 +27,37 @@ import {
 import { rollbackViewState } from "../Rollback/rollbackView.state";
 import { activePathsState } from "../../../Project/project.state";
 import {
-  AnyGroupNode,
-  AnyNode,
-  ChangeBrowserNode,
-  ChangeListNode,
-  changeListNode,
   ChangeNode,
-  getChildren,
+  changeNode,
+  ChangesTreeGroupNode,
+  ChangesTreeNode,
+  changesTreeNodeKey,
+  ExtendedChangesTreeNode,
   getNodeKeyForChange,
-  GroupNode,
-  isChangeNode,
+  GroupNodes,
   isGroupNode,
-} from "./change-view-nodes";
+} from "../ChangesTree/ChangeTreeNode";
 import { Task } from "../../../tasks";
+import { Change } from "../Change";
+import { changesTreeNodesResult } from "../ChangesTree/changesTreeNodesResult";
 
-type MaybeRecoilValue<T> = T | RecoilValue<T>;
-
-export type GroupFn<T extends AnyGroupNode> = (
-  nodes: ReadonlyArray<ChangeNode>
-) => ReadonlyArray<T>;
-
-export interface ChangeGrouping<T extends AnyGroupNode, I = string> {
-  id: I;
-  title: string;
-  isAvailable: MaybeRecoilValue<boolean>;
-  groupFn: MaybeRecoilValue<GroupFn<T>>;
+export interface ChangeListNode<
+  C extends ChangesTreeNode<any> = ChangesViewTreeNode
+> extends ChangesTreeGroupNode<"changelist", C> {
+  changeList: ChangeListObj;
 }
+
+export type ChangesViewTreeNode = ExtendedChangesTreeNode<ChangeListNode>;
+
+export const changeListNode = (
+  changeList: ChangeListObj
+): ChangeListNode<ChangeNode> => ({
+  type: "changelist",
+  key: changesTreeNodeKey("changelist", changeList.id),
+  changeList,
+  children: changeList.changes.map((change) => changeNode(change)),
+});
+
 export const showIgnoredFilesState = atom({
   key: "changesView/showIgnoredFiles",
   default: false,
@@ -69,10 +70,10 @@ export const showRelatedFilesState = atom({
 
 // in a more extensible implementation, the id would be just string. but now that groupings are statically defined,
 // why not have more type safety
-export type GroupingIds = typeof groupings[number]["id"];
+export type GroupingIds = typeof defaultChangeGroupings[number]["id"];
 
-export const changesGroupingState = atomFamily<boolean, GroupingIds>({
-  key: "changesView/grouping",
+export const changesGroupingActiveState = atomFamily<boolean, string>({
+  key: "changesView/isGroupingActive",
   default: true, // it's false in IntelliJ
 });
 
@@ -94,8 +95,8 @@ export const resolvedSelectedKeysState = selector<Set<Key>>({
     if (selection === "all") {
       const { rootNodes } = get(changesTreeNodesState);
       return new Set(
-        bfsVisit<AnyNode, AnyNode[]>(
-          (node) => (isGroupNode(node) ? node.children : []),
+        bfsVisit<ChangesViewTreeNode, ChangesViewTreeNode[]>(
+          (node) => ("children" in node ? node.children : []),
           (node, parentValue) => {
             const nodes = parentValue ?? [];
             nodes.push(node);
@@ -114,7 +115,7 @@ export const resolvedSelectedKeysState = selector<Set<Key>>({
 /**
  * The List of currently selected nodes in Changes tree. Based on {@link selectedKeysState}
  */
-const selectedNodesState = selector<ReadonlySet<AnyNode>>({
+const selectedNodesState = selector<ReadonlySet<ChangesViewTreeNode>>({
   key: "changesView.selectedNodes",
   get: ({ get }) => {
     const selectedKeys = get(resolvedSelectedKeysState);
@@ -130,14 +131,14 @@ export const changesUnderSelectedKeys = selector<ReadonlySet<Change>>({
   get: ({ get }) => {
     const selectedNodes = get(selectedNodesState);
     const allChanges: Set<Change> = new Set();
-    const processNode = (node: AnyNode | undefined) => {
+    const processNode = (node: ChangesViewTreeNode | undefined) => {
       if (!node) {
         return;
       }
       if (node.type === "change") {
         allChanges.add(node.change);
       }
-      if (isGroupNode(node)) {
+      if (isGroupNode<ChangesViewTreeNode>(node)) {
         node.children.forEach(processNode);
       }
     };
@@ -156,7 +157,7 @@ export const changeListsUnderSelection = selector<ReadonlySet<ChangeListObj>>({
     const allChangeLists = get(changeListsState);
 
     const selectedChangeLists: Set<ChangeListObj> = new Set();
-    const processNode = (node: AnyNode | undefined) => {
+    const processNode = (node: ChangesViewTreeNode | undefined) => {
       if (!node) {
         return;
       }
@@ -171,7 +172,7 @@ export const changeListsUnderSelection = selector<ReadonlySet<ChangeListObj>>({
           selectedChangeLists.add(changeList);
         }
       }
-      if (isGroupNode(node)) {
+      if (isGroupNode<ChangesViewTreeNode>(node)) {
         node.children.forEach(processNode);
       }
     };
@@ -206,7 +207,7 @@ export const includedChangesState = selector<ReadonlyArray<Change>>({
  * based on the selected leaf nodes.
  */
 export const includedChangesNestedSelection = selector<
-  NestedSelectionState<AnyNode>
+  NestedSelectionState<ChangesViewTreeNode>
 >({
   key: "changesView.selectedChanges.nestedSelectionState",
   get: ({ get, getCallback }) => {
@@ -224,8 +225,8 @@ export const includedChangesNestedSelection = selector<
       },
       {
         rootNodes,
-        getChildren: (item: AnyNode) =>
-          isGroupNode(item) ? item.children : null,
+        getChildren: (item: ChangesViewTreeNode) =>
+          isGroupNode<ChangesViewTreeNode>(item) ? item.children : null,
         getKey: (item) => item.key,
       }
     );
@@ -249,87 +250,48 @@ export const expandedKeysState = atom<Selection>({
   }),
 });
 
-export const availableGroupingsState = selector({
-  key: "changes.availableGroupings",
-  get: ({ get }) =>
-    groupings
-      .filter((grouping) =>
-        isRecoilValue(grouping.isAvailable)
-          ? get(grouping.isAvailable)
-          : grouping.isAvailable
-      )
-      .map((grouping) => ({
-        ...grouping,
-        isActive: get(changesGroupingState(grouping.id)),
-      })),
+export const changesViewGroupingsState = selector({
+  key: "changes.groupings",
+  get: ({ get, getCallback }) =>
+    get(defaultChangeGroupingsState).map((grouping) => ({
+      ...grouping,
+      isActive: get(changesGroupingActiveState(grouping.id)),
+    })),
 });
 
-const recursiveGrouping = (
-  groupingFns: Array<GroupFn<AnyGroupNode>>,
-  nodes: ReadonlyArray<ChangeBrowserNode<any>>
-): ReadonlyArray<AnyGroupNode> => {
-  if (groupingFns.length === 0 || nodes.length === 0) {
-    return nodes as ReadonlyArray<AnyGroupNode>; // can we avoid explicit cast?
-  }
-  const nextGroupingFns = groupingFns.slice(1);
-  const changeNodes = nodes.filter(isChangeNode);
-  const groupNodes = nodes.filter(isGroupNode);
-  const groups = groupingFns[0](changeNodes);
-
-  [...groupNodes, ...groups].forEach((groupNode) => {
-    groupNode.children = recursiveGrouping(nextGroupingFns, groupNode.children);
-  });
-  return groups.filter((group) => group.children.length > 0);
-};
+const groupChildren = <
+  T extends ChangesTreeGroupNode<any, ChangeNode>,
+  G extends ChangesTreeNode<any>
+>(
+  node: T,
+  groupFn: (
+    nodes: ReadonlyArray<ChangeNode>
+  ) => ReturnType<GroupFn<GroupNodes<G>>> | ReadonlyArray<ChangeNode>
+) => ({
+  ...node,
+  children: groupFn(node.children),
+});
 
 export const changesTreeNodesState = selector<{
-  rootNodes: ChangeListNode[];
+  rootNodes: ReadonlyArray<ChangeListNode>;
   fileCountsMap: Map<Key, number>;
-  byKey: Map<Key, AnyNode>;
+  byKey: Map<Key, ChangesViewTreeNode>;
 }>({
   key: "changesView.treeNodes",
-  get: ({ get }) => {
-    const resolve = <T>(value: MaybeRecoilValue<T>): T =>
-      isRecoilValue(value) ? get(value) : value;
-    const changeLists = get(changeListsState);
-    const groupFns = get(availableGroupingsState)
-      .filter(({ isActive }) => isActive)
-      .map(({ groupFn }) => {
-        return resolve(groupFn);
-      });
-
-    const groupChanges = (changes: readonly ChangeNode[]) =>
-      recursiveGrouping(groupFns, changes);
-
-    const rootNodes = sortBy(({ active }) => !active, changeLists).map(
-      (changeList) => changeListNode(changeList, groupChanges)
+  get: ({ get, getCallback }) => {
+    const changeListNodes = sortBy(
+      ({ active }) => !active,
+      get(changeListsState)
+    ).map(changeListNode);
+    const groupFn = getChangesGroupFn({
+      get,
+      groupings: defaultChangeGroupings,
+      isActive: changesGroupingActiveState,
+    });
+    const rootNodes = changeListNodes.map((changeListNode) =>
+      groupChildren(changeListNode, groupFn)
     );
-    const fileCountsMap = new Map();
-    const byKey = new Map();
-    const getFileCount = (node: GroupNode<any>): number => {
-      return node.children.reduce(
-        (totalSum, child) =>
-          totalSum + (isGroupNode(child) ? getFileCount(child) : 1),
-        0
-      );
-    };
-    dfsVisit<AnyNode, number>(
-      getChildren,
-      (node, childrenFileCount) => {
-        byKey.set(node.key, node);
-        if (!childrenFileCount) {
-          return 1;
-        }
-        const fileCount = childrenFileCount.reduce(
-          (total, count) => total + count,
-          0
-        );
-        fileCountsMap.set(node.key, fileCount);
-        return fileCount;
-      },
-      rootNodes
-    );
-    return { rootNodes, fileCountsMap, byKey };
+    return changesTreeNodesResult(rootNodes);
   },
 });
 
@@ -379,7 +341,9 @@ export const changesFromActivePaths = selector({
   get: ({ get }) => {
     const activePaths = get(activePathsState);
     return get(allChangesState).filter((change) =>
-      activePaths.some((activePath) => change.after.path.startsWith(activePath))
+      activePaths.some((activePath) =>
+        Change.path(change).startsWith(activePath)
+      )
     );
   },
 });
@@ -397,15 +361,18 @@ export const queueCheckInCallback = ({ set, snapshot }: CallbackInterface) => {
           .getLoadable(allChangesState)
           .getValue()
           .filter((change) =>
-            paths.some((activePath) => change.after.path.startsWith(activePath))
+            paths.some((activePath) =>
+              Change.path(change).startsWith(activePath)
+            )
           )
       : snapshot.getLoadable(changesFromActivePaths).getValue();
 
     const includedChangeKeys = changes.map(getNodeKeyForChange);
     set(includedChangeKeysState, new Set(includedChangeKeys));
     if (includedChangeKeys.length > 0) {
-      const expandedKeys = getExpandedToNodesKeys<AnyNode>(
-        (node) => (isGroupNode(node) ? node.children : null),
+      const expandedKeys = getExpandedToNodesKeys<ChangesViewTreeNode>(
+        (node) =>
+          isGroupNode<ChangesViewTreeNode>(node) ? node.children : null,
         (node) => node.key,
         snapshot.getLoadable(changesTreeNodesState).getValue().rootNodes,
         includedChangeKeys

@@ -1,4 +1,4 @@
-import { uniq } from "ramda";
+import { identity, uniq } from "ramda";
 import { getParentPaths } from "../file-utils";
 
 export interface DirectoryNode {
@@ -11,21 +11,30 @@ export interface DirectoryNode {
 type GroupByDirectorAdapter<T, D extends DirectoryNode> = {
   shouldCollapseDirectories?: boolean;
   getPath: (node: T) => string;
+  /**
+   * Maps each processed node. E.g. can be used to enrich nodes with grouping metadata.
+   * @example
+   * ```
+   * mapNode: (node) => ({...node, isGroupedByDirectory: true})
+   * ```
+   */
+  mapNode?: (node: T) => T;
   createDirectoryNode?: (dirNode: DirectoryNode) => D;
 };
 /**
  * Exported only for tests.
  * @internal
  */
-export const groupByDirectory =
+export const createGroupByDirectory =
   <T, D extends DirectoryNode>({
     getPath,
+    mapNode = identity,
     createDirectoryNode = (i) => i as D,
     shouldCollapseDirectories = false,
   }: GroupByDirectorAdapter<T, D>) =>
   (nodes: ReadonlyArray<T>): readonly D[] => {
     const pathToNodeCache: Record<string, D> = {};
-    const rootDirNodes = nodes.map((node) => {
+    const rootDirNodes = nodes.map(mapNode).map((node) => {
       const filepath = getPath(node);
       // noinspection UnnecessaryLocalVariableJS
       const rootDirNode = getParentPaths(

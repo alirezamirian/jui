@@ -276,7 +276,7 @@ export function SearchEverywherePopup() {
 
   const close = () => setOpen(false);
 
-  const collectionRef = useRef<HTMLUListElement>(null);
+  const collectionRef = useRef<HTMLDivElement>(null);
   const selectionManagerRef = useRef<SelectionManager>(null);
   const { collectionSearchInputProps } = useCollectionSearchInput({
     collectionRef,

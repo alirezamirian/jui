@@ -26,19 +26,21 @@ import {
   ActionButton,
 } from "@intellij-platform/core";
 
-import { changesTreeNodesState } from "../ChangesView/ChangesView.state";
-import { getChangeListTreeItemProps } from "../ChangesView/changesTreeNodeRenderers";
+import {
+  changesTreeNodesState,
+  ChangesViewTreeNode,
+} from "../ChangesView/ChangesView.state";
 import { rollbackViewState } from "./rollbackView.state";
 import { allChangesState, useRollbackChanges } from "../change-lists.state";
 import { ChangesSummary } from "../ChangesSummary";
-import { groupings } from "../ChangesView/changesGroupings";
+import { defaultChangeGroupings } from "../ChangesTree/changesGroupings";
 import { RollbackTreeContextMenu } from "./RollbackTreeContextMenu";
 import { notImplemented } from "../../../Project/notImplemented";
 import {
-  AnyNode,
   getNodeKeyForChange,
   isGroupNode,
-} from "../ChangesView/change-view-nodes";
+} from "../ChangesTree/ChangeTreeNode";
+import { changesViewTreeNodeRenderer } from "../ChangesView/changesViewTreeNodeRenderer";
 
 const StyledContainer = styled.div`
   box-sizing: border-box;
@@ -78,7 +80,7 @@ export function RollbackWindow() {
   const [includedChangeKeys, setIncludedChangeKeys] = useState(
     new Set<Key>(initiallyIncludedChangeKeys)
   );
-  const nestedSelection = useNestedSelectionState<AnyNode>(
+  const nestedSelection = useNestedSelectionState<ChangesViewTreeNode>(
     {
       rootNodes,
       getKey: (node) => node.key,
@@ -131,7 +133,7 @@ export function RollbackWindow() {
                           <Section title="Group By">
                             {
                               // FIXME
-                              groupings.map((grouping) => (
+                              defaultChangeGroupings.map((grouping) => (
                                 <Item key={grouping.id}>{grouping.title}</Item>
                               ))
                             }
@@ -166,7 +168,7 @@ export function RollbackWindow() {
                       fillAvailableSpace
                     >
                       {(node) => {
-                        const props = getChangeListTreeItemProps({
+                        const props = changesViewTreeNodeRenderer.getItemProps({
                           node,
                           fileCountsMap,
                         });

@@ -29,8 +29,8 @@ const StyledContainer = styled.div`
   height: 100%;
 `;
 
-export function VcsBranchesView() {
-  const treeRef = useRecoilValue(branchesTreeRefState);
+export function VcsBranchesView({ tabKey }: { tabKey: string }) {
+  const treeRef = useRecoilValue(branchesTreeRefState(tabKey));
   const actions: ActionDefinition[] = [
     {
       id: VcsActionIds.GIT_UPDATE_SELECTED,
@@ -90,7 +90,7 @@ export function VcsBranchesView() {
       {({ shortcutHandlerProps }) => (
         <StyledContainer {...shortcutHandlerProps}>
           <VcsLogBranchesViewToolbar />
-          <BranchesTree />
+          <BranchesTree tabKey={tabKey} />
         </StyledContainer>
       )}
     </ActionsProvider>

@@ -1,6 +1,7 @@
 import React, { RefObject } from "react";
 import {
   atom,
+  RecoilState,
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
@@ -19,18 +20,20 @@ import {
   ToolWindowTabContent,
 } from "@intellij-platform/core";
 
-import { VcsLogDetailsView } from "./VcsLogDetailsView";
+import { VcsLogDetailsView } from "./DetailsView/VcsLogDetailsView";
 import { VcsLogCommitsView } from "./CommitsView/VcsLogCommitsView";
 import { VcsBranchesView } from "./BranchesView/VcsBranchesView";
 import { VcsActionIds } from "../VcsActionIds";
 import {
-  useResetFilters,
+  useCloseVcsTab,
   vcsActiveTabKeyState,
   vcsLogFilter,
   vcsLogTabShowBranches,
+  vcsLogTabShowCommitDetails,
   vcsTabKeysState,
   vcsTabTitleState,
 } from "./vcs-logs.state";
+import { useCommitsTableActions } from "./CommitsView/useCommitsTableActions";
 
 export const VERSION_CONTROL_TOOLWINDOW_ID = "Version Control";
 
@@ -85,7 +88,6 @@ export const VersionControlToolWindow = () => {
 const StyledExpandStripeButton = styled.button.attrs({ tabIndex: -1 })`
   box-sizing: border-box;
   all: unset;
-  height: 100%;
   width: 1.71875rem;
   align-items: center;
   display: flex;
@@ -134,7 +136,7 @@ function VcsTab({ tabKey }: { tabKey: string }) {
 
   const firstViewProps: Partial<ThreeViewSplitterProps> = showBranches
     ? {
-        firstView: <VcsBranchesView />,
+        firstView: <VcsBranchesView tabKey={tabKey} />,
         firstSize: firstViewSize,
         onFirstResize: setFirstViewSize,
         firstViewMinSize: 85,
@@ -145,7 +147,10 @@ function VcsTab({ tabKey }: { tabKey: string }) {
       {({ shortcutHandlerProps }) => (
         // tabIndex is added to make the whole container focusable, which means the focus can go away from the currently
         // focused element, when background is clicked. This is to follow the original implementation.
-        <StyledContainer {...shortcutHandlerProps} tabIndex={0}>
+        <StyledContainer
+          {...shortcutHandlerProps}
+          tabIndex={showBranches ? -1 : 0}
+        >
           {!showBranches && (
             <ShowBranchesButton onPress={() => setShowBranches(true)} />
           )}
@@ -153,7 +158,7 @@ function VcsTab({ tabKey }: { tabKey: string }) {
             {...firstViewProps}
             innerView={<VcsLogCommitsView tabKey={tabKey} />}
             innerViewMinSize={200}
-            lastView={<VcsLogDetailsView />}
+            lastView={<VcsLogDetailsView tabKey={tabKey} />}
             lastSize={lastViewSize}
             onLastResize={setLastViewSize}
             lastViewMinSize={40}
@@ -161,6 +166,21 @@ function VcsTab({ tabKey }: { tabKey: string }) {
         </StyledContainer>
       )}
     </ActionsProvider>
+  );
+}
+
+function useToggleCurrentTabSettings(
+  toggleState: (activeTab: string) => RecoilState<boolean>
+) {
+  return useRecoilCallback(
+    ({ set, snapshot }) =>
+      () => {
+        set(
+          toggleState(snapshot.getLoadable(vcsActiveTabKeyState).getValue()),
+          (value) => !value
+        );
+      },
+    []
   );
 }
 
@@ -179,33 +199,13 @@ function useVcsLogsToolWindowActions() {
       },
     []
   );
-  const toggleMatchCaseAction = useRecoilCallback(
-    ({ set, snapshot }) =>
-      () => {
-        set(
-          vcsLogFilter.matchCase(
-            snapshot.getLoadable(vcsActiveTabKeyState).getValue()
-          ),
-          (value) => !value
-        );
-      },
-    []
-  );
 
-  const toggleRegExpAction = useRecoilCallback(
-    ({ set, snapshot }) =>
-      () => {
-        set(
-          vcsLogFilter.regExp(
-            snapshot.getLoadable(vcsActiveTabKeyState).getValue()
-          ),
-          (value) => !value
-        );
-      },
-    []
-  );
+  const toggleMatchCase = useToggleCurrentTabSettings(vcsLogFilter.matchCase);
+  const toggleRegExp = useToggleCurrentTabSettings(vcsLogFilter.regExp);
+  const toggleDetails = useToggleCurrentTabSettings(vcsLogTabShowCommitDetails);
 
   const actions: ActionDefinition[] = [
+    ...useCommitsTableActions(),
     {
       id: VcsActionIds.FOCUS_TEXT_FILTER,
       title: "Focus Text Filter",
@@ -223,49 +223,33 @@ function useVcsLogsToolWindowActions() {
       id: VcsActionIds.MATCH_CASE,
       title: "Match Case",
       icon: <PlatformIcon icon="actions/matchCase.svg" />,
-      actionPerformed: toggleMatchCaseAction,
+      actionPerformed: toggleMatchCase,
     },
     {
       id: VcsActionIds.REG_EXP,
       title: "Regex",
       icon: <PlatformIcon icon="actions/regex" />,
-      actionPerformed: toggleRegExpAction,
+      actionPerformed: toggleRegExp,
+    },
+    {
+      id: VcsActionIds.SHOW_DETAILS,
+      title: "Show Details",
+      description: "Display details panel",
+      actionPerformed: toggleDetails,
     },
   ];
   return actions;
 }
 
 function VcsToolWindowTabTitle({ tabKey }: { tabKey: string }) {
-  const resetFilters = useResetFilters();
-  const closeTab = useRecoilCallback(
-    ({ set, snapshot, reset }) =>
-      () => {
-        const tabs = snapshot.getLoadable(vcsTabKeysState).getValue();
-        const currentActiveTabKey = snapshot
-          .getLoadable(vcsActiveTabKeyState)
-          .getValue();
-        if (currentActiveTabKey === tabKey) {
-          // make sure the active tab key remains valid, by switching to previous tab. In the reference implementation
-          // the previously activated tab will be activated instead of the previous one index-wise, but it's a
-          // negligible and easy-to-fix difference.
-          set(
-            vcsActiveTabKeyState,
-            tabs[tabs.findIndex((key) => key === tabKey) - 1] || tabs[0]
-          );
-        }
-        set(vcsTabKeysState, (keys) => keys.filter((key) => key !== tabKey));
-        resetFilters(tabKey);
-        reset(vcsLogTabShowBranches(tabKey));
-      },
-    []
-  );
+  const closeTab = useCloseVcsTab();
   return (
     <ToolWindowTabContent
       title={useRecoilValue(vcsTabTitleState(tabKey))}
       closeButton={
         tabKey !== "MAIN" && (
           <TooltipTrigger tooltip={<ActionTooltip actionName="Close Tab" />}>
-            <TabCloseButton onPress={closeTab} />
+            <TabCloseButton onPress={() => closeTab(tabKey)} />
           </TooltipTrigger>
         )
       }

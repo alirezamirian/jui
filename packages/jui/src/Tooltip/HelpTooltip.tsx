@@ -1,7 +1,8 @@
 import React from "react";
-import { Tooltip } from "@intellij-platform/core/Tooltip/Tooltip";
+import { Tooltip, TooltipProps } from "@intellij-platform/core/Tooltip/Tooltip";
 
-export interface HelpTooltipProps {
+export interface HelpTooltipProps
+  extends Omit<TooltipProps, "children" | "multiline"> {
   helpText: React.ReactNode;
   shortcut?: React.ReactNode;
   link?: React.ReactNode;
@@ -16,9 +17,10 @@ export const HelpTooltip = ({
   helpText,
   shortcut,
   link,
+  ...tooltipProps
 }: HelpTooltipProps): JSX.Element => {
   return (
-    <Tooltip multiline>
+    <Tooltip multiline {...tooltipProps}>
       <Tooltip.Header>{helpText}</Tooltip.Header>
       <div>
         <Tooltip.Shortcut>{shortcut}</Tooltip.Shortcut>

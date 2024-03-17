@@ -40,9 +40,8 @@
   "packageManager": "yarn@3.2.1",
   "resolutions": {
     "styled-components": "5.3.5",
+    "typescript": "4.7.4",
     "cypress-plugin-snapshots@1.4.4": "patch:cypress-plugin-snapshots@npm:1.4.4#.yarn/patches/cypress-plugin-snapshots-npm-1.4.4-a6166116fb.patch",
-    "@react-aria/overlays@3.7.5": "patch:@react-aria/overlays@npm:3.7.5#.yarn/patches/@react-aria-overlays-npm-3.7.5-7d05242971.patch",
-    "@react-stately/layout@3.4.4": "patch:@react-stately/layout@npm:3.4.4#.yarn/patches/@react-stately-layout-npm-3.4.4-75ff8d9e5d.patch",
     "@parcel/transformer-js@2.6.0": "patch:@parcel/transformer-js@npm:2.6.0#.yarn/patches/@parcel-transformer-js-npm-2.6.0-6caf2205a6.patch"
   }
 }

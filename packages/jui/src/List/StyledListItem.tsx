@@ -7,8 +7,10 @@ export type StyledListItemProps = {
   disabled: boolean;
 };
 
-export const StyledListItem = styled.li<StyledListItemProps>(
-  ({ containerFocused, selected, disabled, theme }) => {
+export const StyledListItem = styled.div.attrs<StyledListItemProps>({
+  role: "listitem",
+})<StyledListItemProps>`
+  ${({ containerFocused, selected, disabled, theme }) => {
     let backgroundColor;
     let color = disabled
       ? theme.color("*.disabledForeground")
@@ -37,17 +39,16 @@ export const StyledListItem = styled.li<StyledListItemProps>(
       }
     }
     return {
-      backgroundColor,
+      backgroundColor: theme.asCurrentBackground(backgroundColor),
       color,
-      position: "relative",
-      display: "flex",
-      whiteSpace: "nowrap",
-      paddingLeft: "0.5rem", // themed?
-      paddingRight: "0.5rem", // themed?
-      lineHeight: "20px",
-      outline: "none",
-      cursor: "default",
-      minWidth: "min-content", // ?
     };
-  }
-);
+  }};
+  position: relative;
+  display: flex;
+  white-space: nowrap;
+  padding: 0 0.5rem; // themed?
+  line-height: 1.25rem;
+  outline: none;
+  cursor: default;
+  min-width: min-content; // Needed for content sizing for when list/tree is used inside popup or modal window
+`;

@@ -7,10 +7,10 @@ import React, {
 } from "react";
 import { TooltipTriggerProps as AriaTooltipTriggerProps } from "@react-aria/tooltip";
 import { useTooltipTriggerState } from "@react-stately/tooltip";
-import { TooltipTriggerAndOverlay } from "@intellij-platform/core/Tooltip/TooltipTriggerAndOverlay";
 import { AriaPositionProps, useOverlayPosition } from "@react-aria/overlays";
+import { TooltipTriggerAndOverlay } from "./TooltipTriggerAndOverlay";
 
-interface TooltipTriggerProps
+export interface PositionedTooltipTriggerProps
   extends Omit<AriaTooltipTriggerProps, "trigger">,
     Pick<
       AriaPositionProps,
@@ -51,7 +51,7 @@ export const PositionedTooltipTrigger = ({
   offset = 8,
   showOnFocus,
   ...props
-}: TooltipTriggerProps): JSX.Element => {
+}: PositionedTooltipTriggerProps): JSX.Element => {
   const state = useTooltipTriggerState({
     ...props,
     delay,
@@ -60,7 +60,7 @@ export const PositionedTooltipTrigger = ({
   const overlayRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement>(null);
 
-  const { overlayProps, updatePosition } = useOverlayPosition({
+  const positionAria = useOverlayPosition({
     ...props,
     overlayRef,
     targetRef: triggerRef,
@@ -74,14 +74,14 @@ export const PositionedTooltipTrigger = ({
   // FIXME: Find the explanation for why it happens, and fix it properly, if it's a legit issue.
   useEffect(() => {
     if (state.isOpen) {
-      requestAnimationFrame(updatePosition);
+      requestAnimationFrame(positionAria.updatePosition);
     }
   }, [state.isOpen]);
 
   return (
     <TooltipTriggerAndOverlay
       tooltip={tooltip}
-      tooltipOverlayProps={overlayProps}
+      positionAria={positionAria}
       trigger={children}
       state={state}
       overlayRef={overlayRef}

@@ -55,6 +55,7 @@ export const HighlightInCustomUI: StoryFn = () => {
       <SpeedSearchList
         selectionMode="multiple"
         items={legends}
+        estimatedItemHeight={40}
         fillAvailableSpace
       >
         {itemRenderer(renderItemCustomUI, <HighlightedTextValue />)}

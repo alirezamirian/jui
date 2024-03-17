@@ -3,8 +3,8 @@ import * as BrowserFS from "browserfs";
 // @ts-expect-error: https://github.com/sindresorhus/pify/issues/74
 import pify from "pify";
 import LightningFS from "@isomorphic-git/lightning-fs";
-import { BFSCallback } from "browserfs/src/core/file_system";
 import FS, { FSModule } from "browserfs/dist/node/core/FS";
+import { BFSCallback } from "browserfs/dist/node/core/file_system";
 
 // importing the type didn't work as expected
 type FileSystem = Parameters<typeof BrowserFS["initialize"]>[0];

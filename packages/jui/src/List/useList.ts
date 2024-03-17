@@ -1,10 +1,12 @@
 import { AriaSelectableListOptions } from "@react-aria/selection";
 import { ListState } from "@react-stately/list";
-import React, { useEffect, useState } from "react";
+import React, { Key, useEffect, useMemo, useState } from "react";
 import { useSelectableList } from "./useSelectableList";
 import { useFocusWithin } from "@react-aria/interactions";
 import { mergeProps } from "@react-aria/utils";
 import { CollectionRefProps } from "@intellij-platform/core/Collections/useCollectionRef";
+import { useEventCallback } from "@intellij-platform/core/utils/useEventCallback";
+import { ListContextType } from "@intellij-platform/core/List/ListContext";
 
 export interface ListProps
   extends Omit<
@@ -18,12 +20,18 @@ export interface ListProps
     >,
     CollectionRefProps {
   allowEmptySelection?: boolean;
+  /**
+   * Called when the action for the item should be triggered, which can be by double click or pressing Enter.
+   * Enter not implemented yet :D
+   */
+  onAction?: (key: Key) => void;
+  showAsFocused?: boolean;
   id?: string;
 }
 // import { useSelectableList } from "@react-aria/selection";
 
 export function useList<T>(
-  props: ListProps,
+  { onAction, showAsFocused, ...props }: ListProps,
   state: ListState<T>,
   ref: React.RefObject<HTMLElement>
 ) {
@@ -58,8 +66,19 @@ export function useList<T>(
     }
   }, [!props.allowEmptySelection]);
 
+  const onActionCallback = useEventCallback(onAction ?? (() => {}));
+  const listContext: ListContextType<T> = useMemo(
+    () => ({
+      state,
+      focused: Boolean(focused || showAsFocused),
+      onAction: onActionCallback,
+    }),
+    [state, focused, showAsFocused]
+  );
+
   return {
     listProps: mergeProps(listProps, focusWithinProps),
+    listContext,
     focused,
   };
 }

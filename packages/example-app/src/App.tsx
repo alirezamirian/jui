@@ -1,3 +1,4 @@
+import * as path from "path";
 import React, { CSSProperties, useRef } from "react";
 import { RecoilRoot } from "recoil";
 import git from "isomorphic-git";
@@ -15,7 +16,7 @@ import { SampleRepoInitializer } from "./SampleRepoInitializer";
 import { fs, WaitForFs } from "./fs/fs";
 import { exampleAppKeymap } from "./exampleAppKeymap";
 import { ToolWindowsRefContext } from "./Project/useToolWindowManager";
-import * as path from "path";
+import "./jetbrains-mono-font.css";
 
 // useful globals for debugging purposes
 (window as any).git = git;

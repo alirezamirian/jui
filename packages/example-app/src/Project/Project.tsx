@@ -1,4 +1,4 @@
-import React, { CSSProperties, RefObject } from "react";
+import React, { CSSProperties, RefObject, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   ActionDefinition,
@@ -9,7 +9,10 @@ import {
   useBalloonManager,
 } from "@intellij-platform/core";
 import { FileEditor } from "../Editor/FileEditor";
-import { useInitializeVcs } from "../VersionControl/file-status.state";
+import {
+  useInitializeVcs,
+  useRefreshVcsRoots,
+} from "../VersionControl/file-status.state";
 import { toolWindows } from "./toolWindows";
 import { useInitializeChanges } from "../VersionControl/Changes/change-lists.state";
 import { IdeStatusBar } from "../StatusBar/IdeStatusBar";
@@ -42,7 +45,11 @@ export const Project = ({
   const [state, setState] = useRecoilState(toolWindowsState);
   const isRollbackWindowOpen = useRecoilValue(rollbackViewState.isOpen);
   const isSearchEveryWhereOpen = useRecoilValue(searchEverywhereState.isOpen);
+  const refreshVcsRoots = useRefreshVcsRoots();
 
+  useEffect(() => {
+    refreshVcsRoots();
+  }, []);
   useInitializeVcs();
   useInitializeChanges();
   usePersistenceFsNotification();

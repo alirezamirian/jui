@@ -26,15 +26,18 @@ export const StyledEditor = styled(MonacoEditor)`
  */
 export const Editor = (props: Omit<EditorProps, "theme">) => {
   const editorTheme = useEditorTheme();
+  const fontSize = 13;
   return (
     <StyledEditor
       {...props}
       options={{
         minimap: { enabled: false },
-        lineHeight: 20,
+        lineHeight: 22,
         showFoldingControls: "always",
         renderIndentGuides: true,
         overviewRulerBorder: false,
+        fontFamily: "JetBrains Mono",
+        fontSize,
         scrollbar: {
           verticalScrollbarSize: 14,
           horizontalScrollbarSize: 8,

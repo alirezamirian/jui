@@ -1,6 +1,6 @@
 import { styled } from "../styled";
 
-export const StyledListSectionHeader = styled.li(({ theme }) => ({
+export const StyledListSectionHeader = styled.div(({ theme }) => ({
   paddingLeft: 8,
   fontWeight: "bold",
   lineHeight: "20px",

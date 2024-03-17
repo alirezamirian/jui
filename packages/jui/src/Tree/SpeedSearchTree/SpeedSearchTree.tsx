@@ -2,7 +2,10 @@ import React, { ForwardedRef } from "react";
 import { Node } from "@react-types/shared";
 import { Virtualizer } from "@react-aria/virtualizer";
 import { CollectionSpeedSearchContext } from "@intellij-platform/core/CollectionSpeedSearch";
-import { SpeedSearchProps } from "@intellij-platform/core/SpeedSearch";
+import {
+  SpeedSearchProps,
+  SpeedSearchStateProps,
+} from "@intellij-platform/core/SpeedSearch";
 import { useCollectionRef } from "@intellij-platform/core/Collections/useCollectionRef";
 import useForwardedRef from "@intellij-platform/core/utils/useForwardedRef";
 import { StyledTree } from "../StyledTree";
@@ -15,11 +18,23 @@ import { useSpeedSearchTree } from "./useSpeedSearchTree";
 import { SpeedSearchTreeNode } from "./SpeedSearchTreeNode";
 
 export type SpeedSearchTreeProps<T extends object> = TreeProps<T> &
-  SpeedSearchProps;
+  SpeedSearchProps &
+  SpeedSearchStateProps & {
+    /**
+     * Whether speed search popup should not be shown. Useful when speed search state is controlled, and
+     * a search input is rendered outside the tree.
+     */
+    hideSpeedSearchPopup?: boolean;
+  };
 
 export const SpeedSearchTree = React.forwardRef(
   <T extends object>(
-    { fillAvailableSpace = false, treeRef, ...props }: SpeedSearchTreeProps<T>,
+    {
+      fillAvailableSpace = false,
+      treeRef,
+      hideSpeedSearchPopup,
+      ...props
+    }: SpeedSearchTreeProps<T>,
     forwardedRef: ForwardedRef<HTMLDivElement>
   ) => {
     const state = useTreeState(
@@ -42,7 +57,7 @@ export const SpeedSearchTree = React.forwardRef(
     return (
       <TreeContext.Provider value={treeContext}>
         <CollectionSpeedSearchContext.Provider value={speedSearchContextValue}>
-          <SpeedSearchPopup {...searchPopupProps} />
+          {!hideSpeedSearchPopup && <SpeedSearchPopup {...searchPopupProps} />}
           <StyledTree
             as={Virtualizer}
             ref={ref}

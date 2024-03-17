@@ -1,4 +1,4 @@
-import { pick, sortBy } from "ramda";
+import { sortBy } from "ramda";
 import React, { HTMLAttributes, useContext, useEffect, useState } from "react";
 import { useEventCallback } from "@intellij-platform/core/utils/useEventCallback";
 import { dfsVisit } from "@intellij-platform/core/utils/tree-utils";
@@ -68,8 +68,9 @@ export function ActionsProvider(props: ActionsProviderProps): JSX.Element {
     recursivelyCreateActions(keymap, props.actions)
   );
 
-  const actionIds = actions.map((action) => action.id);
-  const shortcuts = pick(actionIds, keymap || {});
+  const shortcuts = Object.fromEntries(
+    actions.map((action) => [action.id, action.shortcuts || []])
+  );
   const [actionProviderId] = useState(generateId);
 
   const { shortcutHandlerProps } = useShortcuts(

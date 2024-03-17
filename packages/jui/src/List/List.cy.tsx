@@ -3,11 +3,13 @@ import * as React from "react";
 import * as stories from "./List.stories";
 import { Item, List } from "@intellij-platform/core";
 
-const { Default, WithConnectedInput } = composeStories(stories);
+const { SingleSelection, WithConnectedInput } = composeStories(stories);
 
 describe("List", () => {
   it("renders as expected", () => {
-    cy.mount(<Default />);
+    cy.mount(<SingleSelection />);
+    cy.findByRole("list");
+    cy.findAllByRole("listitem").should("have.length", 9);
     matchImageSnapshot("List-default");
   });
 
@@ -30,7 +32,7 @@ describe("List", () => {
 
   it("calls onAction for items on click or Enter", () => {
     const onAction = cy.stub().as("onAction");
-    cy.mount(<Default onAction={onAction} />);
+    cy.mount(<SingleSelection onAction={onAction} />);
 
     cy.contains("Vicente Amigo").dblclick();
     cy.get("@onAction").should("be.calledOnceWith", "Vicente Amigo");
@@ -39,7 +41,9 @@ describe("List", () => {
   });
 
   it("auto selects the first item when empty selection is disallowed and nothing is selected", () => {
-    cy.mount(<Default allowEmptySelection={false} selectionMode="single" />);
+    cy.mount(
+      <SingleSelection allowEmptySelection={false} selectionMode="single" />
+    );
     cy.findByRole("list").focus();
     cy.findAllByRole("listitem").first().should("be.selected");
     cy.realPress("ArrowDown");

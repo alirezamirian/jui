@@ -1,26 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Node } from "@react-types/shared";
-import { ListState } from "@react-stately/list";
 import { usePress } from "@react-aria/interactions";
 import { useSelectableItem } from "@intellij-platform/core/selection";
 import { ItemStateContext } from "@intellij-platform/core/Collections";
 import { StyledListItem } from "./StyledListItem";
+import { ListContext } from "@intellij-platform/core/List/ListContext";
 
 export interface ListItemProps<T> {
-  listFocused: boolean;
   item: Node<T>;
-  state: ListState<T>;
-  onAction: () => void;
   children?: React.ReactNode;
 }
 
-export function ListItem<T>({
-  listFocused,
-  item,
-  state,
-  onAction,
-  children,
-}: ListItemProps<T>) {
+export function ListItem<T>({ item, children }: ListItemProps<T>) {
+  const { state, focused: listFocused, onAction } = useContext(ListContext)!;
   const ref = React.useRef(null);
   const isDisabled = state.disabledKeys.has(item.key);
   const isSelected = state.selectionManager.isSelected(item.key);
@@ -28,7 +20,7 @@ export function ListItem<T>({
   const { itemProps } = useSelectableItem({
     key: item.key,
     ref,
-    onAction,
+    onAction: () => onAction?.(item.key),
     selectionManager: state.selectionManager,
   });
   let { pressProps } = usePress({

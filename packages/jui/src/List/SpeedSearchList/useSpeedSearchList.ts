@@ -3,30 +3,31 @@ import { SelectionManager } from "@react-stately/selection";
 import { HTMLProps, Key, RefObject } from "react";
 import { mergeProps } from "@react-aria/utils";
 import { ListKeyboardDelegate } from "@react-aria/selection";
+import {
+  CollectionSpeedSearchContextValue,
+  useCollectionSpeedSearch,
+} from "@intellij-platform/core/CollectionSpeedSearch";
+import { SpeedSearchProps } from "@intellij-platform/core/SpeedSearch";
 import { SpeedSearchPopupProps } from "../../SpeedSearch/SpeedSearchPopup";
 import { TextRange } from "../../TextRange";
-import { useCollectionSpeedSearch } from "../../CollectionSpeedSearch/useCollectionSpeedSearch";
 import { ListProps, useList } from "../useList";
-import { CollectionSpeedSearchContextValue } from "@intellij-platform/core/CollectionSpeedSearch";
 
 interface UseListProps
-  extends Omit<ListProps, "keyboardDelegate" | "disallowTypeAhead"> {
-  stickySearch?: boolean;
-}
+  extends Omit<ListProps, "keyboardDelegate" | "disallowTypeAhead">,
+    Pick<SpeedSearchProps, "keepSearchActiveOnBlur"> {}
 
 export function useSpeedSearchList<T>(
   props: UseListProps,
   listState: ListState<T>,
   ref: RefObject<HTMLElement>
-): {
-  listProps: Omit<HTMLProps<HTMLUListElement>, "as" | "ref">;
+): ReturnType<typeof useList<T>> & {
   searchPopupProps: SpeedSearchPopupProps;
   focused: boolean;
   selectionManager: SelectionManager;
   speedSearchContextValue: CollectionSpeedSearchContextValue;
   matches: Map<Key, TextRange[]>;
 } {
-  const { stickySearch } = props;
+  const { keepSearchActiveOnBlur } = props;
 
   const {
     speedSearch,
@@ -43,10 +44,10 @@ export function useSpeedSearchList<T>(
       listState.disabledKeys,
       ref
     ),
-    stickySearch,
+    keepSearchActiveOnBlur,
     ref,
   });
-  const { listProps, focused } = useList(
+  const { listProps, ...otherOutputs } = useList(
     {
       ...props,
       disallowTypeAhead: true,
@@ -57,9 +58,9 @@ export function useSpeedSearchList<T>(
   );
 
   return {
+    ...otherOutputs,
     listProps: mergeProps(listProps, speedSearchContainerProps),
     matches: speedSearch.matches,
-    focused,
     selectionManager,
     speedSearchContextValue,
     searchPopupProps,

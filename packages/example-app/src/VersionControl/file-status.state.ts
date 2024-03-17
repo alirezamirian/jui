@@ -5,8 +5,7 @@ import {
   selector,
   selectorFamily,
   useRecoilCallback,
-  useRecoilRefresher_UNSTABLE,
-  useResetRecoilState,
+  useSetRecoilState,
 } from "recoil";
 import { sampleRepos } from "../Project/project.state";
 import { findRoot, status, statusMatrix } from "isomorphic-git";
@@ -33,22 +32,30 @@ const temporaryVcsMappingsDefaultState = selector({
     );
   },
 });
+
+// FIXME: since the value of this atom comes from a selector, everytime it's called in a selector (which happens in
+//  many places), it will cause a page blink as some component is using a state that depends on this and the loading
+//  is not handled locally (by either a local Suspense or using useRecoilValueLoadable)
 export const vcsRootsState = atom<VcsDirectoryMapping[]>({
   key: "vcsRoots",
-  default: temporaryVcsMappingsDefaultState,
+  default: [],
 });
 
 /**
  * temporary(?) hook to refresh vcs roots
  */
 export const useRefreshVcsRoots = () => {
-  const refreshTemporaryVcsMappingsDefault = useRecoilRefresher_UNSTABLE(
-    temporaryVcsMappingsDefaultState
-  );
-  const refreshVcsRoots = useResetRecoilState(vcsRootsState);
+  const setVcsRoots = useSetRecoilState(vcsRootsState);
   return () => {
-    refreshTemporaryVcsMappingsDefault();
-    refreshVcsRoots();
+    asyncFilter(
+      ({ dir }) => fs.promises.stat(dir).then(Boolean),
+      Object.values(sampleRepos).map<VcsDirectoryMapping>(({ path }) => ({
+        dir: path,
+        vcs: "git",
+      }))
+    ).then((roots) => {
+      setVcsRoots(roots);
+    });
   };
 };
 

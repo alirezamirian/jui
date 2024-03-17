@@ -1,8 +1,8 @@
-import React, { ComponentProps } from "react";
+import React, { ComponentProps, HTMLAttributes, HTMLProps } from "react";
 import { useTheme } from "styled-components";
 import { Theme } from "./Theme/Theme";
 
-interface Props extends ComponentProps<"img"> {
+interface Props extends React.ImgHTMLAttributes<HTMLImageElement> {
   /**
    * src for when a dark theme is active. if `darkSrc` doesn't have a non-empty string value, src will be used both
    * for dark and light themes.
