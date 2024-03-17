@@ -1,7 +1,7 @@
 ---
 ---
 
-import { Default } from "@intellij-platform/core/List/List.stories";
+import { SingleSelection } from "@intellij-platform/core/List/List.stories";
 import { ExampleContext } from "@site/src/components/ExampleContext";
 
 # List
@@ -16,13 +16,21 @@ a list of items with a single attribute. Here is some examples from JetBrains ID
 - **Settings -> Editor -> Natural Languages** (single attribute list of items)
 - **Show Local History** window (advanced layout)
 
-#### Remaining
+```jsx themed live
+<List selectionMode="multiple" fillAvailableSpace>
+  <Item>Paco de lucia</Item>
+  <Divider />
+  <Item>Vicente Amigo</Item>
+  <Section title="Other">
+    <Item>Gerardo Nunez</Item>
+    <Item>El Amir</Item>
+  </Section>
+</List>
+```
 
-- [ ] Virtualized scrolling support for performance with long lists
+## SpeedSearchList
 
-<ExampleContext>
-  <Default.render />
-</ExampleContext>
+TODO
 
 ## ItemLayout
 
@@ -42,8 +50,6 @@ accessible on `ItemLayout`.
   </Item>
 </SpeedSearchList>
 ```
-
-## SpeedSearchList
 
 ## ContextMenu
 
