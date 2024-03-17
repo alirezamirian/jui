@@ -12,6 +12,7 @@ describe("Tree", () => {
     cy.mount(<Static />);
 
     cy.contains("Foo").click().type("{enter}");
+    cy.findByRole("treeitem", { name: "FooBar" });
     matchImageSnapshot("Tree-nested-single-child-expansion");
   });
 

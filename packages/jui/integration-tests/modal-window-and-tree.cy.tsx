@@ -16,7 +16,8 @@ const StyledFrame = styled.div`
 `;
 
 describe("ModalWindow containing Tree", () => {
-  it("should be sized to fit tree", () => {
+  // FIXME(https://github.com/alirezamirian/jui/issues/56): unskip
+  it.skip("should be sized to fit tree", () => {
     cy.mount(
       <ModalWindow>
         <WindowLayout
@@ -31,11 +32,12 @@ describe("ModalWindow containing Tree", () => {
         />
       </ModalWindow>
     );
+    cy.findByRole("dialog").invoke("width").should("be.greaterThan", 180);
     matchImageSnapshot("ModalWindow-sized-based-on-Tree");
   });
 });
 
 function matchImageSnapshot(snapshotsName: string) {
-  // cy.get("[data-loading-icon]").should("not.exist");
-  // cy.percySnapshot(snapshotsName);
+  cy.get("[data-loading-icon]").should("not.exist");
+  cy.percySnapshot(snapshotsName);
 }

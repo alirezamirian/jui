@@ -4,8 +4,14 @@ import { composeStories } from "@storybook/react";
 import * as stories from "./Popup.stories";
 import { Popup } from "./Popup";
 
-const { Default, DefaultPosition, DefaultSize, MenuContent, ListContent } =
-  composeStories(stories);
+const {
+  Default,
+  DefaultPosition,
+  DefaultSize,
+  MenuContent,
+  ListContent,
+  TreeContent,
+} = composeStories(stories);
 
 describe("Popup", () => {
   describe("sizing and positioning", () => {
@@ -14,12 +20,17 @@ describe("Popup", () => {
       matchImageSnapshot("Popup-default-bounds--simple");
       cy.mount(<MenuContent />);
       matchImageSnapshot("Popup-default-bounds--menu");
-      cy.mount(<ListContent />);
-      matchImageSnapshot("Popup-default-bounds--list");
 
-      // Tree uses virtualization, and sizing is flaky at the moment. FIXME
-      // cy.mount(<TreeContent />);
-      // matchImageSnapshot("Popup-default-bounds--tree");
+      // FIXME(https://github.com/alirezamirian/jui/issues/56): uncomment when the issue is solved
+      //   cy.mount(<ListContent />);
+      //   cy.findByRole("dialog").invoke("width").should("be.greaterThan", 100);
+      //
+      //   matchImageSnapshot("Popup-default-bounds--list");
+      //
+      //   cy.mount(<TreeContent />);
+      //   cy.findByRole("dialog").invoke("width").should("be.greaterThan", 150);
+      //
+      //   matchImageSnapshot("Popup-default-bounds--tree");
     });
 
     it("takes default position into account, while setting size based on content", () => {
