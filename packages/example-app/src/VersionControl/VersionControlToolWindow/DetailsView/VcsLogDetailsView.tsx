@@ -1,6 +1,8 @@
 import React from "react";
 import {
   atom,
+  isRecoilValue,
+  selector,
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
@@ -48,6 +50,21 @@ const StyledContainer = styled.div`
   height: 100%;
 `;
 
+const groupingState = selector({
+  key: "vcs/log/commits/changes/groupingState",
+  get: ({ get }) => {
+    const groupings = defaultChangeGroupings.filter((grouping) =>
+      isRecoilValue(grouping.isAvailable)
+        ? get(grouping.isAvailable)
+        : grouping.isAvailable
+    );
+    return groupings.map((grouping) => ({
+      ...grouping,
+      key: `groupBy:${grouping.id}`,
+      isActive: get(changesGroupingActiveState(grouping.id)),
+    }));
+  },
+});
 export function VcsLogDetailsView({ tabKey }: { tabKey: string }) {
   const [splitViewSize, setSplitViewSize] = useRecoilState(splitViewSizeState);
   const isDetailsVisible = useRecoilValue(vcsLogTabShowCommitDetails(tabKey));
@@ -56,15 +73,10 @@ export function VcsLogDetailsView({ tabKey }: { tabKey: string }) {
   const toggleGroupBy = useRecoilCallback(({ set }) => (id: string) => {
     set(changesGroupingActiveState(id), (currentValue) => !currentValue);
   });
-  const groupByMenuItems = defaultChangeGroupings
-    .filter((grouping) =>
-      useRecoilValue(changesGroupingActiveState(grouping.id))
-    )
-    .map((grouping) => ({
-      title: grouping.title,
-      key: `groupBy:${grouping.id}`,
-    }));
-  const groupBySelectedKeys = groupByMenuItems.map(({ key }) => key);
+  const groupByMenuItems = useRecoilValue(groupingState);
+  const groupBySelectedKeys = groupByMenuItems
+    .filter(({ isActive }) => isActive)
+    .map(({ key }) => key);
 
   const treeRef = useRecoilValue(commitChangesTreeRefState);
   const actions = useTreeActions({ treeRef });
