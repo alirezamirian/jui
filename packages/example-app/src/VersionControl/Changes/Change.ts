@@ -1,4 +1,5 @@
 import { FileStatus } from "../file-status";
+import { dirname } from "path";
 
 export type Revision = {
   path: string;
@@ -52,7 +53,15 @@ export class Change {
   static isRename(change: Change): change is ModificationChange {
     return (
       Change.isModification(change) &&
-      change.before?.path !== change.after?.path
+      change.before.path !== change.after.path &&
+      dirname(change.before.path) === dirname(change.after.path)
+    );
+  }
+  static isMove(change: Change): change is ModificationChange {
+    return (
+      Change.isModification(change) &&
+      change.before.path !== change.after.path &&
+      dirname(change.before.path) !== dirname(change.after.path)
     );
   }
 }
