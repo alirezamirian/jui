@@ -106,6 +106,7 @@ export const changedFilesState = selector({
       type Writeable<T> = { -readonly [P in keyof T]: T[P] };
       sortTreeNodesInPlace(
         (node) =>
+          (node.type === "directory" ? "a_" : "b_") +
           commitChangesTreeNodeRenderer
             .getTextValue(node, { fileCountsMap })
             .toLowerCase(),
