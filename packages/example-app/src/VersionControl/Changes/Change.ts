@@ -4,6 +4,7 @@ import { dirname } from "path";
 export type Revision = {
   path: string;
   isDir: boolean;
+  hash?: string;
   content(): Promise<string>;
 };
 

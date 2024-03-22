@@ -1,5 +1,6 @@
 import { diffLines } from "diff";
 import { AdditionChange, Change, DeletionChange } from "./Change";
+import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 // Read more: https://www.git-scm.com/docs/git-diff/2.6.7#:~:text=The-,similarity%20index,-is%20the%20percentage
 const DEFAULT_SIMILARITY_INDEX = 50;
@@ -10,6 +11,34 @@ const DEFAULT_SIMILARITY_INDEX = 50;
  * @param changes
  */
 export async function detectRenames(
+  changes: ReadonlyArray<Change>
+): Promise<Change[]> {
+  return detectRenamesBasedOnContent(detectRenamesBasedOnHash(changes));
+}
+
+function detectRenamesBasedOnHash(changes: ReadonlyArray<Change>): Change[] {
+  const deletions = changes.filter(Change.isDeletion);
+  const additions = changes.filter(Change.isAddition);
+
+  return mergeRenames(
+    new Map<DeletionChange, { to: AdditionChange }>(
+      deletions
+        .map((deletion) => {
+          const match = additions.find(
+            ({ after: { hash } }) => hash === deletion.before.hash
+          );
+          if (match) {
+            return [deletion, { to: match }] as const;
+          }
+          return null;
+        })
+        .filter(notNull)
+    ),
+    changes
+  );
+}
+
+async function detectRenamesBasedOnContent(
   changes: ReadonlyArray<Change>
 ): Promise<Change[]> {
   const deletions = changes.filter(Change.isDeletion);
@@ -50,7 +79,13 @@ export async function detectRenames(
       );
     })
   );
+  return mergeRenames(renameMapping, changes);
+}
 
+function mergeRenames(
+  renameMapping: Map<DeletionChange, { to: AdditionChange }>,
+  changes: ReadonlyArray<Change>
+) {
   const renamedChanges = [...renameMapping.values()].map((rename) => rename.to);
   return changes
     .map((change) => {

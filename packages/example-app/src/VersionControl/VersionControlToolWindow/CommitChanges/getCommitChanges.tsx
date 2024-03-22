@@ -33,6 +33,7 @@ export async function getCommitChanges({
         return null;
       }
       const afterRevision: Revision = {
+        hash: await after?.oid(),
         path: path.join(params.dir || "", filepath),
         isDir: afterType === "tree",
         content: async () =>
@@ -41,6 +42,7 @@ export async function getCommitChanges({
           ),
       };
       const beforeRevision: Revision = {
+        hash: await before?.oid(),
         path: path.join(params.dir || "" || "", filepath),
         isDir: beforeType === "tree",
         content: async () =>
