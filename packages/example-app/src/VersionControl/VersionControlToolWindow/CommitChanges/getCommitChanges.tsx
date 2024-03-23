@@ -2,7 +2,6 @@ import git from "isomorphic-git";
 import path from "path";
 
 import { Change, Revision } from "../../Changes/Change";
-import { detectRenames } from "../../Changes/detectRenames";
 
 const cache = {}; // FIXME: find a better caching strategy. Per project?
 export async function getCommitChanges({
@@ -60,7 +59,5 @@ export async function getCommitChanges({
     },
   });
 
-  return await detectRenames(
-    (items || []).filter((item: boolean | Change) => item)
-  );
+  return (items || []).filter((item: boolean | Change) => item);
 }
