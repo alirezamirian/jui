@@ -5,6 +5,13 @@ import {
 
 export type ActionInResolvedGroup = Action & { parent: ResolvedActionGroup };
 
+/**
+ * - `popup`: shown as submenu (isPopup property in ActionGroup in the reference impl)
+ * - `section`: a section with divider, but without section title
+ * - `titledSection`: a section with divider and title.
+ */
+type ActionGroupPresentation = "section" | "titledSection" | "popup";
+
 export interface MutableActionGroup extends Action {
   children: Action[];
   /**
@@ -12,11 +19,12 @@ export interface MutableActionGroup extends Action {
    */
   isSearchable?: boolean;
   /**
-   * If the action group should be rendered as a popup (submenu), in menus.
+   * How the action group should be rendered, in menus.
    */
-  isPopup?: boolean;
+  presentation?: ActionGroupPresentation;
 }
 export type ActionGroup = Readonly<MutableActionGroup>;
+
 export interface ResolvedActionGroup extends ActionGroup {
   parent: ResolvedActionGroup | null;
   children: ActionInResolvedGroup[];
@@ -24,13 +32,9 @@ export interface ResolvedActionGroup extends ActionGroup {
 export interface ActionGroupDefinition extends ActionDefinition {
   children: ActionDefinition[]; // Should DividerItem be supported first-class here?
   /**
-   * Whether the action group is searchable. See {@link getAvailableActionsFor}.
-   */
-  isSearchable?: boolean;
-  /**
    * If the action group should be rendered as a popup (submenu), in menus.
    */
-  isPopup?: boolean;
+  presentation?: ActionGroupPresentation;
 }
 
 export function isInResolvedActionGroup(

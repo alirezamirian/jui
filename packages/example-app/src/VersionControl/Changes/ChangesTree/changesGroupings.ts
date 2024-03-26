@@ -15,6 +15,7 @@ import {
   RepositoryNode,
   repositoryNode,
 } from "./ChangeTreeNode";
+import { VcsActionIds } from "../../VcsActionIds";
 
 export type MaybeRecoilValue<T> = T | RecoilValue<T>;
 
@@ -29,6 +30,7 @@ export interface ChangeGrouping<
   id: I;
   title: string;
   isAvailable: MaybeRecoilValue<boolean>;
+  useShortcutOf?: string;
   groupFn: MaybeRecoilValue<GroupFn<T>>;
 }
 
@@ -64,6 +66,7 @@ export const directoryGrouping: ChangeGrouping<DirectoryNode, "directory"> = {
   id: "directory",
   title: "Directory",
   isAvailable: true,
+  useShortcutOf: VcsActionIds.GROUP_BY_DIRECTORY,
   groupFn: createGroupByDirectory<ChangeNode, DirectoryNode>({
     shouldCollapseDirectories: true,
     createDirectoryNode: ({ dirPath, parentNodePath, children }) =>

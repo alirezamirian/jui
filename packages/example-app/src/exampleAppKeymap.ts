@@ -104,6 +104,15 @@ export const exampleAppKeymap: Keymap = {
       },
     },
   ],
+  [VcsActionIds.GROUP_BY_DIRECTORY]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Control"],
+        code: "KeyP",
+      },
+    },
+  ],
   SafeDelete: [
     {
       type: "keyboard",

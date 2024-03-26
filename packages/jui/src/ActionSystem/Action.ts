@@ -48,6 +48,11 @@ export interface ActionDefinition {
   isDisabled?: boolean;
 
   /**
+   * Whether the action is searchable. See {@link ../ActionsProvider.ts#getAvailableActionsFor}.
+   */
+  isSearchable?: boolean;
+
+  /**
    * Allows reusing the shortcut of another action, if no shortcut is set for this action.
    */
   useShortcutsOf?: string;
@@ -56,7 +61,7 @@ export interface ActionDefinition {
 export interface MutableAction
   extends Pick<
     ActionDefinition,
-    "title" | "icon" | "description" | "isDisabled"
+    "title" | "icon" | "description" | "isDisabled" | "isSearchable"
   > {
   id: string;
   /**

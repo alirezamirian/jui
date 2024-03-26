@@ -5,7 +5,10 @@ import {
   useToolWindowState,
   ViewMode,
 } from "@intellij-platform/core/ToolWindows";
-import { ActionDefinition } from "@intellij-platform/core/ActionSystem";
+import {
+  ActionDefinition,
+  ActionGroupDefinition,
+} from "@intellij-platform/core/ActionSystem";
 import { PlatformIcon } from "@intellij-platform/core/Icon";
 import {
   DOCK_PINNED_MODE_ACTION_ID,
@@ -23,7 +26,6 @@ import {
   UNDOCK_MODE_ACTION_ID,
   WINDOW_MODE_ACTION_ID,
 } from "./ToolWindowActionIds";
-import { ActionGroupDefinition } from "@intellij-platform/core/ActionSystem";
 import { useCreateDefaultActionGroup } from "@intellij-platform/core/ActionSystem/components";
 
 // Resize steps in Intellij Platform is calculated based on the size of a "W" character and some
@@ -93,15 +95,14 @@ export function useToolWindowActions({
   const createDefaultActionGroup = useCreateDefaultActionGroup();
 
   const actions: ActionDefinition[] = [];
-  const activeToolWindowActionGroup = createDefaultActionGroup({
-    id: "ActiveToolwindowGroup",
-    title: "Active Tool Window",
-    children: actions,
-  });
   if (!state) {
     // FIXME: when window is removed, a last render happens with the new ToolWindowsState, which doesn't have state
     //  for the removed tool window. Need to understand why that happens.
-    return activeToolWindowActionGroup;
+    return createDefaultActionGroup({
+      id: "ActiveToolwindowGroup",
+      title: "Active Tool Window",
+      children: [],
+    });
   }
   const viewModeActionGroup = createDefaultActionGroup({
     id: VIEW_MODE_ACTION_GROUP_ID,
@@ -260,5 +261,9 @@ export function useToolWindowActions({
     }
     actions.push(resizeGroup);
   }
-  return activeToolWindowActionGroup;
+  return createDefaultActionGroup({
+    id: "ActiveToolwindowGroup",
+    title: "Active Tool Window",
+    children: actions,
+  });
 }

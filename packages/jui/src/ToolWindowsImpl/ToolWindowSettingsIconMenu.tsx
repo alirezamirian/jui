@@ -56,7 +56,7 @@ export function ToolWindowSettingsIconMenu({
     {
       id: "resize",
       title: "Resize",
-      isPopup: true,
+      presentation: "popup",
       children: [...resizeActions.children, maximizeAction],
     },
     new DividerItem(),

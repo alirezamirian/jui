@@ -96,10 +96,12 @@ const changeNodeRenderer: NodeRenderer<ChangeNode> = (node) => ({
       {Change.isRename(node.change)
         ? ` - renamed from ${path.basename(node.change.before.path)}`
         : Change.isMove(node.change) &&
-          ` - moved from ${path.relative(
-            path.dirname(node.change.after.path),
-            path.dirname(node.change.before.path)
-          )}`.replace(/(\.\.\/){2,}[!.]/g, "..")}
+          ` - moved from ${path
+            .relative(
+              path.dirname(node.change.after.path),
+              path.dirname(node.change.before.path)
+            )
+            .replace(/(\.\.\/){2,}[!.]/g, "..")}/`}
 
       <ChangeNodeHint node={node} />
     </ItemLayout>

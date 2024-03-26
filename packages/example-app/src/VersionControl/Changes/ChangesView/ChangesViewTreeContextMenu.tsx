@@ -13,7 +13,7 @@ export const ChangesViewTreeContextMenu = () => {
   }
   return (
     <ActionsMenu
-      aria-label="Context menu"
+      aria-label="Changes actions"
       actions={[
         useAction(VcsActionIds.CHECKIN_FILES),
         useAction(VcsActionIds.ROLLBACK),
