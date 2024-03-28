@@ -22,6 +22,7 @@ import { StyledHeader } from "../styled-components";
 import { vcsLogFilterCurrentTab } from "../vcs-logs.state";
 import { TreeSelectionManager } from "@intellij-platform/core/Tree/TreeSelectionManager";
 import { mergeProps } from "@react-aria/utils";
+import { useLatestRecoilValue } from "../../../recoil-utils";
 
 const StyledSearchInput = styled.input`
   all: unset;
@@ -43,7 +44,7 @@ const StyledSearchIconContainer = styled.span`
 `;
 
 export function BranchesTree({ tabKey }: { tabKey: string }) {
-  const branchesTreeNodes = useRecoilValue(branchesTreeNodeState);
+  const [branchesTreeNodes] = useLatestRecoilValue(branchesTreeNodeState);
   const [selectedKeys, setSelectedKeys] = useRecoilState(
     selectedKeysState(tabKey)
   );
@@ -110,7 +111,7 @@ export function BranchesTree({ tabKey }: { tabKey: string }) {
         ref={ref}
         treeRef={treeRef}
         selectionManagerRef={selectionManagerRef}
-        items={branchesTreeNodes}
+        items={branchesTreeNodes ?? []}
         selectionMode="multiple"
         selectedKeys={selectedKeys}
         onSelectionChange={setSelectedKeys}
