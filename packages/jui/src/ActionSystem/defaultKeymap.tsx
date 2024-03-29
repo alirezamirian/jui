@@ -235,4 +235,12 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
+  [CommonActionId.Delete]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        code: "Backspace",
+      },
+    },
+  ],
 };

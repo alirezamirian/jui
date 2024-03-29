@@ -55,28 +55,28 @@ export const dirContentState = selectorFamily({
  * recoil callback to refresh the file content recoil value of a give path.
  * The callback returns `true` the file exists and content is refreshed successfully, and `false otherwise.
  * @param set
+ * @deprecated use reset(fileContent(path)) directly
  */
 export const reloadFileFromDiskCallback =
-  ({ set }: CallbackInterface) =>
+  ({ reset }: CallbackInterface) =>
   async (path: string) => {
-    try {
-      const content = await fetchFileContent(path);
-      set(fileContent(path), content);
-      return true;
-    } catch {
-      return false;
-    }
+    reset(fileContent(path));
   };
 
-const fetchFileContent = async (
-  filepath: string | undefined
-): Promise<string> => {
-  if (!filepath) {
-    return "";
-  }
-  // @ts-expect-error: bad typing in @isomorphic-git/lightning-fs@4.6.0. It's fixed, but not published at the time of writing this
-  return fs.promises.readFile(filepath, { encoding: "utf8" });
-};
+const readFileContentSelector = selectorFamily({
+  key: "readFileContent",
+  get: (filepath: string | undefined) => async (): Promise<string | null> => {
+    if (!filepath) {
+      return "";
+    }
+    const exists = await fs.promises.exists(filepath);
+    if (!exists) {
+      return null;
+    }
+    // @ts-expect-error: bad typing in @isomorphic-git/lightning-fs@4.6.0. It's fixed, but not published at the time of writing this
+    return fs.promises.readFile(filepath, { encoding: "utf8" });
+  },
+});
 
 /**
  * **Note**: Still not quite clear if we should use atom and [synchronize with source of truth (FS)][recoil-atom-effects],
@@ -93,16 +93,16 @@ const fetchFileContent = async (
  * [recoil-atom-effects]: https://recoiljs.org/docs/guides/atom-effects#write-through-cache-example
  * [vfs]: https://plugins.jetbrains.com/docs/intellij/virtual-file-system.html
  **/
-export const fileContent = atomFamily<string, string | undefined>({
+export const fileContent = atomFamily<string | null, string | undefined>({
   key: "fileContent",
-  default: fetchFileContent,
+  default: readFileContentSelector,
   effects: (filepath) => [
     ({ onSet }) => {
-      onSet((content) => {
-        if (filepath) {
+      onSet(async (content) => {
+        if (filepath && (await fs.promises.exists(filepath))) {
           // Should a sync API be used here?
           fs.promises
-            .writeFile(filepath, content, "utf8")
+            .writeFile(filepath, content ?? "", "utf8")
             .catch((e: unknown) => {
               console.error("failed to sync the file back to the fs", e);
             });

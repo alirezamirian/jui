@@ -1,4 +1,4 @@
-import React, { HTMLAttributes, useContext } from "react";
+import React, { CSSProperties, HTMLAttributes, useContext } from "react";
 import { mergeProps } from "@react-aria/utils";
 
 import { styled } from "@intellij-platform/core/styled";
@@ -38,7 +38,7 @@ const StyledPopupHeader = styled.div<{
  * Implements appearance of
  * [Popup Header](https://www.figma.com/file/nfDfMAdV7j2fnQlpYNAOfP/IntelliJ-Platform-UI-Kit-%28Community%29?node-id=75455%3A26566&t=Hzwse5j5R6iCEzVW-4),
  * and also acts as a handle for moving the panel.
- * Expected to be used with {@link Popup.Layout}:
+ * Expected to be used with {@link Popup#Layout}:
  *
  * @example
  * ```tsx
@@ -50,15 +50,21 @@ const StyledPopupHeader = styled.div<{
 export const PopupHeader = ({
   children,
   hasControls,
+  className,
+  style,
 }: {
   children?: React.ReactNode;
   hasControls?: boolean;
+  className?: string;
+  style?: CSSProperties;
 }) => {
   const { isActive, movable, titleProps } = useContext(PopupContext);
   const renderHeader = (otherProps: HTMLAttributes<HTMLElement> = {}) => (
     <StyledPopupHeader
       active={isActive}
       hasControls={hasControls}
+      className={className}
+      style={style}
       {...mergeProps(titleProps, otherProps)}
     >
       {children}

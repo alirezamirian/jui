@@ -39,6 +39,23 @@ export const Disabled: StoryObj<InputProps> = {
   },
 };
 
+export const Embedded: StoryObj<InputProps> = {
+  render: render,
+  args: {
+    appearance: "embedded",
+    placeholder: "Embedded",
+  },
+};
+
+export const EmbeddedInvalid: StoryObj<InputProps> = {
+  render: render,
+  args: {
+    appearance: "embedded",
+    placeholder: "Embedded",
+    validationState: "invalid",
+  },
+};
+
 export const WithPlaceholder: StoryObj<InputProps> = {
   render: render,
   args: {

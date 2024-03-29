@@ -34,6 +34,8 @@ import {
 import { useEditorStateManager } from "../../Editor/editor.state";
 import { getNodeKeyForChange, isGroupNode } from "./ChangesTree/ChangeTreeNode";
 import { Change } from "./Change";
+import { useLatestRecoilValue } from "../../recoil-utils";
+import { findRootPaths } from "../../path-utils";
 
 export const useChangesViewActionDefinitions = (): ActionDefinition[] => {
   const openRollbackWindow = useRecoilCallback(
@@ -103,25 +105,22 @@ function useCheckInActionDefinition(): ActionDefinition {
   const queueCheckIn = useRecoilCallback(queueCheckInCallback, []);
   const toolWindowManager = useToolWindowManager();
   const activePaths = useRecoilValue(activePathsState);
-  const projectFiles = useRecoilValue(currentProjectFilesState);
-  const roots = activePaths.filter(
-    (path) =>
-      !activePaths.find(
-        (activePath) => path !== activePath && path.startsWith(activePath)
-      )
-  );
+  const [projectFiles] = useLatestRecoilValue(currentProjectFilesState);
+  const roots = findRootPaths(activePaths);
 
-  const isDir = projectFiles.find(
-    (item) => path.dirname(item.path).startsWith(roots[0]) // This is not quite accurate!
-  );
   const allChanges = useRecoilValue(allChangesState);
   const containsChange = roots.some((root) =>
     allChanges.find((change) => isPathInside(root, Change.path(change)))
   );
 
+  // The logic here is a little better than the reference impl, which itself is inconsistent in project view
+  // and in Changes view (aka commit view).
+  const isDirectory = (path: string) =>
+    projectFiles?.some((item) => item.type === "dir" && item.path === path);
+  const selectedPathsAreDirectories = roots.every(isDirectory);
   return {
     id: VcsActionIds.CHECKIN_FILES,
-    title: isDir
+    title: selectedPathsAreDirectories
       ? (commitDirMsg.format({ count: roots.length }) as string)
       : (commitFileMsg.format({ count: roots.length }) as string),
     isDisabled: !containsChange,

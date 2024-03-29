@@ -1,13 +1,16 @@
+import path from "path";
 import {
   atom,
   selector,
   selectorFamily,
   useRecoilRefresher_UNSTABLE,
 } from "recoil";
+import { createRef, MutableRefObject } from "react";
+import { PopupManagerAPI, WindowManagerAPI } from "@intellij-platform/core";
+
 import { dirContentState, FsItem } from "../fs/fs.state";
-import { filterPath } from "./project-utils";
 import { createFocusBasedSetterHook } from "../recoil-utils";
-import path from "path";
+import { filterPath } from "./project-utils";
 
 export interface Project {
   name: string;
@@ -127,6 +130,11 @@ export const activePathsState = atom<string[]>({
   default: [],
 });
 
+export const activePathExistsState = selector({
+  key: "project.activePaths.hasValue",
+  get: ({ get }) => get(activePathsState).length > 0,
+});
+
 /**
  * Sets the value of {@link activePathsState} when focused.
  * @returns focus/blur handling props, to be applied on the container which should set the active path state
@@ -135,3 +143,29 @@ export const useActivePathsProvider = createFocusBasedSetterHook(
   activePathsState,
   []
 );
+
+/**
+ * Ref to the popup manager of the current project. Used in actions that are created by a recoil selector.
+ * TODO(multi-project): either:
+ *  - introduce project-level recoil root, to keep such states per project. Downside is there are atoms that are
+ *    not per-project, and recoil doesn't currently support multiple nested scopes of atoms, even though it does
+ *    support nested RecoilRoots.
+ *  - (better) add a feature to the action system, where ActionProvider can define additional contextual properties
+ *    to be made available in `context` when calling `actionPerformed` method. The biggest challenge for a nice
+ *    implementation of such feature is static type safety.
+ */
+export const projectPopupManagerRefState = atom<
+  MutableRefObject<PopupManagerAPI | null>
+>({
+  key: "project.popupManager",
+  default: createRef(),
+  dangerouslyAllowMutability: true,
+});
+
+export const windowManagerRefState = atom<
+  MutableRefObject<WindowManagerAPI | null>
+>({
+  key: "project.windowManager",
+  default: createRef(),
+  dangerouslyAllowMutability: true,
+});

@@ -13,6 +13,7 @@ import {
   TabCloseButton,
   TabItem,
   TooltipTrigger,
+  useAction,
   useLatest,
 } from "@intellij-platform/core";
 import { editor, languages } from "monaco-editor";
@@ -29,13 +30,12 @@ import {
   activeEditorTabState,
   editorCursorPositionState,
   editorRefState,
-  useEditorStateManager,
+  useEditorState,
 } from "./editor.state";
 import { fileContent } from "../fs/fs.state";
 import { useUpdateFileStatus } from "../VersionControl/file-status.state";
 import * as path from "path";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
-import { useAction } from "@intellij-platform/core";
 import { mergeProps } from "@react-aria/utils";
 import { useActivePathsProvider } from "../Project/project.state";
 import { notImplemented } from "../Project/notImplemented";
@@ -47,7 +47,7 @@ import { notImplemented } from "../Project/notImplemented";
  * TODO: support multiple editors in split view.
  */
 export const FileEditor = () => {
-  const editorStateManager = useEditorStateManager();
+  const [editorTabs, editorStateManager] = useEditorState();
   const activeTab = useRecoilValue(activeEditorTabState);
   const editorRef = useRef<editor.IEditor>();
   const [active, setActive] = useState(false);
@@ -61,7 +61,7 @@ export const FileEditor = () => {
   // which is subject to this caching.
   const tabActionsRef = useLatest({
     closePath: editorStateManager.closePath,
-    closeOthersTabs: editorStateManager.closeOthersTabs,
+    closeOthersTabs: editorStateManager.closeOtherTabs,
   });
 
   const setEditorRef = useSetRecoilState(editorRefState);
@@ -108,7 +108,7 @@ export const FileEditor = () => {
         },
       })}
     >
-      {editorStateManager.tabs.length > 0 && (
+      {editorTabs.length > 0 && (
         <ContextMenuContainer
           renderMenu={() => (
             <Menu
@@ -127,12 +127,12 @@ export const FileEditor = () => {
           )}
         >
           <EditorTabs
-            items={editorStateManager.tabs}
+            items={editorTabs}
             active={active}
             selectedKey={activeTab?.filePath}
             onSelectionChange={(key) =>
               editorStateManager.select(
-                editorStateManager.tabs.findIndex((tab) => tab.filePath === key)
+                editorTabs.findIndex((tab) => tab.filePath === key)
               )
             }
             noBorders
@@ -168,7 +168,7 @@ export const FileEditor = () => {
                             onPress={(e) => {
                               if (e.altKey) {
                                 tabActionsRef.current.closeOthersTabs(
-                                  editorStateManager.tabs.indexOf(tab)
+                                  editorTabs.indexOf(tab)
                                 );
                               } else {
                                 tabActionsRef.current.closePath(tab.filePath);

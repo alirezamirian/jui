@@ -4,6 +4,7 @@ import { useRecoilValue } from "recoil";
 import { fileStatusState } from "./file-status.state";
 import React from "react";
 import { FileStatus } from "./file-status";
+import { useLatestRecoilValue } from "../recoil-utils";
 
 export const useStatusColor = (status: FileStatus) => {
   const theme = useTheme() as Theme;
@@ -20,8 +21,8 @@ export const useStatusColor = (status: FileStatus) => {
   return undefined;
 };
 export const useFileStatusColor = (filepath: string): string | undefined => {
-  const fileStatus = useRecoilValue(fileStatusState(filepath));
-  return useStatusColor(fileStatus);
+  const [fileStatus] = useLatestRecoilValue(fileStatusState(filepath));
+  return useStatusColor(fileStatus ?? "NOT_CHANGED");
 };
 
 export const FileStatusColor: React.FC<{ filepath: string }> = ({

@@ -1,12 +1,15 @@
-import React, { CSSProperties, RefObject, useEffect } from "react";
+import React, { CSSProperties, useRef } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   ActionDefinition,
   ActionsProvider,
+  BalloonManager,
   DefaultToolWindows,
   styled,
   ToolWindowRefValue,
   useBalloonManager,
+  usePopupManager,
+  useWindowManager,
 } from "@intellij-platform/core";
 import { FileEditor } from "../Editor/FileEditor";
 import {
@@ -27,6 +30,11 @@ import { useVcsActions } from "../VersionControl/useVcsActions";
 import { _balloonManagerRef } from "./notImplemented";
 import { PersistentStateProvider } from "./persistence/PersistentStateProvider";
 import { useTestActions } from "../testActions/useTestActions";
+import { ToolWindowsRefContext } from "./useToolWindowManager";
+import {
+  projectPopupManagerRefState,
+  windowManagerRefState,
+} from "./project.state";
 
 const StyledWindowFrame = styled.div`
   display: flex;
@@ -42,18 +50,17 @@ export const Project = ({
   height: CSSProperties["height"];
   toolWindowRef: RefObject<ToolWindowRefValue>;
 }) => {
+export const Project = ({ height }: { height: CSSProperties["height"] }) => {
+  const toolWindowRef = useRef<ToolWindowRefValue>(null);
   const [state, setState] = useRecoilState(toolWindowsState);
   const isRollbackWindowOpen = useRecoilValue(rollbackViewState.isOpen);
   const isSearchEveryWhereOpen = useRecoilValue(searchEverywhereState.isOpen);
-  const refreshVcsRoots = useRefreshVcsRoots();
 
-  useEffect(() => {
-    refreshVcsRoots();
-  }, []);
   useInitializeVcs();
   useInitializeChanges();
-  usePersistenceFsNotification();
-  _balloonManagerRef.value = useBalloonManager();
+
+  useRecoilValue(projectPopupManagerRefState).current = usePopupManager();
+  useRecoilValue(windowManagerRefState).current = useWindowManager();
 
   const allActions: ActionDefinition[] = [
     ...useProjectActions(),
@@ -63,32 +70,48 @@ export const Project = ({
 
   return (
     <PersistentStateProvider>
-      <StyledWindowFrame style={{ height }}>
-        <ActionsProvider
-          actions={allActions}
-          useCapture /* useCapture because of Monaco's aggressive event handling. Specifically, Cmd+Shift+O in .ts files  */
-        >
-          {({ shortcutHandlerProps }) => (
-            <>
-              <DefaultToolWindows
-                ref={toolWindowRef}
-                toolWindowsState={state}
-                onToolWindowStateChange={(newState) => {
-                  setState(newState);
-                }}
-                windows={toolWindows}
-                containerProps={shortcutHandlerProps}
-              >
-                <FileEditor />
-              </DefaultToolWindows>
-              <IdeStatusBar />
-            </>
-          )}
-        </ActionsProvider>
-
-        {isSearchEveryWhereOpen && <SearchEverywherePopup />}
-        {isRollbackWindowOpen && <RollbackWindow />}
-      </StyledWindowFrame>
+      <BalloonManager disablePortal>
+        <SetBalloonManagerRef />
+        <UsePersistentFsNotification />
+        {/* disablePortal to make example app more portable*/}
+        <ToolWindowsRefContext.Provider value={toolWindowRef}>
+          <StyledWindowFrame style={{ height }}>
+            <ActionsProvider
+              actions={allActions}
+              useCapture /* useCapture because of Monaco's aggressive event handling. Specifically, Cmd+Shift+O in .ts files  */
+            >
+              {({ shortcutHandlerProps }) => (
+                <>
+                  <DefaultToolWindows
+                    ref={toolWindowRef}
+                    toolWindowsState={state}
+                    onToolWindowStateChange={(newState) => {
+                      setState(newState);
+                    }}
+                    windows={toolWindows}
+                    containerProps={shortcutHandlerProps}
+                  >
+                    <FileEditor />
+                  </DefaultToolWindows>
+                  <IdeStatusBar />
+                </>
+              )}
+            </ActionsProvider>
+            {isSearchEveryWhereOpen && <SearchEverywherePopup />}
+            {isRollbackWindowOpen && <RollbackWindow />}
+          </StyledWindowFrame>
+        </ToolWindowsRefContext.Provider>
+      </BalloonManager>
     </PersistentStateProvider>
   );
 };
+
+function SetBalloonManagerRef() {
+  _balloonManagerRef.value = useBalloonManager();
+  return null;
+}
+
+function UsePersistentFsNotification() {
+  usePersistenceFsNotification();
+  return null;
+}

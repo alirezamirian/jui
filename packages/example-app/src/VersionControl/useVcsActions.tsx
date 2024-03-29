@@ -34,7 +34,7 @@ export function useVcsActions(): ActionDefinition[] {
       title: "Branches\u2026",
       icon: <PlatformIcon icon="vcs/branch.svg" />,
       actionPerformed: () => {
-        popupManager.show(({ close }) => <BranchesPopup onClose={close} />);
+        popupManager.show(({ close }) => <BranchesPopup close={close} />);
       },
     },
     {

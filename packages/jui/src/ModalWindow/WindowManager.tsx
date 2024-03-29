@@ -12,7 +12,7 @@ import {
   ModalWindowProps,
 } from "./ModalWindow";
 
-interface WindowManagerAPI {
+export interface WindowManagerAPI {
   /**
    * Shows a modal window within the stack of windows managed by {@link WindowManager}.
    * The opened windows will be closed when `onClose` interactions happen.

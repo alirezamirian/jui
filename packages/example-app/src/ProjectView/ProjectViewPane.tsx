@@ -26,9 +26,10 @@ import {
   foldersOnTopState,
   ProjectTreeNode,
   projectViewTreeRefState,
-  selectedKeysState,
+  selectionState,
 } from "./ProjectView.state";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
+import { useLatestRecoilValue } from "../recoil-utils";
 
 export const ProjectViewPane = (): React.ReactElement => {
   const project = useRecoilValue(currentProjectState);
@@ -39,10 +40,9 @@ export const ProjectViewPane = (): React.ReactElement => {
     setProjectViewTreeRef(treeRef);
   }, [treeRef]);
 
-  const projectTree = useRecoilValue(currentProjectTreeState);
-
+  const [treeState] = useLatestRecoilValue(currentProjectTreeState);
   const [expandedKeys, setExpandedKeys] = useRecoilState(expandedKeysState);
-  const [selectedKeys, setSelectedKeys] = useRecoilState(selectedKeysState);
+  const [selectedKeys, setSelectedKeys] = useRecoilState(selectionState);
   const foldersOnTop = useRecoilValue(foldersOnTopState);
 
   const sortItems = foldersOnTop
@@ -57,51 +57,53 @@ export const ProjectViewPane = (): React.ReactElement => {
 
   return (
     <DefaultSuspense>
-      <SpeedSearchTree
-        treeRef={treeRef}
-        {...activePathsProviderProps}
-        items={[projectTree] as ProjectTreeNode[]}
-        onAction={(path) => {
-          editor.openPath(`${path}`);
-        }}
-        fillAvailableSpace
-        autoFocus
-        selectionMode="multiple"
-        selectedKeys={selectedKeys}
-        onSelectionChange={setSelectedKeys}
-        expandedKeys={expandedKeys}
-        onExpandedChange={setExpandedKeys}
-      >
-        {(item) => (
-          <Item
-            key={item.path}
-            textValue={item.name}
-            childItems={
-              "children" in item ? sortItems(item.children) : undefined
-            }
-          >
-            <ItemLayout>
-              {<ProjectViewNodeIcon node={item} />}
-              {item.type === "project" ? (
-                <>
-                  <b>
-                    <HighlightedTextValue />
-                  </b>
-                  <ItemLayout.Hint>{project.path}</ItemLayout.Hint>
-                </>
-              ) : (
-                <FileTreeNodeText node={item} />
-              )}
-              {/* {"loadingState" in item &&
+      {treeState?.root && (
+        <SpeedSearchTree
+          treeRef={treeRef}
+          {...activePathsProviderProps}
+          items={[treeState.root] as ProjectTreeNode[]}
+          onAction={(path) => {
+            editor.openPath(`${path}`);
+          }}
+          fillAvailableSpace
+          autoFocus
+          selectionMode="multiple"
+          selectedKeys={selectedKeys}
+          onSelectionChange={setSelectedKeys}
+          expandedKeys={expandedKeys}
+          onExpandedChange={setExpandedKeys}
+        >
+          {(item) => (
+            <Item
+              key={item.path}
+              textValue={item.name}
+              childItems={
+                "children" in item ? sortItems(item.children) : undefined
+              }
+            >
+              <ItemLayout>
+                {<ProjectViewNodeIcon node={item} />}
+                {item.type === "project" ? (
+                  <>
+                    <b>
+                      <HighlightedTextValue />
+                    </b>
+                    <ItemLayout.Hint>{project.path}</ItemLayout.Hint>
+                  </>
+                ) : (
+                  <FileTreeNodeText node={item} />
+                )}
+                {/* {"loadingState" in item &&
                       item.loadingState === "loading" && (
                         <TreeNodeHint>
                           <Img height={16} src={loading} darkSrc={loadingDark} />
                         </TreeNodeHint>
                       )}*/}
-            </ItemLayout>
-          </Item>
-        )}
-      </SpeedSearchTree>
+              </ItemLayout>
+            </Item>
+          )}
+        </SpeedSearchTree>
+      )}
     </DefaultSuspense>
   );
 };

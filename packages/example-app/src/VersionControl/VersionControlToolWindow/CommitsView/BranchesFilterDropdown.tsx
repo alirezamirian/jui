@@ -1,11 +1,6 @@
 import { groupBy } from "ramda";
 import React, { HTMLAttributes, useEffect, useState } from "react";
-import {
-  selector,
-  useRecoilState,
-  useRecoilValue,
-  useResetRecoilState,
-} from "recoil";
+import { selector, useRecoilState, useResetRecoilState } from "recoil";
 import {
   Divider,
   Item,

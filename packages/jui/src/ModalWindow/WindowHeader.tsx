@@ -9,7 +9,7 @@ const StyledWindowTitle = styled.h1`
   margin: 0;
   text-align: center;
   font-size: 13px; // not rem! intentional
-  line-height: 20px;
+  line-height: 24px; // Double check
   cursor: default;
   user-select: none;
   padding: 0 8px;

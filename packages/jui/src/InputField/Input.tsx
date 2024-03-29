@@ -9,12 +9,13 @@ import { FocusableOptions, useFocusable } from "@react-aria/focus";
 import { ValidationState } from "@react-types/shared";
 import { useFocusWithin } from "@react-aria/interactions";
 import { UnknownThemeProp } from "@intellij-platform/core/Theme";
-import { styled } from "@intellij-platform/core/styled";
+import { styled, css } from "@intellij-platform/core/styled";
 
 const StyledInputBox = styled.div<{
   disabled?: boolean;
   focused?: boolean;
-  validationState: ValidationState | undefined;
+  validationState: InputProps["validationState"];
+  appearance: InputProps["appearance"];
 }>`
   box-sizing: border-box;
   display: inline-flex;
@@ -41,6 +42,13 @@ const StyledInputBox = styled.div<{
   border-radius: 1px;
   cursor: text; // the whole box moves focus to the input
   overflow: hidden;
+  ${({ appearance, validationState, disabled }) =>
+    appearance === "embedded" &&
+    css`
+      border-color: ${validationState !== "invalid" && "transparent"};
+      box-shadow: ${validationState !== "invalid" && "none"};
+      background: ${!disabled && "transparent"};
+    `};
 `;
 
 const StyledInput = styled.input<{ disabled?: boolean }>`
@@ -113,6 +121,14 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
    * Ref to the underlying input element
    */
   inputRef?: React.Ref<HTMLInputElement>;
+
+  /**
+   * Appearance of the input.
+   * - "ghost": Without the border and shadow in valid state.
+   * - "boxed" With the border and shadow.
+   * @default "box"
+   */
+  appearance?: "embedded" | "box";
 }
 
 /**
@@ -136,6 +152,7 @@ export const Input = React.forwardRef(function Input(
     onFocus,
     onBlur,
     autoFocus,
+    appearance,
     ...props
   }: InputProps,
   forwardedRef: ForwardedRef<HTMLDivElement>
@@ -168,6 +185,7 @@ export const Input = React.forwardRef(function Input(
     <StyledInputBox
       ref={ref}
       spellCheck={false}
+      appearance={appearance}
       {...mergeProps(focusWithinProps, {
         className,
         style,

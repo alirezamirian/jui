@@ -62,7 +62,7 @@ export const branchesPopupSizeState = atom<
   default: undefined,
 });
 
-export function BranchesPopup({ onClose }: { onClose: () => void }) {
+export function BranchesPopup({ close }: { close: () => void }) {
   const [repoBranches] = useLatestRecoilValue(allBranchesState);
   const [branchesPopupPersistedSize, setBranchesPopupPersistedSize] =
     useRecoilState(branchesPopupSizeState);
@@ -113,7 +113,7 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                   <IconButton
                     onPress={() => {
                       notImplemented();
-                      onClose();
+                      close();
                     }}
                   >
                     <PlatformIcon icon="vcs/fetch.svg" />
@@ -239,7 +239,7 @@ export function BranchesPopup({ onClose }: { onClose: () => void }) {
                   }
               }
             }}
-            onClose={onClose}
+            onClose={close}
           >
             {newBranchAction && (
               <Item key={newBranchAction.id} textValue={newBranchAction.title}>

@@ -9,7 +9,7 @@ import React, {
 import { Popup, PopupProps } from "./Popup";
 import { PopupControllerContext } from "@intellij-platform/core/Popup/PopupContext";
 
-interface PopupManagerAPI {
+export interface PopupManagerAPI {
   /**
    * Shows a popup within the stack of popups managed by {@link PopupManager}.
    * The opened popup will be closed when `onClose` interactions happen.
