@@ -23,7 +23,7 @@ import {
 /**
  * Represents the properties required for the ActionsProvider component.
  */
-interface ActionsProviderProps {
+export interface ActionsProviderProps {
   /**
    * A collection of action definitions.
    */

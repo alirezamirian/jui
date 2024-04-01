@@ -3,6 +3,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import {
   ActionDefinition,
   ActionsProvider,
+  ActionsProviderProps,
   BalloonManager,
   DefaultToolWindows,
   styled,
@@ -55,12 +56,6 @@ export const Project = ({ height }: { height: CSSProperties["height"] }) => {
   useRecoilValue(projectPopupManagerRefState).current = usePopupManager();
   useRecoilValue(windowManagerRefState).current = useWindowManager();
 
-  const allActions: ActionDefinition[] = [
-    ...useProjectActions(),
-    ...useVcsActions(),
-    ...useTestActions(),
-  ];
-
   return (
     <PersistentStateProvider>
       <SyncChangeListsState />
@@ -70,10 +65,7 @@ export const Project = ({ height }: { height: CSSProperties["height"] }) => {
         {/* disablePortal to make example app more portable*/}
         <ToolWindowsRefContext.Provider value={toolWindowRef}>
           <StyledWindowFrame style={{ height }}>
-            <ActionsProvider
-              actions={allActions}
-              useCapture /* useCapture because of Monaco's aggressive event handling. Specifically, Cmd+Shift+O in .ts files  */
-            >
+            <ProjectActionProvider>
               {({ shortcutHandlerProps }) => (
                 <>
                   <DefaultToolWindows
@@ -90,7 +82,7 @@ export const Project = ({ height }: { height: CSSProperties["height"] }) => {
                   <IdeStatusBar />
                 </>
               )}
-            </ActionsProvider>
+            </ProjectActionProvider>
             {isSearchEveryWhereOpen && <SearchEverywherePopup />}
             {isRollbackWindowOpen && <RollbackWindow />}
           </StyledWindowFrame>
@@ -99,6 +91,23 @@ export const Project = ({ height }: { height: CSSProperties["height"] }) => {
     </PersistentStateProvider>
   );
 };
+
+function ProjectActionProvider(
+  props: Omit<ActionsProviderProps, "actions" | "useCapture">
+) {
+  const allActions: ActionDefinition[] = [
+    ...useProjectActions(),
+    ...useVcsActions(),
+    ...useTestActions(),
+  ];
+  return (
+    <ActionsProvider
+      {...props}
+      actions={allActions}
+      useCapture /* useCapture because of Monaco's aggressive event handling. Specifically, Cmd+Shift+O in .ts files  */
+    />
+  );
+}
 
 function SetBalloonManagerRef() {
   _balloonManagerRef.value = useBalloonManager();
