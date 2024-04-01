@@ -65,4 +65,12 @@ export class Change {
       dirname(change.before.path) !== dirname(change.after.path)
     );
   }
+  static equals(a: Change, b: Change): boolean {
+    return (
+      a.before?.path === b.before?.path &&
+      a.after?.path === b.after?.path &&
+      Boolean(a.before?.isDir) === Boolean(b.before?.isDir) &&
+      Boolean(a.after?.isDir) === Boolean(b.after?.isDir)
+    );
+  }
 }

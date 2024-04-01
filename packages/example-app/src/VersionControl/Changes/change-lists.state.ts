@@ -200,20 +200,32 @@ export function SyncChangeListsState() {
   const setChangeLists = useSetRecoilState(changeListsState);
   useEffect(() => {
     // FIXME: changes now all go to default change list on each refresh. fix it.
-    setChangeLists((changeLists) =>
-      changeLists.map((changeList) => {
-        if (changeList.active) {
-          return {
-            ...changeList,
-            changes,
-          };
-        }
+    setChangeLists((changeLists) => {
+      const updatedChangeLists = changeLists.map((changeList) => {
         return {
           ...changeList,
-          changes: [],
+          changes: changeList.changes
+            .map((change) =>
+              changes.find((aChange) => Change.equals(aChange, change))
+            )
+            .filter(notNull),
         };
-      })
-    );
+      });
+      const existingChanges = updatedChangeLists.flatMap(
+        ({ changes }) => changes
+      );
+      const newChanges = changes.filter(
+        (change) =>
+          !existingChanges.find((anExistingChange) =>
+            Change.equals(change, anExistingChange)
+          )
+      );
+      const activeChangeList =
+        updatedChangeLists.find(({ active }) => active) ??
+        updatedChangeLists[0];
+      activeChangeList.changes.push(...newChanges);
+      return updatedChangeLists;
+    });
   }, [changes]);
   return null;
 }
