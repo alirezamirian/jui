@@ -2,7 +2,6 @@ import {
   atom,
   atomFamily,
   CallbackInterface,
-  selector,
   selectorFamily,
   useRecoilCallback,
   useSetRecoilState,
@@ -15,7 +14,6 @@ import {
   FileStatus,
   VcsDirectoryMapping,
 } from "./file-status";
-import { useEffect } from "react";
 import * as path from "path";
 import { asyncFilter } from "../async-utils";
 
@@ -27,32 +25,31 @@ import { asyncFilter } from "../async-utils";
  * https://github.com/isomorphic-git/isomorphic-git/blob/d631f8e56a5504b10ffc1b35589b1a5b0b2f9e74/src/api/status.js#L135
 
  */
-const status = ({ filepath, ...args }: Parameters<typeof git["status"]>[0]) => {
+const status = async ({
+  filepath,
+  ...args
+}: Parameters<typeof git["status"]>[0]) => {
   return git
     .statusMatrix({ ...args, filepaths: [filepath] })
     .then((rows) => rows[0]);
 };
-// This should be refactored to have the configuration file(s) as the source of truth.
-const temporaryVcsMappingsDefaultState = selector({
-  key: "vcsRoots/temporaryDefault",
-  get: async (): Promise<VcsDirectoryMapping[]> => {
-    return asyncFilter(
-      ({ dir }) => fs.promises.stat(dir).then(Boolean),
-      Object.values(sampleRepos).map(({ path }) => ({
-        dir: path,
-        vcs: "git",
-      }))
-    );
-  },
-});
 
-// FIXME: since the value of this atom comes from a selector, everytime it's called in a selector (which happens in
-//  many places), it will cause a page blink as some component is using a state that depends on this and the loading
-//  is not handled locally (by either a local Suspense or using useRecoilValueLoadable)
 export const vcsRootsState = atom<VcsDirectoryMapping[]>({
   key: "vcsRoots",
-  default: [],
+  effects: [
+    ({ setSelf }) => {
+      setSelf(TMP_findGitRoots());
+    },
+  ],
 });
+const TMP_findGitRoots = () =>
+  asyncFilter(
+    ({ dir }) => fs.promises.stat(dir).then(Boolean),
+    Object.values(sampleRepos).map<VcsDirectoryMapping>(({ path }) => ({
+      dir: path,
+      vcs: "git",
+    }))
+  );
 
 /**
  * temporary(?) hook to refresh vcs roots
@@ -60,13 +57,7 @@ export const vcsRootsState = atom<VcsDirectoryMapping[]>({
 export const useRefreshVcsRoots = () => {
   const setVcsRoots = useSetRecoilState(vcsRootsState);
   return () =>
-    asyncFilter(
-      ({ dir }) => fs.promises.stat(dir).then(Boolean),
-      Object.values(sampleRepos).map<VcsDirectoryMapping>(({ path }) => ({
-        dir: path,
-        vcs: "git",
-      }))
-    ).then((roots) => {
+    TMP_findGitRoots().then((roots) => {
       setVcsRoots(roots);
     });
 };
@@ -95,28 +86,37 @@ type RepoStatus = {
   [relativeFilePath: string]: FileStatus;
 };
 
-const repoStatusInitialValue = selectorFamily<RepoStatus, string>({
-  key: "vcs.repoStatusMatrix",
-  get: (repoDir) => async () => {
-    console.time(`statusMatrix ${repoDir}`);
-    const rows = await statusMatrix({ fs, dir: repoDir });
-    console.timeEnd(`statusMatrix ${repoDir}`);
-    const result: RepoStatus = {};
-    rows.forEach((row) => {
-      result[row[0]] = convertGitStatus(row);
-    });
-    return result;
-  },
-});
+const fetchRepoStatusFromFs = async (repoDir: string) => {
+  console.time(`statusMatrix ${repoDir}`);
+  const rows = await statusMatrix({ fs, dir: repoDir });
+  console.timeEnd(`statusMatrix ${repoDir}`);
+  const result: RepoStatus = {};
+  rows.forEach((row) => {
+    result[row[0]] = convertGitStatus(row);
+  });
+  return result;
+};
 
 /**
  * A mapping from relative file paths to file status, calculated efficiently for all files in a repo.
  * It's an atom to allow updating it for a single file, when status of a file is changed, instead of querying
  * the whole status matrix.
+ * UPDATE: going from setting `default` to the selector that fetches the repo status from fs, and refreshing the atom's
+ * state by calling `reset`/`refresh` on it, to having an empty object as default value, and updating it based on
+ * the refreshed selector. That is to make sure repoStatusState will not block UI, since many pieces of state depend
+ * on it, and if it's async, it will require lots of local loading handling, or Suspense boundaries, for something
+ * that's usually not critical for the UX to be completely up-to-date. In cases that we do need to know if repo status
+ * is being updated, a separate atom is created to hold that state. It's a little non-idiomatic use of Recoil, but
+ * it seems justified for the use case. Also, it could perhaps be a feature to be supported first-class, to allow
+ * atoms that can preserve the state stale, contain both the current/stale value and the loading state.
  */
-const repoStatusState = atomFamily<RepoStatus, string>({
+export const repoStatusState = atomFamily<RepoStatus, string>({
   key: "vcs.repoStatus",
-  default: repoStatusInitialValue,
+  effects: (repoDir: string) => [
+    ({ setSelf }) => {
+      setSelf(fetchRepoStatusFromFs(repoDir));
+    },
+  ],
 });
 
 /**
@@ -126,7 +126,7 @@ const repoStatusState = atomFamily<RepoStatus, string>({
  * in a git root.
  * NOTE: Do **not** use recoil `refresh` API to update file status, as it may update status for the whole repo (if
  * {@link repoStatusState} is not yet written into), which is not very efficient.
- * use {@link useUpdateFileStatus} or {@link refreshFileStatusCallback} to efficiently refresh
+ * use {@link useRefreshFileStatus} or {@link refreshFileStatusCallback} to efficiently refresh
  * the status of a single file.
  */
 export const fileStatusState = selectorFamily<FileStatus, string>({
@@ -183,30 +183,22 @@ export const refreshFileStatusCallback =
     }
   };
 
-export const useUpdateFileStatus = (): ((
+export const useRefreshFileStatus = (): ((
   absoluteFilepath: string
 ) => Promise<void>) => useRecoilCallback(refreshFileStatusCallback);
 
-export const useUpdateVcsFileStatuses = () =>
+export const useRefreshRepoStatuses = () =>
   useRecoilCallback(
-    ({ snapshot, refresh }: CallbackInterface) =>
+    ({ snapshot, set }: CallbackInterface) =>
       async () => {
         const gitDirs = await snapshot.getPromise(vcsRootsState);
         gitDirs?.forEach(({ dir, vcs }) => {
           if (vcs === "git") {
-            refresh(repoStatusState(dir));
+            fetchRepoStatusFromFs(dir).then((repoStatus) => {
+              set(repoStatusState(dir), repoStatus);
+            });
           }
         });
       },
     []
   );
-
-export const useInitializeVcs = () => {
-  // const updateVcsFileStatuses = useUpdateVcsFileStatuses();
-  const refreshVcsRoots = useRefreshVcsRoots();
-  useEffect(() => {
-    refreshVcsRoots().catch((e) => {
-      console.error("could not initialize VCS file statuses", e);
-    });
-  }, []);
-};

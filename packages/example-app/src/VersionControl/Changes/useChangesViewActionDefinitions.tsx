@@ -14,11 +14,7 @@ import {
   queueCheckInCallback,
   selectedKeysState,
 } from "./ChangesView/ChangesView.state";
-import {
-  allChangesState,
-  useRefreshChanges,
-  useSetActiveChangeList,
-} from "./change-lists.state";
+import { allChangesState, useSetActiveChangeList } from "./change-lists.state";
 import path from "path";
 import { IntlMessageFormat } from "intl-messageformat";
 import { getExpandedToNodesKeys } from "@intellij-platform/core/utils/tree-utils";
@@ -36,13 +32,14 @@ import { getNodeKeyForChange, isGroupNode } from "./ChangesTree/ChangeTreeNode";
 import { Change } from "./Change";
 import { useLatestRecoilValue } from "../../recoil-utils";
 import { findRootPaths } from "../../path-utils";
+import { useRefreshRepoStatuses } from "../file-status.state";
 
 export const useChangesViewActionDefinitions = (): ActionDefinition[] => {
   const openRollbackWindow = useRecoilCallback(
     openRollbackWindowForSelectionCallback,
     []
   );
-  const refresh = useRefreshChanges();
+  const refresh = useRefreshRepoStatuses();
 
   return [
     useCheckInActionDefinition(),

@@ -12,12 +12,8 @@ import {
   useWindowManager,
 } from "@intellij-platform/core";
 import { FileEditor } from "../Editor/FileEditor";
-import {
-  useInitializeVcs,
-  useRefreshVcsRoots,
-} from "../VersionControl/file-status.state";
 import { toolWindows } from "./toolWindows";
-import { useInitializeChanges } from "../VersionControl/Changes/change-lists.state";
+import { SyncChangeListsState } from "../VersionControl/Changes/change-lists.state";
 import { IdeStatusBar } from "../StatusBar/IdeStatusBar";
 import { usePersistenceFsNotification } from "../usePersistenceFsNotification";
 import { RollbackWindow } from "../VersionControl/Changes/Rollback/RollbackWindow";
@@ -56,9 +52,6 @@ export const Project = ({ height }: { height: CSSProperties["height"] }) => {
   const isRollbackWindowOpen = useRecoilValue(rollbackViewState.isOpen);
   const isSearchEveryWhereOpen = useRecoilValue(searchEverywhereState.isOpen);
 
-  useInitializeVcs();
-  useInitializeChanges();
-
   useRecoilValue(projectPopupManagerRefState).current = usePopupManager();
   useRecoilValue(windowManagerRefState).current = useWindowManager();
 
@@ -70,6 +63,7 @@ export const Project = ({ height }: { height: CSSProperties["height"] }) => {
 
   return (
     <PersistentStateProvider>
+      <SyncChangeListsState />
       <BalloonManager disablePortal>
         <SetBalloonManagerRef />
         <UsePersistentFsNotification />

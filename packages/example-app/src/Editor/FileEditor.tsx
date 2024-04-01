@@ -33,7 +33,7 @@ import {
   useEditorState,
 } from "./editor.state";
 import { fileContent } from "../fs/fs.state";
-import { useUpdateFileStatus } from "../VersionControl/file-status.state";
+import { useRefreshFileStatus } from "../VersionControl/file-status.state";
 import * as path from "path";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
 import { mergeProps } from "@react-aria/utils";
@@ -69,7 +69,7 @@ export const FileEditor = () => {
   const fileContentState = fileContent(activeTab?.filePath);
   const contentLoadable = useRecoilValueLoadable(fileContentState);
   const setContent = useSetRecoilState(fileContentState);
-  const updateFileStatus = useUpdateFileStatus();
+  const updateFileStatus = useRefreshFileStatus();
 
   const updateContent = (newContent: string = "") => {
     setActive(false);
