@@ -16,7 +16,7 @@ import { VcsActionIds } from "../../VcsActionIds";
 export function ChangesViewToolbar() {
   return (
     <Toolbar border="bottom">
-      <ActionButton actionId={VcsActionIds.REFRESH} />
+      <ActionButton actionId={CommonActionId.REFRESH} />
       <ActionButton actionId={VcsActionIds.ROLLBACK} />
       <ActionButton actionId={VcsActionIds.SHOW_DIFF} />
       <TooltipTrigger tooltip={<ActionTooltip actionName="Changelists" />}>

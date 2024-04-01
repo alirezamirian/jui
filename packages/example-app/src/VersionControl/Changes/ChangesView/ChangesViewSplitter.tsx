@@ -18,6 +18,7 @@ import { ChangeViewTree } from "./ChangeViewTree";
 import { ChangesViewToolbar } from "./ChangesViewToolbar";
 import { CommitView } from "./CommitView";
 import { CommitActionsRow } from "./CommitActionsRow";
+import { useChangesViewActions } from "./useChangesViewActions";
 
 const StyledContainer = styled.div`
   display: flex;
@@ -59,6 +60,7 @@ export const ChangesViewSplitter = () => {
   const [commitMessageSize, setCommitMessageSize] = useRecoilState(
     commitMessageSizeState(orientation)
   );
+  const changesViewActions = useChangesViewActions();
   const treeActions = useTreeActions({ treeRef });
   // TODO(lib-candidate): ToolWindowAwareSplitter. A wrapper around ThreeViewSplitter which sets orientation based
   //  on anchor orientation from useToolWindowState.
@@ -68,7 +70,7 @@ export const ChangesViewSplitter = () => {
     <ThreeViewSplitter
       orientation={orientation}
       innerView={
-        <ActionsProvider actions={treeActions}>
+        <ActionsProvider actions={[...treeActions, ...changesViewActions]}>
           {({ shortcutHandlerProps }) => (
             <StyledContainer {...shortcutHandlerProps}>
               <ChangesViewToolbar />

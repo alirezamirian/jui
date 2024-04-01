@@ -1,6 +1,10 @@
 import { useRecoilValue } from "recoil";
 import { selectedKeysState } from "./ChangesView.state";
-import { DividerItem, useAction } from "@intellij-platform/core";
+import {
+  CommonActionId,
+  DividerItem,
+  useAction,
+} from "@intellij-platform/core";
 import React from "react";
 import { VcsActionIds } from "../../VcsActionIds";
 import { ActionsMenu } from "@intellij-platform/core";
@@ -27,7 +31,7 @@ export const ChangesViewTreeContextMenu = () => {
         useAction(VcsActionIds.SET_DEFAULT_CHANGELIST),
         useAction(VcsActionIds.MOVE_TO_ANOTHER_CHANGELIST),
         new DividerItem(),
-        useAction(VcsActionIds.REFRESH),
+        useAction(CommonActionId.REFRESH),
       ].filter(notNull)}
     />
   );
