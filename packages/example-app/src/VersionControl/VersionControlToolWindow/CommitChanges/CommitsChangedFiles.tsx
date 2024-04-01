@@ -1,4 +1,4 @@
-import React, { HTMLAttributes, ReactNode, useEffect, useState } from "react";
+import React, { HTMLAttributes, useEffect } from "react";
 import {
   RecoilValue,
   useRecoilState,
@@ -16,6 +16,7 @@ import {
 
 import { useLatestRecoilValue } from "../../../recoil-utils";
 import { LoadingGif } from "../../../LoadingGif";
+import { Delayed } from "../../../Delayed";
 import { StyledPlaceholderContainer } from "../styled-components";
 import { selectedCommitsState } from "../CommitsView/CommitsTable.state";
 import {
@@ -26,8 +27,6 @@ import {
   selectionState,
 } from "./CommitsChangedFiles.state";
 import { commitChangesTreeNodeRenderer } from "./commitChangesTreeNodeRenderer";
-
-const DEFAULT_LOADING_DELAY_MS = 500; // To be shared later in more places.
 
 const StyledLoadingWrapper = styled.div`
   position: absolute;
@@ -145,18 +144,4 @@ export function CommitChangedFiles({
       )}
     </div>
   );
-}
-
-function Delayed({ children }: { children: ReactNode }) {
-  const [waitedEnough, setWaitedEnough] = useState(false);
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setWaitedEnough(true);
-    }, DEFAULT_LOADING_DELAY_MS);
-    return () => clearTimeout(timer);
-  }, []);
-  if (waitedEnough) {
-    return <>{children}</>;
-  }
-  return null;
 }

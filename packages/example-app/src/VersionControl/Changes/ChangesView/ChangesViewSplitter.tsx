@@ -1,3 +1,5 @@
+import React, { useRef } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
   ActionsProvider,
   getAnchorOrientation,
@@ -7,10 +9,11 @@ import {
   useToolWindowState,
   useTreeActions,
 } from "@intellij-platform/core";
-import { useRecoilState } from "recoil";
 
+import { repoStatusUpdatingState } from "../../file-status.state";
+import { LoadingGif } from "../../../LoadingGif";
+import { Delayed } from "../../../Delayed";
 import { commitMessageSizeState } from "./ChangesView.state";
-import React, { useRef } from "react";
 import { ChangeViewTree } from "./ChangeViewTree";
 import { ChangesViewToolbar } from "./ChangesViewToolbar";
 import { CommitView } from "./CommitView";
@@ -25,6 +28,14 @@ const StyledContainer = styled.div`
 const StyledTreeViewWrapper = styled.div`
   flex: 1;
   overflow: auto;
+  position: relative;
+`;
+
+const StyledLoadingWrapper = styled.div`
+  position: absolute;
+  right: 0.125rem;
+  top: 0.125rem;
+  z-index: 1;
 `;
 
 // Not so ideal solution for allowing imperatively focusing commit message. Should be ok, since there will
@@ -44,6 +55,7 @@ export const ChangesViewSplitter = () => {
   const treeRef = useRef<TreeRefValue>(null);
   const editorRef = useRef<{ focus: () => void }>(null);
   const orientation = getAnchorOrientation(anchor);
+  const updating = useRecoilValue(repoStatusUpdatingState);
   const [commitMessageSize, setCommitMessageSize] = useRecoilState(
     commitMessageSizeState(orientation)
   );
@@ -61,6 +73,13 @@ export const ChangesViewSplitter = () => {
             <StyledContainer {...shortcutHandlerProps}>
               <ChangesViewToolbar />
               <StyledTreeViewWrapper>
+                {updating && (
+                  <Delayed>
+                    <StyledLoadingWrapper>
+                      <LoadingGif />
+                    </StyledLoadingWrapper>
+                  </Delayed>
+                )}
                 <ChangeViewTree treeRef={treeRef} />
               </StyledTreeViewWrapper>
               <CommitActionsRow />

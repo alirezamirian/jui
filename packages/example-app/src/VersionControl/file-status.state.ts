@@ -119,6 +119,11 @@ export const repoStatusState = atomFamily<RepoStatus, string>({
   ],
 });
 
+export const repoStatusUpdatingState = atom<boolean>({
+  key: "vcs.repoStatus.updating",
+  default: false,
+});
+
 /**
  * Keeps FileStatus of files based on their absolute path.
  * NOTE: updating files status is now not connected to file updates, as there is no proper (V)FS API allowing change
@@ -191,14 +196,19 @@ export const useRefreshRepoStatuses = () =>
   useRecoilCallback(
     ({ snapshot, set }: CallbackInterface) =>
       async () => {
-        const gitDirs = await snapshot.getPromise(vcsRootsState);
-        gitDirs?.forEach(({ dir, vcs }) => {
-          if (vcs === "git") {
-            fetchRepoStatusFromFs(dir).then((repoStatus) => {
-              set(repoStatusState(dir), repoStatus);
-            });
-          }
-        });
+        set(repoStatusUpdatingState, true);
+        try {
+          const gitDirs = await snapshot.getPromise(vcsRootsState);
+          await Promise.all(
+            gitDirs?.map(({ dir, vcs }) =>
+              fetchRepoStatusFromFs(dir).then((repoStatus) => {
+                set(repoStatusState(dir), repoStatus);
+              })
+            )
+          );
+        } finally {
+          set(repoStatusUpdatingState, false);
+        }
       },
     []
   );
