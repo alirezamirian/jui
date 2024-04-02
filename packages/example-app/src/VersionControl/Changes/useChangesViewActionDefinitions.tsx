@@ -1,10 +1,7 @@
 import React from "react";
 import { useRecoilCallback, useRecoilValue } from "recoil";
-import {
-  ActionDefinition,
-  CommonActionId,
-  PlatformIcon,
-} from "@intellij-platform/core";
+import path from "path";
+import { ActionDefinition, PlatformIcon } from "@intellij-platform/core";
 
 import { notImplemented } from "../../Project/notImplemented";
 import {
@@ -17,8 +14,7 @@ import {
   queueCheckInCallback,
   selectedKeysState,
 } from "./ChangesView/ChangesView.state";
-import { allChangesState } from "./change-lists.state";
-import path from "path";
+import { allChangesState } from "./changes.state";
 import { IntlMessageFormat } from "intl-messageformat";
 import { getExpandedToNodesKeys } from "@intellij-platform/core/utils/tree-utils";
 

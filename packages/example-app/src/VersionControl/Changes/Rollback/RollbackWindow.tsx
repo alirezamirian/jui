@@ -31,7 +31,6 @@ import {
   ChangesViewTreeNode,
 } from "../ChangesView/ChangesView.state";
 import { rollbackViewState } from "./rollbackView.state";
-import { allChangesState, useRollbackChanges } from "../change-lists.state";
 import { ChangesSummary } from "../ChangesSummary";
 import { defaultChangeGroupings } from "../ChangesTree/changesGroupings";
 import { RollbackTreeContextMenu } from "./RollbackTreeContextMenu";
@@ -42,6 +41,7 @@ import {
 } from "../ChangesTree/ChangeTreeNode";
 import { changesViewTreeNodeRenderer } from "../ChangesView/changesViewTreeNodeRenderer";
 import { Change } from "../Change";
+import { allChangesState, useRollbackChanges } from "../changes.state";
 
 const StyledContainer = styled.div`
   box-sizing: border-box;

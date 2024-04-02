@@ -1,27 +1,15 @@
 import {
   atom,
   selector,
-  selectorFamily,
   useRecoilCallback,
   useRecoilValue,
   useSetRecoilState,
 } from "recoil";
-import { checkout, resetIndex } from "isomorphic-git";
 import { useEffect } from "react";
-import path from "path";
-import { groupBy } from "ramda";
-
-import { fs } from "../../fs/fs";
-import { dirContentState, reloadFileFromDiskCallback } from "../../fs/fs.state";
-import {
-  repoStatusState,
-  useRefreshFileStatus,
-  vcsRootForFile,
-  vcsRootsState,
-} from "../file-status.state";
-import { Change } from "./Change";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
-import { findRootPaths } from "../../path-utils";
+
+import { allChangesState } from "./changes.state";
+import { Change } from "./Change";
 
 export interface ChangeListObj {
   id: string;
@@ -56,136 +44,6 @@ export const activeChangeListState = selector<ChangeListObj | null>({
   get: ({ get }) =>
     get(changeListsState).find((changeList) => changeList.active) ?? null,
 });
-
-export const allChangesState = selector<ReadonlyArray<Change>>({
-  key: "vcs.allChanges",
-  get: ({ get }) => {
-    return get(vcsRootsState)
-      .map(({ dir }) => get(repoChangesState(dir)))
-      .flat();
-  },
-});
-
-const repoChangesState = selectorFamily<Change[], string>({
-  key: "vcs.repoChanges",
-  get:
-    (repoDir: string) =>
-    ({ get }) =>
-      Object.entries(get(repoStatusState(repoDir)))
-        .map(([filename, status]) => {
-          const revision = {
-            path: path.join(repoDir, filename),
-            isDir: false,
-            content(): Promise<string> {
-              throw new Error("Not implemented");
-            },
-          };
-          if (status === "ADDED") {
-            return {
-              after: revision,
-            };
-          }
-          if (status === "MODIFIED") {
-            return {
-              before: revision,
-              after: revision,
-            };
-          }
-          if (status === "DELETED") {
-            return {
-              before: revision,
-            };
-          }
-          return null;
-        })
-        .filter(notNull),
-});
-
-/**
- * react hook that returns a rollback function which accepts a list of changes to rollback.
- */
-export const useRollbackChanges = () => {
-  const updateFileStatus = useRefreshFileStatus();
-  return useRecoilCallback(
-    (callbackInterface) =>
-      async (changes: readonly Change[], deleteAddedFiles?: boolean) => {
-        const { snapshot, refresh } = callbackInterface;
-        const reloadFileFromDisk =
-          reloadFileFromDiskCallback(callbackInterface);
-
-        const changesWithRepoRoots = (
-          await Promise.all(
-            changes
-              .filter((change) => !change.after?.isDir)
-              .map(async (change) => {
-                const repoRoot = await snapshot.getPromise(
-                  vcsRootForFile(Change.path(change))
-                );
-                if (repoRoot) {
-                  return {
-                    repoRoot,
-                    type: Change.type(change),
-                    fullPath: Change.path(change),
-                    relativePath: path.relative(repoRoot, Change.path(change)),
-                  };
-                }
-              })
-          )
-        ).filter(notNull);
-        const groupedChanges = groupBy(
-          ({ repoRoot }) => repoRoot,
-          changesWithRepoRoots
-        );
-        await Promise.all(
-          Object.entries(groupedChanges).map(async ([repoRoot, items]) => {
-            const { toReset = [], toCheckout = [] } = groupBy(
-              ({ type }) =>
-                type !== "ADDED" || deleteAddedFiles ? "toCheckout" : "toReset",
-              items
-            );
-            await Promise.allSettled(
-              toReset.map(({ relativePath, type }) =>
-                resetIndex({
-                  fs,
-                  dir: repoRoot,
-                  filepath: relativePath,
-                })
-              )
-            );
-            if (toCheckout.length > 0) {
-              await checkout({
-                fs,
-                dir: repoRoot,
-                force: true,
-                filepaths: toCheckout.map(
-                  ({ relativePath, type }) => relativePath
-                ),
-              });
-            }
-
-            // FIXME(fs.watch)
-            const dirsWithRemovedFiles = findRootPaths(
-              items
-                .filter(({ type }) => deleteAddedFiles && type === "ADDED")
-                .map(({ fullPath }) => path.dirname(fullPath))
-            );
-            dirsWithRemovedFiles.forEach((pathToRefresh) =>
-              refresh(dirContentState(pathToRefresh))
-            );
-
-            await Promise.allSettled(
-              items.map(async ({ fullPath, relativePath }) => {
-                await reloadFileFromDisk(fullPath); // Since fileContent is an atom, we set the value. Could be a selector that we would refresh
-                await updateFileStatus(fullPath);
-                await resetIndex({ fs, dir: repoRoot, filepath: relativePath });
-              })
-            );
-          })
-        );
-      },
-    []
-  );
-};
 
 export const useSetActiveChangeList = () =>
   useRecoilCallback(

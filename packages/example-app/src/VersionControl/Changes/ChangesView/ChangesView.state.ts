@@ -3,11 +3,7 @@ import { Key } from "react";
 import { atom, atomFamily, CallbackInterface, selector } from "recoil";
 import { Selection } from "@react-types/shared";
 
-import {
-  allChangesState,
-  ChangeListObj,
-  changeListsState,
-} from "../change-lists.state";
+import { ChangeListObj, changeListsState } from "../change-lists.state";
 import {
   defaultChangeGroupings,
   defaultChangeGroupingsState,
@@ -40,6 +36,7 @@ import {
 import { Task } from "../../../tasks";
 import { Change } from "../Change";
 import { changesTreeNodesResult } from "../ChangesTree/changesTreeNodesResult";
+import { allChangesState } from "../changes.state";
 
 export interface ChangeListNode<
   C extends ChangesTreeNode<any> = ChangesViewTreeNode
