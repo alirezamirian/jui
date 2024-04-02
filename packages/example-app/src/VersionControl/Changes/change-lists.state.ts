@@ -12,7 +12,7 @@ import path from "path";
 import { groupBy } from "ramda";
 
 import { fs } from "../../fs/fs";
-import { reloadFileFromDiskCallback } from "../../fs/fs.state";
+import { dirContentState, reloadFileFromDiskCallback } from "../../fs/fs.state";
 import {
   repoStatusState,
   useRefreshFileStatus,
@@ -21,6 +21,7 @@ import {
 } from "../file-status.state";
 import { Change } from "./Change";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
+import { findRootPaths } from "../../path-utils";
 
 export interface ChangeListObj {
   id: string;
@@ -106,58 +107,82 @@ const repoChangesState = selectorFamily<Change[], string>({
 export const useRollbackChanges = () => {
   const updateFileStatus = useRefreshFileStatus();
   return useRecoilCallback(
-    (callbackInterface) => async (changes: readonly Change[]) => {
-      const { snapshot, set } = callbackInterface;
-      const reloadFileFromDisk = reloadFileFromDiskCallback(callbackInterface);
+    (callbackInterface) =>
+      async (changes: readonly Change[], deleteAddedFiles?: boolean) => {
+        const { snapshot, refresh } = callbackInterface;
+        const reloadFileFromDisk =
+          reloadFileFromDiskCallback(callbackInterface);
 
-      const changesWithRepoRoots = await Promise.all(
-        changes
-          .filter((change) => !change.after?.isDir)
-          .map(async (change) => {
-            const repoRoot = (await snapshot.getPromise(
-              vcsRootForFile(Change.path(change))
-            ))!; // FIXME: handle null
-            return {
-              repoRoot,
-              fullPath: Change.path(change),
-              relativePath: path.relative(repoRoot, Change.path(change)),
-            };
-          })
-      );
-      const groupedChanges = groupBy(
-        ({ repoRoot }) => repoRoot,
-        changesWithRepoRoots
-      );
-      await Promise.all(
-        Object.entries(groupedChanges).map(async ([repoRoot, items]) => {
-          await checkout({
-            fs,
-            dir: repoRoot,
-            force: true,
-            filepaths: items.map(({ relativePath }) => relativePath),
-          });
+        const changesWithRepoRoots = (
           await Promise.all(
-            items.map(async ({ fullPath, relativePath }) => {
-              await resetIndex({ fs, dir: repoRoot, filepath: relativePath });
-              await reloadFileFromDisk(fullPath); // Since fileContent is an atom, we set the value. Could be a selector that we would refresh
-              return updateFileStatus(fullPath);
-            })
-          );
-        })
-      );
+            changes
+              .filter((change) => !change.after?.isDir)
+              .map(async (change) => {
+                const repoRoot = await snapshot.getPromise(
+                  vcsRootForFile(Change.path(change))
+                );
+                if (repoRoot) {
+                  return {
+                    repoRoot,
+                    type: Change.type(change),
+                    fullPath: Change.path(change),
+                    relativePath: path.relative(repoRoot, Change.path(change)),
+                  };
+                }
+              })
+          )
+        ).filter(notNull);
+        const groupedChanges = groupBy(
+          ({ repoRoot }) => repoRoot,
+          changesWithRepoRoots
+        );
+        await Promise.all(
+          Object.entries(groupedChanges).map(async ([repoRoot, items]) => {
+            const { toReset = [], toCheckout = [] } = groupBy(
+              ({ type }) =>
+                type !== "ADDED" || deleteAddedFiles ? "toCheckout" : "toReset",
+              items
+            );
+            await Promise.allSettled(
+              toReset.map(({ relativePath, type }) =>
+                resetIndex({
+                  fs,
+                  dir: repoRoot,
+                  filepath: relativePath,
+                })
+              )
+            );
+            if (toCheckout.length > 0) {
+              await checkout({
+                fs,
+                dir: repoRoot,
+                force: true,
+                filepaths: toCheckout.map(
+                  ({ relativePath, type }) => relativePath
+                ),
+              });
+            }
 
-      // Remove all changes from changelists. It's much more efficient than refresh.
-      set(changeListsState, (changeLists) =>
-        changeLists.map((changeList) => {
-          return {
-            ...changeList,
-            changes: changeList.changes.filter(
-              (change) => !changes.includes(change)
-            ),
-          };
-        })
-      );
-    },
+            // FIXME(fs.watch)
+            const dirsWithRemovedFiles = findRootPaths(
+              items
+                .filter(({ type }) => deleteAddedFiles && type === "ADDED")
+                .map(({ fullPath }) => path.dirname(fullPath))
+            );
+            dirsWithRemovedFiles.forEach((pathToRefresh) =>
+              refresh(dirContentState(pathToRefresh))
+            );
+
+            await Promise.allSettled(
+              items.map(async ({ fullPath, relativePath }) => {
+                await reloadFileFromDisk(fullPath); // Since fileContent is an atom, we set the value. Could be a selector that we would refresh
+                await updateFileStatus(fullPath);
+                await resetIndex({ fs, dir: repoRoot, filepath: relativePath });
+              })
+            );
+          })
+        );
+      },
     []
   );
 };
