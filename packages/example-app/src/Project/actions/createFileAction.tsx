@@ -1,4 +1,3 @@
-import git from "isomorphic-git";
 import path from "path";
 import { selector, useRecoilCallback, useRecoilValue } from "recoil";
 import React, { ChangeEvent, useState } from "react";
@@ -25,11 +24,9 @@ import {
   projectPopupManagerRefState,
   windowManagerRefState,
 } from "../project.state";
-import {
-  refreshFileStatusCallback,
-  vcsRootForFile,
-} from "../../VersionControl/file-status.state";
+import { vcsRootForFile } from "../../VersionControl/file-status.state";
 import { createFileCallback } from "../fs-operations";
+import { gitAddCallback } from "../../VersionControl/gitAddCallback";
 
 // TODO: expand to and select the new file in the project tree, if the action is initiated from projects view.
 export const createFileActionState = selector({
@@ -186,15 +183,7 @@ function NewFileNamePopup({
 }
 
 function useAddToGit() {
-  return useRecoilCallback(
-    (callbackInterface) => async (filepath: string) => {
-      const refreshFileStatus = refreshFileStatusCallback(callbackInterface);
-      const dir = await git.findRoot({ fs, filepath });
-      await git.add({ fs, dir, filepath: path.relative(dir, filepath) });
-      await refreshFileStatus(filepath);
-    },
-    []
-  );
+  return useRecoilCallback(gitAddCallback, []);
 }
 
 function AddFileToGitWindow({

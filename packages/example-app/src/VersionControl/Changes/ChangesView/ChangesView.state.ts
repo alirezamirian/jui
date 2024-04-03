@@ -333,7 +333,7 @@ export const commitTaskIdState = atom<Task["id"] | null>({
   default: null,
 });
 
-export const changesFromActivePaths = selector({
+export const changesFromActivePathsState = selector({
   key: "changesView/changesFromActivePaths",
   get: ({ get }) => {
     const activePaths = get(activePathsState);
@@ -362,7 +362,7 @@ export const queueCheckInCallback = ({ set, snapshot }: CallbackInterface) => {
               Change.path(change).startsWith(activePath)
             )
           )
-      : snapshot.getLoadable(changesFromActivePaths).getValue();
+      : snapshot.getLoadable(changesFromActivePathsState).getValue();
 
     const includedChangeKeys = changes.map(getNodeKeyForChange);
     set(includedChangeKeysState, new Set(includedChangeKeys));
@@ -401,7 +401,7 @@ export const openRollbackWindowForSelectionCallback = ({
       .getValue();
     const changesBasedOnActivePaths =
       contextual && activePaths.length > 0
-        ? snapshot.getLoadable(changesFromActivePaths).getValue()
+        ? snapshot.getLoadable(changesFromActivePathsState).getValue()
         : null;
     set(
       rollbackViewState.initiallyIncludedChanges,

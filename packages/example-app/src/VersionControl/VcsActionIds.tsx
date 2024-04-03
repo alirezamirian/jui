@@ -7,6 +7,7 @@ export const VcsActionIds = {
   SHELVE: "ChangesView.Shelve",
   UNSHELVE_SILENTLY: "ChangesView.UnshelveSilently",
   NEW_CHANGELIST: "ChangesView.NewChangeList",
+  ADD_UNVERSIONED: "ChangesView.AddUnversioned",
   RENAME_CHANGELIST: "ChangesView.Rename",
   REMOVE_CHANGELIST: "ChangesView.RemoveChangeList",
   SET_DEFAULT_CHANGELIST: "ChangesView.SetDefault",
@@ -18,6 +19,7 @@ export const VcsActionIds = {
 
   GROUP_CHANGES_VIEW_POPUP_MENU: "ChangesViewPopupMenu", // Not used yet
   GROUP_BY_DIRECTORY: "ChangesView.GroupBy.Directory",
+  GIT_ADD: "Git.Add",
   GIT_CREATE_NEW_BRANCH: "Git.CreateNewBranch",
   GIT_BRANCHES: "Git.Branches",
 

@@ -1,4 +1,4 @@
-import { GetRecoilValue, isRecoilValue, RecoilValue, selector } from "recoil";
+import { GetRecoilValue, isRecoilValue, selector } from "recoil";
 
 import { vcsRootsState } from "../../file-status.state";
 import { createGroupByDirectory } from "../../../tree-utils/groupByDirectory";
@@ -16,8 +16,7 @@ import {
   repositoryNode,
 } from "./ChangeTreeNode";
 import { VcsActionIds } from "../../VcsActionIds";
-
-export type MaybeRecoilValue<T> = T | RecoilValue<T>;
+import { MaybeRecoilValue } from "../../../recoil-utils";
 
 export type GroupFn<T extends ChangesTreeGroupNode<any>> = (
   nodes: ReadonlyArray<ChangeNode>

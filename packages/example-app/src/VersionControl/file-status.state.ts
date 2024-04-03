@@ -170,21 +170,27 @@ export const fileStatusState = selectorFamily<FileStatus, string>({
 
 export const refreshFileStatusCallback =
   ({ set, snapshot }: CallbackInterface) =>
-  async (filepath: string) => {
-    const repoRoot = snapshot.getLoadable(vcsRootForFile(filepath)).getValue();
+  /**
+   * Adds a file or directory to git index
+   * @param fullPath
+   */
+  async (fullPath: string) => {
+    const repoRoot = snapshot.getLoadable(vcsRootForFile(fullPath)).getValue();
     if (repoRoot) {
-      const relativePath = path.relative(repoRoot, filepath);
-      const fileStatus = convertGitStatus(
-        await status({
-          fs,
-          dir: repoRoot,
-          filepath: relativePath,
-        })
-      );
-      set(repoStatusState(repoRoot), (statusMap) => ({
-        ...statusMap,
-        [relativePath]: fileStatus,
-      }));
+      const rows = await git.statusMatrix({
+        fs,
+        dir: repoRoot,
+        filepaths: [path.relative(repoRoot, fullPath)],
+      });
+      set(repoStatusState(repoRoot), (statusMap) => {
+        const newStatusMap = {
+          ...statusMap,
+        };
+        rows.forEach((row) => {
+          newStatusMap[row[0]] = convertGitStatus(row);
+        });
+        return newStatusMap;
+      });
     }
   };
 
