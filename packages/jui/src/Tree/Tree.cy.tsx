@@ -16,6 +16,18 @@ describe("Tree", () => {
     matchImageSnapshot("Tree-nested-single-child-expansion");
   });
 
+  it("sets the right accessibility roles", () => {
+    cy.mount(
+      <Tree>
+        <Item>node 1</Item>
+        <Item>node 2</Item>
+      </Tree>
+    );
+
+    cy.findByRole("tree");
+    cy.findAllByRole("treeitem").should("have.length", 2);
+  });
+
   it("collapses descendant items of a node that is collapsed", () => {
     cy.mount(<Static />);
 
