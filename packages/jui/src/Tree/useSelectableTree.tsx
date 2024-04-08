@@ -1,4 +1,4 @@
-import React, { Key, RefObject, useMemo, useState } from "react";
+import { Key, RefObject, useEffect, useMemo, useRef, useState } from "react";
 import {
   DOMProps,
   KeyboardDelegate,
@@ -17,6 +17,7 @@ import { TreeContextType } from "./TreeContext";
 import { hasAnyModifier } from "@intellij-platform/core/utils/keyboard-utils";
 import { FocusEvents } from "@react-types/shared/src/events";
 import { FocusStrategy } from "@react-types/shared/src/selection";
+import { groupBy } from "ramda";
 
 export interface SelectableTreeProps<T>
   extends DOMProps,
@@ -175,6 +176,7 @@ export function useSelectableTree<T>(
     ]
   );
   ////////////////////////////////////////////////////////////////////////////////////////
+  useSelectParentOfRemovedSelectedNode(state);
 
   return {
     // order of merging here is important. navigation handling should precede selection handling
@@ -189,3 +191,39 @@ export function useSelectableTree<T>(
     focused,
   };
 }
+
+/**
+ * When a selected node is removed from the tree, selects the parent of the removed node
+ * if no other node is selected.
+ *
+ * Note: this behavior is observed in a couple of tree views, including project files tree.
+ * There could be an option for disabling/enabling it, if use cases comes up in future
+ * where this behavior causes issues.
+ */
+const useSelectParentOfRemovedSelectedNode = (state: TreeState<unknown>) => {
+  const previousCollectionRef = useRef(state.collection);
+  useEffect(() => {
+    if (state.selectionManager.rawSelection !== "all") {
+      const keys = [...state.collection.getKeys()];
+
+      const { invalid = [], valid = [] } = groupBy(
+        (selectedKey) => (keys.includes(selectedKey) ? "valid" : "invalid"),
+        [...state.selectionManager.selectedKeys]
+      );
+      if (valid.length === 0 && invalid.length > 0) {
+        for (let invalidKey of invalid) {
+          let key: Key | undefined = invalidKey;
+          while (key != undefined) {
+            if (keys.includes(key)) {
+              state.selectionManager.setSelectedKeys(valid.concat(key));
+              state.selectionManager.setFocusedKey(key);
+              return;
+            }
+            key = previousCollectionRef.current.getItem(key)?.parentKey;
+          }
+        }
+      }
+    }
+    previousCollectionRef.current = state.collection;
+  }, [state.collection]);
+};
