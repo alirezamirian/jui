@@ -22,8 +22,9 @@ import { setProjectAnnotations } from "@storybook/react";
 import { mount, MountOptions } from "cypress/react";
 import { Theme, ThemeProvider } from "@intellij-platform/core";
 import sbPreview from "../../.storybook/preview";
+
 const requireTheme = require.context("../../themes", false, /\.theme\.json$/);
-const themes = requireTheme.keys().map((themeFile: string) => {
+const themes: Theme[] = requireTheme.keys().map((themeFile: string) => {
   const themeJson = requireTheme(themeFile);
   return new Theme(themeJson);
 });
@@ -77,6 +78,12 @@ Cypress.Commands.add(
       <TestThemeProvider theme={theme}>{jsx}</TestThemeProvider>,
       options,
       rerenderKey
-    );
+    ).then((result) => ({
+      ...result,
+      rerender: (jsx: React.ReactNode) =>
+        result.rerender(
+          <TestThemeProvider theme={theme}>{jsx}</TestThemeProvider>
+        ),
+    }));
   }
 );

@@ -82,9 +82,6 @@ export function BranchesTree({ tabKey }: { tabKey: string }) {
    *   to collection components.
    */
 
-  // FIXME: selectedKeys and expandedKeys can become invalid due to changes in nodes, which makes the tree view
-  //  not react to the key events. Ideally, the tree view should be robust regarding invalid keys, and otherwise
-  //  the keys should be validated everytime nodes change.
   return (
     <StyledContainer>
       <StyledHeader>

@@ -100,6 +100,25 @@ describe("Tree", () => {
     cy.realPress([modifier, "a"]);
     cy.findAllByRole("treeitem", { selected: true }).should("have.length", 12);
   });
+
+  type ExampleTreeNode = { name: string; children?: ExampleTreeNode[] };
+  it("handles keyboard events when the tree is focused, but no item is", async () => {
+    const tree = (items: ExampleTreeNode[]) => (
+      <Tree selectionMode="multiple" key="example" items={items}>
+        {(item) => <Item key={item.name}>{item.name}</Item>}
+      </Tree>
+    );
+    cy.mount(
+      tree([{ name: "node 1" }, { name: "node 2" }, { name: "node 3" }])
+    ).then(({ rerender }) => {
+      cy.findByRole("treeitem", { name: "node 2" }).realClick();
+      cy.findByRole("treeitem", { name: "node 2" }).should("be.focused");
+      rerender(tree([{ name: "node 1" }, { name: "node 3" }]));
+      cy.findByRole("tree").should("be.focused"); // when node is removed, focus is moved to the container
+      cy.realPress("ArrowDown");
+      cy.focused().should("have.attr", "role", "treeitem");
+    });
+  });
 });
 
 const notBeHorizontallyScrollable = ($el: Cypress.JQueryWithSelector) => {

@@ -97,47 +97,45 @@ export function useSelectableTree<T>(
 
   const onKeyDown = (event: KeyboardEvent) => {
     const focusedKey = state.selectionManager.focusedKey;
-    if (focusedKey == null) {
-      event.continuePropagation();
-      return;
-    }
-    const item = state.collection.getItem(focusedKey);
-    const isExpandable = item.hasChildNodes;
-    const expanded = state.expandedKeys.has(focusedKey);
-    const isDisabled = state.disabledKeys.has(focusedKey);
-    if (isDisabled) {
-      event.continuePropagation();
-      return;
-    }
-
-    props?.onNodeKeyDown?.(event, item);
-
-    const shouldToggle =
-      !hasAnyModifier(event) &&
-      (event.key === "Enter" ||
-        (event.key === "ArrowLeft" && expanded) ||
-        (event.key === "ArrowRight" && !expanded));
-
-    if (isExpandable && shouldToggle) {
-      event.preventDefault();
-      state.toggleKey(focusedKey);
-    } else if (event.key === "Enter") {
-      onAction?.(focusedKey);
-    } else {
-      // selectionKeyDown currently doesn't report back if it handled the event or not. We could have conditionally
-      // continued propagation if the event was not handled. Then we could change Speed Search impl to only handle
-      // inputs when the propagation is not prevented.
-      // Also, selectionKeyDown is not accurate in handling actions like "select all". e.g. it takes 'cmd+shift+a' too,
-      // as select all which can conflict with action system. So we don't call it if there are multiple modifiers.
-      const hasAtMostOneModifier =
-        [event.metaKey, event.ctrlKey, event.shiftKey, event.altKey].filter(
-          (i) => i
-        ).length < 2;
-      if (hasAtMostOneModifier) {
-        selectionKeyDown?.(event);
+    const focusedItem = focusedKey
+      ? state.collection.getItem(focusedKey)
+      : null;
+    if (focusedItem) {
+      const isExpandable = Boolean(focusedItem?.hasChildNodes);
+      const expanded = state.expandedKeys.has(focusedKey);
+      const isDisabled = state.disabledKeys.has(focusedKey);
+      if (isDisabled) {
+        event.continuePropagation();
+        return;
       }
-      event.continuePropagation();
+      props?.onNodeKeyDown?.(event, focusedItem);
+      const shouldToggle =
+        !hasAnyModifier(event) &&
+        (event.key === "Enter" ||
+          (event.key === "ArrowLeft" && expanded) ||
+          (event.key === "ArrowRight" && !expanded));
+      if (isExpandable && shouldToggle) {
+        event.preventDefault();
+        state.toggleKey(focusedKey);
+        return;
+      } else if (event.key === "Enter") {
+        onAction?.(focusedKey);
+        return;
+      }
     }
+    // selectionKeyDown currently doesn't report back if it handled the event or not. We could have conditionally
+    // continued propagation if the event was not handled. Then we could change Speed Search impl to only handle
+    // inputs when the propagation is not prevented.
+    // Also, selectionKeyDown is not accurate in handling actions like "select all". e.g. it takes 'cmd+shift+a' too,
+    // as select all which can conflict with action system. So we don't call it if there are multiple modifiers.
+    const hasAtMostOneModifier =
+      [event.metaKey, event.ctrlKey, event.shiftKey, event.altKey].filter(
+        (i) => i
+      ).length < 2;
+    if (hasAtMostOneModifier) {
+      selectionKeyDown?.(event);
+    }
+    event.continuePropagation();
   };
   const { keyboardProps } = useKeyboard({
     onKeyDown,
