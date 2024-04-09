@@ -1,5 +1,5 @@
 import path from "path";
-import { selector, useRecoilCallback, useRecoilValue } from "recoil";
+import { selector, useRecoilCallback } from "recoil";
 import React, { ChangeEvent, useState } from "react";
 import {
   ActionDefinition,
@@ -88,22 +88,30 @@ function NewFileNamePopup({
   close: () => void;
   destinationDir: string;
 }) {
-  const createFile = useRecoilCallback((callbackInterface) => {
-    const createFile = createFileCallback(callbackInterface);
-    return async (filePath: string) => {
-      const { snapshot } = callbackInterface;
-      const windowManager = snapshot
-        .getLoadable(windowManagerRefState)
-        .getValue().current;
-      const repoDir = await snapshot.getPromise(vcsRootForFile(filePath));
-      await createFile(filePath);
-      if (repoDir) {
-        windowManager?.open(({ close }) => (
-          <AddFileToGitWindow filepath={filePath} close={close} />
-        ));
-      }
-    };
-  }, []);
+  const createFile = useRecoilCallback(
+    (callbackInterface) => {
+      const createFile = createFileCallback(callbackInterface);
+      return async (filePath: string) => {
+        const { snapshot } = callbackInterface;
+        const editorManager = snapshot
+          .getLoadable(editorManagerState)
+          .getValue();
+        const windowManager = snapshot
+          .getLoadable(windowManagerRefState)
+          .getValue().current;
+        const repoDir = await snapshot.getPromise(vcsRootForFile(filePath));
+        await createFile(filePath);
+        close();
+        editorManager.focus();
+        if (repoDir) {
+          windowManager?.open(({ close }) => (
+            <AddFileToGitWindow filepath={filePath} close={close} />
+          ));
+        }
+      };
+    },
+    [close]
+  );
   const [filename, setFilename] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [validationState, setValidationState] = useState<"valid" | "invalid">(
@@ -126,10 +134,8 @@ function NewFileNamePopup({
           )}' already exists`
         );
       }
-      return false;
     } else {
-      createFile(fullPath);
-      return true;
+      await createFile(fullPath);
     }
   };
 
@@ -142,11 +148,7 @@ function NewFileNamePopup({
             onSubmit={(e) => {
               e.preventDefault();
               if (filename) {
-                submit().then((submitted) => {
-                  if (submitted) {
-                    close();
-                  }
-                }); // error handling?
+                submit(); // error handling?
               }
             }}
             onMouseDown={() => {
@@ -194,11 +196,6 @@ function AddFileToGitWindow({
   filepath: string;
 }) {
   const addToGit = useAddToGit();
-  const editorManager = useRecoilValue(editorManagerState);
-  const closeAndFocusEditor = () => {
-    close();
-    editorManager.focus();
-  };
   return (
     <ModalWindow minWidth="content" minHeight="content">
       <WindowLayout
@@ -229,12 +226,12 @@ function AddFileToGitWindow({
             left={<Checkbox isDisabled>Don't ask again</Checkbox>}
             right={
               <>
-                <Button onPress={closeAndFocusEditor}>Cancel</Button>
+                <Button onPress={close}>Cancel</Button>
                 <Button
                   autoFocus
                   variant="default"
                   onPress={() => {
-                    addToGit(filepath).then(closeAndFocusEditor);
+                    addToGit(filepath).then(close);
                   }}
                 >
                   Add

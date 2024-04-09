@@ -17,12 +17,8 @@ import {
   useLatest,
 } from "@intellij-platform/core";
 import { editor, languages } from "monaco-editor";
-import React, { useEffect, useRef, useState } from "react";
-import {
-  useRecoilValue,
-  useRecoilValueLoadable,
-  useSetRecoilState,
-} from "recoil";
+import React, { useRef, useState } from "react";
+import { selector, useSetRecoilState } from "recoil";
 import { getIconForFile } from "../file-utils";
 import { LoadingGif } from "../LoadingGif";
 import { Editor } from "./Editor";
@@ -32,14 +28,25 @@ import {
   editorRefState,
   useEditorState,
 } from "./editor.state";
-import { fileContent } from "../fs/fs.state";
+import { fileContentState } from "../fs/fs.state";
 import { useRefreshFileStatus } from "../VersionControl/file-status.state";
 import * as path from "path";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
 import { mergeProps } from "@react-aria/utils";
 import { useActivePathsProvider } from "../Project/project.state";
 import { notImplemented } from "../Project/notImplemented";
+import { useExistingLatestRecoilValue } from "../recoil-utils";
 
+const editorFullState = selector({
+  key: "editorState",
+  get: ({ get }) => {
+    const activeEditorTab = get(activeEditorTabState);
+    return {
+      ...activeEditorTab,
+      content: get(fileContentState(activeEditorTab?.filePath)),
+    };
+  },
+});
 /**
  * Used as main content in the main ToolWindows. Shows currently opened files tabs and the editor.
  *
@@ -48,16 +55,18 @@ import { notImplemented } from "../Project/notImplemented";
  */
 export const FileEditor = () => {
   const [editorTabs, editorStateManager] = useEditorState();
-  const activeTab = useRecoilValue(activeEditorTabState);
-  const editorRef = useRef<editor.IEditor>();
+  const editorRef = useRef<editor.ICodeEditor>();
   const [active, setActive] = useState(false);
   const hideAllAction = useAction(HIDE_ALL_WINDOWS_ACTION_ID);
   const setCursorPositionState = useSetRecoilState(editorCursorPositionState);
 
+  const [{ content, editorState, filePath }, loadingState] =
+    useExistingLatestRecoilValue(editorFullState);
+
   // For functions that are needed in tab action callbacks. Because items are cached and referencing anything
   // other than the collection item (tab) itself has a risk of working with stale data because of the caching
   // More info: https://react-spectrum.adobe.com/react-stately/collections.html#why-not-array-map
-  // We can alternatively switch to mapping over tabs array, instead of using the Collection's dynamic api (items),
+  // We can alternatively switch to mapping over tabs array, instead of using the Collection's dynamic api (items)
   // which is subject to this caching.
   const tabActionsRef = useLatest({
     closePath: editorStateManager.closePath,
@@ -66,16 +75,14 @@ export const FileEditor = () => {
 
   const setEditorRef = useSetRecoilState(editorRefState);
 
-  const fileContentState = fileContent(activeTab?.filePath);
-  const contentLoadable = useRecoilValueLoadable(fileContentState);
-  const setContent = useSetRecoilState(fileContentState);
+  const setContent = useSetRecoilState(fileContentState(filePath));
   const updateFileStatus = useRefreshFileStatus();
 
   const updateContent = (newContent: string = "") => {
     setActive(false);
     setContent(newContent);
-    if (activeTab) {
-      updateFileStatus(activeTab.filePath).catch((e) => {
+    if (filePath) {
+      updateFileStatus(filePath).catch((e) => {
         console.error("Could not update file status", e);
       });
     }
@@ -84,18 +91,10 @@ export const FileEditor = () => {
   // For now, when the first tab content is changed, we focus the editor.
   // FIXME when action system is implemented and there is an action like "open project file".
   // Note that it's event currently buggy
-  useEffect(() => {
-    editorRef.current?.focus();
-    if (activeTab?.editorState.cursorPos) {
-      editorRef.current?.setPosition(activeTab?.editorState.cursorPos);
-    }
-  }, [activeTab?.filePath]);
 
   const activePathsProviderProps = useActivePathsProvider(
-    activeTab ? [activeTab.filePath] : []
+    filePath ? [filePath] : []
   );
-
-  const content = contentLoadable.valueMaybe();
 
   return (
     <StyledFileEditorContainer
@@ -129,12 +128,12 @@ export const FileEditor = () => {
           <EditorTabs
             items={editorTabs}
             active={active}
-            selectedKey={activeTab?.filePath}
-            onSelectionChange={(key) =>
+            selectedKey={filePath}
+            onSelectionChange={(key) => {
               editorStateManager.select(
                 editorTabs.findIndex((tab) => tab.filePath === key)
-              )
-            }
+              );
+            }}
             noBorders
           >
             {(tab) => {
@@ -190,32 +189,42 @@ export const FileEditor = () => {
           </EditorTabs>
         </ContextMenuContainer>
       )}
-      {activeTab &&
-        (typeof content === "string" ? (
-          <Editor
-            height="100%"
-            path={activeTab.filePath}
-            onMount={(monacoEditor, monaco) => {
-              monacoEditor.focus();
-              enableJsx(monaco);
-              editorRef.current = monacoEditor;
-              monacoEditor.onDidChangeCursorPosition((e) => {
-                setCursorPositionState(e.position);
-              });
-              monacoEditor.onDidChangeModel(() => {
-                const position = editorRef.current?.getPosition();
-                if (position) {
-                  setCursorPositionState(position);
-                }
-              });
-            }}
-            onChange={updateContent}
-            value={content}
-          />
-        ) : (
-          content && "UNSUPPORTED CONTENT"
-        ))}
-      {contentLoadable.state === "loading" && <FileEditorLoading />}
+      {typeof content === "string" ? (
+        /**
+         * ## Note
+         * TLDR: Keeping the editor mounted when filePath changes is intentional and does matter.
+         *
+         * Whether the editor component is kept mounted as tabs change or not has nuances that can lead to minor
+         * focus issues. For example calling editorStateManager.focus() may do nothing if the editor is unmounted due
+         * to filePath being changed. focusing editor in createFile action is an example of such case. It also affects
+         * certain focus management code within the FileEditor. For example, focusing the editor on tab changes will
+         * be necessary if the editor remounts with each file change. Or autofocus behavior of the editor can be
+         * done on the onMount callback of the Editor component, if it's only mounted once. But the same code leads
+         * to focus issues if the editor is mounted on active tab changes, when they are not done via the tab UI,
+         * but as a side effect of another action like opening a file via Project tool window.
+         *
+         */
+        <Editor
+          height="100%"
+          path={filePath}
+          onMount={(monacoEditor, monaco) => {
+            monacoEditor.focus();
+            enableJsx(monaco);
+            editorRef.current = monacoEditor;
+            monacoEditor.onDidChangeCursorPosition((e) => {
+              setCursorPositionState(e.position);
+            });
+            monacoEditor.onDidChangeModel(() => {
+              // TODO: set the editor tab state, and add an atom effect to persist whole editor state across loads
+            });
+          }}
+          onChange={updateContent}
+          value={content ?? ""}
+        />
+      ) : (
+        content && "UNSUPPORTED CONTENT"
+      )}
+      {loadingState === "loading" && <FileEditorLoading />}
     </StyledFileEditorContainer>
   );
 };

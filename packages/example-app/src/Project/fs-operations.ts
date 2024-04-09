@@ -7,7 +7,7 @@ import { editorManagerState } from "../Editor/editor.state";
 import { fs } from "../fs/fs";
 import git from "isomorphic-git";
 import path from "path";
-import { dirContentState, fileContent } from "../fs/fs.state";
+import { dirContentState, fileContentState } from "../fs/fs.state";
 import { ensureDir } from "../fs/fs-utils";
 
 export const deleteFileCallback =
@@ -31,7 +31,7 @@ export const deleteFileCallback =
         }
       } finally {
         refresh(dirContentState(path.dirname(filepath))); // TODO(fs.watch): better done separately using fs.watch
-        reset(fileContent(filepath)); // TODO(fs.watch): better done separately using fs.watch
+        reset(fileContentState(filepath)); // TODO(fs.watch): better done separately using fs.watch
       }
     } finally {
       releaseSnapshot();
@@ -57,7 +57,7 @@ export const createFileCallback =
         throw new Error(`File ${filePath} already exists`);
       }
       await fs.promises.writeFile(filePath, "", "utf-8");
-      reset(fileContent(filePath)); // TODO(fs.watch): better done in an atom effect
+      reset(fileContentState(filePath)); // TODO(fs.watch): better done in an atom effect
       (await snapshot.getPromise(editorManagerState)).openPath(filePath);
       refresh(dirContentState(destinationDir));
     } finally {

@@ -60,7 +60,7 @@ export const dirContentState = selectorFamily({
 export const reloadFileFromDiskCallback =
   ({ reset }: CallbackInterface) =>
   async (path: string) => {
-    reset(fileContent(path));
+    reset(fileContentState(path));
   };
 
 const readFileContentSelector = selectorFamily({
@@ -93,7 +93,7 @@ const readFileContentSelector = selectorFamily({
  * [recoil-atom-effects]: https://recoiljs.org/docs/guides/atom-effects#write-through-cache-example
  * [vfs]: https://plugins.jetbrains.com/docs/intellij/virtual-file-system.html
  **/
-export const fileContent = atomFamily<string | null, string | undefined>({
+export const fileContentState = atomFamily<string | null, string | undefined>({
   key: "fileContent",
   default: readFileContentSelector,
   effects: (filepath) => [
