@@ -15,6 +15,9 @@ import {
 import { useRunTask } from "../../../tasks";
 import { commitTaskIdState } from "./ChangesView.state";
 import { Change } from "../Change";
+import { resolvedRefState } from "../../refs.state";
+import { repoCurrentBranchNameState } from "../../Branches/branches.state";
+import { allCommitsState } from "../../VersionControlToolWindow/CommitsView/CommitsTable.state";
 
 const commitSuccessfulMessage = new IntlMessageFormat(
   `{count, plural,
@@ -34,7 +37,7 @@ export function useCommitChanges() {
   const runTask = useRunTask();
 
   return useRecoilCallback(
-    ({ snapshot, set }) =>
+    ({ snapshot, set, refresh }) =>
       (changes: readonly Change[], commitMessage: string) => {
         const taskId = runTask(
           { title: "Committing...", isCancelable: false },
@@ -90,10 +93,24 @@ export function useCommitChanges() {
                         email: "alireza.mirian@gmail.com",
                       },
                     });
+                    const currentBranch = await snapshot.getPromise(
+                      repoCurrentBranchNameState(repoRoot)
+                    );
+                    if (currentBranch) {
+                      refresh(
+                        resolvedRefState({
+                          repoRoot,
+                          ref: currentBranch,
+                        })
+                      );
+                    }
+                    refresh(resolvedRefState({ repoRoot, ref: "HEAD" }));
                   }
                 )
               ).then(
                 () => {
+                  refresh(allCommitsState); // maybe a more efficient way to update only the newly added commit, when
+                  // allCommitsState is refactored to allow that
                   refreshFileStatus().catch(console.error);
 
                   balloonManager.show({
