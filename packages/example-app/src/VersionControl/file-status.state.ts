@@ -177,15 +177,20 @@ export const refreshFileStatusCallback =
   async (fullPath: string) => {
     const repoRoot = snapshot.getLoadable(vcsRootForFile(fullPath)).getValue();
     if (repoRoot) {
+      const relativePath = path.relative(repoRoot, fullPath);
       const rows = await git.statusMatrix({
         fs,
         dir: repoRoot,
-        filepaths: [path.relative(repoRoot, fullPath)],
+        filepaths: [relativePath],
       });
       set(repoStatusState(repoRoot), (statusMap) => {
         const newStatusMap = {
           ...statusMap,
         };
+        if (rows.length === 0) {
+          // if file is removed and doesn't exist in HEAD, it will not appear on the status matrix
+          delete newStatusMap[relativePath];
+        }
         rows.forEach((row) => {
           newStatusMap[row[0]] = convertGitStatus(row);
         });
