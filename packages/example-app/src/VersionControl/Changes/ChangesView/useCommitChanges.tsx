@@ -50,7 +50,9 @@ export function useCommitChanges() {
                       const repoRoot = snapshot
                         .getLoadable(vcsRootForFile(filePath))
                         .getValue();
-                      const content = await fs.promises.readFile(filePath);
+                      const content = (await fs.promises.exists(filePath))
+                        ? await fs.promises.readFile(filePath)
+                        : null;
                       return repoRoot
                         ? {
                             repoRoot,
@@ -66,7 +68,7 @@ export function useCommitChanges() {
                 Object.entries(changesGroupedByRepo).map(
                   async ([repoRoot, files]) => {
                     const updates = files.reduce<{
-                      [filePath: string]: Uint8Array;
+                      [filePath: string]: Uint8Array | null;
                     }>(
                       (soFar, { filePath, content }) => ({
                         ...soFar,
@@ -80,7 +82,7 @@ export function useCommitChanges() {
                     await commitFiles({
                       fs,
                       dir: repoRoot,
-                      files: updates,
+                      updates,
                       message: commitMessage,
                       author: {
                         // FIXME

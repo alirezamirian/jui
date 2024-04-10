@@ -1,7 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import { ChangesViewSplitter } from "./ChangesViewSplitter";
-import { useRefreshRepoStatuses } from "../../file-status.state";
 
 const StyledContainer = styled.div`
   display: flex;
@@ -9,14 +8,8 @@ const StyledContainer = styled.div`
   height: 100%;
 `;
 
-export const ChangesViewPane = () => {
-  const refresh = useRefreshRepoStatuses();
-  useEffect(() => {
-    refresh();
-  }, []);
-  return (
-    <StyledContainer>
-      <ChangesViewSplitter />
-    </StyledContainer>
-  );
-};
+export const ChangesViewPane = () => (
+  <StyledContainer>
+    <ChangesViewSplitter />
+  </StyledContainer>
+);
