@@ -31,6 +31,7 @@ export async function commitFiles({
   });
   const entries = headTree.tree;
 
+  let containsChange = false;
   // Write content into blobs, and upsert respective entries with the new oids
   await Promise.all(
     Object.entries(updates).map(async ([filePath, blob]) => {
@@ -38,6 +39,7 @@ export async function commitFiles({
       if (blob == null) {
         // null indicates removed file
         if (index > -1) {
+          containsChange = true;
           entries.splice(index, 1);
         }
         return;
@@ -54,9 +56,13 @@ export async function commitFiles({
           path: filePath,
         });
       }
+      containsChange = true;
     })
   );
 
+  if (!containsChange) {
+    throw new Error("Nothing to commit!");
+  }
   // Write the new tree into the git object database
   const newTreeOid = await git.writeTree({ fs, dir, gitdir, tree: entries });
 
