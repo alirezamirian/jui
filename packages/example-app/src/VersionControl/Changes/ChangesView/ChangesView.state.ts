@@ -34,7 +34,7 @@ import {
   isGroupNode,
 } from "../ChangesTree/ChangeTreeNode";
 import { Task } from "../../../tasks";
-import { Change } from "../Change";
+import { AnyChange, Change } from "../Change";
 import { changesTreeNodesResult } from "../ChangesTree/changesTreeNodesResult";
 import { allChangesState } from "../changes.state";
 
@@ -123,11 +123,11 @@ const selectedNodesState = selector<ReadonlySet<ChangesViewTreeNode>>({
   },
 });
 
-export const changesUnderSelectedKeys = selector<ReadonlySet<Change>>({
+export const changesUnderSelectedKeys = selector<ReadonlySet<AnyChange>>({
   key: "changesView.selectedKeys.changes",
   get: ({ get }) => {
     const selectedNodes = get(selectedNodesState);
-    const allChanges: Set<Change> = new Set();
+    const allChanges: Set<AnyChange> = new Set();
     const processNode = (node: ChangesViewTreeNode | undefined) => {
       if (!node) {
         return;
@@ -188,7 +188,7 @@ export const includedChangeKeysState = atom<Set<string>>({
   default: new Set<string>([]),
 });
 
-export const includedChangesState = selector<ReadonlyArray<Change>>({
+export const includedChangesState = selector<ReadonlyArray<AnyChange>>({
   key: "changesView.includedChanges",
   get: ({ get }) => {
     const includedChangeKeys = get(includedChangeKeysState);

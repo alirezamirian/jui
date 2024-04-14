@@ -183,11 +183,9 @@ function useJumpToSourceAction(): ActionDefinition {
     icon: <PlatformIcon icon="actions/editSource.svg" />,
     actionPerformed: () => {
       [...selectedChanges].forEach((change, index, arr) => {
-        if (!change.after?.isDir) {
-          editorStateManager.openPath(
-            Change.path(change),
-            index === arr.length - 1
-          );
+        const changePath = Change.path(change);
+        if (!changePath) {
+          editorStateManager.openPath(changePath, index === arr.length - 1);
         }
       });
     },

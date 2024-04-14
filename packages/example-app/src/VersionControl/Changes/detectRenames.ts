@@ -1,6 +1,6 @@
 import { diffLines } from "diff";
-import { AdditionChange, Change, DeletionChange } from "./Change";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
+import { AdditionChange, AnyChange, Change, DeletionChange } from "./Change";
 
 // Read more: https://www.git-scm.com/docs/git-diff/2.6.7#:~:text=The-,similarity%20index,-is%20the%20percentage
 const DEFAULT_SIMILARITY_INDEX = 50;
@@ -11,12 +11,14 @@ const DEFAULT_SIMILARITY_INDEX = 50;
  * @param changes
  */
 export async function detectRenames(
-  changes: ReadonlyArray<Change>
-): Promise<Change[]> {
+  changes: ReadonlyArray<AnyChange>
+): Promise<AnyChange[]> {
   return detectRenamesBasedOnContent(detectRenamesBasedOnHash(changes));
 }
 
-function detectRenamesBasedOnHash(changes: ReadonlyArray<Change>): Change[] {
+function detectRenamesBasedOnHash(
+  changes: ReadonlyArray<AnyChange>
+): AnyChange[] {
   const deletions = changes.filter(Change.isDeletion);
   const additions = changes.filter(Change.isAddition);
 
@@ -39,20 +41,15 @@ function detectRenamesBasedOnHash(changes: ReadonlyArray<Change>): Change[] {
 }
 
 async function detectRenamesBasedOnContent(
-  changes: ReadonlyArray<Change>
-): Promise<Change[]> {
+  changes: ReadonlyArray<AnyChange>
+): Promise<AnyChange[]> {
   const deletions = changes.filter(Change.isDeletion);
   const additions = changes.filter(Change.isAddition);
 
-  const contents = new Map<Change, string>();
-  const getContent = async (change: Change): Promise<string> => {
+  const contents = new Map<AnyChange, string>();
+  const getContent = async (change: AnyChange): Promise<string> => {
     if (!contents.get(change)) {
-      contents.set(
-        change,
-        await (Change.isAddition(change)
-          ? change.after.content()
-          : change.before?.content() ?? "")
-      );
+      contents.set(change, await Change.content(change));
     }
     return contents.get(change) ?? "";
   };
@@ -84,21 +81,22 @@ async function detectRenamesBasedOnContent(
 
 function mergeRenames(
   renameMapping: Map<DeletionChange, { to: AdditionChange }>,
-  changes: ReadonlyArray<Change>
+  changes: ReadonlyArray<AnyChange>
 ) {
-  const renamedChanges = [...renameMapping.values()].map((rename) => rename.to);
+  const renamedChanges: AnyChange[] = [...renameMapping.values()].map(
+    (rename) => rename.to
+  );
   return changes
     .map((change) => {
-      const candidate = Change.isDeletion(change) && renameMapping.get(change);
-      if (candidate) {
-        return {
-          ...change,
-          after: candidate?.to.after,
-        };
+      if (Change.isDeletion(change)) {
+        const candidate = renameMapping.get(change);
+        if (candidate) {
+          return Change(change.before, candidate?.to.after);
+        }
       }
       return change;
     })
-    .filter((change) => !renamedChanges.includes(change as AdditionChange));
+    .filter((change) => !renamedChanges.includes(change));
 }
 
 /**

@@ -12,7 +12,7 @@ import {
   getNodeKeyForChange,
   isGroupNode,
 } from "../ChangesTree/ChangeTreeNode";
-import { Change } from "../Change";
+import { AnyChange } from "../Change";
 
 const isOpen = atom<boolean>({
   key: "rollbackView.isOpen",
@@ -22,7 +22,7 @@ const windowBounds = atom<Partial<Bounds>>({
   key: "rollbackView.windowBounds",
   default: { height: 500 },
 });
-const initiallyIncludedChanges = atom<ReadonlyArray<Change>>({
+const initiallyIncludedChanges = atom<ReadonlyArray<AnyChange>>({
   key: "rollbackView.initiallySelectedChanges",
   default: [],
 });

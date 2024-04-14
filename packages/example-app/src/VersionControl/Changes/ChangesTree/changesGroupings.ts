@@ -51,9 +51,7 @@ const repositoryGrouping: ChangeGrouping<RepositoryNode, "repository"> = {
             repositoryNode(
               repository,
               nodes.filter((node) =>
-                (
-                  node.change.after?.path || node.change.before?.path
-                )?.startsWith(repository.dir)
+                Change.path(node.change)?.startsWith(repository.dir)
               )
             )
         );
@@ -71,9 +69,7 @@ export const directoryGrouping: ChangeGrouping<DirectoryNode, "directory"> = {
     createDirectoryNode: ({ dirPath, parentNodePath, children }) =>
       directoryNode(dirPath, parentNodePath, children),
     mapNode: (node) => changeNode(node.change, false),
-    getPath: (node) => {
-      return Change.path(node.change);
-    },
+    getPath: (node) => Change.path(node.change),
   }),
 };
 

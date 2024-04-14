@@ -13,15 +13,15 @@ import {
   vcsRootsState,
 } from "../file-status.state";
 import { findRootPaths } from "../../path-utils";
-import { Change } from "./Change";
+import { AnyChange, Change } from "./Change";
 
-const repoChangesState = selectorFamily<Change[], string>({
+const repoChangesState = selectorFamily<AnyChange[], string>({
   key: "vcs.repoChanges",
   get:
     (repoDir: string) =>
     ({ get }) =>
       Object.entries(get(repoStatusState(repoDir)))
-        .map(([filename, status]) => {
+        .map<AnyChange | null>(([filename, status]) => {
           const revision = {
             path: path.join(repoDir, filename),
             isDir: false,
@@ -30,27 +30,19 @@ const repoChangesState = selectorFamily<Change[], string>({
             },
           };
           if (status === "ADDED") {
-            return {
-              after: revision,
-            };
+            return Change(null, revision);
+          } else if (status === "MODIFIED") {
+            return Change(revision, revision);
+          } else if (status === "DELETED") {
+            return Change(revision, null);
+          } else {
+            return null;
           }
-          if (status === "MODIFIED") {
-            return {
-              before: revision,
-              after: revision,
-            };
-          }
-          if (status === "DELETED") {
-            return {
-              before: revision,
-            };
-          }
-          return null;
         })
         .filter(notNull),
 });
 
-export const allChangesState = selector<ReadonlyArray<Change>>({
+export const allChangesState = selector<ReadonlyArray<AnyChange>>({
   key: "vcs.allChanges",
   get: ({ get }) => {
     return get(vcsRootsState)
@@ -66,7 +58,7 @@ export const useRollbackChanges = () => {
   const updateFileStatus = useRefreshFileStatus();
   return useRecoilCallback(
     (callbackInterface) =>
-      async (changes: readonly Change[], deleteAddedFiles?: boolean) => {
+      async (changes: readonly AnyChange[], deleteAddedFiles?: boolean) => {
         const { snapshot, refresh } = callbackInterface;
         const reloadFileFromDisk =
           reloadFileFromDiskCallback(callbackInterface);
@@ -74,7 +66,7 @@ export const useRollbackChanges = () => {
         const changesWithRepoRoots = (
           await Promise.all(
             changes
-              .filter((change) => !change.after?.isDir)
+              .filter((change) => !Change.revision(change).isDir)
               .map(async (change) => {
                 const repoRoot = await snapshot.getPromise(
                   vcsRootForFile(Change.path(change))
@@ -82,7 +74,7 @@ export const useRollbackChanges = () => {
                 if (repoRoot) {
                   return {
                     repoRoot,
-                    type: Change.type(change),
+                    type: change.type,
                     fullPath: Change.path(change),
                     relativePath: path.relative(repoRoot, Change.path(change)),
                   };

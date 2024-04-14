@@ -1,5 +1,5 @@
 import { VcsDirectoryMapping } from "../../file-status";
-import { Change } from "../Change";
+import { AnyChange, Change } from "../Change";
 
 export interface ChangesTreeNode<T extends string> {
   type: T;
@@ -19,7 +19,7 @@ export type GroupNodes<T extends ChangesTreeNode<any>> = Extract<
 >;
 
 export interface ChangeNode extends ChangesTreeNode<"change"> {
-  change: Change;
+  change: AnyChange;
   /**
    * Whether to show the file path in front of the file name (in muted UI)
    */
@@ -52,9 +52,9 @@ export type DefaultChangesTreeNode = ExtendedChangesTreeNode<never>;
 export const changesTreeNodeKey = (type: string, id: string): string =>
   `${type}_${id}`;
 
-export const getNodeKeyForChange = (change: Change) =>
+export const getNodeKeyForChange = (change: AnyChange) =>
   changesTreeNodeKey("change", Change.path(change));
-export const changeNode = (change: Change, showPath = true): ChangeNode => ({
+export const changeNode = (change: AnyChange, showPath = true): ChangeNode => ({
   type: "change",
   key: getNodeKeyForChange(change),
   change,

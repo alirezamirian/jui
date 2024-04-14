@@ -14,7 +14,7 @@ import {
 } from "../../file-status.state";
 import { useRunTask } from "../../../tasks";
 import { commitTaskIdState } from "./ChangesView.state";
-import { Change } from "../Change";
+import { AnyChange, Change } from "../Change";
 import { resolvedRefState } from "../../refs.state";
 import { repoCurrentBranchNameState } from "../../Branches/branches.state";
 import { allCommitsState } from "../../VersionControlToolWindow/CommitsView/CommitsTable.state";
@@ -38,7 +38,7 @@ export function useCommitChanges() {
 
   return useRecoilCallback(
     ({ snapshot, set, refresh }) =>
-      (changes: readonly Change[], commitMessage: string) => {
+      (changes: readonly AnyChange[], commitMessage: string) => {
         const taskId = runTask(
           { title: "Committing...", isCancelable: false },
           {

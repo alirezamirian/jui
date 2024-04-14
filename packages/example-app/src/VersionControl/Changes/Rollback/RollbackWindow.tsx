@@ -105,7 +105,9 @@ export function RollbackWindow() {
   const treeActions = useTreeActions({ treeRef });
   const [deleteAddedFiles, setDeleteAddedFiles] = useState(false);
 
-  const atLeastOneNewFileSelected = includedChanges.some(Change.isAddition);
+  const atLeastOneNewFileSelected = includedChanges.some(
+    (change) => change.type === "ADDED"
+  );
 
   return (
     <ModalWindow

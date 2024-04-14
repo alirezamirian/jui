@@ -9,14 +9,14 @@ import { useEffect } from "react";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 import { allChangesState } from "./changes.state";
-import { Change } from "./Change";
+import { AnyChange, Change } from "./Change";
 
 export interface ChangeListObj {
   id: string;
   name: string;
   comment: string;
   active: boolean;
-  changes: ReadonlyArray<Change>;
+  changes: ReadonlyArray<AnyChange>;
 }
 
 export const changeListsState = atom<ChangeListObj[]>({
@@ -82,7 +82,6 @@ export function SyncChangeListsState() {
   const changes = useRecoilValue(allChangesState);
   const setChangeLists = useSetRecoilState(changeListsState);
   useEffect(() => {
-    // FIXME: changes now all go to default change list on each refresh. fix it.
     setChangeLists((changeLists) => {
       const updatedChangeLists = changeLists.map((changeList) => {
         return {

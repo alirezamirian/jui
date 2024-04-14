@@ -90,7 +90,7 @@ const changeNodeRenderer: NodeRenderer<ChangeNode> = (node) => ({
   rendered: (
     <ItemLayout>
       <PlatformIcon icon={getIconForFile(Change.path(node.change))} />
-      <StatusColor status={Change.type(node.change)}>
+      <StatusColor status={Change.fileStatus(node.change)}>
         <HighlightedTextValue />
       </StatusColor>
       {Change.isRename(node.change)

@@ -1,21 +1,17 @@
 import React from "react";
 import { StatusColor } from "../FileStatusColor";
-import { Change } from "./Change";
+import { AnyChange, Change } from "./Change";
 
 export const ChangesSummary = ({
   changes,
 }: {
-  changes: ReadonlyArray<Change>;
+  changes: ReadonlyArray<AnyChange>;
 }) => {
   const modifiedCount = changes.filter(
-    (change) => Change.type(change) === "MODIFIED"
+    (change) => Change.fileStatus(change) === "MODIFIED"
   ).length;
-  const addedCount = changes.filter(
-    (change) => Change.type(change) === "ADDED"
-  ).length;
-  const deletedCount = changes.filter(
-    (change) => Change.type(change) === "DELETED"
-  ).length;
+  const addedCount = changes.filter(Change.isAddition).length;
+  const deletedCount = changes.filter(Change.isDeletion).length;
 
   return (
     <>
