@@ -9,7 +9,11 @@ import {
 } from "../ChangesTree/changesTreeNodeRenderers";
 import { repoStatusUpdatingState } from "../../file-status.state";
 import { Delayed } from "../../../Delayed";
-import { ChangeListNode, ChangesViewTreeNode } from "./ChangesView.state";
+import {
+  ChangeListNode,
+  ChangesViewTreeNode,
+  UnversionedChangesNode,
+} from "./ChangesView.state";
 
 const changeListNodeRenderer: NodeRenderer<ChangeListNode> = (
   node,
@@ -30,6 +34,22 @@ const changeListNodeRenderer: NodeRenderer<ChangeListNode> = (
   ),
 });
 
+const unversionedChangesNodeRenderer: NodeRenderer<UnversionedChangesNode> = (
+  _node,
+  { fileCount }
+) => ({
+  textValue: "Unversioned Files",
+  rendered: (
+    <ItemLayout>
+      <HighlightedTextValue />
+      <ItemLayout.Hint>
+        {formatFileCount(fileCount)}
+        {<LoadingText />}
+      </ItemLayout.Hint>
+    </ItemLayout>
+  ),
+});
+
 function LoadingText() {
   const loading = useRecoilValue(repoStatusUpdatingState);
   return <>{loading && <Delayed>, updating...</Delayed>}</>;
@@ -38,4 +58,5 @@ function LoadingText() {
 export const changesViewTreeNodeRenderer =
   createChangesTreeNodeRenderer<ChangesViewTreeNode>({
     changelist: changeListNodeRenderer,
+    unversioned: unversionedChangesNodeRenderer,
   });

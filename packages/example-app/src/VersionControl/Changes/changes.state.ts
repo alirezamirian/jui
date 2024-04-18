@@ -35,6 +35,8 @@ const repoChangesState = selectorFamily<AnyChange[], string>({
             return Change(revision, revision);
           } else if (status === "DELETED") {
             return Change(revision, null);
+          } else if (status === "UNKNOWN") {
+            return Change.Unversioned(revision);
           } else {
             return null;
           }

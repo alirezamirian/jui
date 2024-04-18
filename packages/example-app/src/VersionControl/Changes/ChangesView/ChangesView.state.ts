@@ -3,11 +3,15 @@ import { Key } from "react";
 import { atom, atomFamily, CallbackInterface, selector } from "recoil";
 import { Selection } from "@react-types/shared";
 
-import { ChangeListObj, changeListsState } from "../change-lists.state";
+import {
+  ChangeListObj,
+  changeListsState,
+  unversionedChangesState,
+} from "../change-lists.state";
 import {
   defaultChangeGroupings,
   defaultChangeGroupingsState,
-  getChangesGroupFn,
+  getPrefixedChangesGroupFn,
   GroupFn,
 } from "../ChangesTree/changesGroupings";
 import {
@@ -43,8 +47,13 @@ export interface ChangeListNode<
 > extends ChangesTreeGroupNode<"changelist", C> {
   changeList: ChangeListObj;
 }
+export interface UnversionedChangesNode<
+  C extends ChangesTreeNode<any> = ChangeNode
+> extends ChangesTreeGroupNode<"unversioned", C> {}
 
-export type ChangesViewTreeNode = ExtendedChangesTreeNode<ChangeListNode>;
+export type ChangesViewTreeNode = ExtendedChangesTreeNode<
+  ChangeListNode | UnversionedChangesNode
+>;
 
 export const changeListNode = (
   changeList: ChangeListObj
@@ -270,24 +279,36 @@ const groupChildren = <
 });
 
 export const changesTreeNodesState = selector<{
-  rootNodes: ReadonlyArray<ChangeListNode>;
+  rootNodes: ReadonlyArray<ChangeListNode | UnversionedChangesNode>;
   fileCountsMap: Map<Key, number>;
   byKey: Map<Key, ChangesViewTreeNode>;
 }>({
   key: "changesView.treeNodes",
-  get: ({ get, getCallback }) => {
+  get: ({ get }) => {
     const changeListNodes = sortBy(
       ({ active }) => !active,
       get(changeListsState)
     ).map(changeListNode);
-    const groupFn = getChangesGroupFn({
+    const prefixedGroupFn = getPrefixedChangesGroupFn({
       get,
       groupings: defaultChangeGroupings,
       isActive: changesGroupingActiveState,
     });
-    const rootNodes = changeListNodes.map((changeListNode) =>
-      groupChildren(changeListNode, groupFn)
-    );
+    const unversionedChanges = get(unversionedChangesState);
+    const rootNodes: Array<ChangeListNode | UnversionedChangesNode> =
+      changeListNodes.map((changeListNode) =>
+        groupChildren(changeListNode, prefixedGroupFn(changeListNode.key))
+      );
+    if (unversionedChanges.length > 0) {
+      const unversionedChangesNode: UnversionedChangesNode = {
+        key: "unversioned",
+        type: "unversioned",
+        children: unversionedChanges.map((change) => changeNode(change)),
+      };
+      rootNodes.push(
+        groupChildren(unversionedChangesNode, prefixedGroupFn("unversioned"))
+      );
+    }
     return changesTreeNodesResult(rootNodes);
   },
 });

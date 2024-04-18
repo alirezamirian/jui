@@ -46,9 +46,10 @@ export const deleteFilesCallback =
     return Promise.all(filePaths.map(deleteFile));
   };
 
-export const createFileCallback =
-  ({ snapshot, refresh, reset }: CallbackInterface) =>
-  async (filePath: string) => {
+export const createFileCallback = (callbackInterface: CallbackInterface) => {
+  const refreshFileStatus = refreshFileStatusCallback(callbackInterface);
+  return async (filePath: string) => {
+    const { snapshot, refresh, reset } = callbackInterface;
     const releaseSnapshot = snapshot.retain();
     try {
       const destinationDir = path.dirname(filePath);
@@ -59,8 +60,10 @@ export const createFileCallback =
       await fs.promises.writeFile(filePath, "", "utf-8");
       reset(fileContentState(filePath)); // TODO(fs.watch): better done in an atom effect
       (await snapshot.getPromise(editorManagerState)).openPath(filePath);
+      await refreshFileStatus(filePath);
       refresh(dirContentState(destinationDir));
     } finally {
       releaseSnapshot();
     }
   };
+};

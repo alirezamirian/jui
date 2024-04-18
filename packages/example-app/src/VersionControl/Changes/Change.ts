@@ -210,6 +210,15 @@ Change.isModified = function (change: AnyChange): change is ModificationChange {
 };
 
 /**
+ * type-guard returning filter for unversioned change.
+ */
+Change.isUnversioned = function (
+  change: AnyChange
+): change is UnversionedChange {
+  return change.type === "UNVERSIONED";
+};
+
+/**
  * @returns the `after` revision if the change is not a deletion, and `before` revision, otherwise.
  */
 Change.revision = function (change: AnyChange): Revision {

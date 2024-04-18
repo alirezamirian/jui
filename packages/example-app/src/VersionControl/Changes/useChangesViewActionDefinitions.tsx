@@ -32,6 +32,7 @@ import { Change } from "./Change";
 import { useLatestRecoilValue } from "../../recoil-utils";
 import { findRootPaths } from "../../path-utils";
 import { useRefreshRepoStatuses } from "../file-status.state";
+import { activeChangeListState } from "./change-lists.state";
 
 export const useChangesViewActionDefinitions = (): ActionDefinition[] => {
   const openRollbackWindow = useRecoilCallback(
@@ -134,11 +135,11 @@ function useCheckInProjectAction(): ActionDefinition {
         let keyToSelect = includedChangesKeys.values().next().value;
         if (includedChangesKeys.size === 0) {
           const allKeys = snapshot
-            .getLoadable(allChangesState)
+            .getLoadable(activeChangeListState)
             .getValue()
-            .map(getNodeKeyForChange);
+            ?.changes.map(getNodeKeyForChange);
           set(includedChangeKeysState, new Set(allKeys));
-          keyToSelect = allKeys[0];
+          keyToSelect = allKeys?.[0];
         }
         if (keyToSelect) {
           const { rootNodes } = snapshot

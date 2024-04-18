@@ -63,10 +63,11 @@ export const changeNode = (change: AnyChange, showPath = true): ChangeNode => ({
 export const directoryNode = <G extends ChangesTreeNode<any>>(
   dirPath: string,
   parentNodePath: string,
-  children: readonly G[] = []
+  children: readonly G[] = [],
+  keyPrefix: string = ""
 ): DirectoryNode<G> => ({
   type: "directory",
-  key: changesTreeNodeKey("directory", dirPath),
+  key: keyPrefix + changesTreeNodeKey("directory", dirPath),
   dirPath,
   parentNodePath,
   children,

@@ -31,11 +31,19 @@ const rootNodes = selector({
   get: ({ get }) => {
     const selectedChanges = get(initiallyIncludedChanges);
     const { rootNodes } = get(changesTreeNodesState);
-    return rootNodes.filter(
-      ({ changeList: { changes, active } }) =>
-        (selectedChanges.length === 0 && active) ||
-        selectedChanges.some((change) => changes.includes(change))
+    const includedRootNodes = rootNodes.filter(
+      (node) =>
+        node.type === "changelist" &&
+        selectedChanges.some((change) =>
+          node.changeList.changes.includes(change)
+        )
     );
+    if (includedRootNodes.length === 0) {
+      return rootNodes.filter(
+        (node) => node.type === "changelist" && node.changeList.active
+      );
+    }
+    return includedRootNodes;
   },
 });
 const initiallyExpandedKeys = selector({

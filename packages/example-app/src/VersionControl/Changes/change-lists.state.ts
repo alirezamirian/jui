@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 import { allChangesState } from "./changes.state";
-import { AnyChange, Change } from "./Change";
+import { AnyChange, Change, UnversionedChange } from "./Change";
 
 export interface ChangeListObj {
   id: string;
@@ -43,6 +43,11 @@ export const activeChangeListState = selector<ChangeListObj | null>({
   key: "changelists.lists/default",
   get: ({ get }) =>
     get(changeListsState).find((changeList) => changeList.active) ?? null,
+});
+
+export const unversionedChangesState = selector<UnversionedChange[]>({
+  key: "changelists.lists/unversioned",
+  get: ({ get }) => get(allChangesState).filter(Change.isUnversioned),
 });
 
 export const useSetActiveChangeList = () =>
@@ -96,12 +101,14 @@ export function SyncChangeListsState() {
       const existingChanges = updatedChangeLists.flatMap(
         ({ changes }) => changes
       );
-      const newChanges = changes.filter(
-        (change) =>
-          !existingChanges.find((anExistingChange) =>
-            Change.equals(change, anExistingChange)
-          )
-      );
+      const newChanges = changes
+        .filter((change) => !Change.isUnversioned(change))
+        .filter(
+          (change) =>
+            !existingChanges.find((anExistingChange) =>
+              Change.equals(change, anExistingChange)
+            )
+        );
       const activeChangeList =
         updatedChangeLists.find(({ active }) => active) ??
         updatedChangeLists[0];
