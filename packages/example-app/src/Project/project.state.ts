@@ -6,7 +6,11 @@ import {
   useRecoilRefresher_UNSTABLE,
 } from "recoil";
 import { createRef, MutableRefObject } from "react";
-import { PopupManagerAPI, WindowManagerAPI } from "@intellij-platform/core";
+import {
+  AlertDialogApi,
+  PopupManagerAPI,
+  WindowManagerAPI,
+} from "@intellij-platform/core";
 
 import { dirContentState, FsItem } from "../fs/fs.state";
 import { createFocusBasedSetterHook } from "../recoil-utils";
@@ -166,6 +170,14 @@ export const windowManagerRefState = atom<
   MutableRefObject<WindowManagerAPI | null>
 >({
   key: "project.windowManager",
+  default: createRef(),
+  dangerouslyAllowMutability: true,
+});
+
+export const alertDialogRefState = atom<
+  MutableRefObject<AlertDialogApi | null>
+>({
+  key: "project.alertDialog",
   default: createRef(),
   dangerouslyAllowMutability: true,
 });

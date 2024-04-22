@@ -8,6 +8,7 @@ import {
   DefaultToolWindows,
   styled,
   ToolWindowRefValue,
+  useAlertDialog,
   useBalloonManager,
   usePopupManager,
   useWindowManager,
@@ -31,6 +32,7 @@ import { ToolWindowsRefContext } from "./useToolWindowManager";
 import {
   projectPopupManagerRefState,
   windowManagerRefState,
+  alertDialogRefState,
 } from "./project.state";
 
 const StyledWindowFrame = styled.div`
@@ -40,13 +42,6 @@ const StyledWindowFrame = styled.div`
   min-height: 0;
 `;
 
-export const Project = ({
-  height,
-  toolWindowRef,
-}: {
-  height: CSSProperties["height"];
-  toolWindowRef: RefObject<ToolWindowRefValue>;
-}) => {
 export const Project = ({ height }: { height: CSSProperties["height"] }) => {
   const toolWindowRef = useRef<ToolWindowRefValue>(null);
   const [state, setState] = useRecoilState(toolWindowsState);
@@ -55,6 +50,7 @@ export const Project = ({ height }: { height: CSSProperties["height"] }) => {
 
   useRecoilValue(projectPopupManagerRefState).current = usePopupManager();
   useRecoilValue(windowManagerRefState).current = useWindowManager();
+  useRecoilValue(alertDialogRefState).current = useAlertDialog();
 
   return (
     <PersistentStateProvider>

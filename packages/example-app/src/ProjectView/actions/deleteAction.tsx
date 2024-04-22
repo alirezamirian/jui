@@ -15,11 +15,29 @@ import { notImplemented } from "../../Project/notImplemented";
 import { HelpButton } from "../../HelpButton";
 import {
   activePathExistsState,
+  alertDialogRefState,
   windowManagerRefState,
 } from "../../Project/project.state";
 import { selectedNodesState } from "../ProjectView.state";
 import { findRootPaths } from "../../path-utils";
 import { deleteFilesCallback } from "../../Project/fs-operations";
+import { IntlMessageFormat } from "intl-messageformat";
+
+const fileCountMsg = new IntlMessageFormat(
+  `{count, plural,
+    =1 {1 file}
+    other {# files}
+  }`,
+  "en-US"
+);
+
+const dirCountMsg = new IntlMessageFormat(
+  `{count, plural,
+    =1 {1 directory}
+    other {# directories}
+  }`,
+  "en-US"
+);
 
 export const deleteActionState = selector({
   key: `action.${CommonActionId.Delete}`,
@@ -28,10 +46,13 @@ export const deleteActionState = selector({
     title: "Delete",
     description: "Delete selected item",
     isDisabled: !get(activePathExistsState),
-    actionPerformed: getCallback(({ snapshot, refresh }) => async () => {
+    actionPerformed: getCallback(({ snapshot }) => async () => {
       const selectedNodes = snapshot.getLoadable(selectedNodesState).getValue();
       const windowManager = snapshot
         .getLoadable(windowManagerRefState)
+        .getValue().current;
+      const alertDialog = snapshot
+        .getLoadable(alertDialogRefState)
         .getValue().current;
       if (selectedNodes.length === 0) {
         return;
@@ -45,11 +66,45 @@ export const deleteActionState = selector({
         .map((node) => node.path);
 
       if (directories.length > 0) {
-        return notImplemented();
+        const singleDirName =
+          directories.length === 1 && filePaths.length === 0
+            ? path.basename(directories[0])
+            : null;
+
+        const confirmed = await alertDialog?.confirm({
+          title: "Delete",
+          okText: "Delete",
+          message: (
+            <div style={{ width: 354 }}>
+              Delete{" "}
+              {singleDirName
+                ? `"${singleDirName}"`
+                : [
+                    { count: directories.length, message: dirCountMsg },
+                    { count: filePaths.length, message: fileCountMsg },
+                  ]
+                    .filter(({ count }) => count > 0)
+                    .map(({ message, count }) => message.format({ count }))
+                    .join(" and ")}
+              ?
+              <br />
+              All files and subdirectories in
+              {singleDirName
+                ? ` "${singleDirName}" `
+                : " the selected directories "}
+              will be deleted. <br />
+              You might not be able to fully undo this operation!
+            </div>
+          ),
+        });
+        if (confirmed) {
+          notImplemented();
+        }
+      } else {
+        windowManager?.open(({ close }) => (
+          <DeleteFilesConfirmationDialog filePaths={filePaths} close={close} />
+        ));
       }
-      windowManager?.open(({ close }) => (
-        <DeleteFilesConfirmationDialog filePaths={filePaths} close={close} />
-      ));
     }),
   }),
 });

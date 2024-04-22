@@ -40,6 +40,7 @@ export const deleteFileCallback =
 
 export const deleteFilesCallback =
   (callbackInterface: CallbackInterface) => async (filePaths: string[]) => {
+    // TODO: use task API
     // An attempt to make this transactional failed, since it requires passing `set` and `reset` from transact function
     // to deleteFileCallback, and {...callbackInterface, set, reset} didn't work , since callbackInterface is a proxy object
     const deleteFile = deleteFileCallback(callbackInterface);

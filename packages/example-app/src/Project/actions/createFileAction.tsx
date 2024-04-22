@@ -101,6 +101,7 @@ function NewFileNamePopup({
           .getValue().current;
         const repoDir = await snapshot.getPromise(vcsRootForFile(filePath));
         await createFile(filePath);
+        // TODO: select it in the Project tool window, if it was created from the Project tool window
         close();
         editorManager.focus();
         if (repoDir) {
