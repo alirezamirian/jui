@@ -1,0 +1,97 @@
+---
+---
+
+import { AlertDialog } from "@intellij-platform/core";
+import { ApiDescription } from "../../src/components/ApiDescription";
+
+# AlertDialog
+
+<ApiDescription of={AlertDialog} />
+
+### Features
+
+- Alert UI with [various options][alert-ui-design] such as type, help button, etc.
+- [Imperative API](#imperative-api) for common patterns, such as confirmation.
+
+### Live example
+
+```jsx live themed
+function AlertDialogExample() {
+  const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
+  return (
+    <>
+      <Button onPress={() => setOpen(true)}>Open</Button>
+      {open && (
+        <AlertDialog
+          type="warning"
+          heading="Process 'storybook:start' Is Running"
+          body="Do you want to terminate the process 'storybook:start'?"
+          checkbox={<Checkbox>Don't ask again</Checkbox>}
+          buttons={
+            <>
+              <Button onPress={close}>Cancel</Button>
+              <Button autoFocus onPress={close}>
+                Disconnect
+              </Button>
+              <Button variant="default" onPress={close}>
+                Terminate
+              </Button>
+            </>
+          }
+          helpButton={
+            <Button variant="icon">
+              <PlatformIcon icon="actions/help"></PlatformIcon>
+            </Button>
+          }
+          onClose={close}
+        />
+      )}
+    </>
+  );
+}
+```
+
+## Imperative API
+
+`useAlertDialog` provides an imperative API for common scenarios that are handled by AlertDialog,
+such as confirming an action. The imperative API is a set of async helper functions such as `confirm`, which can
+get user input during some action handling logic, without needing to handle the state of the dialog UI.
+
+:::info
+`useAlertDialog` depends on [WindowManager](./ModalWindow#windowmanager) to imperatively open modal windows.
+:::
+
+```jsx noInline live themed
+function AlertDialogImperativeApiExample() {
+  const { confirm } = useAlertDialog();
+
+  const doDelete = async () => {
+    const confirmed = await confirm({
+      title: "Delete?",
+      message: (
+        <div style={{ width: 354 }}>
+          Delete 2 directories and 3 files?
+          <br />
+          All files and subdirectories in the selected directories will be
+          deleted. <br />
+          You might not be able to fully undo this operation!
+        </div>
+      ),
+      okText: "Delete",
+    });
+    if (confirmed) {
+      alert("Deleting!");
+    }
+  };
+  return <Button onPress={doDelete}>Delete</Button>;
+}
+
+render(
+  <WindowManager>
+    <AlertDialogImperativeApiExample />
+  </WindowManager>
+);
+```
+
+[alert-ui-design]: https://www.figma.com/file/nfDfMAdV7j2fnQlpYNAOfP/IntelliJ-Platform-UI-Kit-(Community)?type=design&node-id=79194-16371&mode=design&t=sHxqebNsXuLZdDI6-4

@@ -38,6 +38,7 @@ export * from "./Tooltip";
 export * from "./Popup";
 export * from "./InputField";
 export * from "./SearchInput";
+export * from "./AlertDialog";
 
 export { type Bounds } from "./Overlay";
 export { type TextRange } from "./TextRange";

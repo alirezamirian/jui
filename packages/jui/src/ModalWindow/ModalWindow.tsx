@@ -19,6 +19,7 @@ export interface ModalWindowProps
   extends AriaDialogProps,
     ResizableMovableOverlayOptions {
   children: React.ReactNode;
+  className?: string;
   onClose?: () => void;
 }
 
@@ -27,7 +28,8 @@ const StyledWindowUnderlay = styled.div`
   z-index: 1000; // FIXME: z-index should not be hard-coded like this
   inset: 0;
 `;
-const StyledWindowContainer = styled.div`
+
+export const StyledWindowContainer = styled.div`
   position: fixed;
   // not checked if there should be a better substitute for * in the following colors. Maybe "Component"?
   background-color: ${({ theme }) => theme.color("*.background")};
@@ -79,6 +81,7 @@ export const ModalWindow = ({
   interactions = "all",
   minWidth = DEFAULT_WINDOW_MIN_WIDTH,
   minHeight = DEFAULT_WINDOW_MIN_HEIGHT,
+  className,
   ...props
 }: ModalWindowProps): React.ReactElement => {
   const { children } = props;
@@ -113,7 +116,7 @@ export const ModalWindow = ({
   const { focusContainmentFixProps } = useFocusContainmentFix();
 
   return (
-    <StyledWindowUnderlay {...underlayProps}>
+    <StyledWindowUnderlay {...underlayProps} className={className}>
       <OverlayInteractionHandler {...overlayInteractionHandlerProps}>
         <FocusScope contain restoreFocus autoFocus>
           <StyledWindowContainer

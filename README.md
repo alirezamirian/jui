@@ -141,17 +141,14 @@ https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8
             <td>✅</td>
         </tr>
         <tr>
-            <td rowspan="4"><a href="https://jetbrains.github.io/ui/controls/balloon/">Balloon Notification</a></td>
+            <td rowspan="3"><a href="https://jetbrains.github.io/ui/controls/notifications/">Notifications</a></td>
         </tr>
         <tr>
-            <td colspan="2">Basic</td>
-            <td>✅</td></tr>
-        <tr>
-            <td colspan="2">Actions</td>
-            <td>✅ (without dropdown)</td>
+            <td colspan="2"><a href="https://jetbrains.github.io/ui/controls/balloon/">Balloon</a></td>
+            <td>✅</td>
         </tr>
         <tr>
-            <td colspan="2">BalloonManager, and useBalloonManager to imperatively show balloon notifications</td>
+            <td colspan="2"><a href="https://jetbrains.github.io/ui/controls/alert/">Alert</a></td>
             <td>✅</td>
         </tr>
         <tr>
@@ -288,6 +285,10 @@ https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8
         </tr>
         <tr>
             <td rowspan="1" colspan="3"><a href="https://jetbrains.github.io/ui/components/dialog_window/">ModalWindow</a></td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="3"><a href="https://jetbrains.github.io/ui/controls/alert/">Alert</a></td>
             <td>✅</td>
         </tr>
         <tr>

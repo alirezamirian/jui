@@ -2,6 +2,24 @@ import React, { MouseEventHandler } from "react";
 import { disableTextSelection, restoreTextSelection } from "./textSelection";
 import { useLatest } from "../useLatest";
 
+/**
+ * To be used with {@link UseMoveOptions#canMoveStart} to allow
+ * the move to start only on whitespaces. Does that by checking if the
+ * element is an HTMLElement with all children being Elements.
+ * This logic almost always detects the whitespaces properly, because if mouse
+ * was pressed on a piece of text, the event target would have been that element.
+ */
+export function isEventOnEmptySpaces({
+  target,
+  currentTarget,
+}: React.MouseEvent) {
+  return (
+    currentTarget === target ||
+    (target instanceof HTMLElement &&
+      [...target.childNodes].every((child) => child instanceof HTMLElement))
+  );
+}
+
 export type XY = { x: number; y: number };
 export type UseMoveOptions<S> = {
   /**
@@ -11,6 +29,24 @@ export type UseMoveOptions<S> = {
    */
   dragThreshold?: number;
   disabled?: boolean;
+  /**
+   * Whether the move should be initiated from a mouse down event.
+   * Note: regardless of the value of this option, the move won't start when interactive elements like buttons
+   * are being pressed.
+   * @see isEventOnEmptySpaces
+   * @example
+   * ```ts
+   * // Don't move when children are being dragged.
+   * useMove({ canMoveStart: e => e.target === e.currentTarget });
+   * ```
+   *
+   * @example
+   * ```ts
+   * // move when empty spaces are being dragged.
+   * useMove({ canMoveStart: isEventOnEmptySpaces });
+   * ```
+   */
+  canMoveStart?: (eventTarget: React.MouseEvent) => boolean;
   onMoveStart: (args: { from: XY }) => S;
   onMove: (args: { from: XY; to: XY; movement: XY; startState: S }) => void;
   onMoveEnd?: (args: { startState: S }) => void;
@@ -46,15 +82,15 @@ export function useMove<S>({
   onMoveStart,
   onMove,
   onMoveEnd,
+  canMoveStart = () => true,
 }: UseMoveOptions<S>): { onMouseDown?: MouseEventHandler } {
   const handlersRef = useLatest({ onMove, onMoveEnd });
 
   const onMouseDown = (event: React.MouseEvent) => {
-    disableTextSelection();
-    if (event.button !== 0) {
-      restoreTextSelection();
+    if (event.button !== 0 || !canMoveStart(event)) {
       return;
     }
+    disableTextSelection();
     const from = { x: event.pageX, y: event.pageY };
     let dragStarted = false;
     let startState: S;
