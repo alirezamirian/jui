@@ -85,7 +85,6 @@ export function CommitChangedFiles({
       {...treeShortcutHandlerProps}
       style={{
         height: "-webkit-fill-available",
-        marginBottom: "1rem",
         position: "relative",
       }}
     >
@@ -106,6 +105,7 @@ export function CommitChangedFiles({
           onExpandedChange={setExpandedKeys}
           selectedKeys={selection}
           onSelectionChange={setSelection}
+          style={{ paddingBottom: "1rem" }}
           fillAvailableSpace
         >
           {commitChangesTreeNodeRenderer.itemRenderer({

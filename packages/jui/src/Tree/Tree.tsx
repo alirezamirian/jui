@@ -1,4 +1,4 @@
-import React, { ForwardedRef, RefObject, useRef } from "react";
+import React, { CSSProperties, ForwardedRef, RefObject, useRef } from "react";
 import { Node } from "@react-types/shared";
 import { Virtualizer } from "@react-aria/virtualizer";
 import { TreeProps as StatelyTreeProps } from "@react-stately/tree";
@@ -29,6 +29,9 @@ export interface TreeProps<T extends object>
    */
   showAsFocused?: boolean;
   treeRef?: RefObject<TreeRefValue>;
+
+  className?: string;
+  style?: CSSProperties;
 }
 
 /**
@@ -40,7 +43,13 @@ export interface TreeProps<T extends object>
  */
 export const Tree = React.forwardRef(
   <T extends object>(
-    { fillAvailableSpace = false, treeRef, ...props }: TreeProps<T>,
+    {
+      fillAvailableSpace = false,
+      treeRef,
+      style,
+      className,
+      ...props
+    }: TreeProps<T>,
     forwardedRef: ForwardedRef<HTMLDivElement>
   ) => {
     const state = useTreeState(props, treeRef);
@@ -65,6 +74,8 @@ export const Tree = React.forwardRef(
           fillAvailableSpace={fillAvailableSpace}
           {...virtualizerProps}
           {...treeProps}
+          style={style}
+          className={className}
         >
           {(itemType: string, item: Node<any>) => (
             <TreeNode key={item.key} item={item as Node<T>} />
