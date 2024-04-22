@@ -3,6 +3,7 @@ import { useFocusWithin, useKeyboard } from "@react-aria/interactions";
 import { useControlledState } from "@react-stately/utils";
 import { ControlledStateProps } from "../type-utils";
 import React, { RefObject } from "react";
+import { hasAnyModifier } from "@intellij-platform/core/utils/keyboard-utils";
 
 export interface SpeedSearchState {
   /**
@@ -93,18 +94,24 @@ export function useSpeedSearch(
         // In case events are propagated through portals
         return;
       }
-      if ((e.key === "a" && e.metaKey) || e.ctrlKey) {
+      if (e.key === "a" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
       }
       if (e.key === "Escape") {
-        if (searchTerm) {
-          clear();
-          return;
-        }
+        clear();
       } else {
         ghostInputKeydown(e);
       }
-      e.continuePropagation();
+      /**
+       * In the reference impl, at least some action shortcuts are allowed
+       * while the search is active. But actions with some other shortcuts
+       * (like Delete) are not triggered while the speed search is active
+       * the current condition below is not 100% matching the reference impl,
+       * but seems to be good enough for now.
+       */
+      if (!active || hasAnyModifier(e)) {
+        e.continuePropagation();
+      }
     },
   });
 
