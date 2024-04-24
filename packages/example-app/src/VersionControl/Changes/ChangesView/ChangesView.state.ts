@@ -4,14 +4,14 @@ import { atom, atomFamily, CallbackInterface, selector } from "recoil";
 import { Selection } from "@react-types/shared";
 
 import {
-  allChangesState,
   ChangeListObj,
   changeListsState,
+  unversionedChangesState,
 } from "../change-lists.state";
 import {
   defaultChangeGroupings,
   defaultChangeGroupingsState,
-  getChangesGroupFn,
+  getPrefixedChangesGroupFn,
   GroupFn,
 } from "../ChangesTree/changesGroupings";
 import {
@@ -38,16 +38,22 @@ import {
   isGroupNode,
 } from "../ChangesTree/ChangeTreeNode";
 import { Task } from "../../../tasks";
-import { Change } from "../Change";
+import { AnyChange, Change } from "../Change";
 import { changesTreeNodesResult } from "../ChangesTree/changesTreeNodesResult";
+import { allChangesState } from "../changes.state";
 
 export interface ChangeListNode<
   C extends ChangesTreeNode<any> = ChangesViewTreeNode
 > extends ChangesTreeGroupNode<"changelist", C> {
   changeList: ChangeListObj;
 }
+export interface UnversionedChangesNode<
+  C extends ChangesTreeNode<any> = ChangeNode
+> extends ChangesTreeGroupNode<"unversioned", C> {}
 
-export type ChangesViewTreeNode = ExtendedChangesTreeNode<ChangeListNode>;
+export type ChangesViewTreeNode = ExtendedChangesTreeNode<
+  ChangeListNode | UnversionedChangesNode
+>;
 
 export const changeListNode = (
   changeList: ChangeListObj
@@ -126,11 +132,11 @@ const selectedNodesState = selector<ReadonlySet<ChangesViewTreeNode>>({
   },
 });
 
-export const changesUnderSelectedKeys = selector<ReadonlySet<Change>>({
+export const changesUnderSelectedKeys = selector<ReadonlySet<AnyChange>>({
   key: "changesView.selectedKeys.changes",
   get: ({ get }) => {
     const selectedNodes = get(selectedNodesState);
-    const allChanges: Set<Change> = new Set();
+    const allChanges: Set<AnyChange> = new Set();
     const processNode = (node: ChangesViewTreeNode | undefined) => {
       if (!node) {
         return;
@@ -191,7 +197,7 @@ export const includedChangeKeysState = atom<Set<string>>({
   default: new Set<string>([]),
 });
 
-export const includedChangesState = selector<ReadonlyArray<Change>>({
+export const includedChangesState = selector<ReadonlyArray<AnyChange>>({
   key: "changesView.includedChanges",
   get: ({ get }) => {
     const includedChangeKeys = get(includedChangeKeysState);
@@ -273,24 +279,36 @@ const groupChildren = <
 });
 
 export const changesTreeNodesState = selector<{
-  rootNodes: ReadonlyArray<ChangeListNode>;
+  rootNodes: ReadonlyArray<ChangeListNode | UnversionedChangesNode>;
   fileCountsMap: Map<Key, number>;
   byKey: Map<Key, ChangesViewTreeNode>;
 }>({
   key: "changesView.treeNodes",
-  get: ({ get, getCallback }) => {
+  get: ({ get }) => {
     const changeListNodes = sortBy(
       ({ active }) => !active,
       get(changeListsState)
     ).map(changeListNode);
-    const groupFn = getChangesGroupFn({
+    const prefixedGroupFn = getPrefixedChangesGroupFn({
       get,
       groupings: defaultChangeGroupings,
       isActive: changesGroupingActiveState,
     });
-    const rootNodes = changeListNodes.map((changeListNode) =>
-      groupChildren(changeListNode, groupFn)
-    );
+    const unversionedChanges = get(unversionedChangesState);
+    const rootNodes: Array<ChangeListNode | UnversionedChangesNode> =
+      changeListNodes.map((changeListNode) =>
+        groupChildren(changeListNode, prefixedGroupFn(changeListNode.key))
+      );
+    if (unversionedChanges.length > 0) {
+      const unversionedChangesNode: UnversionedChangesNode = {
+        key: "unversioned",
+        type: "unversioned",
+        children: unversionedChanges.map((change) => changeNode(change)),
+      };
+      rootNodes.push(
+        groupChildren(unversionedChangesNode, prefixedGroupFn("unversioned"))
+      );
+    }
     return changesTreeNodesResult(rootNodes);
   },
 });
@@ -336,7 +354,7 @@ export const commitTaskIdState = atom<Task["id"] | null>({
   default: null,
 });
 
-export const changesFromActivePaths = selector({
+export const changesFromActivePathsState = selector({
   key: "changesView/changesFromActivePaths",
   get: ({ get }) => {
     const activePaths = get(activePathsState);
@@ -365,7 +383,7 @@ export const queueCheckInCallback = ({ set, snapshot }: CallbackInterface) => {
               Change.path(change).startsWith(activePath)
             )
           )
-      : snapshot.getLoadable(changesFromActivePaths).getValue();
+      : snapshot.getLoadable(changesFromActivePathsState).getValue();
 
     const includedChangeKeys = changes.map(getNodeKeyForChange);
     set(includedChangeKeysState, new Set(includedChangeKeys));
@@ -404,7 +422,7 @@ export const openRollbackWindowForSelectionCallback = ({
       .getValue();
     const changesBasedOnActivePaths =
       contextual && activePaths.length > 0
-        ? snapshot.getLoadable(changesFromActivePaths).getValue()
+        ? snapshot.getLoadable(changesFromActivePathsState).getValue()
         : null;
     set(
       rollbackViewState.initiallyIncludedChanges,

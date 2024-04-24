@@ -5,25 +5,6 @@ import React, { useEffect } from "react";
 import { persistentFsPreference, switchToPersistentFS } from "./fs/fs";
 import { useRunTask } from "./tasks";
 
-export interface ProcessState {
-  state:
-    | "STARTED"
-    | "PAUSED"
-    | "PAUSING"
-    | "CANCELED"
-    | "CANCELING"
-    | "FINISHED";
-  /**
-   * between 1 and 100
-   */
-  progress: number;
-  isIndeterminate: boolean;
-  name: string;
-  details: string;
-  onCancel?: () => void;
-  onPause?: () => void;
-}
-
 export function usePersistenceFsNotification() {
   const balloons = useBalloonManager();
 

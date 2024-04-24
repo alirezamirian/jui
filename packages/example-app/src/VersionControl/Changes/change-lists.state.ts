@@ -1,24 +1,22 @@
-import { atom, CallbackInterface, selector, useRecoilCallback } from "recoil";
-import { checkout, resetIndex, statusMatrix, StatusRow } from "isomorphic-git";
-import { useEffect } from "react";
-import path from "path";
-import { groupBy } from "ramda";
-
-import { fs } from "../../fs/fs";
-import { reloadFileFromDiskCallback } from "../../fs/fs.state";
 import {
-  useUpdateFileStatus,
-  vcsRootForFile,
-  vcsRootsState,
-} from "../file-status.state";
-import { Change } from "./Change";
+  atom,
+  selector,
+  useRecoilCallback,
+  useRecoilValue,
+  useSetRecoilState,
+} from "recoil";
+import { useEffect } from "react";
+import { notNull } from "@intellij-platform/core/utils/array-utils";
+
+import { allChangesState } from "./changes.state";
+import { AnyChange, Change, UnversionedChange } from "./Change";
 
 export interface ChangeListObj {
   id: string;
   name: string;
   comment: string;
   active: boolean;
-  changes: Change[];
+  changes: ReadonlyArray<AnyChange>;
 }
 
 export const changeListsState = atom<ChangeListObj[]>({
@@ -47,136 +45,10 @@ export const activeChangeListState = selector<ChangeListObj | null>({
     get(changeListsState).find((changeList) => changeList.active) ?? null,
 });
 
-export const allChangesState = selector<ReadonlyArray<Change>>({
-  key: "changelists.allChanges",
-  get: ({ get }) =>
-    get(changeListsState)
-      .map((changeLists) => changeLists.changes)
-      .flat(),
+export const unversionedChangesState = selector<UnversionedChange[]>({
+  key: "changelists.lists/unversioned",
+  get: ({ get }) => get(allChangesState).filter(Change.isUnversioned),
 });
-
-const isAChange = ([, head, workingDir, stage]: StatusRow): boolean =>
-  head !== 1 || workingDir !== 1 || stage !== 1;
-
-const refreshChangesCallback =
-  ({ snapshot, set }: CallbackInterface) =>
-  async () => {
-    const gitRoots = (await snapshot.getPromise(vcsRootsState)).filter(
-      (root) => root.vcs === "git"
-    );
-    const allStatusMatrices = await Promise.all(
-      gitRoots.map(async ({ dir }) => {
-        const rows = await statusMatrix({ fs, dir });
-        return rows
-          .filter(isAChange)
-          .map(
-            ([pathname, ...theRest]) =>
-              [path.join(dir, pathname), ...theRest] as StatusRow
-          );
-      })
-    );
-    const unversionedPaths = []; // FIXME: handle unversioned files
-    const changes = allStatusMatrices.flat().map(
-      ([path, head, workdir, stage]): Change => ({
-        // FIXME: change object creation doesn't cover all kind of changes.
-        after: {
-          path,
-          isDir: false,
-          content(): Promise<string> {
-            throw new Error("Not implemented");
-          },
-        },
-        before: {
-          path,
-          isDir: false,
-          content(): Promise<string> {
-            throw new Error("Not implemented");
-          },
-        },
-      })
-    );
-
-    // FIXME: changes now all go to default change list on each refresh. fix it.
-    set(changeListsState, (changeLists) =>
-      changeLists.map((changeList) => {
-        if (changeList.active) {
-          return {
-            ...changeList,
-            changes,
-          };
-        }
-        return {
-          ...changeList,
-          changes: [],
-        };
-      })
-    );
-  };
-
-/**
- * react hook that returns a rollback function which accepts a list of changes to rollback.
- */
-export const useRollbackChanges = () => {
-  const updateFileStatus = useUpdateFileStatus();
-  return useRecoilCallback(
-    (callbackInterface) => async (changes: readonly Change[]) => {
-      const { snapshot, set } = callbackInterface;
-      const reloadFileFromDisk = reloadFileFromDiskCallback(callbackInterface);
-
-      const changesWithRepoRoots = await Promise.all(
-        changes
-          .filter((change) => !change.after?.isDir)
-          .map(async (change) => {
-            const repoRoot = (await snapshot.getPromise(
-              vcsRootForFile(Change.path(change))
-            ))!; // FIXME: handle null
-            return {
-              repoRoot,
-              fullPath: Change.path(change),
-              relativePath: path.relative(repoRoot, Change.path(change)),
-            };
-          })
-      );
-      const groupedChanges = groupBy(
-        ({ repoRoot }) => repoRoot,
-        changesWithRepoRoots
-      );
-      await Promise.all(
-        Object.entries(groupedChanges).map(async ([repoRoot, items]) => {
-          await checkout({
-            fs,
-            dir: repoRoot,
-            force: true,
-            filepaths: items.map(({ relativePath }) => relativePath),
-          });
-          await Promise.all(
-            items.map(async ({ fullPath, relativePath }) => {
-              await resetIndex({ fs, dir: repoRoot, filepath: relativePath });
-              await reloadFileFromDisk(fullPath); // Since fileContent is an atom, we set the value. Could be a selector that we would refresh
-              return updateFileStatus(fullPath);
-            })
-          );
-        })
-      );
-
-      // Remove all changes from changelists. It's much more efficient than refresh.
-      set(changeListsState, (changeLists) =>
-        changeLists.map((changeList) => {
-          return {
-            ...changeList,
-            changes: changeList.changes.filter(
-              (change) => !changes.includes(change)
-            ),
-          };
-        })
-      );
-    },
-    []
-  );
-};
-
-export const useRefreshChanges = () =>
-  useRecoilCallback(refreshChangesCallback, []);
 
 export const useSetActiveChangeList = () =>
   useRecoilCallback(
@@ -200,10 +72,49 @@ export const useSetActiveChangeList = () =>
     []
   );
 
-// temporary, perhaps
-export const useInitializeChanges = () => {
-  const refresh = useRefreshChanges();
+/**
+ * Helper component that keeps change lists state up-to-date with respect to changes.
+ * It must be rendered at top level. Reasons for the unconventional implementation as a component
+ * that must be rendered in top level:
+ * - The *effects* API in recoil doesn't allow for this use case where one atom needs to be kept valid/up-to-date
+ *   based on another atom. Changes here is the source of truth. Any removed changes should be removed from
+ *   changelist(s) too, and any new change should be added to the active changelist
+ * - The state of change lists is **not** just a 1:1 function of changes. So it can't be a selector. How changes are
+ *   grouped in different lists is something that must have its own source of truth, but it needs validation,
+ *   every time changes are added/removed.
+ */
+export function SyncChangeListsState() {
+  const changes = useRecoilValue(allChangesState);
+  const setChangeLists = useSetRecoilState(changeListsState);
   useEffect(() => {
-    refresh().catch((e) => console.error("could not initialize changes", e));
-  }, [refresh]);
-};
+    setChangeLists((changeLists) => {
+      const updatedChangeLists = changeLists.map((changeList) => {
+        return {
+          ...changeList,
+          changes: changeList.changes
+            .map((change) =>
+              changes.find((aChange) => Change.equals(aChange, change))
+            )
+            .filter(notNull),
+        };
+      });
+      const existingChanges = updatedChangeLists.flatMap(
+        ({ changes }) => changes
+      );
+      const newChanges = changes
+        .filter((change) => !Change.isUnversioned(change))
+        .filter(
+          (change) =>
+            !existingChanges.find((anExistingChange) =>
+              Change.equals(change, anExistingChange)
+            )
+        );
+      const activeChangeList =
+        updatedChangeLists.find(({ active }) => active) ??
+        updatedChangeLists[0];
+      activeChangeList.changes.push(...newChanges);
+      return updatedChangeLists;
+    });
+  }, [changes]);
+  return null;
+}

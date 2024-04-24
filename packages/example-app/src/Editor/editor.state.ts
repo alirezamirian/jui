@@ -1,17 +1,12 @@
-import {
-  atom,
-  selector,
-  useRecoilCallback,
-  useRecoilState,
-  useSetRecoilState,
-} from "recoil";
-import { Focusable } from "../common-types";
+import { atom, CallbackInterface, selector, useRecoilValue } from "recoil";
 import { descend, sortWith } from "ramda";
+import { Position } from "monaco-editor";
+
 import {
   currentProjectFilesState,
   projectFilePath,
 } from "../Project/project.state";
-import { Position } from "monaco-editor";
+import { Focusable } from "../common-types";
 
 interface TextEditorState {
   cursorPos: { lineNumber: number; column: number };
@@ -46,9 +41,19 @@ const temporaryTabsDefaultValue = selector({
 });
 
 // it should become something under "project" state later.
-export const editorTabsState = atom<EditorTabState[]>({
+export const editorTabsState = atom<ReadonlyArray<EditorTabState>>({
   key: "editor.tabs",
-  default: temporaryTabsDefaultValue,
+  default: [],
+  effects: [
+    ({ getPromise, setSelf, trigger }) => {
+      // an effect is used to set the intial value instead of using the selector directly in default value,
+      // because otherwise the atom will be linked to the selector (and dynamically updated) until the state is set
+      // which can lead to inconsistent behavior based on whether anything in tabs state is changed or not.
+      if (trigger === "get") {
+        getPromise(temporaryTabsDefaultValue).then((tabs) => setSelf(tabs));
+      }
+    },
+  ],
 });
 
 const activeEditorTabIndexState = atom<number>({
@@ -79,47 +84,30 @@ export const editorRefState = atom<null | Focusable>({
 });
 
 export interface EditorStateManager {
-  tabs: EditorTabState[];
   openPath(filePath: string, focus?: boolean): void;
   closePath(path: string): void;
-  closeOthersTabs(index: number): void;
+  closeOtherTabs(index: number): void;
   closeTab(index: number): void;
   select(index: number): void;
+  focus(): void;
 }
 
-/**
- * TODO: refactor this to expose actions in a way that doesn't create dependency to state. A piece of UI that only
- *  needs to open a file in editor in response to some action (e.g. ProjectViewPane or ChangeViewTree) doesn't need to
- *  re-render on editor state changes
- */
-export const useEditorStateManager = (): EditorStateManager => {
-  const [tabsState, setTabsState] = useRecoilState(editorTabsState);
-  const setActiveTabIndex = useSetRecoilState(activeEditorTabIndexState);
-  const focus = useRecoilCallback(
-    ({ snapshot }) =>
-      () => {
-        snapshot.getLoadable(editorRefState).valueOrThrow()?.focus();
-      },
-    []
-  );
-
-  const select = (index: number) => {
-    setActiveTabIndex(index);
-  };
-  const closePath = (filePath: string) => {
+const openPathCallback =
+  ({ snapshot, set }: CallbackInterface) =>
+  (filePath: string, shouldFocus = true) => {
+    const tabsState = snapshot.getLoadable(editorTabsState).getValue();
     const index = tabsState.findIndex((tab) => tab.filePath === filePath);
-    if (index > -1) {
-      closeTab(index);
-      setActiveTabIndex(Math.max(index - 1, 0));
-    }
-  };
-  const openPath = (filePath: string, shouldFocus = true) => {
-    const index = tabsState.findIndex((tab) => tab.filePath === filePath);
+    const select = (index: number) => {
+      set(activeEditorTabIndexState, index);
+    };
+    const focus = () => {
+      snapshot.getLoadable(editorRefState).valueOrThrow()?.focus();
+    };
     if (index > -1) {
       select(index);
     } else {
       const newIndex = tabsState.length;
-      setTabsState((currentState) => [
+      set(editorTabsState, (currentState) => [
         ...currentState,
         {
           filePath,
@@ -134,23 +122,81 @@ export const useEditorStateManager = (): EditorStateManager => {
       setTimeout(focus);
     }
   };
-  const closeTab = (index: number) => {
-    setTabsState((tabsState) =>
+
+const closeCallback =
+  ({ set }: CallbackInterface) =>
+  (index: number) =>
+    set(editorTabsState, (tabsState) =>
       tabsState.filter((_, tabIndex) => tabIndex !== index)
     );
+
+const closePathCallback =
+  (callbackInterface: CallbackInterface) => (filePath: string) => {
+    const { set, snapshot, transact_UNSTABLE } = callbackInterface;
+    const close = closeCallback(callbackInterface);
+    const index = snapshot
+      .getLoadable(editorTabsState)
+      .getValue()
+      .findIndex((tab) => tab.filePath === filePath);
+    if (index > -1) {
+      transact_UNSTABLE(() => {
+        close(index);
+        set(activeEditorTabIndexState, Math.max(index - 1, 0));
+      });
+    }
   };
-  const closeOthersTabs = (index: number) => {
-    setTabsState((tabsState) =>
+
+const closeOtherTabsCallback =
+  ({ set }: CallbackInterface) =>
+  (index: number) => {
+    set(editorTabsState, (tabsState) =>
       tabsState.filter((_, tabIndex) => tabIndex === index)
     );
   };
-  return {
-    tabs: tabsState,
-    // This should become an action. Something like "open project file", when action system is implemented.
-    openPath,
-    closePath,
-    closeTab,
-    closeOthersTabs,
-    select,
+const select =
+  ({ set, snapshot }: CallbackInterface) =>
+  (index: number) => {
+    const numTabs = snapshot.getLoadable(editorTabsState).getValue().length;
+    if (index >= 0 && index < numTabs) {
+      set(activeEditorTabIndexState, index);
+    }
   };
+
+const focus =
+  ({ snapshot }: CallbackInterface) =>
+  () => {
+    snapshot.getLoadable(editorRefState).valueOrThrow()?.focus();
+  };
+
+export const editorManagerState = selector<Omit<EditorStateManager, "tabs">>({
+  key: "editor.manager",
+  get: ({ getCallback }) => {
+    return {
+      // TODO: create an action for opening in editor (jump to source)
+      openPath: getCallback(openPathCallback),
+      closeTab: getCallback(closeCallback),
+      closePath: getCallback(closePathCallback),
+      closeOtherTabs: getCallback(closeOtherTabsCallback),
+      select: getCallback(select),
+      focus: getCallback(focus),
+    };
+  },
+});
+
+/**
+ * Gives access to editor state manager, in React components. returns a stable editor manager object,
+ * that won't cause re-rendering based on editor state changes.
+ */
+export const useEditorStateManager = (): EditorStateManager =>
+  useRecoilValue(editorManagerState);
+
+/**
+ * Gives access to editor state and also the manager, as a tuple, analogous to how useState returns
+ * a tuple for the state and the setter. Only the setter is an interface.
+ */
+export const useEditorState = () => {
+  return [
+    useRecoilValue(editorTabsState),
+    useRecoilValue(editorManagerState),
+  ] as const;
 };

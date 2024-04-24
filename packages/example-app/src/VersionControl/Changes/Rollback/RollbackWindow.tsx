@@ -31,7 +31,6 @@ import {
   ChangesViewTreeNode,
 } from "../ChangesView/ChangesView.state";
 import { rollbackViewState } from "./rollbackView.state";
-import { allChangesState, useRollbackChanges } from "../change-lists.state";
 import { ChangesSummary } from "../ChangesSummary";
 import { defaultChangeGroupings } from "../ChangesTree/changesGroupings";
 import { RollbackTreeContextMenu } from "./RollbackTreeContextMenu";
@@ -41,6 +40,8 @@ import {
   isGroupNode,
 } from "../ChangesTree/ChangeTreeNode";
 import { changesViewTreeNodeRenderer } from "../ChangesView/changesViewTreeNodeRenderer";
+import { Change } from "../Change";
+import { allChangesState, useRollbackChanges } from "../changes.state";
 
 const StyledContainer = styled.div`
   box-sizing: border-box;
@@ -102,6 +103,11 @@ export function RollbackWindow() {
 
   const treeRef = useRef<TreeRefValue>(null);
   const treeActions = useTreeActions({ treeRef });
+  const [deleteAddedFiles, setDeleteAddedFiles] = useState(false);
+
+  const atLeastOneNewFileSelected = includedChanges.some(
+    (change) => change.type === "ADDED"
+  );
 
   return (
     <ModalWindow
@@ -205,7 +211,11 @@ export function RollbackWindow() {
               <StyledLine>
                 <ChangesSummary changes={includedChanges} />
               </StyledLine>
-              <Checkbox isDisabled>
+              <Checkbox
+                isDisabled={!atLeastOneNewFileSelected}
+                isSelected={deleteAddedFiles}
+                onChange={setDeleteAddedFiles}
+              >
                 Delete local copies of the added files
               </Checkbox>
             </div>
@@ -216,7 +226,7 @@ export function RollbackWindow() {
                   <Button
                     variant="default"
                     onPress={() => {
-                      rollbackChanges(includedChanges)
+                      rollbackChanges(includedChanges, deleteAddedFiles)
                         .catch((e) => {
                           balloons.show({
                             title: "Reverting changes failed",

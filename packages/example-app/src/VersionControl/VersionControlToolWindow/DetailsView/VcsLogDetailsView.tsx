@@ -1,31 +1,33 @@
-import React from "react";
+import React, { HTMLAttributes, useMemo } from "react";
 import {
   atom,
+  isRecoilValue,
+  RecoilValue,
+  selector,
   useRecoilCallback,
   useRecoilState,
   useRecoilValue,
 } from "recoil";
 import {
   ActionButton,
+  ActionDefinition,
+  ActionGroupMenu,
   ActionsProvider,
   ActionTooltip,
   CommonActionId,
-  Divider,
   IconButton,
   IconButtonWithMenu,
-  Item,
   PlatformIcon,
-  Section,
   SpeedSearchMenu,
   styled,
   ThreeViewSplitter,
   Toolbar,
   TooltipTrigger,
-  useAction,
+  useActionGroup,
+  useActions,
+  useCreateDefaultActionGroup,
   useTreeActions,
 } from "@intellij-platform/core";
-
-import { notImplemented } from "../../../Project/notImplemented";
 import { StyledHeader, StyledSpacer } from "../styled-components";
 import { CommitChangedFiles } from "../CommitChanges/CommitsChangedFiles";
 import { CommitDetails } from "./CommitDetails";
@@ -34,8 +36,12 @@ import {
   changesGroupingActiveState,
   commitChangesTreeRefState,
 } from "../CommitChanges/CommitsChangedFiles.state";
-import { vcsLogTabShowCommitDetails } from "../vcs-logs.state";
+import {
+  vcsLogTabShowCommitDetailsInCurrentTabState,
+  vcsLogTabShowCommitDetailsState,
+} from "../vcs-logs.state";
 import { VcsActionIds } from "../../VcsActionIds";
+import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 const splitViewSizeState = atom({
   key: "vcs/toolwindow/splitViewSize",
@@ -48,30 +54,82 @@ const StyledContainer = styled.div`
   height: 100%;
 `;
 
+const groupingState = selector({
+  key: "vcs/log/commits/changes/groupingState",
+  get: ({ get }) => {
+    const groupings = defaultChangeGroupings.filter((grouping) =>
+      isRecoilValue(grouping.isAvailable)
+        ? get(grouping.isAvailable)
+        : grouping.isAvailable
+    );
+    return groupings.map((grouping) => ({
+      ...grouping,
+      key: `groupBy:${grouping.id}`,
+      isActive: get(changesGroupingActiveState(grouping.id)),
+    }));
+  },
+});
+
+const GROUP_BY_ACTION_GROUP_ID = "Vcs.log.detailsView.groupBy";
+const LAYOUT_ACTION_GROUP_ID = "Vcs.log.detailsView.layout";
+const VIEW_OPTIONS_ACTION_GROUP_ID = "Vcs.log.detailsView.viewOptions";
+const SHOW_DETAILS_ACTION_ID = `${LAYOUT_ACTION_GROUP_ID}.${VcsActionIds.SHOW_DETAILS}`;
+const SHOW_DIFF_PREVIEW_ACTION_ID = `${LAYOUT_ACTION_GROUP_ID}.${VcsActionIds.SHOW_DIFF_PREVIEW}`;
+
+const groupingActionId = (grouping: { id: string }) => {
+  return `Vcs.log.detailsView.groupBy.${grouping.id}`;
+};
+
 export function VcsLogDetailsView({ tabKey }: { tabKey: string }) {
   const [splitViewSize, setSplitViewSize] = useRecoilState(splitViewSizeState);
-  const isDetailsVisible = useRecoilValue(vcsLogTabShowCommitDetails(tabKey));
-  const toggleDetailsAction = useAction(VcsActionIds.SHOW_DETAILS);
-
+  const isDetailsVisible = useRecoilValue(
+    vcsLogTabShowCommitDetailsState(tabKey)
+  );
   const toggleGroupBy = useRecoilCallback(({ set }) => (id: string) => {
     set(changesGroupingActiveState(id), (currentValue) => !currentValue);
   });
-  const groupByMenuItems = defaultChangeGroupings
-    .filter((grouping) =>
-      useRecoilValue(changesGroupingActiveState(grouping.id))
-    )
-    .map((grouping) => ({
-      title: grouping.title,
-      key: `groupBy:${grouping.id}`,
-    }));
-  const groupBySelectedKeys = groupByMenuItems.map(({ key }) => key);
+  const createActionGroup = useCreateDefaultActionGroup();
+  const availableGroupings = useRecoilValue(groupingState);
 
   const treeRef = useRecoilValue(commitChangesTreeRefState);
-  const actions = useTreeActions({ treeRef });
-
-  const selectedKeys = [
-    ...groupBySelectedKeys,
-    ...(isDetailsVisible ? [VcsActionIds.SHOW_DETAILS] : []),
+  const actions = [
+    createActionGroup({
+      id: VIEW_OPTIONS_ACTION_GROUP_ID,
+      title: "View Options",
+      icon: <PlatformIcon icon="actions/groupBy.svg" />,
+      children: [
+        createActionGroup({
+          id: GROUP_BY_ACTION_GROUP_ID,
+          title: "Group By",
+          presentation: "titledSection",
+          icon: <PlatformIcon icon="actions/groupBy.svg" />,
+          children: availableGroupings.map((grouping) => ({
+            id: groupingActionId(grouping),
+            useShortcutsOf: grouping.useShortcutOf,
+            title: grouping.title,
+            actionPerformed: () => {
+              toggleGroupBy(grouping.id);
+            },
+          })),
+        }),
+        createActionGroup({
+          id: LAYOUT_ACTION_GROUP_ID,
+          presentation: "titledSection",
+          title: "Layout",
+          children: [
+            useRedefineAction(
+              VcsActionIds.SHOW_DETAILS,
+              SHOW_DETAILS_ACTION_ID
+            ),
+            useRedefineAction(
+              VcsActionIds.SHOW_DIFF_PREVIEW,
+              SHOW_DIFF_PREVIEW_ACTION_ID
+            ),
+          ].filter(notNull),
+        }),
+      ],
+    }),
+    ...useTreeActions({ treeRef }),
   ];
 
   return (
@@ -97,39 +155,7 @@ export function VcsLogDetailsView({ tabKey }: { tabKey: string }) {
               <IconButtonWithMenu
                 renderMenu={({ menuProps }) => {
                   return (
-                    <SpeedSearchMenu
-                      {...menuProps}
-                      selectedKeys={selectedKeys}
-                      onAction={(key) => {
-                        const groupByItem = groupByMenuItems.find(
-                          (item) => item.key === key
-                        );
-                        if (groupByItem) {
-                          toggleGroupBy(`${key}`.split(":")[1]);
-                        } else if (key === toggleDetailsAction?.id) {
-                          toggleDetailsAction?.perform();
-                        } else {
-                          notImplemented();
-                        }
-                      }}
-                    >
-                      <Section title="Group By">
-                        {groupByMenuItems.map((item) => (
-                          <Item key={item.key}>{item.title}</Item>
-                        ))}
-                      </Section>
-                      <Divider />
-                      <Section title="Layout">
-                        {toggleDetailsAction ? (
-                          <Item key={toggleDetailsAction?.id}>
-                            {toggleDetailsAction.title}
-                          </Item>
-                        ) : (
-                          (null as any)
-                        )}
-                        <Item>Show Diff Preview</Item>
-                      </Section>
-                    </SpeedSearchMenu>
+                    <VcsLogsDetailsViewOptionsMenu menuProps={menuProps} />
                   );
                 }}
               >
@@ -166,4 +192,67 @@ export function VcsLogDetailsView({ tabKey }: { tabKey: string }) {
       )}
     </ActionsProvider>
   );
+}
+
+const toggleActionsState: { [actionId: string]: RecoilValue<boolean> } = {
+  [SHOW_DETAILS_ACTION_ID]: vcsLogTabShowCommitDetailsInCurrentTabState,
+  ...Object.fromEntries(
+    defaultChangeGroupings.map((grouping) => [
+      groupingActionId(grouping),
+      changesGroupingActiveState(grouping.id),
+    ])
+  ),
+};
+const selectedKeysState = selector({
+  key: "vcs/log/commits/detailsView/viewOptionsSelectedKeys",
+  get: ({ get }) =>
+    Object.entries(toggleActionsState)
+      .filter(([, state]) => get(state))
+      .map(([actionId]) => actionId),
+});
+
+function VcsLogsDetailsViewOptionsMenu({
+  menuProps,
+}: {
+  menuProps: HTMLAttributes<HTMLDivElement>;
+}) {
+  const group = useActionGroup(VIEW_OPTIONS_ACTION_GROUP_ID);
+  const selectedKeys = useRecoilValue(selectedKeysState);
+  return (
+    group && (
+      <ActionGroupMenu
+        menuComponent={SpeedSearchMenu}
+        menuProps={menuProps}
+        actionGroup={group}
+        selectedKeys={selectedKeys}
+      />
+    )
+  );
+}
+
+/**
+ * Currently, action groups are expected to **define** the child actions, instead of just referencing already defined
+ * actions. In such model, where groups are not just a grouping of existing actions, this hook allows for redefining
+ * existing actions to be used within a group. Kind of a temporary solution while action system evolves.
+ */
+function useRedefineAction(
+  actionId: string,
+  newId: string
+): ActionDefinition | null {
+  const actions = useActions();
+
+  const action = useMemo(() => actions.find(({ id }) => id === actionId), []);
+  if (!action) {
+    return null;
+  }
+  const { perform, id, ...commonProperties } = action;
+  return {
+    ...commonProperties,
+    id: newId,
+    useShortcutsOf: id,
+    isSearchable: false,
+    actionPerformed: (context) => {
+      perform(context);
+    },
+  };
 }

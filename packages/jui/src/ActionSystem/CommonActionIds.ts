@@ -10,4 +10,5 @@ export const CommonActionId = {
   SHOW_SEARCH_HISTORY: "ShowSearchHistory",
   COPY_REFERENCE: "CopyReference",
   REFRESH: "Refresh",
+  Delete: "$Delete",
 };

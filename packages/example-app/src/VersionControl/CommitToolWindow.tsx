@@ -8,12 +8,12 @@ import {
 import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 import { ChangesViewPane } from "./Changes/ChangesView/ChangesViewPane";
-import { allChangesState } from "./Changes/change-lists.state";
 import { vcsRootForFile } from "./file-status.state";
 import { LocalBranch, repoBranchesState } from "./Branches/branches.state";
 import { changesGroupingActiveState } from "./Changes/ChangesView/ChangesView.state";
 import { TrackingBranchInfo } from "./TrackingBranchInfo";
 import { Change } from "./Changes/Change";
+import { allChangesState } from "./Changes/changes.state";
 
 export const COMMIT_TOOLWINDOW_ID = "Commit";
 

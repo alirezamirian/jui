@@ -448,10 +448,13 @@ export function useCheckoutBranch() {
         refresh(repoBranchesState(repoRoot));
         refresh(dirContentState(repoRoot));
         const openedFiles = snapshot.getLoadable(editorTabsState).getValue();
-        const existingOpenedFile = await asyncFilter(
-          ({ filePath }) => reloadFileFromDisk(filePath),
-          openedFiles
-        );
+        const existingOpenedFile = await asyncFilter(async ({ filePath }) => {
+          const exists = await fs.promises.exists(filePath); // should it be fs directly?
+          if (exists) {
+            await reloadFileFromDisk(filePath);
+          }
+          return exists;
+        }, openedFiles);
         set(editorTabsState, existingOpenedFile);
         // TODO: update file status (fileStatusState) for the repo.
       },

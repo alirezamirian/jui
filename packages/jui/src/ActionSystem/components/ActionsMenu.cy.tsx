@@ -42,7 +42,7 @@ describe("ActionsMenu", () => {
     cy.findByRole("menuitem", { name: "Action 2" });
   });
 
-  it("renders nested menu for groups with isPopup set to true", () => {
+  it("renders nested menu for groups with presentation set to 'popup'", () => {
     const actionGroup1 = cy.stub().as("Action Group 1");
     const action1 = cy.stub().as("Action 1");
     const MyActionMenu = () => {
@@ -57,7 +57,7 @@ describe("ActionsMenu", () => {
             id: "Action Group 1",
             title: "Action Group 1",
             actionPerformed: actionGroup1,
-            isPopup: true,
+            presentation: "popup",
             children: [
               {
                 id: "Action 1",
@@ -77,7 +77,7 @@ describe("ActionsMenu", () => {
     cy.findByRole("menuitem", { name: "Action 1" });
   });
 
-  it("renders menu section for groups with isPopup set to false", () => {
+  it("renders menu section for groups with presentation is not set to 'section'", () => {
     const actionGroup1 = cy.stub().as("Action Group 1");
     const action1 = cy.stub().as("Action 1");
     const MyActionMenu = () => {
@@ -92,7 +92,7 @@ describe("ActionsMenu", () => {
             id: "Action Group 1",
             title: "Action Group 1",
             actionPerformed: actionGroup1,
-            isPopup: false,
+            presentation: "section",
             children: [
               {
                 id: "Action 1",
@@ -124,7 +124,7 @@ describe("ActionsMenu", () => {
             {
               id: "group 2",
               title: "Group 2 (not an action group)",
-              isPopup: true,
+              presentation: "popup",
               children: [useAction("Action 2")],
             } as ActionItem,
           ].filter(notNull)}
@@ -143,7 +143,7 @@ describe("ActionsMenu", () => {
             id: "Action Group 1",
             title: "Action Group 1",
             actionPerformed: actionGroup1,
-            isPopup: true,
+            presentation: "popup",
             children: [
               {
                 id: "Action Group 1 - Action 1",

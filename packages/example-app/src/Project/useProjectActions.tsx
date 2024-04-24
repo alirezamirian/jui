@@ -1,10 +1,11 @@
-import { useRecoilCallback } from "recoil";
+import { useRecoilCallback, useRecoilValue } from "recoil";
 import {
   ActionContext,
   ActionDefinition,
   CommonActionId,
 } from "@intellij-platform/core";
 
+import { createFileActionState } from "./actions/createFileAction";
 import { searchEverywhereState } from "../SearchEverywhere/searchEverywhere.state";
 
 export function useProjectActions(): ActionDefinition[] {
@@ -20,6 +21,7 @@ export function useProjectActions(): ActionDefinition[] {
     []
   );
 
+  const newFileAction = useRecoilValue(createFileActionState);
   return [
     {
       id: CommonActionId.GO_TO_ACTION,
@@ -37,5 +39,6 @@ export function useProjectActions(): ActionDefinition[] {
         openSearchEverywhere(event, "Files");
       },
     },
+    newFileAction,
   ];
 }

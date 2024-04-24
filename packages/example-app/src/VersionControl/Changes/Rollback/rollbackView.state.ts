@@ -12,7 +12,7 @@ import {
   getNodeKeyForChange,
   isGroupNode,
 } from "../ChangesTree/ChangeTreeNode";
-import { Change } from "../Change";
+import { AnyChange } from "../Change";
 
 const isOpen = atom<boolean>({
   key: "rollbackView.isOpen",
@@ -22,7 +22,7 @@ const windowBounds = atom<Partial<Bounds>>({
   key: "rollbackView.windowBounds",
   default: { height: 500 },
 });
-const initiallyIncludedChanges = atom<ReadonlyArray<Change>>({
+const initiallyIncludedChanges = atom<ReadonlyArray<AnyChange>>({
   key: "rollbackView.initiallySelectedChanges",
   default: [],
 });
@@ -31,11 +31,19 @@ const rootNodes = selector({
   get: ({ get }) => {
     const selectedChanges = get(initiallyIncludedChanges);
     const { rootNodes } = get(changesTreeNodesState);
-    return rootNodes.filter(
-      ({ changeList: { changes, active } }) =>
-        (selectedChanges.length === 0 && active) ||
-        selectedChanges.some((change) => changes.includes(change))
+    const includedRootNodes = rootNodes.filter(
+      (node) =>
+        node.type === "changelist" &&
+        selectedChanges.some((change) =>
+          node.changeList.changes.includes(change)
+        )
     );
+    if (includedRootNodes.length === 0) {
+      return rootNodes.filter(
+        (node) => node.type === "changelist" && node.changeList.active
+      );
+    }
+    return includedRootNodes;
   },
 });
 const initiallyExpandedKeys = selector({

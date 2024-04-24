@@ -1,10 +1,10 @@
 import React from "react";
 import { useRecoilCallback, useRecoilValue } from "recoil";
+import path from "path";
 import { ActionDefinition, PlatformIcon } from "@intellij-platform/core";
 
 import { notImplemented } from "../../Project/notImplemented";
 import {
-  changeListsUnderSelection,
   changesTreeNodesState,
   changesUnderSelectedKeys,
   ChangesViewTreeNode,
@@ -14,12 +14,7 @@ import {
   queueCheckInCallback,
   selectedKeysState,
 } from "./ChangesView/ChangesView.state";
-import {
-  allChangesState,
-  useRefreshChanges,
-  useSetActiveChangeList,
-} from "./change-lists.state";
-import path from "path";
+import { allChangesState } from "./changes.state";
 import { IntlMessageFormat } from "intl-messageformat";
 import { getExpandedToNodesKeys } from "@intellij-platform/core/utils/tree-utils";
 
@@ -34,13 +29,17 @@ import {
 import { useEditorStateManager } from "../../Editor/editor.state";
 import { getNodeKeyForChange, isGroupNode } from "./ChangesTree/ChangeTreeNode";
 import { Change } from "./Change";
+import { useLatestRecoilValue } from "../../recoil-utils";
+import { findRootPaths } from "../../path-utils";
+import { useRefreshRepoStatuses } from "../file-status.state";
+import { activeChangeListState } from "./change-lists.state";
 
 export const useChangesViewActionDefinitions = (): ActionDefinition[] => {
   const openRollbackWindow = useRecoilCallback(
     openRollbackWindowForSelectionCallback,
     []
   );
-  const refresh = useRefreshChanges();
+  const refresh = useRefreshRepoStatuses();
 
   return [
     useCheckInActionDefinition(),
@@ -56,7 +55,8 @@ export const useChangesViewActionDefinitions = (): ActionDefinition[] => {
     },
     {
       id: VcsActionIds.REFRESH,
-      title: "Refresh",
+      title: "Refresh VCS Changes",
+      description: "Refresh VCS Changes",
       icon: <PlatformIcon icon="actions/refresh.svg" />,
       actionPerformed: refresh,
     },
@@ -64,12 +64,6 @@ export const useChangesViewActionDefinitions = (): ActionDefinition[] => {
       id: VcsActionIds.SHOW_DIFF,
       title: "Show Diff",
       icon: <PlatformIcon icon="actions/diff.svg" />,
-      actionPerformed: notImplemented,
-    },
-    {
-      id: VcsActionIds.SHELVE_SILENTLY,
-      title: "Shelve Silently",
-      icon: <PlatformIcon icon="vcs/shelveSilent.svg" />,
       actionPerformed: notImplemented,
     },
     {
@@ -103,25 +97,22 @@ function useCheckInActionDefinition(): ActionDefinition {
   const queueCheckIn = useRecoilCallback(queueCheckInCallback, []);
   const toolWindowManager = useToolWindowManager();
   const activePaths = useRecoilValue(activePathsState);
-  const projectFiles = useRecoilValue(currentProjectFilesState);
-  const roots = activePaths.filter(
-    (path) =>
-      !activePaths.find(
-        (activePath) => path !== activePath && path.startsWith(activePath)
-      )
-  );
+  const [projectFiles] = useLatestRecoilValue(currentProjectFilesState);
+  const roots = findRootPaths(activePaths);
 
-  const isDir = projectFiles.find(
-    (item) => path.dirname(item.path).startsWith(roots[0]) // This is not quite accurate!
-  );
   const allChanges = useRecoilValue(allChangesState);
   const containsChange = roots.some((root) =>
     allChanges.find((change) => isPathInside(root, Change.path(change)))
   );
 
+  // The logic here is a little better than the reference impl, which itself is inconsistent in project view
+  // and in Changes view (aka commit view).
+  const isDirectory = (path: string) =>
+    projectFiles?.some((item) => item.type === "dir" && item.path === path);
+  const selectedPathsAreDirectories = roots.every(isDirectory);
   return {
     id: VcsActionIds.CHECKIN_FILES,
-    title: isDir
+    title: selectedPathsAreDirectories
       ? (commitDirMsg.format({ count: roots.length }) as string)
       : (commitFileMsg.format({ count: roots.length }) as string),
     isDisabled: !containsChange,
@@ -144,11 +135,11 @@ function useCheckInProjectAction(): ActionDefinition {
         let keyToSelect = includedChangesKeys.values().next().value;
         if (includedChangesKeys.size === 0) {
           const allKeys = snapshot
-            .getLoadable(allChangesState)
+            .getLoadable(activeChangeListState)
             .getValue()
-            .map(getNodeKeyForChange);
+            ?.changes.map(getNodeKeyForChange);
           set(includedChangeKeysState, new Set(allKeys));
-          keyToSelect = allKeys[0];
+          keyToSelect = allKeys?.[0];
         }
         if (keyToSelect) {
           const { rootNodes } = snapshot
@@ -193,31 +184,17 @@ function useJumpToSourceAction(): ActionDefinition {
     icon: <PlatformIcon icon="actions/editSource.svg" />,
     actionPerformed: () => {
       [...selectedChanges].forEach((change, index, arr) => {
-        if (!change.after?.isDir) {
-          editorStateManager.openPath(
-            Change.path(change),
-            index === arr.length - 1
-          );
+        const changePath = Change.path(change);
+        if (!changePath) {
+          editorStateManager.openPath(changePath, index === arr.length - 1);
         }
       });
     },
   };
 }
 
-const deleteChangeListMsg = new IntlMessageFormat(
-  `Delete {count, plural,
-    =1 {Changelist}
-    other {Changelists}
-  }`,
-  "en-US"
-);
 function useChangeListActionDefinitions(): ActionDefinition[] {
-  const selectedChangeLists = useRecoilValue(changeListsUnderSelection);
   const selectedChanges = useRecoilValue(changesUnderSelectedKeys);
-  const setActiveChangeList = useSetActiveChangeList();
-  const nonActiveSelectedChangeLists = [...selectedChangeLists].filter(
-    (list) => !list.active
-  );
 
   const actions: ActionDefinition[] = [
     {
@@ -228,40 +205,8 @@ function useChangeListActionDefinitions(): ActionDefinition[] {
       actionPerformed: notImplemented,
     },
   ];
-
-  // Actions are conditionally added instead of being disabled.
-  if (selectedChangeLists.size === 1) {
-    actions.push({
-      id: VcsActionIds.RENAME_CHANGELIST,
-      title: "Edit Changelist...",
-      description: "Edit name and description of selected changelist",
-      icon: <PlatformIcon icon="actions/edit.svg" />,
-      actionPerformed: notImplemented,
-    });
-  }
-  if (nonActiveSelectedChangeLists.length > 0) {
-    actions.push({
-      id: VcsActionIds.REMOVE_CHANGELIST,
-      title: deleteChangeListMsg.format({
-        count: nonActiveSelectedChangeLists.length,
-      }) as string,
-      description: "Remove changelist and move all changes to another",
-      icon: <PlatformIcon icon="general/remove.svg" />,
-      actionPerformed: notImplemented,
-    });
-  }
-  if (nonActiveSelectedChangeLists.length === 1) {
-    actions.push({
-      title: "Set Active Changelist",
-      description: "Set changelist to which new changes are placed by default",
-      id: VcsActionIds.SET_DEFAULT_CHANGELIST,
-      icon: <PlatformIcon icon="actions/selectall.svg" />,
-      actionPerformed: () => {
-        setActiveChangeList(nonActiveSelectedChangeLists[0].id);
-      },
-    });
-  }
   if (selectedChanges.size > 0) {
+    // FIXME: should use active paths, not selection
     actions.push({
       title: "Move to Another Changelist...",
       description: "Move selected changes to another changelist",

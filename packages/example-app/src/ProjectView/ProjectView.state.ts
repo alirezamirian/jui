@@ -53,9 +53,21 @@ export const expandedKeysState = atom({
   }),
 });
 
-export const selectedKeysState = atom<Selection>({
-  key: "projectView.selectedKeys",
+export const selectionState = atom<Selection>({
+  key: "projectView.selection",
   default: new Set<Key>([]),
+});
+
+export const selectedNodesState = selector<ReadonlyArray<ProjectTreeNode>>({
+  key: "projectView.selectedKeys",
+  get: ({ get }) => {
+    const selection = get(selectionState);
+    const nodesByKey = get(currentProjectTreeState).byKey;
+    const selectedKeys = selection === "all" ? nodesByKey.keys() : selection;
+    return [...selectedKeys]
+      .map((key) => nodesByKey.get(`${key}`))
+      .filter(notNull);
+  },
 });
 
 export const projectViewTreeRefState = atom<RefObject<TreeRefValue>>({
@@ -104,8 +116,9 @@ function sortProjectTreeNodes(items: FileTreeNode[]): void {
 async function createProjectTree(
   project: Project,
   get: GetRecoilValue
-): Promise<ProjectTreeRoot> {
+): Promise<{ root: ProjectTreeRoot; byKey: Map<string, ProjectTreeNode> }> {
   const rootItems = get(dirContentState(project.path));
+  const byKey = new Map<string, ProjectTreeNode>();
   const mapItem =
     (parent: FileTreeDirNode | null) =>
     async (item: FsItem): Promise<FileTreeNode | null> => {
@@ -113,9 +126,9 @@ async function createProjectTree(
         ...item,
         parent,
       };
-      const dirNode: FileTreeDirNode = { ...node, children: [] };
       if (item.type === "dir") {
         if (filterPath(item)) {
+          const dirNode: FileTreeDirNode = { ...node, children: [] };
           dirNode.children = (
             await Promise.all(
               (get(dirContentState(item.path)) ?? ([] as FsItem[])).map(
@@ -124,10 +137,12 @@ async function createProjectTree(
             )
           ).filter(notNull);
           sortProjectTreeNodes(dirNode.children);
+          byKey.set(dirNode.path, dirNode);
           return dirNode;
         }
         return null;
       }
+      byKey.set(node.path, node);
       return node;
     };
 
@@ -135,13 +150,15 @@ async function createProjectTree(
     await Promise.all((rootItems || []).map(mapItem(null)))
   ).filter(notNull);
   sortProjectTreeNodes(children);
-  return {
+  const root: ProjectTreeNode = {
     type: "project",
     path: project.path,
     name: project.name,
     parent: null,
     children,
   };
+  byKey.set(root.path, root);
+  return { root, byKey };
 }
 
 /**

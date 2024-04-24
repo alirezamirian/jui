@@ -10,6 +10,8 @@ import {
 import { FocusEvent, useEffect, useRef, useState } from "react";
 import { equals } from "ramda";
 
+export type MaybeRecoilValue<T> = T | RecoilValue<T>;
+
 export const createFocusBasedSetterHook = <T extends unknown, N extends T = T>(
   state: RecoilState<T>,
   nullValue: N
@@ -79,6 +81,32 @@ export function useLatestRecoilValue<T>(
     loadable.state === "hasValue" ? loadable.getValue() : state,
     loadable.state,
   ];
+}
+
+/**
+ * Similar to {@link useLatestRecoilValue}, only that value is guaranteed
+ * to be initialized. i.e. the first load of the recoil value will suspend
+ * the rendering, but the subsequent updates will not, and the latest value
+ * will be used, while a new value is being loaded.
+ */
+export function useExistingLatestRecoilValue<T>(
+  recoilValue: RecoilValue<T>
+): [T, Loadable<unknown>["state"]] {
+  const [state, setState] = useState<T | null>(null);
+  let loadable = useRecoilValueLoadable(recoilValue);
+
+  useEffect(() => {
+    if (loadable.state === "hasValue") {
+      setState(loadable.contents);
+    }
+  }, [loadable]);
+
+  const value = loadable.state === "hasValue" ? loadable.getValue() : state;
+
+  if (value === null) {
+    throw loadable.toPromise();
+  }
+  return [value, loadable.state];
 }
 
 /**

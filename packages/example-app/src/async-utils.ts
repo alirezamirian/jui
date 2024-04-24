@@ -1,6 +1,6 @@
 export async function asyncFilter<T>(
   predicate: (item: T) => Promise<boolean>,
-  array: T[]
+  array: readonly T[]
 ) {
   const predicateResult = await Promise.all(
     array.map((item) => predicate(item).catch(() => false))

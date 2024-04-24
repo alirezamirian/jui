@@ -11,6 +11,8 @@ import {
   PlatformIcon,
   styled,
   WindowLayout,
+  TooltipTrigger,
+  HelpTooltip,
 } from "@intellij-platform/core";
 
 const StyledContainer = styled.div`
@@ -301,7 +303,13 @@ export const WithFooter: StoryObj<ModalWindowProps> = {
           <WindowLayout.Footer
             left={
               <>
-                <Button variant="icon">?</Button>
+                <TooltipTrigger
+                  tooltip={<HelpTooltip helpText="Show Help Contents" />}
+                >
+                  <Button variant="icon">
+                    <PlatformIcon icon="actions/help"></PlatformIcon>
+                  </Button>
+                </TooltipTrigger>
                 <Checkbox>Open in editor</Checkbox>
               </>
             }

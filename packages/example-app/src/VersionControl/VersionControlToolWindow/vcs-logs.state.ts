@@ -84,21 +84,30 @@ export const vcsLogTabState = <T extends (tabKey: string) => RecoilState<any>>(
 /**
  * Whether branches filter is visible for a VCS log tab
  */
-export const vcsLogTabShowBranches = vcsLogTabState(
+export const vcsLogTabShowBranchesState = vcsLogTabState(
   atomFamily<boolean, string>({
     key: "vcs/logs/filter/showBranches",
     default: false,
   })
 );
+
 /**
  * Whether the commit details is shown (in a split view together with commit changes).
  */
-export const vcsLogTabShowCommitDetails = vcsLogTabState(
+export const vcsLogTabShowCommitDetailsState = vcsLogTabState(
   atomFamily<boolean, string>({
     key: "vcs/logs/showCommitDetails",
     default: true,
   })
 );
+/**
+ * Whether the commit details is shown (in a split view together with commit changes).
+ */
+export const vcsLogTabShowCommitDetailsInCurrentTabState = selector({
+  key: "vcs/logs/showCommitDetails/currentTab",
+  get: ({ get }) =>
+    get(vcsLogTabShowCommitDetailsState(get(vcsActiveTabKeyState))),
+});
 
 export const CURRENT_USER_FILTER_VALUE = "*";
 export const vcsLogFilter = {

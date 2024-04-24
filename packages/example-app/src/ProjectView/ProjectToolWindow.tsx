@@ -16,6 +16,7 @@ import {
 import { ProjectViewPane } from "./ProjectViewPane";
 import { activeEditorTabState } from "../Editor/editor.state";
 import { ProjectViewActionIds } from "./ProjectViewActionIds";
+import { deleteActionState } from "./actions/deleteAction";
 
 const { SELECT_IN_PROJECT_VIEW } = ProjectViewActionIds;
 
@@ -26,7 +27,6 @@ export function ProjectToolWindow() {
   //  accessible, and allowing other UI parts than editor's active tab, to set the context of "file" which needs to be
   //  opened in project view.
   const projectViewActions = useProjectViewActions();
-
   return (
     <DefaultToolWindow
       headerContent="Project"
@@ -55,6 +55,7 @@ function useProjectViewActions(): Array<ActionDefinition> {
       selectPathInProjectView(activeTab.filePath);
     }
   };
+  const deleteAction = useRecoilValue(deleteActionState);
 
   return [
     {
@@ -65,5 +66,6 @@ function useProjectViewActions(): Array<ActionDefinition> {
       isDisabled: !activeTab,
       description: "Selects a context file in the Project View",
     },
+    deleteAction, // could have been on project level, if it could handle delete in editor as well
   ];
 }

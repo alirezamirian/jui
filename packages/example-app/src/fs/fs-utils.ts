@@ -78,6 +78,10 @@ const fileExists = async (fs: PromisifiedFS, filepath: string) => {
   return exists && !(await fs.stat(filepath)).isDirectory();
 };
 
+/**
+ * Similar to `fs.mkdir(dirPath, {recursive: true})`. `recursive` is not supported in the
+ * currently used fs implementations.
+ */
 export async function ensureDir(fs: PromisifiedFS, dirPath: string) {
   const stat = await fs
     .stat(dirPath)

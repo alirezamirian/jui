@@ -1,4 +1,4 @@
-import React, { ForwardedRef } from "react";
+import React, { CSSProperties, ForwardedRef } from "react";
 import { Node } from "@react-types/shared";
 import { Virtualizer } from "@react-aria/virtualizer";
 import { CollectionSpeedSearchContext } from "@intellij-platform/core/CollectionSpeedSearch";
@@ -33,6 +33,8 @@ export const SpeedSearchTree = React.forwardRef(
       fillAvailableSpace = false,
       treeRef,
       hideSpeedSearchPopup,
+      style,
+      className,
       ...props
     }: SpeedSearchTreeProps<T>,
     forwardedRef: ForwardedRef<HTMLDivElement>
@@ -64,6 +66,8 @@ export const SpeedSearchTree = React.forwardRef(
             fillAvailableSpace={fillAvailableSpace}
             {...virtualizerProps}
             {...treeProps}
+            style={style}
+            className={className}
           >
             {(type: string, item: unknown) => (
               <SpeedSearchTreeNode

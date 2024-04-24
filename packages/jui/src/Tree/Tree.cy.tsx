@@ -2,7 +2,7 @@ import { composeStories } from "@storybook/react";
 import * as React from "react";
 import * as stories from "./Tree.stories";
 import { isMac } from "@react-aria/utils";
-import { Tree } from "./Tree";
+import { Tree, TreeProps } from "./Tree";
 import { Item } from "../Collections";
 
 const { Static, ScrollAndContainerWidth } = composeStories(stories);
@@ -14,6 +14,18 @@ describe("Tree", () => {
     cy.contains("Foo").click().type("{enter}");
     cy.findByRole("treeitem", { name: "FooBar" });
     matchImageSnapshot("Tree-nested-single-child-expansion");
+  });
+
+  it("sets the right accessibility roles", () => {
+    cy.mount(
+      <Tree>
+        <Item>node 1</Item>
+        <Item>node 2</Item>
+      </Tree>
+    );
+
+    cy.findByRole("tree");
+    cy.findAllByRole("treeitem").should("have.length", 2);
   });
 
   it("collapses descendant items of a node that is collapsed", () => {
@@ -87,6 +99,133 @@ describe("Tree", () => {
     cy.findByRole("treeitem", { selected: true }).should("have.length", 1);
     cy.realPress([modifier, "a"]);
     cy.findAllByRole("treeitem", { selected: true }).should("have.length", 12);
+  });
+
+  type ExampleTreeNode = { name: string; children?: ExampleTreeNode[] };
+  const tree = ({
+    items,
+    ...props
+  }: { items: ExampleTreeNode[] } & Omit<
+    TreeProps<ExampleTreeNode>,
+    "children" | "selectionMode" | "items"
+  >) => (
+    <Tree selectionMode="multiple" key="example" items={items} {...props}>
+      {(item) => (
+        <Item key={item.name} childItems={item.children}>
+          {item.name}
+        </Item>
+      )}
+    </Tree>
+  );
+
+  it("handles keyboard events when the tree is focused, but no item is", () => {
+    cy.mount(
+      tree({
+        items: [{ name: "node 1" }, { name: "node 2" }, { name: "node 3" }],
+      })
+    ).then(({ rerender }) => {
+      cy.findByRole("treeitem", { name: "node 2" }).realClick();
+      cy.findByRole("treeitem", { name: "node 2" }).should("be.focused");
+      rerender(tree({ items: [{ name: "node 1" }, { name: "node 3" }] }));
+      cy.findByRole("tree").should("be.focused"); // when node is removed, focus is moved to the container
+      cy.realPress("ArrowDown");
+      cy.focused().should("have.attr", "role", "treeitem");
+    });
+  });
+
+  describe("moving selection up when selected node is removed", () => {
+    it("moves selection to the parent when selected node is removed", () => {
+      cy.mount(
+        tree({
+          items: [
+            { name: "node 1" },
+            { name: "node 2", children: [{ name: "node 2.1" }] },
+            { name: "node 3" },
+          ],
+          defaultExpandedKeys: ["node 2"],
+          defaultSelectedKeys: ["node 2.1"],
+        })
+      ).then(({ rerender }) => {
+        rerender(
+          tree({
+            items: [{ name: "node 1" }, { name: "node 2" }, { name: "node 3" }],
+          })
+        );
+        cy.findByRole("treeitem", { name: "node 2", selected: true });
+      });
+    });
+
+    it("moves selection to the parent when multiple selected nodes of the same parent are is removed", () => {
+      cy.mount(
+        tree({
+          items: [
+            { name: "node 1" },
+            {
+              name: "node 2",
+              children: [{ name: "node 2.1" }, { name: "node 2.2" }],
+            },
+            { name: "node 3" },
+          ],
+          defaultExpandedKeys: ["node 2"],
+          defaultSelectedKeys: ["node 2.1", "node 2.2"],
+        })
+      ).then(({ rerender }) => {
+        rerender(
+          tree({
+            items: [{ name: "node 1" }, { name: "node 2" }, { name: "node 3" }],
+          })
+        );
+        cy.findByRole("treeitem", { name: "node 2", selected: true });
+      });
+    });
+
+    it("moves selection to the first non-removed parent when selected node is removed", () => {
+      cy.mount(
+        tree({
+          items: [
+            { name: "node 1" },
+            {
+              name: "node 2",
+              children: [
+                { name: "node 2.1", children: [{ name: "node 2.1.1" }] },
+              ],
+            },
+            { name: "node 3" },
+          ],
+          defaultExpandedKeys: ["node 2", "node 2.1"],
+          defaultSelectedKeys: ["node 2.1.1"],
+        })
+      ).then(({ rerender }) => {
+        rerender(
+          tree({
+            items: [{ name: "node 1" }, { name: "node 2" }, { name: "node 3" }],
+          })
+        );
+        cy.findByRole("treeitem", { name: "node 2", selected: true });
+      });
+    });
+
+    it("doesn't change selection when the removed node wasn't the only selected node", () => {
+      cy.mount(
+        tree({
+          items: [
+            { name: "node 1" },
+            { name: "node 2", children: [{ name: "node 2.1" }] },
+            { name: "node 3" },
+          ],
+          defaultExpandedKeys: ["node 2"],
+          defaultSelectedKeys: ["node 2.1", "node 3"],
+        })
+      ).then(({ rerender }) => {
+        rerender(
+          tree({
+            items: [{ name: "node 1" }, { name: "node 2" }, { name: "node 3" }],
+          })
+        );
+        cy.findByRole("treeitem", { name: "node 3", selected: true });
+        cy.findByRole("treeitem", { name: "node 2", selected: false });
+      });
+    });
   });
 });
 

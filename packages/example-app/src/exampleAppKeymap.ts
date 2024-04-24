@@ -95,12 +95,30 @@ export const exampleAppKeymap: Keymap = {
       },
     },
   ],
+  [VcsActionIds.ADD_UNVERSIONED]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta", "Alt"],
+        code: "KeyA",
+      },
+    },
+  ],
   [VcsActionIds.FOCUS_TEXT_FILTER]: [
     {
       type: "keyboard",
       firstKeyStroke: {
         modifiers: ["Meta"],
         code: "KeyL",
+      },
+    },
+  ],
+  [VcsActionIds.GROUP_BY_DIRECTORY]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Control"],
+        code: "KeyP",
       },
     },
   ],

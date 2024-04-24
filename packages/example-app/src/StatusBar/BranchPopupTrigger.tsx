@@ -25,7 +25,7 @@ export function BranchPopupTrigger() {
             setTimeout(maybeShowGitCloneTip, 500);
           }
         }}
-        popup={({ close }) => <BranchesPopup onClose={close} />}
+        popup={({ close }) => <BranchesPopup close={close} />}
       >
         <TooltipTrigger
           tooltip={

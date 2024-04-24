@@ -1,5 +1,10 @@
-import React, { HTMLAttributes, ReactNode, useEffect, useState } from "react";
-import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from "recoil";
+import React, { HTMLAttributes, useEffect } from "react";
+import {
+  RecoilValue,
+  useRecoilState,
+  useRecoilValue,
+  useRecoilValueLoadable,
+} from "recoil";
 
 import {
   HelpTooltip,
@@ -11,17 +16,17 @@ import {
 
 import { useLatestRecoilValue } from "../../../recoil-utils";
 import { LoadingGif } from "../../../LoadingGif";
+import { Delayed } from "../../../Delayed";
 import { StyledPlaceholderContainer } from "../styled-components";
 import { selectedCommitsState } from "../CommitsView/CommitsTable.state";
 import {
   changedFilesState,
+  changedFilesWithoutRenamesState,
   commitChangesTreeRefState,
   expandedKeysState,
   selectionState,
 } from "./CommitsChangedFiles.state";
 import { commitChangesTreeNodeRenderer } from "./commitChangesTreeNodeRenderer";
-
-const DEFAULT_LOADING_DELAY_MS = 500; // To be shared later in more places.
 
 const StyledLoadingWrapper = styled.div`
   position: absolute;
@@ -32,6 +37,14 @@ const StyledLoadingWrapper = styled.div`
   align-items: center;
   justify-content: center;
 `;
+
+function useFastestValueLoadable<T>(states: RecoilValue<T>[]) {
+  const loadables = states.map((state) => useRecoilValueLoadable(state));
+  return (
+    loadables.find(({ state }) => state === "hasValue") ||
+    loadables.slice(-1)[0]
+  );
+}
 /**
  * TODO: handle multiple selected commits (check Changes.ShowChangesFromParents https://github.com/JetBrains/intellij-community/blob/ac57611a0612bd65ba2a19c841a4f95b40591134/platform/vcs-log/impl/src/com/intellij/vcs/log/ui/frame/VcsLogChangesBrowser.java#L255-L254)
  */
@@ -43,7 +56,11 @@ export function CommitChangedFiles({
   const [selectedCommits] = useLatestRecoilValue(selectedCommitsState);
   const treeRef = useRecoilValue(commitChangesTreeRefState);
   const nothingSelected = !selectedCommits?.length;
-  const stateLoadable = useRecoilValueLoadable(changedFilesState);
+
+  const stateLoadable = useFastestValueLoadable([
+    changedFilesState,
+    changedFilesWithoutRenamesState,
+  ]);
   const state = stateLoadable.valueMaybe();
   const [expandedKeys, setExpandedKeys] = useRecoilState(expandedKeysState);
   const [selection, setSelection] = useRecoilState(selectionState);
@@ -54,7 +71,7 @@ export function CommitChangedFiles({
     setSelection(new Set());
     // FIXME: with this being in an effect here, closing and reopening the toolwindow will
     //  reset the selection, making selection state be effectively like a local state.
-  }, [state]);
+  }, [stateLoadable.state]);
 
   if (nothingSelected) {
     return (
@@ -68,7 +85,6 @@ export function CommitChangedFiles({
       {...treeShortcutHandlerProps}
       style={{
         height: "-webkit-fill-available",
-        marginBottom: "1rem",
         position: "relative",
       }}
     >
@@ -89,6 +105,7 @@ export function CommitChangedFiles({
           onExpandedChange={setExpandedKeys}
           selectedKeys={selection}
           onSelectionChange={setSelection}
+          style={{ paddingBottom: "1rem" }}
           fillAvailableSpace
         >
           {commitChangesTreeNodeRenderer.itemRenderer({
@@ -127,18 +144,4 @@ export function CommitChangedFiles({
       )}
     </div>
   );
-}
-
-function Delayed({ children }: { children: ReactNode }) {
-  const [waitedEnough, setWaitedEnough] = useState(false);
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setWaitedEnough(true);
-    }, DEFAULT_LOADING_DELAY_MS);
-    return () => clearTimeout(timer);
-  }, []);
-  if (waitedEnough) {
-    return <>{children}</>;
-  }
-  return null;
 }

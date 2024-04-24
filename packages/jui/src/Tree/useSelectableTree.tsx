@@ -1,4 +1,4 @@
-import React, { Key, RefObject, useMemo, useState } from "react";
+import { Key, RefObject, useEffect, useMemo, useRef, useState } from "react";
 import {
   DOMProps,
   KeyboardDelegate,
@@ -17,6 +17,7 @@ import { TreeContextType } from "./TreeContext";
 import { hasAnyModifier } from "@intellij-platform/core/utils/keyboard-utils";
 import { FocusEvents } from "@react-types/shared/src/events";
 import { FocusStrategy } from "@react-types/shared/src/selection";
+import { groupBy } from "ramda";
 
 export interface SelectableTreeProps<T>
   extends DOMProps,
@@ -97,47 +98,45 @@ export function useSelectableTree<T>(
 
   const onKeyDown = (event: KeyboardEvent) => {
     const focusedKey = state.selectionManager.focusedKey;
-    if (focusedKey == null) {
-      event.continuePropagation();
-      return;
-    }
-    const item = state.collection.getItem(focusedKey);
-    const isExpandable = item.hasChildNodes;
-    const expanded = state.expandedKeys.has(focusedKey);
-    const isDisabled = state.disabledKeys.has(focusedKey);
-    if (isDisabled) {
-      event.continuePropagation();
-      return;
-    }
-
-    props?.onNodeKeyDown?.(event, item);
-
-    const shouldToggle =
-      !hasAnyModifier(event) &&
-      (event.key === "Enter" ||
-        (event.key === "ArrowLeft" && expanded) ||
-        (event.key === "ArrowRight" && !expanded));
-
-    if (isExpandable && shouldToggle) {
-      event.preventDefault();
-      state.toggleKey(focusedKey);
-    } else if (event.key === "Enter") {
-      onAction?.(focusedKey);
-    } else {
-      // selectionKeyDown currently doesn't report back if it handled the event or not. We could have conditionally
-      // continued propagation if the event was not handled. Then we could change Speed Search impl to only handle
-      // inputs when the propagation is not prevented.
-      // Also, selectionKeyDown is not accurate in handling actions like "select all". e.g. it takes 'cmd+shift+a' too,
-      // as select all which can conflict with action system. So we don't call it if there are multiple modifiers.
-      const hasAtMostOneModifier =
-        [event.metaKey, event.ctrlKey, event.shiftKey, event.altKey].filter(
-          (i) => i
-        ).length < 2;
-      if (hasAtMostOneModifier) {
-        selectionKeyDown?.(event);
+    const focusedItem = focusedKey
+      ? state.collection.getItem(focusedKey)
+      : null;
+    if (focusedItem) {
+      const isExpandable = Boolean(focusedItem?.hasChildNodes);
+      const expanded = state.expandedKeys.has(focusedKey);
+      const isDisabled = state.disabledKeys.has(focusedKey);
+      if (isDisabled) {
+        event.continuePropagation();
+        return;
       }
-      event.continuePropagation();
+      props?.onNodeKeyDown?.(event, focusedItem);
+      const shouldToggle =
+        !hasAnyModifier(event) &&
+        (event.key === "Enter" ||
+          (event.key === "ArrowLeft" && expanded) ||
+          (event.key === "ArrowRight" && !expanded));
+      if (isExpandable && shouldToggle) {
+        event.preventDefault();
+        state.toggleKey(focusedKey);
+        return;
+      } else if (event.key === "Enter") {
+        onAction?.(focusedKey);
+        return;
+      }
     }
+    // selectionKeyDown currently doesn't report back if it handled the event or not. We could have conditionally
+    // continued propagation if the event was not handled. Then we could change Speed Search impl to only handle
+    // inputs when the propagation is not prevented.
+    // Also, selectionKeyDown is not accurate in handling actions like "select all". e.g. it takes 'cmd+shift+a' too,
+    // as select all which can conflict with action system. So we don't call it if there are multiple modifiers.
+    const hasAtMostOneModifier =
+      [event.metaKey, event.ctrlKey, event.shiftKey, event.altKey].filter(
+        (i) => i
+      ).length < 2;
+    if (hasAtMostOneModifier) {
+      selectionKeyDown?.(event);
+    }
+    event.continuePropagation();
   };
   const { keyboardProps } = useKeyboard({
     onKeyDown,
@@ -177,6 +176,7 @@ export function useSelectableTree<T>(
     ]
   );
   ////////////////////////////////////////////////////////////////////////////////////////
+  useSelectParentOfRemovedSelectedNode(state);
 
   return {
     // order of merging here is important. navigation handling should precede selection handling
@@ -191,3 +191,39 @@ export function useSelectableTree<T>(
     focused,
   };
 }
+
+/**
+ * When a selected node is removed from the tree, selects the parent of the removed node
+ * if no other node is selected.
+ *
+ * Note: this behavior is observed in a couple of tree views, including project files tree.
+ * There could be an option for disabling/enabling it, if use cases comes up in future
+ * where this behavior causes issues.
+ */
+const useSelectParentOfRemovedSelectedNode = (state: TreeState<unknown>) => {
+  const previousCollectionRef = useRef(state.collection);
+  useEffect(() => {
+    if (state.selectionManager.rawSelection !== "all") {
+      const keys = [...state.collection.getKeys()];
+
+      const { invalid = [], valid = [] } = groupBy(
+        (selectedKey) => (keys.includes(selectedKey) ? "valid" : "invalid"),
+        [...state.selectionManager.selectedKeys]
+      );
+      if (valid.length === 0 && invalid.length > 0) {
+        for (let invalidKey of invalid) {
+          let key: Key | undefined = invalidKey;
+          while (key != undefined) {
+            if (keys.includes(key)) {
+              state.selectionManager.setSelectedKeys(valid.concat(key));
+              state.selectionManager.setFocusedKey(key);
+              return;
+            }
+            key = previousCollectionRef.current.getItem(key)?.parentKey;
+          }
+        }
+      }
+    }
+    previousCollectionRef.current = state.collection;
+  }, [state.collection]);
+};

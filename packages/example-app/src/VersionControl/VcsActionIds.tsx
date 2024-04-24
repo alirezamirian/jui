@@ -7,6 +7,7 @@ export const VcsActionIds = {
   SHELVE: "ChangesView.Shelve",
   UNSHELVE_SILENTLY: "ChangesView.UnshelveSilently",
   NEW_CHANGELIST: "ChangesView.NewChangeList",
+  ADD_UNVERSIONED: "ChangesView.AddUnversioned",
   RENAME_CHANGELIST: "ChangesView.Rename",
   REMOVE_CHANGELIST: "ChangesView.RemoveChangeList",
   SET_DEFAULT_CHANGELIST: "ChangesView.SetDefault",
@@ -17,7 +18,8 @@ export const VcsActionIds = {
   JUMP_TO_SOURCE: CommonActionId.EDIT_SOURCE,
 
   GROUP_CHANGES_VIEW_POPUP_MENU: "ChangesViewPopupMenu", // Not used yet
-
+  GROUP_BY_DIRECTORY: "ChangesView.GroupBy.Directory",
+  GIT_ADD: "Git.Add",
   GIT_CREATE_NEW_BRANCH: "Git.CreateNewBranch",
   GIT_BRANCHES: "Git.Branches",
 
@@ -32,4 +34,7 @@ export const VcsActionIds = {
   COPY_REVISION_NUMBER: "Vcs.CopyRevisionNumberAction",
   LOG_REFRESH: "Vcs.Log.Refresh",
   SHOW_DETAILS: "Vcs.Log.ShowDetailsAction",
+  SHOW_DIFF_PREVIEW: "Vcs.Log.ShowDiffPreview",
+  PRESENTATION_SETTINGS: "Vcs.PresentationSettings",
+  FILE_HISTORY_PRESENTATION_SETTINGS: "Vcs.FileHistory.PresentationSettings",
 };

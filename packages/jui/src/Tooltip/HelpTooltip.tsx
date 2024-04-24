@@ -22,9 +22,11 @@ export const HelpTooltip = ({
   return (
     <Tooltip multiline {...tooltipProps}>
       <Tooltip.Header>{helpText}</Tooltip.Header>
-      <div>
-        <Tooltip.Shortcut>{shortcut}</Tooltip.Shortcut>
-      </div>
+      {shortcut && (
+        <div>
+          <Tooltip.Shortcut>{shortcut}</Tooltip.Shortcut>
+        </div>
+      )}
       {link && <Tooltip.Link>{link}</Tooltip.Link>}
     </Tooltip>
   );

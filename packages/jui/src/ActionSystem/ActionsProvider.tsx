@@ -23,7 +23,7 @@ import {
 /**
  * Represents the properties required for the ActionsProvider component.
  */
-interface ActionsProviderProps {
+export interface ActionsProviderProps {
   /**
    * A collection of action definitions.
    */
@@ -140,7 +140,9 @@ function recursivelyCreateActions(
     const firstShortcut = shortcuts?.[0];
     const action: MutableAction | ActionInResolvedGroup = {
       ...actionDefinition,
-      ...(parent ? { parent } : {}),
+      ...(isActionGroupDefinition(actionDefinition)
+        ? { parent: parent ?? null }
+        : {}),
       shortcuts,
       shortcut: firstShortcut ? shortcutToString(firstShortcut) : undefined, // Maybe it should be all shortcuts?
       perform: (context) => {
@@ -190,7 +192,12 @@ export function getAvailableActionsFor(element: Element): Action[] {
       .map((dataKey) => {
         const id = dataKey?.replace(ACTION_PROVIDER_ID_DATA_PREFIX, "");
         const actions = id && actionProvidersMap.get(id);
-        return actions ? Object.values(actions) : [];
+        // noinspection PointlessBooleanExpressionJS
+        return actions
+          ? Object.values(actions).filter(
+              ({ isSearchable }) => isSearchable !== false
+            )
+          : [];
       })
       .concat();
     return sortBy((actionSet) => -actionSet.length, actionSets)[0] || [];

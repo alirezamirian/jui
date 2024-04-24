@@ -9,13 +9,15 @@ import { notNull } from "@intellij-platform/core/utils/array-utils";
 import { fs } from "../../../fs/fs";
 import { commitFiles } from "../../commit-utils";
 import {
-  useUpdateVcsFileStatuses,
+  useRefreshRepoStatuses,
   vcsRootForFile,
 } from "../../file-status.state";
-import { useRefreshChanges } from "../change-lists.state";
 import { useRunTask } from "../../../tasks";
 import { commitTaskIdState } from "./ChangesView.state";
-import { Change } from "../Change";
+import { AnyChange, Change } from "../Change";
+import { resolvedRefState } from "../../refs.state";
+import { repoCurrentBranchNameState } from "../../Branches/branches.state";
+import { allCommitsState } from "../../VersionControlToolWindow/CommitsView/CommitsTable.state";
 
 const commitSuccessfulMessage = new IntlMessageFormat(
   `{count, plural,
@@ -30,14 +32,13 @@ const commitSuccessfulMessage = new IntlMessageFormat(
  * Syncs all relevant state (like file status, and change lists) after commit.
  */
 export function useCommitChanges() {
-  const refreshChanges = useRefreshChanges();
-  const refreshFileStatus = useUpdateVcsFileStatuses();
+  const refreshFileStatus = useRefreshRepoStatuses();
   const balloonManager = useBalloonManager();
   const runTask = useRunTask();
 
   return useRecoilCallback(
-    ({ snapshot, set }) =>
-      (changes: readonly Change[], commitMessage: string) => {
+    ({ snapshot, set, refresh }) =>
+      (changes: readonly AnyChange[], commitMessage: string) => {
         const taskId = runTask(
           { title: "Committing...", isCancelable: false },
           {
@@ -52,7 +53,9 @@ export function useCommitChanges() {
                       const repoRoot = snapshot
                         .getLoadable(vcsRootForFile(filePath))
                         .getValue();
-                      const content = await fs.promises.readFile(filePath);
+                      const content = (await fs.promises.exists(filePath))
+                        ? await fs.promises.readFile(filePath)
+                        : null;
                       return repoRoot
                         ? {
                             repoRoot,
@@ -68,7 +71,7 @@ export function useCommitChanges() {
                 Object.entries(changesGroupedByRepo).map(
                   async ([repoRoot, files]) => {
                     const updates = files.reduce<{
-                      [filePath: string]: Uint8Array;
+                      [filePath: string]: Uint8Array | null;
                     }>(
                       (soFar, { filePath, content }) => ({
                         ...soFar,
@@ -82,7 +85,7 @@ export function useCommitChanges() {
                     await commitFiles({
                       fs,
                       dir: repoRoot,
-                      files: updates,
+                      updates,
                       message: commitMessage,
                       author: {
                         // FIXME
@@ -90,13 +93,24 @@ export function useCommitChanges() {
                         email: "alireza.mirian@gmail.com",
                       },
                     });
+                    const currentBranch = await snapshot.getPromise(
+                      repoCurrentBranchNameState(repoRoot)
+                    );
+                    if (currentBranch) {
+                      refresh(
+                        resolvedRefState({
+                          repoRoot,
+                          ref: currentBranch,
+                        })
+                      );
+                    }
+                    refresh(resolvedRefState({ repoRoot, ref: "HEAD" }));
                   }
                 )
               ).then(
                 () => {
-                  // TODO: file status state and changes state separately use statusMatrix. It can be refactored for
-                  //  changes to be based on file status state.
-                  refreshChanges().catch(console.error);
+                  refresh(allCommitsState); // maybe a more efficient way to update only the newly added commit, when
+                  // allCommitsState is refactored to allow that
                   refreshFileStatus().catch(console.error);
 
                   balloonManager.show({
@@ -131,6 +145,6 @@ export function useCommitChanges() {
         );
         set(commitTaskIdState, taskId);
       },
-    [refreshChanges]
+    []
   );
 }

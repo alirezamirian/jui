@@ -11,13 +11,17 @@ import { BranchesPopup } from "./Branches/BranchesPopup";
 import { useChangesViewActionDefinitions } from "./Changes/useChangesViewActionDefinitions";
 import { VcsActionIds } from "./VcsActionIds";
 import { CreateNewBranchWindow } from "./Branches/CreateNewBranchWindow";
+import { useExistingLatestRecoilValue } from "../recoil-utils";
+import { gitAddActionSelector } from "./actions/gitAddAction";
 
 export function useVcsActions(): ActionDefinition[] {
   const popupManager = usePopupManager();
   const windowManager = useWindowManager();
 
+  const [gitAddAction] = useExistingLatestRecoilValue(gitAddActionSelector);
   return [
     ...useChangesViewActionDefinitions(),
+    gitAddAction,
     {
       id: VcsActionIds.GIT_CREATE_NEW_BRANCH,
       title: "New Branch\u2026",
@@ -34,7 +38,7 @@ export function useVcsActions(): ActionDefinition[] {
       title: "Branches\u2026",
       icon: <PlatformIcon icon="vcs/branch.svg" />,
       actionPerformed: () => {
-        popupManager.show(({ close }) => <BranchesPopup onClose={close} />);
+        popupManager.show(({ close }) => <BranchesPopup close={close} />);
       },
     },
     {

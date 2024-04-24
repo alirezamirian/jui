@@ -7,16 +7,20 @@ import git from "isomorphic-git";
  * This way of committing files by building the new tree directly, and without using index
  * provides more flexibility in selectively committing only some changes, and is similar to
  * how it's done in JetBrains IDEs.
- * TODO: support removing files by null as content
  */
 export async function commitFiles({
-  files,
+  updates,
   fs,
   dir,
   gitdir,
   ...options
 }: Omit<Parameters<typeof git["commit"]>[0], "tree"> & {
-  files: { [filePath: string]: Uint8Array };
+  /**
+   * A mapping from file paths to either:
+   * - the new content of the file that should be committed, in form of a Uint8Array blob
+   * - null, indicating the files should be removed
+   */
+  updates: { [filePath: string]: Uint8Array | null };
 }) {
   const headTreeOid = await git.resolveRef({ fs, dir, gitdir, ref: "HEAD" });
   const headTree = await git.readTree({
@@ -27,10 +31,20 @@ export async function commitFiles({
   });
   const entries = headTree.tree;
 
+  let containsChange = false;
   // Write content into blobs, and upsert respective entries with the new oids
   await Promise.all(
-    Object.entries(files).map(async ([filePath, blob]) => {
-      const entry = entries.find(({ path }) => path === filePath);
+    Object.entries(updates).map(async ([filePath, blob]) => {
+      const index = entries.findIndex(({ path }) => path === filePath);
+      if (blob == null) {
+        // null indicates removed file
+        if (index > -1) {
+          containsChange = true;
+          entries.splice(index, 1);
+        }
+        return;
+      }
+      const entry = entries[index];
       const oid = await git.writeBlob({ fs, dir, gitdir, blob });
       if (entry) {
         entry.oid = oid;
@@ -42,9 +56,13 @@ export async function commitFiles({
           path: filePath,
         });
       }
+      containsChange = true;
     })
   );
 
+  if (!containsChange) {
+    throw new Error("Nothing to commit!");
+  }
   // Write the new tree into the git object database
   const newTreeOid = await git.writeTree({ fs, dir, gitdir, tree: entries });
 
@@ -59,7 +77,7 @@ export async function commitFiles({
 
   // Index is not updated when committing from a custom tree. We need to reset index for each updated file.
   await Promise.all(
-    Object.keys(files).map((filepath) =>
+    Object.keys(updates).map((filepath) =>
       git.resetIndex({
         fs,
         dir,

@@ -2,29 +2,23 @@ import { DirectoryNode, createGroupByDirectory } from "./groupByDirectory";
 import { ChangeNode } from "../VersionControl/Changes/ChangesTree/ChangeTreeNode";
 import { readFileSync } from "fs";
 import { performance } from "perf_hooks";
-import { Change } from "../VersionControl/Changes/Change";
+import { Change, Revision } from "../VersionControl/Changes/Change";
 
-const change = (path: string): ChangeNode => ({
-  key: path,
-  type: "change",
-  change: {
-    after: {
-      path,
-      isDir: false,
-      content(): Promise<string> {
-        throw new Error("Not implemented");
-      },
+const change = (path: string): ChangeNode => {
+  const revision: Revision = {
+    path,
+    isDir: false,
+    content(): Promise<string> {
+      throw new Error("Not implemented");
     },
-    before: {
-      path,
-      isDir: false,
-      content(): Promise<string> {
-        throw new Error("Not implemented");
-      },
-    },
-  },
-  showPath: false,
-});
+  };
+  return {
+    key: path,
+    type: "change",
+    change: Change(revision, revision),
+    showPath: false,
+  };
+};
 
 const groupByDirectory = createGroupByDirectory<ChangeNode, DirectoryNode>({
   getPath: (node) => Change.path(node.change),

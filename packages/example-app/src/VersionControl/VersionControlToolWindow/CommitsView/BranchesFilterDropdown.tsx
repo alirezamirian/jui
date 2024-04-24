@@ -1,11 +1,6 @@
 import { groupBy } from "ramda";
 import React, { HTMLAttributes, useEffect, useState } from "react";
-import {
-  selector,
-  useRecoilState,
-  useRecoilValue,
-  useResetRecoilState,
-} from "recoil";
+import { selector, useRecoilState, useResetRecoilState } from "recoil";
 import {
   Divider,
   Item,
@@ -22,6 +17,7 @@ import {
 import { BranchFavoriteButton } from "../../Branches/BranchFavoriteButton";
 import { vcsLogFilter } from "../vcs-logs.state";
 import { VcsFilterDropdown } from "./VcsLogDropdown";
+import { useLatestRecoilValue } from "../../../recoil-utils";
 
 export function BranchesFilterDropdown({ tabKey }: { tabKey: string }) {
   const [selectedBranches, setSelectedBranches] = useRecoilState(
@@ -57,7 +53,7 @@ const groupRepoRoots = (
  * Unique list of all local and remote branches of all repositories.
  * Each branch has a list of repos which indicates the list of repository roots the branch appears in.
  */
-const repoGroupedAllBranches = selector({
+const repoGroupedAllBranchesState = selector({
   key: "vcs/allBranchesRepoConsolidated",
   get: ({ get }) => {
     const allBranches = get(allBranchesState);
@@ -99,9 +95,11 @@ function BranchesFilterMenu({
     []
   );
   const { toggleFavorite, isFavorite } = useFavoriteBranches();
-  const { localBranches, remoteBranches } = useRecoilValue(
-    repoGroupedAllBranches
+  const [repoGroupedAllBranches] = useLatestRecoilValue(
+    repoGroupedAllBranchesState
   );
+  const { localBranches = [], remoteBranches = [] } =
+    repoGroupedAllBranches || {};
 
   const remoteBranchesByRemote = groupBy(
     ({ branchName }) => branchName.split("/")[0],

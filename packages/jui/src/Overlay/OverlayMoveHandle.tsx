@@ -1,7 +1,11 @@
-import { useMove } from "../utils/interaction-utils/useMove";
+import { useMove, UseMoveOptions } from "../utils/interaction-utils/useMove";
 import { useOverlayInteractionHandler } from "./OverlayInteractionHandler";
 import React from "react";
 
+export type UseOverlayMoveHandleOptions = Omit<
+  UseMoveOptions<unknown>,
+  "onMoveStart" | "onMove" | "onMoveEnd"
+>;
 /**
  * Used for making a dom element a move handle for the overlay it's being rendered in.
  * It uses the context provided by {@link OverlayInteractionHandler}, and returns props to be applied on a dom element to
@@ -9,7 +13,7 @@ import React from "react";
  *
  * @see OverlayMoveHandle
  */
-export function useOverlayMoveHandle() {
+export function useOverlayMoveHandle(options?: UseOverlayMoveHandleOptions) {
   const interactionHandler = useOverlayInteractionHandler();
   if (!interactionHandler) {
     return { moveHandleProps: {} };
@@ -18,6 +22,7 @@ export function useOverlayMoveHandle() {
     interactionHandler;
 
   const moveProps = useMove({
+    ...options,
     onMoveStart: () => {
       return startInteraction("move");
     },
@@ -43,10 +48,11 @@ export function useOverlayMoveHandle() {
  */
 export const OverlayMoveHandle = ({
   children,
+  ...props
 }: {
   children: (
     props: ReturnType<typeof useOverlayMoveHandle>
   ) => React.ReactElement;
-}) => {
-  return children(useOverlayMoveHandle());
+} & UseOverlayMoveHandleOptions) => {
+  return children(useOverlayMoveHandle(props));
 };

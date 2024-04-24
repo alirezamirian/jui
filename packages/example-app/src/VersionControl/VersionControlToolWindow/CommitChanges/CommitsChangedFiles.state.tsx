@@ -1,5 +1,11 @@
 import React, { Key, RefObject } from "react";
-import { atom, atomFamily, selector } from "recoil";
+import {
+  atom,
+  atomFamily,
+  GetRecoilValue,
+  selector,
+  selectorFamily,
+} from "recoil";
 import { Selection } from "@react-types/shared";
 import { TreeRefValue } from "@intellij-platform/core";
 import { sortTreeNodesInPlace } from "@intellij-platform/core/utils/tree-utils";
@@ -24,6 +30,7 @@ import {
 } from "../CommitsView/CommitsTable.state";
 import { commitChangesTreeNodeRenderer } from "./commitChangesTreeNodeRenderer";
 import { getCommitChanges } from "./getCommitChanges";
+import { detectRenames } from "../../Changes/detectRenames";
 
 export const changesGroupingActiveState = atomFamily<boolean, string>({
   key: "vcs/log/commits/changes/isGroupingActive",
@@ -56,46 +63,63 @@ export interface CommitParentChangeTreeNode
   oid: string;
   subject: string;
 }
-/**
- * Changes corresponding to the currently selected commits.
- * NOTE: it could be refactored into a selectorFamily, where the selected OIds are
- * passed as parameter, which would allow for caching the result, as the selector
- * would not be reevaluated when the only selection is changed, and the state
- * of the table is not changed.
- */
-export const changedFilesState = selector({
-  key: "vcs/log/commits/selection/changes",
-  get: async ({ get }) => {
+
+type CommitDiffParams = Pick<
+  Parameters<typeof getCommitChanges>[0],
+  "fromRef" | "toRef" | "dir"
+>;
+const commitsDiffWithoutRenamesState = selectorFamily({
+  key: "vcs/log/commits/diffWithoutRenamesState",
+  get: (params: CommitDiffParams) => () =>
+    getCommitChanges({
+      fs,
+      ...params,
+    }),
+});
+
+const commitsDiffState = selectorFamily({
+  key: "vcs/log/commits/diffState",
+  get:
+    (params: CommitDiffParams) =>
+    ({ get }) =>
+      detectRenames(get(commitsDiffWithoutRenamesState(params))),
+});
+
+const getChangedFilesState =
+  (state: typeof commitsDiffState) =>
+  async ({ get }: { get: GetRecoilValue }) => {
     const selectedCommits = get(selectedCommitsState);
     const commitLogItem = selectedCommits[0]; // FIXME: take all selected commits into account
     const { byOid } = get(commitsTableRowsState);
     const toRef = commitLogItem?.readCommitResult?.oid;
-    if (toRef) {
+    const parents = commitLogItem?.readCommitResult.commit.parent;
+    if (toRef && parents) {
       const groupFn = getChangesGroupFn({
         get,
         groupings: defaultChangeGroupings,
         isActive: changesGroupingActiveState,
       });
-
-      const rootNodes = await Promise.all(
-        commitLogItem?.readCommitResult.commit.parent.map((parent) =>
-          getCommitChanges({
-            fs,
-            fromRef: parent,
-            toRef,
-            dir: commitLogItem.repoPath,
-          }).then(
-            (changes) =>
-              ({
-                type: COMMIT_PARENT_ID,
-                key: changesTreeNodeKey(COMMIT_PARENT_ID, parent),
-                oid: parent,
-                subject: byOid[parent]?.readCommitResult.commit.message || "",
-                children: groupFn([...changes].map((node) => changeNode(node))),
-              } as CommitParentChangeTreeNode)
-          )
-        )
+      const rootNodes = parents?.map(
+        (parent) =>
+          ({
+            type: COMMIT_PARENT_ID,
+            key: changesTreeNodeKey(COMMIT_PARENT_ID, parent),
+            oid: parent,
+            subject: byOid[parent]?.readCommitResult.commit.message || "",
+            children: groupFn(
+              [
+                ...get(
+                  state({
+                    toRef,
+                    fromRef: parent,
+                    dir: commitLogItem.repoPath,
+                  })
+                ),
+              ].map((node) => changeNode(node))
+            ),
+          } as CommitParentChangeTreeNode)
       );
+
       const { expandAllKeys, fileCountsMap, ...result } =
         changesTreeNodesResult(
           rootNodes.length === 1
@@ -106,6 +130,7 @@ export const changedFilesState = selector({
       type Writeable<T> = { -readonly [P in keyof T]: T[P] };
       sortTreeNodesInPlace(
         (node) =>
+          (node.type === "directory" ? "a_" : "b_") +
           commitChangesTreeNodeRenderer
             .getTextValue(node, { fileCountsMap })
             .toLowerCase(),
@@ -131,5 +156,20 @@ export const changedFilesState = selector({
       };
     }
     return null;
-  },
+  };
+
+/**
+ * Changes corresponding to the currently selected commits, before rename detection, which can be slow.
+ */
+export const changedFilesWithoutRenamesState = selector({
+  key: "vcs/log/commits/selection/changesWithoutRename",
+  get: getChangedFilesState(commitsDiffWithoutRenamesState),
+});
+
+/**
+ * Changes corresponding to the currently selected commits.
+ */
+export const changedFilesState = selector({
+  key: "vcs/log/commits/selection/changes",
+  get: getChangedFilesState(commitsDiffState),
 });

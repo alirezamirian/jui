@@ -33,7 +33,13 @@ function ModalWindowExample() {
                 hasBorder
                 left={
                   <>
-                    <Button variant="icon">?</Button>
+                    <TooltipTrigger
+                      tooltip={<HelpTooltip helpText="Show Help Contents" />}
+                    >
+                      <Button variant="icon">
+                        <PlatformIcon icon="actions/help"></PlatformIcon>
+                      </Button>
+                    </TooltipTrigger>
                     <Checkbox>Some settings</Checkbox>
                   </>
                 }
@@ -56,3 +62,7 @@ function ModalWindowExample() {
   );
 }
 ```
+
+## WindowManager
+
+🚧

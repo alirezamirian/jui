@@ -65,7 +65,6 @@ export const toolWindows: ToolWindowDescriptor[] = [
         <VersionControlToolWindow />
       </Suspense>
     ),
-    showStripeButton: false,
     initialState: toolWindowState({
       anchor: "bottom",
       weight: 0.35,

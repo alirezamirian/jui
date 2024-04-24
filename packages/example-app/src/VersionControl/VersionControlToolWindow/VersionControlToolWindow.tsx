@@ -28,12 +28,13 @@ import {
   useCloseVcsTab,
   vcsActiveTabKeyState,
   vcsLogFilter,
-  vcsLogTabShowBranches,
-  vcsLogTabShowCommitDetails,
+  vcsLogTabShowBranchesState,
+  vcsLogTabShowCommitDetailsState,
   vcsTabKeysState,
   vcsTabTitleState,
 } from "./vcs-logs.state";
 import { useCommitsTableActions } from "./CommitsView/useCommitsTableActions";
+import { notImplemented } from "../../Project/notImplemented";
 
 export const VERSION_CONTROL_TOOLWINDOW_ID = "Version Control";
 
@@ -131,7 +132,7 @@ function VcsTab({ tabKey }: { tabKey: string }) {
 
   const actions = useVcsLogsToolWindowActions();
   const [showBranches, setShowBranches] = useRecoilState(
-    vcsLogTabShowBranches(tabKey)
+    vcsLogTabShowBranchesState(tabKey)
   );
 
   const firstViewProps: Partial<ThreeViewSplitterProps> = showBranches
@@ -190,7 +191,7 @@ function useVcsLogsToolWindowActions() {
     ({ set, snapshot }) =>
       () => {
         set(
-          vcsLogTabShowBranches(
+          vcsLogTabShowBranchesState(
             snapshot.getLoadable(vcsActiveTabKeyState).getValue()
           ),
           // Would be nicer to have the action toggle, but prioritized matching the reference impl here.
@@ -202,7 +203,9 @@ function useVcsLogsToolWindowActions() {
 
   const toggleMatchCase = useToggleCurrentTabSettings(vcsLogFilter.matchCase);
   const toggleRegExp = useToggleCurrentTabSettings(vcsLogFilter.regExp);
-  const toggleDetails = useToggleCurrentTabSettings(vcsLogTabShowCommitDetails);
+  const toggleDetails = useToggleCurrentTabSettings(
+    vcsLogTabShowCommitDetailsState
+  );
 
   const actions: ActionDefinition[] = [
     ...useCommitsTableActions(),
@@ -236,6 +239,12 @@ function useVcsLogsToolWindowActions() {
       title: "Show Details",
       description: "Display details panel",
       actionPerformed: toggleDetails,
+    },
+    {
+      id: VcsActionIds.SHOW_DIFF_PREVIEW,
+      title: "Show Diff Preview",
+      description: "Show Diff Preview Panel",
+      actionPerformed: () => notImplemented(),
     },
   ];
   return actions;

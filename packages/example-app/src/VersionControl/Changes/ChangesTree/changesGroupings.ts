@@ -1,4 +1,4 @@
-import { GetRecoilValue, isRecoilValue, RecoilValue, selector } from "recoil";
+import { GetRecoilValue, isRecoilValue, selector } from "recoil";
 
 import { vcsRootsState } from "../../file-status.state";
 import { createGroupByDirectory } from "../../../tree-utils/groupByDirectory";
@@ -15,8 +15,8 @@ import {
   RepositoryNode,
   repositoryNode,
 } from "./ChangeTreeNode";
-
-export type MaybeRecoilValue<T> = T | RecoilValue<T>;
+import { VcsActionIds } from "../../VcsActionIds";
+import { MaybeRecoilValue } from "../../../recoil-utils";
 
 export type GroupFn<T extends ChangesTreeGroupNode<any>> = (
   nodes: ReadonlyArray<ChangeNode>
@@ -29,6 +29,7 @@ export interface ChangeGrouping<
   id: I;
   title: string;
   isAvailable: MaybeRecoilValue<boolean>;
+  useShortcutOf?: string;
   groupFn: MaybeRecoilValue<GroupFn<T>>;
 }
 
@@ -50,9 +51,7 @@ const repositoryGrouping: ChangeGrouping<RepositoryNode, "repository"> = {
             repositoryNode(
               repository,
               nodes.filter((node) =>
-                (
-                  node.change.after?.path || node.change.before?.path
-                )?.startsWith(repository.dir)
+                Change.path(node.change)?.startsWith(repository.dir)
               )
             )
         );
@@ -64,14 +63,13 @@ export const directoryGrouping: ChangeGrouping<DirectoryNode, "directory"> = {
   id: "directory",
   title: "Directory",
   isAvailable: true,
+  useShortcutOf: VcsActionIds.GROUP_BY_DIRECTORY,
   groupFn: createGroupByDirectory<ChangeNode, DirectoryNode>({
     shouldCollapseDirectories: true,
     createDirectoryNode: ({ dirPath, parentNodePath, children }) =>
       directoryNode(dirPath, parentNodePath, children),
     mapNode: (node) => changeNode(node.change, false),
-    getPath: (node) => {
-      return Change.path(node.change);
-    },
+    getPath: (node) => Change.path(node.change),
   }),
 };
 
@@ -114,24 +112,45 @@ export const recursiveGrouping = <T extends ChangesTreeNode<any>>(
   return groups.filter((group) => group.children.length > 0);
 };
 
-export function getChangesGroupFn<G extends ChangesTreeGroupNode<any>>({
-  get,
-  isActive,
-  groupings,
-}: {
-  get: GetRecoilValue;
-  isActive: (groupingId: string) => MaybeRecoilValue<boolean>;
-  groupings: ReadonlyArray<ChangeGrouping<G, any>>;
-}) {
-  const resolve = <T>(value: MaybeRecoilValue<T>): T =>
-    isRecoilValue(value) ? get(value) : value;
-  const groupFns = groupings
-    .filter(
-      ({ id, isAvailable }) => resolve(isAvailable) && resolve(isActive(id))
-    )
-    .map(({ groupFn }) => {
-      return resolve(groupFn);
-    });
-  return (changes: readonly ChangeNode[]) =>
-    recursiveGrouping<G>(groupFns, changes);
-}
+/**
+ * returns a function that accepts a `keyPrefix` and creates change grouping function based on the
+ * passed {@param groupings}, in a way that the key of each grouping node is prefixed with the `keyPrefix`.
+ * Useful for grouping changes under some root nodes with potentially overlapping groups. E.g. the same
+ * folder or repository node may appear under different changeLists.
+ */
+export const getPrefixedChangesGroupFn =
+  <G extends ChangesTreeGroupNode<any>>({
+    get,
+    isActive,
+    groupings,
+  }: {
+    get: GetRecoilValue;
+    isActive: (groupingId: string) => MaybeRecoilValue<boolean>;
+    groupings: ReadonlyArray<ChangeGrouping<G, any>>;
+  }) =>
+  (keyPrefix: string) => {
+    const resolve = <T>(value: MaybeRecoilValue<T>): T =>
+      isRecoilValue(value) ? get(value) : value;
+    const groupFns = groupings
+      .filter(
+        ({ id, isAvailable }) => resolve(isAvailable) && resolve(isActive(id))
+      )
+      .map(({ groupFn }) => {
+        return resolve(groupFn);
+      })
+      .map<GroupFn<any>>((groupFn) =>
+        keyPrefix
+          ? (...args) =>
+              groupFn(...args).map((group) => ({
+                ...group,
+                key: `${keyPrefix}:${group.key}`,
+              }))
+          : groupFn
+      );
+    return (changes: readonly ChangeNode[]) =>
+      recursiveGrouping<G>(groupFns, changes);
+  };
+
+export const getChangesGroupFn = (
+  ...args: Parameters<typeof getPrefixedChangesGroupFn>
+) => getPrefixedChangesGroupFn(...args)("");
