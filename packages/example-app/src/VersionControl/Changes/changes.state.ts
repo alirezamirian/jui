@@ -76,8 +76,7 @@ export const useRollbackChanges = () => {
                 if (repoRoot) {
                   return {
                     repoRoot,
-                    type: change.type,
-                    fullPath: Change.path(change),
+                    change,
                     relativePath: path.relative(repoRoot, Change.path(change)),
                   };
                 }
@@ -91,12 +90,12 @@ export const useRollbackChanges = () => {
         await Promise.all(
           Object.entries(groupedChanges).map(async ([repoRoot, items]) => {
             const { toReset = [], toCheckout = [] } = groupBy(
-              ({ type }) =>
+              ({ change: { type } }) =>
                 type !== "ADDED" || deleteAddedFiles ? "toCheckout" : "toReset",
               items
             );
             await Promise.allSettled(
-              toReset.map(({ relativePath, type }) =>
+              toReset.map(({ relativePath }) =>
                 resetIndex({
                   fs,
                   dir: repoRoot,
@@ -110,23 +109,31 @@ export const useRollbackChanges = () => {
                 dir: repoRoot,
                 force: true,
                 filepaths: toCheckout.map(
-                  ({ relativePath, type }) => relativePath
+                  ({ relativePath, change: { type } }) => relativePath
                 ),
               });
             }
 
             // FIXME(fs.watch)
-            const dirsWithRemovedFiles = findRootPaths(
-              items
-                .filter(({ type }) => deleteAddedFiles && type === "ADDED")
-                .map(({ fullPath }) => path.dirname(fullPath))
-            );
-            dirsWithRemovedFiles.forEach((pathToRefresh) =>
+            const changedDirectories = findRootPaths(
+              items.flatMap(({ change }) => {
+                if (change.type === "MODIFIED") {
+                  // minor optimization
+                  return [];
+                }
+                if (change.type === "MOVED") {
+                  return [change.before.path, change.after.path];
+                }
+                return Change.path(change);
+              })
+            ).map(path.dirname);
+            changedDirectories.forEach((pathToRefresh) =>
               refresh(dirContentState(pathToRefresh))
             );
 
             await Promise.allSettled(
-              items.map(async ({ fullPath, relativePath }) => {
+              items.map(async ({ relativePath, change }) => {
+                const fullPath = Change.path(change);
                 await reloadFileFromDisk(fullPath); // Since fileContent is an atom, we set the value. Could be a selector that we would refresh
                 await updateFileStatus(fullPath);
                 await resetIndex({ fs, dir: repoRoot, filepath: relativePath });
