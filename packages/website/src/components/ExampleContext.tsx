@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from "react";
-import { SSRProvider } from "@react-aria/ssr";
+import BrowserOnly from "@docusaurus/BrowserOnly";
+
 import darculaTheme from "../../../jui/themes/darcula.theme.json";
 import highContrastTheme from "../../../jui/themes/HighContrast.theme.json";
 import lightTheme from "../../../jui/themes/intellijlaf.theme.json";
@@ -25,9 +26,9 @@ export const ExampleContext: React.FC<{
 
   useFixDocusaurusStyleBleeds();
   return (
-    <SSRProvider>
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
-    </SSRProvider>
+    <BrowserOnly fallback={<>Loading...</>}>
+      {() => <ThemeProvider theme={theme}>{children}</ThemeProvider>}
+    </BrowserOnly>
   );
 };
 
