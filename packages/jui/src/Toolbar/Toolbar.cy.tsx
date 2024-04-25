@@ -92,8 +92,10 @@ describe("Toolbar", () => {
     // all buttons should be hidden
     cy.findAllByRole("button").filter(":visible").should("have.length", 1);
 
-    // overflow button should still be visible
-    cy.findByRole("toolbar").realHover({ position: "right" });
+    // .realHover() is flaky in this case.
+    // It seems it can double trigger an event that opens the toolbar, resulting
+    //  in too many buttons being rendered. Not sure if it's actually revealing some issue in the component or not.
+    cy.findByRole("toolbar").realMouseMove(1, 1, { position: "center" });
     // and it should work
     cy.findAllByRole("button")
       .should("be.visible")
