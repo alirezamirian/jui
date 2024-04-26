@@ -1,2 +1,2 @@
-export * from "./Button";
-export * from "./BareButton";
+export { Button, type ButtonProps } from "./Button";
+export { BareButton, type BareButtonProps } from "./BareButton";

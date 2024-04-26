@@ -7,7 +7,7 @@ import { OverlayMoveHandle } from "@intellij-platform/core/Overlay";
 import { styled } from "../styled";
 import { StyledWindowContainer } from "@intellij-platform/core/ModalWindow/ModalWindow";
 import { PlatformIcon } from "@intellij-platform/core/Icon";
-import { Button } from "@intellij-platform/core/Button";
+import { ButtonGroup } from "@intellij-platform/core/ButtonGroup";
 import { isEventOnEmptySpaces } from "@intellij-platform/core/utils/interaction-utils/useMove";
 
 export interface AlertDialogProps
@@ -112,7 +112,7 @@ const StyledCheckbox = styled.div`
   margin-left: -0.25rem;
 `;
 
-const StyledButtons = styled.div`
+const StyledButtons = styled(ButtonGroup)`
   display: flex;
   justify-self: end;
   gap: 1rem;

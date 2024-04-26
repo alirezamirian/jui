@@ -3,7 +3,7 @@ import { composeStories } from "@storybook/react";
 import * as stories from "./ModalWindow.stories";
 import { ModalWindow, WindowLayout } from "@intellij-platform/core";
 
-const { Default } = composeStories(stories);
+const { Default, WithFooter } = composeStories(stories);
 
 describe("ModalWindow", () => {
   it("works!", () => {
@@ -14,6 +14,16 @@ describe("ModalWindow", () => {
     );
     matchImageSnapshot("ModalWindow-default");
   });
+
+  it("it allows for navigating buttons with arrow keys", () => {
+    cy.mount(<WithFooter />);
+    cy.findByRole("button", { name: "Ok" }).focus().realPress("ArrowLeft");
+    cy.findByRole("button", { name: "Cancel" })
+      .should("be.focused")
+      .realPress("ArrowLeft"); // should wrap
+    cy.findByRole("button", { name: "Ok" }).should("be.focused");
+  });
+
   it("supports resize", () => {
     const onBoundsChange = cy.stub().as("onBoundsChange");
     cy.mount(

@@ -32,9 +32,21 @@ describe("AlertDialog", () => {
     cy.mount(example);
     matchImageSnapshot("AlertDialog-warning");
   });
+
   it("is accessible as alertdialog", () => {
     cy.mount(example);
     cy.findByRole("alertdialog");
+  });
+
+  it("it allows for navigating buttons with arrow keys", () => {
+    cy.mount(example);
+    cy.findByRole("button", { name: "Disconnect" })
+      .focus() // Not relying on autofocus for this test case
+      .realPress("ArrowLeft");
+    cy.findByRole("button", { name: "Cancel" })
+      .should("be.focused")
+      .realPress("ArrowLeft"); // should wrap
+    cy.findByRole("button", { name: "Terminate" }).should("be.focused");
   });
 
   it("allows moving by dragging the whitespaces", () => {
