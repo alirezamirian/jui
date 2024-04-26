@@ -90,19 +90,9 @@ describe("Toolbar", () => {
   it("can still handle the overflow in very small widths", () => {
     cy.mount(<HorizontalOverflow containerWidth={20} />);
     // all buttons should be hidden
-    cy.findAllByRole("button").filter(":visible").should("have.length", 1);
-
-    // .realHover() is flaky in this case.
-    // It seems it can double trigger an event that opens the toolbar, resulting
-    //  in too many buttons being rendered. Not sure if it's actually revealing some issue in the component or not.
-    cy.findByRole("toolbar").realMouseMove(1, 1, { position: "center" });
-    // and it should work
-    cy.findAllByRole("button")
-      .should("be.visible")
-      .and(
-        "have.length",
-        9 /* 8 buttons in the overflow popup + overflow button in the toolbar*/
-      );
+    checkOverflowPopupIsHidden();
+    cy.findByRole("toolbar").realHover();
+    checkOverflowPopupIsVisible();
   });
 
   it("opens the overflow popup even when half-overflowed hidden elements are hovered", () => {
