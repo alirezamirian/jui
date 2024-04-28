@@ -131,7 +131,9 @@ const StyledHelpIcon = styled.div`
  * [notification](https://jetbrains.github.io/ui/controls/notifications/) pattern for use cases where
  * immediate user action is required.
  * Since the use cases are quite specific, and the component is expected to be used with pretty specific
- * content items, the layout is not implemented as a separate component, the way it is in many other components.
+ * content items, the layout is not implemented as a separate component, the way it is in components like
+ * {@link ModalWindow} or {@link Menu}
+ *
  *
  */
 export const AlertDialog = ({
