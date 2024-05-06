@@ -1,5 +1,6 @@
 import React, { FocusEventHandler, useContext, useRef } from "react";
-import { useModal, useOverlay, usePreventScroll } from "@react-aria/overlays";
+import { useOverlayTriggerState } from "@react-stately/overlays";
+import { useModalOverlay, usePreventScroll } from "@react-aria/overlays";
 import { focusSafely, FocusScope } from "@react-aria/focus";
 import { useDialog } from "@react-aria/dialog";
 import { AriaDialogProps } from "@react-types/dialog"; // temporary phantom dependency
@@ -92,18 +93,27 @@ export const ModalWindow = ({
   };
 
   const ref = React.useRef<HTMLDivElement>(null);
-  const { overlayProps, underlayProps } = useOverlay(
+  const { modalProps, underlayProps } = useModalOverlay(
     {
-      isOpen: true, // maybe allow rendering closed window? :-?
-      onClose,
       isDismissable: false,
       isKeyboardDismissDisabled: false,
-      shouldCloseOnBlur: false,
     },
+    // useModalOverlay doesn't really need the full `OverlayTriggerState` interface.
+    // It only requires `isOpen` and `close`.
+    // However, it's currently typed like this, so useOverlayTriggerState is used,
+    // just to comply with the required type, and in the unlikely case where a future minor version starts to use
+    // other properties from `OverlayTriggerState`
+    useOverlayTriggerState({
+      isOpen: true,
+      onOpenChange: (isOpen) => {
+        if (!isOpen) {
+          onClose();
+        }
+      },
+    }),
     ref
   );
   usePreventScroll();
-  const { modalProps } = useModal();
 
   const { dialogProps, titleProps } = useDialog(props, ref);
 
@@ -120,13 +130,9 @@ export const ModalWindow = ({
       <OverlayInteractionHandler {...overlayInteractionHandlerProps}>
         <FocusScope contain restoreFocus autoFocus>
           <StyledWindowContainer
-            {...mergeProps(
-              overlayProps,
-              dialogProps,
-              modalProps,
-              focusContainmentFixProps,
-              { style }
-            )}
+            {...mergeProps(dialogProps, modalProps, focusContainmentFixProps, {
+              style,
+            })}
             ref={ref}
           >
             <StyledWindowInnerContainer>

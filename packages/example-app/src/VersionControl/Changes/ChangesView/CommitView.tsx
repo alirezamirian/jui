@@ -66,6 +66,7 @@ export function CommitView({
   const commitMessageTextAreaRef = useRef<HTMLTextAreaElement>(null);
   const [commitMessage, setCommitMessage] = useRecoilState(commitMessageState);
   const commit = useCommitChanges();
+  const amend = useRecoilValue(amendCommitState);
   const balloonManager = useBalloonManager();
   const [errorMessage, setErrorMessage] = useRecoilState(
     commitErrorMessageState
@@ -139,11 +140,12 @@ export function CommitView({
           variant={hasFocus ? "default" : undefined}
           onPress={commitSelectedChanges}
           isDisabled={commitTaskId != null}
+          mnemonic="i"
         >
-          Commit
+          {amend ? "Amend Commit" : "Commit"}
         </Button>
-        <Button preventFocusOnPress onPress={notImplemented}>
-          Commit and Push...
+        <Button preventFocusOnPress onPress={notImplemented} mnemonic="P">
+          {amend ? "Amend Commit and Push..." : "Commit and Push..."}
         </Button>
       </StyledCommitActionsRow>
     </StyledCommitMessageContainer>

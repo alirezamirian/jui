@@ -17,15 +17,15 @@ const render: StoryFn<ButtonProps> = (props) => {
 
 export const SimpleUsage: StoryObj<ButtonProps> = {};
 
-export const Disabled = {
+export const Disabled: StoryObj<ButtonProps> = {
   args: { isDisabled: true, children: "Disabled" },
 };
 
-export const Default = {
+export const Default: StoryObj<ButtonProps> = {
   args: { variant: "default", children: "Default" },
 };
 
-export const PreventFocusOnPress = {
+export const PreventFocusOnPress: StoryObj<ButtonProps> = {
   render: (props: ButtonProps) => (
     <div>
       <input autoFocus /> <br />
@@ -40,7 +40,7 @@ export const PreventFocusOnPress = {
   },
 };
 
-export const ExcludeFromTabOrder = {
+export const ExcludeFromTabOrder: StoryObj<ButtonProps> = {
   render: (props: ButtonProps) => (
     <div
       style={{
@@ -62,7 +62,7 @@ export const ExcludeFromTabOrder = {
   },
 };
 
-export const NotFocusable = {
+export const NotFocusable: StoryObj<ButtonProps> = {
   args: {
     excludeFromTabOrder: true,
     preventFocusOnPress: true,
@@ -70,8 +70,16 @@ export const NotFocusable = {
   },
 };
 
-export const AutoFocus = {
+export const AutoFocus: StoryObj<ButtonProps> = {
   args: {
     autoFocus: true,
+  },
+};
+
+export const WithMnemonic: StoryObj<ButtonProps> = {
+  args: {
+    children: "Disconnect",
+    mnemonic: "D",
+    onPress: (event) => alert(event ? "onPress" : "onPress (mnemonic)"),
   },
 };

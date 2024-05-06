@@ -1,0 +1,39 @@
+---
+---
+
+# Mnemonic
+
+Implements [mnemonic](<https://en.wikipedia.org/wiki/Mnemonics_(keyboard)>) UX pattern, for actionable components.
+[See more](https://jetbrains.github.io/ui/principles/mnemonics/).
+
+:::tip
+`MnemonicTrigger` is typically not used directly as it's used internally in components like `Button` and `Checkbox`.
+Only use it if implementing the same pattern for a custom component.
+:::
+
+### Live example
+
+```jsx live themed
+<>
+  <MnemonicTrigger
+    mnemonic="P"
+    onTriggered={() => alert("First!")}
+    isDisabled={false}
+  >
+    Press Alt+P to activate mnemonic
+  </MnemonicTrigger>
+  <br />
+  <MnemonicTrigger
+    mnemonic="m"
+    onTriggered={() => alert("Second!")}
+    isDisabled={false}
+  >
+    Hold <code>Alt</code> to activate <MnemonicText>mnemonic</MnemonicText>
+  </MnemonicTrigger>
+</>
+```
+
+:::info
+Implementation of mnemonic for `Menu` (currently not done) doesn't require `MnemonicTrigger` as it's activated
+based on the focus being on the menu, without requiring a separate activation key (`Alt`).
+:::

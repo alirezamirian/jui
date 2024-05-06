@@ -14,6 +14,7 @@ import {
 import { ChangesSummary } from "../ChangesSummary";
 import { notImplemented } from "../../../Project/notImplemented";
 import { amendCommitState, includedChangesState } from "./ChangesView.state";
+import { focusCommitMessage } from "./ChangesViewSplitter";
 
 const StyledActionsRow = styled.div`
   display: flex;
@@ -57,8 +58,13 @@ export function CommitActionsRow() {
           <span {...props}>
             <StyledAmendCheckbox
               isSelected={amend}
-              onChange={setAmend}
+              onChange={(value) => {
+                setAmend(value);
+                // TODO: alternate commit message between the latest commit message and the last edited message.
+                focusCommitMessage();
+              }}
               preventFocus
+              mnemonic="m"
             >
               Amend
             </StyledAmendCheckbox>

@@ -13,6 +13,7 @@ import { styled } from "@intellij-platform/core/styled";
 
 import { CheckboxIcon } from "./CheckboxIcon";
 import { UnknownThemeProp } from "@intellij-platform/core/Theme";
+import { MnemonicTrigger } from "@intellij-platform/core/Mnemonic";
 
 export interface CheckboxProps
   extends InputBase,
@@ -73,6 +74,14 @@ export interface CheckboxProps
   name?: string;
 
   className?: string; // to support styled-components
+
+  /**
+   * A character to be used as {@link https://jetbrains.design/intellij/principles/mnemonics/ mnemonic} for the button
+   * It will be shown as underlined in button text, when mnemonic is activated (by pressing Alt)
+   * Note: if you use mnemonic, and the direct child of the button is not a string, you should use `Mnemonic.Text`
+   * to render the button text, to have the underlining behavior.
+   */
+  mnemonic?: string;
 }
 
 const StyledWrapperLabel = styled.label`
@@ -118,6 +127,7 @@ export const Checkbox = ({
   preventFocus,
   className,
   disableFocusAlwaysVisible,
+  mnemonic,
   ...props
 }: CheckboxProps) => {
   const state = useToggleState(props);
@@ -164,7 +174,17 @@ export const Checkbox = ({
       />
       {props.children && (
         <StyledCheckboxLabelText isDisabled={props.isDisabled}>
-          {props.children}
+          {mnemonic ? (
+            <MnemonicTrigger
+              mnemonic={mnemonic}
+              isDisabled={props.isDisabled}
+              onTriggered={state.toggle}
+            >
+              {props.children}
+            </MnemonicTrigger>
+          ) : (
+            props.children
+          )}
         </StyledCheckboxLabelText>
       )}
     </StyledWrapperLabel>

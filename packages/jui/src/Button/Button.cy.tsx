@@ -2,6 +2,7 @@ import React from "react";
 import { composeStories } from "@storybook/react";
 import * as stories from "./Button.stories";
 import { createGlobalStyle } from "styled-components";
+import { Button } from "./Button";
 
 const { SimpleUsage: SimpleUsageStory } = composeStories(stories);
 
@@ -78,6 +79,29 @@ describe("Button", () => {
     // focused, but also the focus is not changed after interaction with the button.
     cy.focused().should("have.id", "focused-element");
     cy.wrap(onPress).should("be.calledOnce");
+  });
+
+  it("supports mnemonic", () => {
+    const onPress = cy.stub();
+    cy.mount(
+      <Button mnemonic="d" onPress={onPress}>
+        Disconnect
+      </Button>
+    );
+    cy.window().focus();
+    cy.realPress(["Alt", "d"]);
+    cy.wrap(onPress).should("be.calledOnceWith");
+  });
+  it("Can't be triggered via mnemonic, if disabled", () => {
+    const onPress = cy.stub();
+    cy.mount(
+      <Button mnemonic="d" isDisabled onPress={onPress}>
+        Disconnect
+      </Button>
+    );
+    cy.window().focus();
+    cy.realPress(["Alt", "d"]);
+    cy.wrap(onPress).should("not.be.calledOnceWith");
   });
 });
 

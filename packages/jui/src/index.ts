@@ -40,6 +40,7 @@ export * from "./Popup";
 export * from "./InputField";
 export * from "./SearchInput";
 export * from "./AlertDialog";
+export * from "./Mnemonic";
 
 export { type Bounds } from "./Overlay";
 export { type TextRange } from "./TextRange";

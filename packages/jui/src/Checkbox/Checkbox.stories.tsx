@@ -46,3 +46,7 @@ export const ExcludeFromTabOrder: StoryObj<CheckboxProps> = {
 export const DisableFocusAlwaysVisible: StoryObj<CheckboxProps> = {
   args: { disableFocusAlwaysVisible: true },
 };
+
+export const WithMnemonic: StoryObj<CheckboxProps> = {
+  args: { mnemonic: "E" },
+};
