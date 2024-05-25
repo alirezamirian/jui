@@ -49,12 +49,13 @@ const sampleRepoKey: keyof typeof sampleRepos = "JUI";
  */
 export const sampleRepo = sampleRepos[sampleRepoKey];
 
+export const defaultProject = {
+  name: "Workspace",
+  path: "/workspace",
+};
 export const currentProjectState = atom<Project>({
   key: "project",
-  default: {
-    name: "Workspace",
-    path: "/workspace",
-  },
+  default: defaultProject,
 });
 
 export const projectFilePath = selectorFamily({

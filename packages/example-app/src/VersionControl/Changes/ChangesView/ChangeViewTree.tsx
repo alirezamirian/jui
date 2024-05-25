@@ -80,6 +80,7 @@ export const ChangeViewTree = ({
       style={{ height: "100%" }}
     >
       <SpeedSearchTreeWithCheckboxes
+        aria-label="Commit changes tree" // no aria-label in the reference impl
         treeRef={treeRef}
         items={rootNodes}
         selectionMode="multiple"

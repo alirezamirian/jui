@@ -29,7 +29,7 @@ describe("Input", () => {
         }
       />
     );
-    cy.get("[data-loading-icon]").should("not.exist");
+    cy.get("[aria-busy=true]").should("not.exist");
     cy.findByRole("button").realMouseDown();
     cy.findByRole("textbox").should("be.focused");
 

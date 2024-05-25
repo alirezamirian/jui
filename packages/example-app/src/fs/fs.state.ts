@@ -58,8 +58,9 @@ export const dirContentState = selectorFamily({
  * @deprecated use reset(fileContent(path)) directly
  */
 export const reloadFileFromDiskCallback =
-  ({ reset }: CallbackInterface) =>
+  ({ reset, refresh }: CallbackInterface) =>
   async (path: string) => {
+    refresh(readFileContentSelector(path));
     reset(fileContentState(path));
   };
 

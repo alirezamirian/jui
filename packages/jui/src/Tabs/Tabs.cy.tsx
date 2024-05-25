@@ -47,7 +47,7 @@ describe("Tabs", () => {
 
     // Local visual testing turned out problematic. switching to percy, at least for this test case
     const compareSnapshot = (name: string) => {
-      cy.get("[data-loading-icon]").should("not.exist");
+      cy.get("[aria-busy=true]").should("not.exist");
       cy.percySnapshot(name);
     };
 
@@ -76,7 +76,7 @@ describe("Tabs", () => {
 });
 
 function matchImageSnapshot(snapshotsName: string) {
-  cy.get("[data-loading-icon]").should("not.exist");
+  cy.get("[aria-busy=true]").should("not.exist");
   cy.document().toMatchImageSnapshot({
     name: snapshotsName,
     // imageConfig: {

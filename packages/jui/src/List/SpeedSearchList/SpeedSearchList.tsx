@@ -1,6 +1,6 @@
 import React, { ForwardedRef } from "react";
 import { AriaListBoxProps } from "@react-types/listbox";
-import { useObjectRef } from "@react-aria/utils";
+import { filterDOMProps, useObjectRef } from "@react-aria/utils";
 import { Virtualizer } from "@react-aria/virtualizer";
 import { Node } from "@react-types/shared";
 
@@ -73,6 +73,7 @@ export const SpeedSearchList = React.forwardRef(function SpeedSearchList<
             as={Virtualizer<Node<any>, any>}
             ref={ref}
             fillAvailableSpace={fillAvailableSpace}
+            {...filterDOMProps(props, { labelable: true })}
             {...virtualizerProps}
             {...listProps}
           >

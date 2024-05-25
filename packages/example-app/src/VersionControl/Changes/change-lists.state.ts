@@ -88,12 +88,15 @@ export function SyncChangeListsState() {
   const setChangeLists = useSetRecoilState(changeListsState);
   useEffect(() => {
     setChangeLists((changeLists) => {
+      const trackedChanges = changes.filter(
+        (change) => !Change.isUnversioned(change)
+      );
       const updatedChangeLists = changeLists.map((changeList) => {
         return {
           ...changeList,
           changes: changeList.changes
             .map((change) =>
-              changes.find((aChange) => Change.equals(aChange, change))
+              trackedChanges.find((aChange) => Change.equals(aChange, change))
             )
             .filter(notNull),
         };
@@ -101,14 +104,12 @@ export function SyncChangeListsState() {
       const existingChanges = updatedChangeLists.flatMap(
         ({ changes }) => changes
       );
-      const newChanges = changes
-        .filter((change) => !Change.isUnversioned(change))
-        .filter(
-          (change) =>
-            !existingChanges.find((anExistingChange) =>
-              Change.equals(change, anExistingChange)
-            )
-        );
+      const newChanges = trackedChanges.filter(
+        (change) =>
+          !existingChanges.find((anExistingChange) =>
+            Change.equals(change, anExistingChange)
+          )
+      );
       const activeChangeList =
         updatedChangeLists.find(({ active }) => active) ??
         updatedChangeLists[0];

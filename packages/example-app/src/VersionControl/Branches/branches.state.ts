@@ -101,7 +101,15 @@ export const repoBranchesState = selectorFamily<RepoBranches, string>({
     (repoRoot: string) =>
     async ({ get }) => {
       const currentBranchName = get(repoCurrentBranchNameState(repoRoot));
-      const localBranches = get(repoLocalBranchesState(repoRoot));
+      let localBranches = get(repoLocalBranchesState(repoRoot));
+      if (localBranches.length === 0 && currentBranchName) {
+        // When a repo is initialized and before the first commit, no branch is returned when listing branches.
+        // See more: https://github.com/isomorphic-git/isomorphic-git/issues/1650
+        localBranches = localBranches.concat({
+          name: currentBranchName,
+          trackingBranch: null,
+        });
+      }
       return {
         repoRoot,
         currentBranch:
@@ -149,6 +157,11 @@ export const branchForPathState = selectorFamily<string | null, string>({
     (filepath: string) =>
     ({ get }) => {
       const root = get(vcsRootForFile(filepath));
+      console.log(
+        `repo root for ${filepath}`,
+        root,
+        root && get(repoBranchesState(root))
+      );
       return root
         ? get(repoBranchesState(root)).currentBranch?.name || null
         : null;
@@ -450,6 +463,7 @@ export function useCheckoutBranch() {
         const openedFiles = snapshot.getLoadable(editorTabsState).getValue();
         const existingOpenedFile = await asyncFilter(async ({ filePath }) => {
           const exists = await fs.promises.exists(filePath); // should it be fs directly?
+          // the file content for files not open in the editor also need to be updated. TODO(fs.watch)
           if (exists) {
             await reloadFileFromDisk(filePath);
           }

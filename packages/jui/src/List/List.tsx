@@ -5,7 +5,7 @@ import { useList } from "./useList";
 import { ListItem } from "./ListItem";
 import { StyledList } from "./StyledList";
 import { useListState } from "./useListState";
-import { useObjectRef } from "@react-aria/utils";
+import { filterDOMProps, useObjectRef } from "@react-aria/utils";
 
 import { CollectionRefProps } from "@intellij-platform/core/Collections/useCollectionRef";
 import { Virtualizer } from "@react-aria/virtualizer";
@@ -87,6 +87,7 @@ export const List = React.forwardRef(function List<T extends object>(
         as={Virtualizer<Node<any>, any>}
         {...virtualizerProps}
         {...listProps}
+        {...filterDOMProps(props, { labelable: true })}
         fillAvailableSpace={fillAvailableSpace}
         className={className}
         ref={ref}

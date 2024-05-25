@@ -447,10 +447,12 @@ export function SearchEverywherePopup() {
                               </Item>
                             );
                           }
+                          const itemText = contributor.getItemText(item);
                           return (
                             <Item
                               key={key}
-                              textValue={contributor.getItemText(item)}
+                              textValue={itemText}
+                              aria-label={itemText}
                             >
                               {contributor.renderItem(item)}
                             </Item>

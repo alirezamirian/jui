@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.cypress.json",
+  "include": [
+    "cypress/e2e/**/*.ts",
+    "src/ForwardRefPatch.d.ts",
+    "cypress/cypress-plugin-snapshots-types.d.ts",
+    "cypress/support/**/*.ts"
+  ],
+  "exclude": ["cypress/support/component.tsx"]
+}

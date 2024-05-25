@@ -48,7 +48,9 @@ export const expandedKeysState = atom({
     key: "projectView.expandedKeys/default",
     get: ({ get }) =>
       new Set<Key>(
-        get(vcsRootsState).flatMap(({ dir }) => getParentPaths(dir).concat(dir))
+        get(vcsRootsState)
+          .flatMap(({ dir }) => getParentPaths(dir).concat(dir))
+          .concat(get(currentProjectState).path)
       ),
   }),
 });

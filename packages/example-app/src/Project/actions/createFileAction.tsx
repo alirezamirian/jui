@@ -46,7 +46,7 @@ export const createFileActionState = selector({
         .getLoadable(projectPopupManagerRefState)
         .getValue().current;
 
-      // TODO: open a dialog and let the user choose the destination
+      // TODO: open a dialog and let the user choose the destination if, multiple paths are active
       const destinationDir = (
         await fs.promises.stat(activePaths[0])
       ).isDirectory()
@@ -104,6 +104,13 @@ function NewFileNamePopup({
         // TODO: select it in the Project tool window, if it was created from the Project tool window
         close();
         editorManager.focus();
+        // Hacky approach to fix an edge case where the editor is not rendered already (no open tabs), and
+        // so will be focused with a little delay. For the focus to go back to the editor after AddFileToGitWindow
+        // is closed, without any extra focus management, we need to make sure the editor is focused before the
+        // modal window is opened, so it restores to the editor.
+        await waitUntil(
+          () => document.activeElement instanceof HTMLTextAreaElement
+        );
         if (repoDir) {
           windowManager?.open(({ close }) => (
             <AddFileToGitWindow filepath={filePath} close={close} />
@@ -244,4 +251,12 @@ function AddFileToGitWindow({
       />
     </ModalWindow>
   );
+}
+
+async function waitUntil(criteria: () => boolean, timeoutInMs = 1000) {
+  if (criteria() || timeoutInMs < 0) {
+    return;
+  }
+  await new Promise((resolve) => setTimeout(resolve, 50));
+  await waitUntil(criteria, timeoutInMs - 50);
 }

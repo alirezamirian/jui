@@ -10,7 +10,7 @@ import {
 } from "@intellij-platform/core";
 import { DefaultSuspense } from "./DefaultSuspense";
 import { Project } from "./Project/Project";
-import { SampleRepoInitializer } from "./SampleRepoInitializer";
+import { ProjectInitializer } from "./ProjectInitializer";
 import { fs, WaitForFs } from "./fs/fs";
 import { exampleAppKeymap } from "./exampleAppKeymap";
 import "./jetbrains-mono-font.css";
@@ -29,7 +29,7 @@ export const App = ({ height }: { height?: CSSProperties["height"] }) => {
     // TODO: add an error boundary
     <DefaultSuspense>
       <WaitForFs>
-        <SampleRepoInitializer>
+        <ProjectInitializer>
           <KeymapProvider keymap={exampleAppKeymap}>
             <RecoilRoot>
               <WindowManager>
@@ -39,7 +39,7 @@ export const App = ({ height }: { height?: CSSProperties["height"] }) => {
               </WindowManager>
             </RecoilRoot>
           </KeymapProvider>
-        </SampleRepoInitializer>
+        </ProjectInitializer>
       </WaitForFs>
     </DefaultSuspense>
   );

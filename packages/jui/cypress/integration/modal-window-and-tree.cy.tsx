@@ -1,6 +1,6 @@
 import React from "react";
 import { ModalWindow, styled, WindowLayout } from "@intellij-platform/core";
-import { SpeedSearchTreeSample } from "../src/story-components";
+import { SpeedSearchTreeSample } from "@intellij-platform/core/story-components";
 
 const StyledContainer = styled.div`
   box-sizing: border-box;
@@ -38,6 +38,6 @@ describe("ModalWindow containing Tree", () => {
 });
 
 function matchImageSnapshot(snapshotsName: string) {
-  cy.get("[data-loading-icon]").should("not.exist");
+  cy.get("[aria-busy=true]").should("not.exist");
   cy.percySnapshot(snapshotsName);
 }

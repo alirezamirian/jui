@@ -59,6 +59,7 @@ export const ProjectViewPane = (): React.ReactElement => {
     <DefaultSuspense>
       {treeState?.root && (
         <SpeedSearchTree
+          aria-label="Project structure tree"
           treeRef={treeRef}
           {...activePathsProviderProps}
           items={[treeState.root] as ProjectTreeNode[]}

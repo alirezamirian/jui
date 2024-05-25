@@ -24,7 +24,7 @@ export function useSvgIcon(
       }
       if (ref.current) {
         // For querying for icons that are not loaded yet. Especially useful for visual testing
-        ref.current.dataset.loadingIcon = "true";
+        ref.current.ariaBusy = "true";
       }
       const svg = await theme.getSvgIcon(path, selected).catch((e) => {
         if (fallbackPath) {
@@ -33,14 +33,13 @@ export function useSvgIcon(
         throw e;
       });
       if (svg) {
-        if (!unmounted && ref?.current) {
-          if (ref) {
-            ref.current?.querySelector("svg")?.remove();
-            const svgElement = document.createElement("svg");
-            ref.current?.appendChild(svgElement);
-            svgElement.outerHTML = makeIdsUnique(svg); // UNSAFE! Would require sanitization, or icon sources must be trusted.
-            delete ref.current?.dataset.loadingIcon;
-          }
+        const element = ref?.current;
+        if (!unmounted && element) {
+          element.querySelector("svg")?.remove();
+          const svgElement = document.createElement("svg");
+          element.appendChild(svgElement);
+          svgElement.outerHTML = makeIdsUnique(svg); // UNSAFE! Would require sanitization, or icon sources must be trusted.
+          element.ariaBusy = "false";
         }
       } else {
         console.error("Could not resolve icon:", path);

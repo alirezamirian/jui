@@ -5,6 +5,7 @@
       "node",
       "cypress",
       "cypress-real-events",
+      "cypress-plugin-steps",
       "@percy/cypress",
       "@testing-library/cypress"
     ]
@@ -13,7 +14,6 @@
     "**/*.cy.tsx",
     "src/ForwardRefPatch.d.ts",
     "cypress/cypress-plugin-snapshots-types.d.ts",
-    "cypress/cypress.d.ts",
-    "cypress/support/*.ts"
+    "cypress/support/component.tsx"
   ]
 }

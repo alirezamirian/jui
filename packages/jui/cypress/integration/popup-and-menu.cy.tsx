@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Button, Popup, PopupTrigger } from "@intellij-platform/core";
-import { MenuPopupContent } from "../src/Popup/story-helpers";
+import { MenuPopupContent } from "@intellij-platform/core/Popup/story-helpers";
 
 describe("Popup and menu integration", () => {
   it("lets user select menu items by mouse", () => {

@@ -98,6 +98,7 @@ export function CommitChangedFiles({
       )}
       {state && (
         <SpeedSearchTree
+          aria-label="Commit changes"
           treeRef={treeRef}
           items={state.rootNodes}
           selectionMode="multiple"

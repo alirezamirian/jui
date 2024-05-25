@@ -17,7 +17,10 @@ describe("ModalWindow", () => {
 
   it("it allows for navigating buttons with arrow keys", () => {
     cy.mount(<WithFooter />);
-    cy.findByRole("button", { name: "Ok" }).focus().realPress("ArrowLeft");
+    cy.findByRole("button", { name: "Ok" })
+      .focus()
+      .should("be.focused")
+      .realPress("ArrowLeft");
     cy.findByRole("button", { name: "Cancel" })
       .should("be.focused")
       .realPress("ArrowLeft"); // should wrap
@@ -130,6 +133,6 @@ function drag(from: { x: number; y: number }, to: { x: number; y: number }) {
 }
 
 function matchImageSnapshot(snapshotsName: string) {
-  cy.get("[data-loading-icon]").should("not.exist");
+  cy.get("[aria-busy=true]").should("not.exist");
   cy.percySnapshot(snapshotsName);
 }

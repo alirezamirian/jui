@@ -54,7 +54,11 @@ export const toolWindows: ToolWindowDescriptor[] = [
         <CommitToolWindow />
       </Suspense>
     ),
-    initialState: toolWindowState({ anchor: "left", isVisible: false }),
+    initialState: toolWindowState({
+      anchor: "left",
+      isSplit: true, // Default is false in the original impl.
+      isVisible: false,
+    }),
   },
   {
     id: VERSION_CONTROL_TOOLWINDOW_ID,

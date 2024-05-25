@@ -20,6 +20,7 @@ export const VcsActionIds = {
   GROUP_CHANGES_VIEW_POPUP_MENU: "ChangesViewPopupMenu", // Not used yet
   GROUP_BY_DIRECTORY: "ChangesView.GroupBy.Directory",
   GIT_ADD: "Git.Add",
+  GIT_INIT: "Git.Init",
   GIT_CREATE_NEW_BRANCH: "Git.CreateNewBranch",
   GIT_BRANCHES: "Git.Branches",
 

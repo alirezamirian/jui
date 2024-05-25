@@ -16,6 +16,7 @@ import { useTreeVirtualizer } from "../useTreeVirtualizer";
 import { TreeContext } from "../TreeContext";
 import { useSpeedSearchTree } from "./useSpeedSearchTree";
 import { SpeedSearchTreeNode } from "./SpeedSearchTreeNode";
+import { filterDOMProps } from "@react-aria/utils";
 
 export type SpeedSearchTreeProps<T extends object> = TreeProps<T> &
   SpeedSearchProps &
@@ -66,6 +67,7 @@ export const SpeedSearchTree = React.forwardRef(
             fillAvailableSpace={fillAvailableSpace}
             {...virtualizerProps}
             {...treeProps}
+            {...filterDOMProps(props, { labelable: true })}
             style={style}
             className={className}
           >

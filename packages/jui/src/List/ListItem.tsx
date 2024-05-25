@@ -36,6 +36,7 @@ export function ListItem<T>({ item, children }: ListItemProps<T>) {
       disabled={isDisabled}
       aria-disabled={isDisabled}
       aria-selected={isSelected}
+      aria-label={item["aria-label"]}
       {...pressProps}
       ref={ref}
     >

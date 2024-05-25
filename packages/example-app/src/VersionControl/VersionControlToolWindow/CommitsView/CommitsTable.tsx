@@ -58,6 +58,7 @@ export function CommitsTable() {
         )}
         {rows && rows.length > 0 && (
           <List
+            aria-label="Commits list"
             items={rows}
             fillAvailableSpace
             selectionMode="multiple"

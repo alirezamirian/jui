@@ -6,6 +6,9 @@
       "path": "tsconfig.cypress.json"
     },
     {
+      "path": "tsconfig.cypress-e2e.json"
+    },
+    {
       "path": "tsconfig.stories.json"
     },
     {
