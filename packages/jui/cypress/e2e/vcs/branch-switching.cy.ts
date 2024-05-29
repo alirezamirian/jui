@@ -33,7 +33,10 @@ describe("vcs => branch switching", () => {
 
   it("can switch branches updating files in project view and the editor", () => {
     cy.step("Check files and their content on branch-2");
-    cy.findTreeNodeInProjectView("test-on-branch-2.ts").dblclick();
+    cy.findTreeNodeInProjectView("test-on-branch-2.ts")
+      .click() // some extra interactions to fix some flakiness in CI env
+      .focused()
+      .dblclick();
     cy.contains("test-on-branch-2.ts content on branch-2");
     cy.findTreeNodeInProjectView("test-on-both-branches.ts").dblclick();
     cy.contains("test-on-both-branches.ts content on branch-2");
@@ -41,8 +44,8 @@ describe("vcs => branch switching", () => {
     cy.step("Switch to branch-1");
     cy.focused(); // waiting for the editor (or whatever element) to get focused, so the keyboard events can be handled
     cy.searchAndInvokeAction("Branches", "Branches...");
-    cy.contains("branch-1").realClick();
-    cy.findByRole("menuitem", { name: "Checkout" }).realClick();
+    cy.contains("branch-1").click();
+    cy.findByRole("menuitem", { name: "Checkout" }).click();
 
     cy.step("Check files and their content on branch-1");
     cy.findTreeNodeInProjectView("test-on-branch-2.ts").should("not.exist");

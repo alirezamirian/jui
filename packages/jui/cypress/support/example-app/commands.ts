@@ -59,7 +59,7 @@ function initialize(
     },
   });
   // Without this, the keyboard events in potential next commands may get triggered before the app is fully loaded.
-  cy.focused();
+  cy.focused({ timeout: 8000 });
 }
 
 function searchAndInvokeAction(

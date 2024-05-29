@@ -9,7 +9,7 @@ it("commits changes", () => {
   // Commit toolwindow to the editor makes the button change classes (going from default to non-default variant),
   // which prevents cypress from finding the element after it checks it's accessible for clicking.
   cy.contains("test.ts content on master");
-  cy.contains("Commit").realClick();
+  cy.contains("Commit").click();
   cy.findByRole("tree", { name: "Commit changes tree" })
     .findAllByRole("checkbox", { selected: true })
     .should("have.length", 0);

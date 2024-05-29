@@ -253,7 +253,7 @@ function AddFileToGitWindow({
   );
 }
 
-async function waitUntil(criteria: () => boolean, timeoutInMs = 1000) {
+async function waitUntil(criteria: () => boolean, timeoutInMs = 2000) {
   if (criteria() || timeoutInMs < 0) {
     return;
   }

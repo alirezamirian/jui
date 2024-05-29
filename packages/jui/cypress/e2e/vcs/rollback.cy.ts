@@ -21,7 +21,7 @@ describe("vcs => rollback", () => {
     cy.findTreeNodeInProjectView("existing-file.ts");
     cy.findTreeNodeInProjectView("new-file.ts");
     cy.findTreeNodeInProjectView("removed-file.ts").should("not.exist");
-    cy.contains("Commit").realClick();
+    cy.contains("Commit").click();
     cy.findTreeNodeInChangesView("existing-file.ts");
     cy.findTreeNodeInChangesView("new-file.ts");
     cy.findTreeNodeInChangesView("removed-file.ts");
@@ -29,7 +29,7 @@ describe("vcs => rollback", () => {
     cy.step("Rollback (without deletion)");
     cy.findTreeNodeInChangesView("Changes").focus();
     cy.searchAndInvokeAction("rollback");
-    cy.findByRole("button", { name: "Rollback" }).realClick();
+    cy.findByRole("button", { name: "Rollback" }).click();
 
     cy.step("Verify the changes are reverted");
     cy.findTreeNodeInProjectView("existing-file.ts");
@@ -52,7 +52,7 @@ describe("vcs => rollback", () => {
     cy.findTreeNodeInProjectView("existing-file.ts");
     cy.findTreeNodeInProjectView("new-file.ts");
     cy.findTreeNodeInProjectView("removed-file.ts").should("not.exist");
-    cy.contains("Commit").realClick();
+    cy.contains("Commit").click();
     // TODO: check file status colors https://stackoverflow.com/questions/66163312/how-to-judge-if-a-color-is-green
     cy.findTreeNodeInChangesView("existing-file.ts");
     cy.findTreeNodeInChangesView("new-file.ts");
@@ -61,9 +61,9 @@ describe("vcs => rollback", () => {
     cy.step("Rollback (without deletion)");
     cy.searchAndInvokeAction("rollback");
     cy.findByRole("checkbox", { name: /Delete local copies/ })
-      .realClick()
+      .click()
       .should("be.checked");
-    cy.findByRole("button", { name: "Rollback" }).realClick();
+    cy.findByRole("button", { name: "Rollback" }).click();
 
     cy.step("Verify the files are reverted, and new files are deleted");
     cy.findTreeNodeInProjectView("existing-file.ts");
@@ -83,15 +83,15 @@ describe("vcs => rollback", () => {
 
     cy.step("Verify initial state");
     cy.findTreeNodeInProjectView("test.ts");
-    cy.contains("Commit").realClick();
+    cy.contains("Commit").click();
     cy.findTreeNodeInChangesView("test.ts");
 
     cy.step("Rollback (deleting local copies)");
     cy.searchAndInvokeAction("rollback");
     cy.findByRole("checkbox", { name: /Delete local copies/ })
-      .realClick()
+      .click()
       .should("be.checked");
-    cy.findByRole("button", { name: "Rollback" }).realClick();
+    cy.findByRole("button", { name: "Rollback" }).click();
 
     cy.step("Verify the file is deleted");
     cy.findTreeNodeInProjectView("test.ts").should("not.exist");
@@ -104,12 +104,12 @@ describe("vcs => rollback", () => {
 
     cy.step("Verify initial state");
     cy.findTreeNodeInProjectView("test.ts");
-    cy.contains("Commit").realClick();
+    cy.contains("Commit").click();
     cy.findTreeNodeInChangesView("test.ts");
 
     cy.step("Rollback (without deletion)");
     cy.searchAndInvokeAction("rollback");
-    cy.findByRole("button", { name: "Rollback" }).realClick();
+    cy.findByRole("button", { name: "Rollback" }).click();
 
     cy.step("Verify the added file still exists");
     cy.findTreeNodeInProjectView("test.ts");

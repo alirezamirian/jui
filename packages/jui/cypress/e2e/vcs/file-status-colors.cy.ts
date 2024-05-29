@@ -33,7 +33,7 @@ describe("vcs => file status colors", () => {
     );
 
     cy.step("Colors in Commit tool window");
-    cy.contains("Commit").realClick();
+    cy.contains("Commit").click();
     cy.findTreeNodeInChangesView("modified-file.ts").should(
       "have.fileStatusColor",
       "modified"
