@@ -104,13 +104,13 @@ jobs:
           # Percy's nonce is supposed to be set to run id by default, but it's not. Plus, appending run_number makes it more reliable in case of rerunning
           PERCY_PARALLEL_NONCE: ${{ github.run_id }}-${{ github.run_number }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-        run: yarn run cypress:component --record --parallel
+        run: yarn run cypress:component --record --parallel --group component
 
       - name: Run Cypress Tests (without percy) ✅
         if: ${{ !(env.IS_PR_JUST_MERGED == 'true' || env.IS_PR_WITH_PERCY == 'true') }}
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-        run: yarn run cypress:component --record --parallel
+        run: yarn run cypress:component --record --parallel --group component
 
   cypress_tests_e2e:
     needs: install_and_cache_dependencies
@@ -151,14 +151,14 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         run: |
           yarn workspace jui-example-app run serve &
-          yarn run cypress:e2e --record --parallel
+          yarn run cypress:e2e --record --parallel --group e2e
       - name: Run Cypress Tests (without percy) ✅
         if: ${{ !(env.IS_PR_JUST_MERGED == 'true' || env.IS_PR_WITH_PERCY == 'true') }}
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         run: |
           yarn workspace jui-example-app run serve &
-          yarn run cypress:e2e --record --parallel
+          yarn run cypress:e2e --record --parallel --group e2e
 
   # just because there is no way to add a required status check based on a matrix job. In order to avoid adding
   # individual status check for each parallel job. Based on this suggestion:
