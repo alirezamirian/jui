@@ -7,7 +7,7 @@ import {
   Tree,
   WindowLayout,
 } from "@intellij-platform/core";
-import darculaThemeJson from "../themes/darcula.theme.json";
+import darculaThemeJson from "../../themes/darcula.theme.json";
 import { Item } from "@react-stately/collections";
 
 describe("integration of modal window with Tree components", () => {

@@ -24,6 +24,7 @@ export const ActionButton = ({
   const actionButton = (
     <IconButton
       isDisabled={action.isDisabled}
+      aria-label={action.title}
       {...otherProps}
       onPress={(e) => {
         action?.perform();

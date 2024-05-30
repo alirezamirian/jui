@@ -74,7 +74,7 @@ describe("SpeedSearchTree", () => {
 });
 
 function matchImageSnapshot(snapshotsName: string) {
-  cy.get("[data-loading-icon]", { timeout: 10000 }).should("not.exist");
+  cy.get("[aria-busy=true]", { timeout: 10000 }).should("not.exist");
   cy.get("#component-container").toMatchImageSnapshot({
     name: snapshotsName,
     screenshotConfig: { padding: [25, 0] },

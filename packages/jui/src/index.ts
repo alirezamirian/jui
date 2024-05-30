@@ -26,6 +26,7 @@ export * from "./Tabs";
 export * from "./Theme";
 export * from "./Checkbox";
 export * from "./Button";
+export * from "./ButtonGroup";
 export * from "./TreeCheckboxes";
 export * from "./ThreeViewSplitter/ThreeViewSplitter";
 export * from "./Balloon";
@@ -39,6 +40,7 @@ export * from "./Popup";
 export * from "./InputField";
 export * from "./SearchInput";
 export * from "./AlertDialog";
+export * from "./Mnemonic";
 
 export { type Bounds } from "./Overlay";
 export { type TextRange } from "./TextRange";

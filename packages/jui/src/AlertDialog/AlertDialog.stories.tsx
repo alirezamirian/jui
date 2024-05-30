@@ -25,12 +25,7 @@ export default {
   argTypes: {},
 } as Meta<AlertDialogProps>;
 
-const render = (props: AlertDialogProps) => {
-  return <AlertDialog {...props} />;
-};
-
 export const Information: StoryObj<AlertDialogProps> = {
-  render,
   args: {
     type: "information",
     heading: "Information",
@@ -40,7 +35,6 @@ export const Information: StoryObj<AlertDialogProps> = {
 };
 
 export const Question: StoryObj<AlertDialogProps> = {
-  render,
   args: {
     type: "question",
     heading: "Delete",
@@ -55,7 +49,6 @@ export const Question: StoryObj<AlertDialogProps> = {
 };
 
 export const Warning: StoryObj<AlertDialogProps> = {
-  render,
   args: {
     type: "warning",
     heading: "Process 'storybook:start' Is Running",
@@ -72,7 +65,6 @@ export const Warning: StoryObj<AlertDialogProps> = {
 };
 
 export const Error: StoryObj<AlertDialogProps> = {
-  render,
   args: {
     type: "error",
     heading: "Failed to Re-Run Refactoring",
@@ -82,7 +74,6 @@ export const Error: StoryObj<AlertDialogProps> = {
 };
 
 export const WithHelpIcon: StoryObj<AlertDialogProps> = {
-  render,
   args: {
     helpButton: (
       <TooltipTrigger tooltip={<HelpTooltip helpText="Show Help Contents" />}>
@@ -101,7 +92,6 @@ export const WithHelpIcon: StoryObj<AlertDialogProps> = {
 };
 
 export const WithCheckbox: StoryObj<AlertDialogProps> = {
-  render,
   args: {
     type: "question",
     heading: "Confirm Exit",
@@ -117,7 +107,6 @@ export const WithCheckbox: StoryObj<AlertDialogProps> = {
 };
 
 export const WithSetWidth: StoryObj<AlertDialogProps> = {
-  render,
   args: {
     type: "question",
     heading: "Delete?",

@@ -2,6 +2,7 @@ import React from "react";
 import { composeStories } from "@storybook/react";
 import * as stories from "./Button.stories";
 import { createGlobalStyle } from "styled-components";
+import { Button } from "./Button";
 
 const { SimpleUsage: SimpleUsageStory } = composeStories(stories);
 
@@ -79,11 +80,34 @@ describe("Button", () => {
     cy.focused().should("have.id", "focused-element");
     cy.wrap(onPress).should("be.calledOnce");
   });
+
+  it("supports mnemonic", () => {
+    const onPress = cy.stub();
+    cy.mount(
+      <Button mnemonic="d" onPress={onPress}>
+        Disconnect
+      </Button>
+    );
+    cy.window().focus();
+    cy.realPress(["Alt", "d"]);
+    cy.wrap(onPress).should("be.calledOnceWith");
+  });
+  it("Can't be triggered via mnemonic, if disabled", () => {
+    const onPress = cy.stub();
+    cy.mount(
+      <Button mnemonic="d" isDisabled onPress={onPress}>
+        Disconnect
+      </Button>
+    );
+    cy.window().focus();
+    cy.realPress(["Alt", "d"]);
+    cy.wrap(onPress).should("not.be.calledOnceWith");
+  });
 });
 
 function matchImageSnapshot(snapshotsName: string) {
   // NOTE: right now focus state is lost in percy snapshots. Seems like an issue in percy at the moment, since the
   // element is properly focused before and after percy snapshot.
-  cy.get("[data-loading-icon]").should("not.exist");
+  cy.get("[aria-busy=true]").should("not.exist");
   cy.percySnapshot(snapshotsName);
 }

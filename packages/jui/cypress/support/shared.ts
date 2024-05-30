@@ -24,18 +24,19 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
+import "cypress-real-events/support";
 import "cypress-plugin-snapshots/commands";
 import "@testing-library/cypress/add-commands";
+import "@oreillymedia/cypress-playback/addCommands";
+import "cypress-plugin-xhr-toggle";
+import "@percy/cypress";
+import "cypress-plugin-steps";
 import { isMac } from "@react-aria/utils";
-
-Cypress.Commands.add("ctrlClick", { prevSubject: true }, (subject, options) => {
-  cy.wrap(subject).click({ ...options, metaKey: isMac(), ctrlKey: !isMac() });
-});
 
 // resize commands
 declare global {
   namespace Cypress {
-    interface Chainable {
+    interface Chainable<Subject> {
       /**
        * Custom command to perform resize action on an element with resize handle on `side`
        * @example cy.resizeFromSide('left', 50) // increase size by 50 pixels, using left resize handle.
@@ -53,9 +54,25 @@ declare global {
       move(x: number, y: number): Chainable<JQuery<HTMLElement>>;
 
       isWithinViewport(): Chainable<JQuery<HTMLElement>>;
+
+      /**
+       * Command+click on mac, Ctrl+click, otherwise
+       */
+      ctrlClick(
+        options?: Partial<
+          Omit<
+            Cypress.ClickOptions,
+            "cmdKey" | "ctrlKey" | "commandKey" | "controlKey" | "metaKey"
+          >
+        >
+      ): Chainable<Subject>;
     }
   }
 }
+
+Cypress.Commands.add("ctrlClick", { prevSubject: true }, (subject, options) => {
+  cy.wrap(subject).click({ ...options, metaKey: isMac(), ctrlKey: !isMac() });
+});
 
 Cypress.Commands.add(
   "resizeFromSide",
@@ -72,6 +89,23 @@ Cypress.Commands.add(
       .realMouseUp();
   }
 );
+
+const originalDispatchEvent = window.dispatchEvent;
+
+Cypress.Screenshot.defaults({
+  onBeforeScreenshot: () => {
+    window.dispatchEvent = (e) => {
+      console.log(
+        "Ignored event dispatched during snapshot testing. That's to prevent overlays from getting closed on scroll event",
+        e
+      );
+      return false;
+    };
+  },
+  onAfterScreenshot: () => {
+    window.dispatchEvent = originalDispatchEvent;
+  },
+});
 
 Cypress.Commands.add("move", { prevSubject: "element" }, (subject, x, y) => {
   return cy

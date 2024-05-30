@@ -801,6 +801,6 @@ describe("ContextMenu", () => {
 });
 
 function matchImageSnapshot(snapshotsName: string) {
-  cy.get("[data-loading-icon]").should("not.exist");
+  cy.get("[aria-busy=true]").should("not.exist");
   cy.percySnapshot(snapshotsName);
 }

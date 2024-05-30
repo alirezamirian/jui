@@ -8,7 +8,7 @@ import {
   sampleRepos,
   useRefreshCurrentProjectFiles,
 } from "../Project/project.state";
-import { cloneRepo, isSuccessfullyCloned } from "../SampleRepoInitializer";
+import { cloneRepo, isSuccessfullyCloned } from "../ProjectInitializer";
 import React from "react";
 import { useRefreshVcsRoots } from "./file-status.state";
 import { useRecoilCallback } from "recoil";

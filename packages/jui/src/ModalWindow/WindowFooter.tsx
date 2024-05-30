@@ -1,5 +1,6 @@
 import { styled } from "@intellij-platform/core/styled";
 import React from "react";
+import { ButtonGroup } from "@intellij-platform/core/ButtonGroup";
 
 const StyledFooter = styled.div<{ hasBorder?: boolean }>`
   padding: 0.625rem 0.875rem;
@@ -30,7 +31,9 @@ export function WindowFooter({
    */
   left?: React.ReactNode;
   /**
-   * The content to go to the right side the footer. {@link Button}s are usually used inside the right content
+   * The content to go to the right side the footer.
+   * {@link Button}s are usually used inside the right content.
+   * A {@link ButtonGroup} is rendered around the content to allow for keyboard navigation with arrow keys.
    */
   right?: React.ReactNode;
   /**
@@ -41,7 +44,9 @@ export function WindowFooter({
   return (
     <StyledFooter hasBorder={hasBorder}>
       <StyledFooterSide>{left}</StyledFooterSide>
-      <StyledFooterSide>{right}</StyledFooterSide>
+      <StyledFooterSide>
+        <ButtonGroup>{right}</ButtonGroup>
+      </StyledFooterSide>
     </StyledFooter>
   );
 }

@@ -11,6 +11,8 @@ import {
   StyledDefaultButton,
   StyledIconButton,
 } from "@intellij-platform/core/Button/StyledButton";
+import { MnemonicTrigger } from "@intellij-platform/core/Mnemonic";
+import { PressEvent } from "@react-types/shared/src/events";
 
 type ButtonVariant = "default" | "icon";
 export interface ButtonProps extends AriaButtonProps {
@@ -22,7 +24,20 @@ export interface ButtonProps extends AriaButtonProps {
 
   form?: ButtonHTMLAttributes<HTMLButtonElement>["form"];
   style?: CSSProperties;
+  /**
+   * A character to be used as {@link https://jetbrains.design/intellij/principles/mnemonics/ mnemonic} for the button
+   * It will be shown as underlined in button text, when mnemonic is activated (by pressing Alt)
+   * Note: if you use mnemonic, and the direct child of the button is not a string, you should use `MnemonicText`
+   * to render the button text, to have the underlining behavior.
+   */
+  mnemonic?: string;
   className?: string;
+
+  /**
+   * Called when the button is pressed, or triggered via mnemonic. If mnemonic is used, there won't be any event
+   * passed to onPress callback.
+   */
+  onPress?: (e?: PressEvent) => void;
 }
 
 const variants: { [key in ButtonVariant]: typeof StyledButton } = {
@@ -38,7 +53,6 @@ const variants: { [key in ButtonVariant]: typeof StyledButton } = {
  * behaviour is different from what is explained here: https://jetbrains.github.io/ui/controls/button/#16
  * Cmd+Enter should always trigger onPress. Plus, maybe it should work independent of "form" being used? or maybe it's
  * not a big deal to expect an ancestor "form" element, when variant is "default"?
- * - Support for mnemonic
  * - "Default" style differences in Windows.
  * - Gradient colors (low hanging fruit, but negligible added value).
  *
@@ -55,7 +69,7 @@ const variants: { [key in ButtonVariant]: typeof StyledButton } = {
  *
  */
 export const Button: React.FC<ButtonProps> = React.forwardRef(function Button(
-  { variant, style, className, ...props }: ButtonProps,
+  { variant, style, className, mnemonic, ...props }: ButtonProps,
   forwardedRef: ForwardedRef<HTMLButtonElement>
 ) {
   const ref = useObjectRef(forwardedRef);
@@ -71,7 +85,17 @@ export const Button: React.FC<ButtonProps> = React.forwardRef(function Button(
       className={className}
       ref={ref}
     >
-      {props.children}
+      {mnemonic ? (
+        <MnemonicTrigger
+          mnemonic={mnemonic}
+          isDisabled={props.isDisabled}
+          onTriggered={props.onPress}
+        >
+          {props.children}
+        </MnemonicTrigger>
+      ) : (
+        props.children
+      )}
     </Component>
   );
 });

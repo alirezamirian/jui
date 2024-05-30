@@ -1,6 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 import { ChangesViewSplitter } from "./ChangesViewSplitter";
+import { vcsRootsState } from "../../file-status.state";
+import { useRecoilValue } from "recoil";
+import { ChangesViewZeroState } from "./ChangesViewZeroState";
 
 const StyledContainer = styled.div`
   display: flex;
@@ -8,8 +11,11 @@ const StyledContainer = styled.div`
   height: 100%;
 `;
 
-export const ChangesViewPane = () => (
-  <StyledContainer>
-    <ChangesViewSplitter />
-  </StyledContainer>
-);
+export const ChangesViewPane = () => {
+  const vcsRoots = useRecoilValue(vcsRootsState);
+  return (
+    <StyledContainer>
+      {vcsRoots.length > 0 ? <ChangesViewSplitter /> : <ChangesViewZeroState />}
+    </StyledContainer>
+  );
+};

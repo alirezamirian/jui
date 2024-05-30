@@ -1,18 +1,19 @@
 import { selector, selectorFamily, useRecoilCallback } from "recoil";
 import path from "path";
 import { groupBy } from "ramda";
-import { checkout, resetIndex } from "isomorphic-git";
+import git, { checkout, resetIndex } from "isomorphic-git";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 import { dirContentState, reloadFileFromDiskCallback } from "../../fs/fs.state";
 import { fs } from "../../fs/fs";
+import { findRootPaths } from "../../path-utils";
+import { editorManagerState } from "../../Editor/editor.state";
 import {
   repoStatusState,
   useRefreshFileStatus,
   vcsRootForFile,
   vcsRootsState,
 } from "../file-status.state";
-import { findRootPaths } from "../../path-utils";
 import { AnyChange, Change } from "./Change";
 
 const repoChangesState = selectorFamily<AnyChange[], string>({
@@ -104,13 +105,36 @@ export const useRollbackChanges = () => {
               )
             );
             if (toCheckout.length > 0) {
-              await checkout({
-                fs,
-                dir: repoRoot,
-                force: true,
-                filepaths: toCheckout.map(
-                  ({ relativePath, change: { type } }) => relativePath
-                ),
+              const resolvedHead = await git
+                .resolveRef({ fs, dir: repoRoot, ref: "HEAD" })
+                .catch(() => null);
+              if (resolvedHead) {
+                await checkout({
+                  fs,
+                  dir: repoRoot,
+                  force: true,
+                  filepaths: toCheckout.map(
+                    ({ relativePath, change: { type } }) => relativePath
+                  ),
+                });
+              } else {
+                // if the repository is just created, HEAD is not resolved, and checkout() throws, so we delete files
+                // manually in that case.
+                // TODO: another use case is detached HEAD, and it may need to be handled for non-addition changes?
+                await Promise.all(
+                  toCheckout
+                    .filter(({ change }) => change.type === "ADDED")
+                    .map(({ change }) => {
+                      const fullPath = Change.path(change);
+                      return fs.promises.unlink(fullPath);
+                    })
+                );
+              }
+            }
+            if (deleteAddedFiles) {
+              const editor = await snapshot.getPromise(editorManagerState);
+              changes.filter(Change.isAddition).forEach((change) => {
+                editor.closePath(Change.path(change)); // FIXME(fs.watch)
               });
             }
 
@@ -135,8 +159,8 @@ export const useRollbackChanges = () => {
               items.map(async ({ relativePath, change }) => {
                 const fullPath = Change.path(change);
                 await reloadFileFromDisk(fullPath); // Since fileContent is an atom, we set the value. Could be a selector that we would refresh
-                await updateFileStatus(fullPath);
                 await resetIndex({ fs, dir: repoRoot, filepath: relativePath });
+                await updateFileStatus(fullPath);
               })
             );
           })

@@ -316,7 +316,7 @@ export const WithFooter: StoryObj<ModalWindowProps> = {
             right={
               <>
                 <Button autoFocus>Cancel</Button>
-                <Button variant="default">OK</Button>
+                <Button variant="default">Ok</Button>
               </>
             }
           />

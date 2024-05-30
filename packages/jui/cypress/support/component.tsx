@@ -1,3 +1,4 @@
+/// <reference types="@types/webpack-env" />
 // ***********************************************************
 // This example support/index.ts is processed and
 // loaded automatically before your test files.
@@ -13,15 +14,21 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-import "@percy/cypress";
-import "cypress-real-events/support";
-import "./commands";
+import "./shared";
 
 import React, { useEffect } from "react";
 import { setProjectAnnotations } from "@storybook/react";
 import { mount, MountOptions } from "cypress/react";
 import { Theme, ThemeProvider } from "@intellij-platform/core";
 import sbPreview from "../../.storybook/preview";
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      mount: typeof mount;
+    }
+  }
+}
 
 const requireTheme = require.context("../../themes", false, /\.theme\.json$/);
 const themes: Theme[] = requireTheme.keys().map((themeFile: string) => {
@@ -44,23 +51,6 @@ const TestThemeProvider = ({
   });
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 };
-
-const originalDispatchEvent = window.dispatchEvent;
-
-Cypress.Screenshot.defaults({
-  onBeforeScreenshot: () => {
-    window.dispatchEvent = (e) => {
-      console.log(
-        "Ignored event dispatched during snapshot testing. That's to prevent overlays from getting closed on scroll event",
-        e
-      );
-      return false;
-    };
-  },
-  onAfterScreenshot: () => {
-    window.dispatchEvent = originalDispatchEvent;
-  },
-});
 
 Cypress.Commands.add(
   "mount",

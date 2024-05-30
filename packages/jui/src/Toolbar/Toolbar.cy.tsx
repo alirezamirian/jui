@@ -240,7 +240,7 @@ function checkOverflowPopupIsHidden(buttonNameToCheckBasedOn = "Expand All") {
 
 function matchImageSnapshot(snapshotsName: string) {
   // with percy
-  cy.get("[data-loading-icon]").should("not.exist");
+  cy.get("[aria-busy=true]").should("not.exist");
   cy.percySnapshot(snapshotsName);
 
   // or local snapshot testing

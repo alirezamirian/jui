@@ -57,8 +57,11 @@ const StyledFrame = styled.div`
 `;
 
 const StyledLine = styled.div`
-  line-height: 2;
-  padding-left: 0.5rem;
+  &:not(:empty) {
+    line-height: 1.5;
+    padding-left: 0.375rem;
+    margin-bottom: 0.75rem;
+  }
 `;
 
 export function RollbackWindow() {
@@ -203,7 +206,7 @@ export function RollbackWindow() {
           <>
             <div
               style={{
-                padding: "0 .75rem",
+                padding: ".5rem 0.75rem 0",
                 display: "flex",
                 flexDirection: "column",
               }}
@@ -215,6 +218,7 @@ export function RollbackWindow() {
                 isDisabled={!atLeastOneNewFileSelected}
                 isSelected={deleteAddedFiles}
                 onChange={setDeleteAddedFiles}
+                mnemonic="D"
               >
                 Delete local copies of the added files
               </Checkbox>
@@ -222,9 +226,13 @@ export function RollbackWindow() {
             <WindowLayout.Footer
               right={
                 <>
-                  <Button onPress={close}>Cancel</Button>
+                  <Button onPress={close} mnemonic="C">
+                    Close
+                  </Button>
                   <Button
                     variant="default"
+                    mnemonic="R"
+                    isDisabled={includedChanges.length === 0}
                     onPress={() => {
                       rollbackChanges(includedChanges, deleteAddedFiles)
                         .catch((e) => {

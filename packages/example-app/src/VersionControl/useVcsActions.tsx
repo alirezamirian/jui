@@ -13,15 +13,21 @@ import { VcsActionIds } from "./VcsActionIds";
 import { CreateNewBranchWindow } from "./Branches/CreateNewBranchWindow";
 import { useExistingLatestRecoilValue } from "../recoil-utils";
 import { gitAddActionSelector } from "./actions/gitAddAction";
+import { gitInitActionSelector } from "./actions/gitInitAction";
+import { useRecoilValue } from "recoil";
+import { vcsRootsState } from "./file-status.state";
 
 export function useVcsActions(): ActionDefinition[] {
   const popupManager = usePopupManager();
   const windowManager = useWindowManager();
-
   const [gitAddAction] = useExistingLatestRecoilValue(gitAddActionSelector);
+  const [gitInitAction] = useExistingLatestRecoilValue(gitInitActionSelector);
   return [
     ...useChangesViewActionDefinitions(),
     gitAddAction,
+    // not including git init action if there is at least one git root, because the action is not fully implemented
+    // and doesn't allow selecting the directory to initialize as a git repository. FIXME
+    ...(useRecoilValue(vcsRootsState).length === 0 ? [gitInitAction] : []),
     {
       id: VcsActionIds.GIT_CREATE_NEW_BRANCH,
       title: "New Branch\u2026",

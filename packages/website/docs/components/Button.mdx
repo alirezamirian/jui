@@ -12,13 +12,13 @@ Standalone [Button](https://jetbrains.github.io/ui/controls/button/) with a text
 
 - Support for `default` button UI
 - Focus management options (`preventFocusOnPress`, `excludeFromTabOrder`)
+- Support for mnemonics.
 
 #### Remaining
 
 - [ ] [Default button behaviour](https://jetbrains.github.io/ui/controls/button/#default) is not implemented yet. It's
       just the appearance at the moment.
 - [ ] Platform Specific UI. It's based on Mac UI at the moment.
-- [ ] Support for mnemonics.
 
 ```jsx live themed
 <>
@@ -37,6 +37,9 @@ Standalone [Button](https://jetbrains.github.io/ui/controls/button/) with a text
   <br />
   <Button preventFocusOnPress>Prevent focus on press</Button> <br />
   <br />
+  <Button mnemonic="W" onPress={() => alert("Button triggered by mnemonics")}>
+    With Mnemonics
+  </Button> <br />
 </>
 ```
 

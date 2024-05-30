@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { sampleRepo } from "./Project/project.state";
-import { fs } from "./fs/fs";
-import { clone } from "isomorphic-git";
+import path from "path";
+import git, { clone } from "isomorphic-git";
 import http from "isomorphic-git/http/web";
 import styled from "styled-components";
 import { WINDOW_SHADOW } from "@intellij-platform/core";
+import { defaultProject, sampleRepo } from "./Project/project.state";
+import { fs } from "./fs/fs";
+import { ensureDir } from "./fs/fs-utils";
 
 const StyledDialog = styled.div`
   position: absolute;
@@ -49,27 +51,47 @@ export async function isSuccessfullyCloned(dir: string) {
   return true;
 }
 
-export const SampleRepoInitializer: React.FC = ({ children }) => {
+export const ProjectInitializer = ({
+  children,
+  withSampleRepo = !location.search.includes("clone=false"),
+}: {
+  withSampleRepo?: boolean;
+  children?: React.ReactNode;
+}) => {
   const [state, setState] = useState<
     "error" | "cloning" | "uninitialized" | "initialized"
   >("uninitialized");
   useEffect(() => {
-    async function init(dir: string, repoUrl: string) {
+    async function ensureSampleRepo(dir: string, repoUrl: string) {
       if (!(await isSuccessfullyCloned(dir))) {
         setState("cloning");
         await cloneRepo({ dir, url: repoUrl });
       }
     }
-
-    init(sampleRepo.path, sampleRepo.url)
-      .then(() => {
+    // noinspection JSIgnoredPromiseFromCall: error handling done in the function
+    init();
+    async function init() {
+      await ensureDir(fs.promises, defaultProject.path);
+      const externalInit = (window as any).INITIALIZE_APP; // Giving a chance for external fs initialization. Used in e2e tests
+      try {
+        if (externalInit) {
+          console.log("external initialization...");
+          await externalInit({
+            fs,
+            git,
+            path,
+            projectDir: defaultProject.path,
+          });
+        } else if (withSampleRepo) {
+          await ensureSampleRepo(sampleRepo.path, sampleRepo.url);
+        }
         console.log("demo repo initialized");
         setState("initialized");
-      })
-      .catch((e) => {
+      } catch (e) {
         console.error("could not initialize the demo repo", e);
         setState("error");
-      });
+      }
+    }
   }, []);
 
   if (state === "uninitialized") {

@@ -32,6 +32,6 @@ function testTheme(theme: Theme) {
 }
 
 function matchImageSnapshot(snapshotsName: string) {
-  cy.get("[data-loading-icon]", { timeout: 10000 }).should("not.exist");
+  cy.get("[aria-busy=true]", { timeout: 10000 }).should("not.exist");
   cy.percySnapshot(snapshotsName);
 }

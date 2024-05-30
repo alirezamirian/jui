@@ -92,6 +92,8 @@ const StyledInput = styled(Input)`
  *
  * Caveat: If the width is not set (either explicitly or via the entailing layout), the width of the input will change when clear button shows/hides.
  *
+ * @see Input
+ * @see InputField
  */
 export const SearchInput = React.forwardRef(function SearchInput(
   {

@@ -7,7 +7,7 @@ import {
   toolWindowState,
   DefaultToolWindows,
 } from "@intellij-platform/core";
-import darculaThemeJson from "../themes/darcula.theme.json";
+import darculaThemeJson from "../../themes/darcula.theme.json";
 import { SpeedSearchTreeSample } from "@intellij-platform/core/story-components";
 
 const window = (id: string) => ({

@@ -1,6 +1,7 @@
 import React from "react";
 import { composeStories } from "@storybook/react";
 import * as stories from "./Checkbox.stories";
+import { Checkbox } from "./Checkbox";
 
 const { Default } = composeStories(stories);
 
@@ -86,9 +87,35 @@ describe("Checkbox", () => {
     cy.wrap(onChange).should("be.calledWith", false);
     matchImageSnapshot("Checkbox-indeterminate-2");
   });
+
+  it("supports mnemonic", () => {
+    const onChange = cy.stub();
+    cy.mount(
+      <Checkbox onChange={onChange} mnemonic="d">
+        Don't ask again
+      </Checkbox>
+    );
+    cy.window().focus();
+    cy.realPress(["Alt", "d"]);
+    cy.wrap(onChange).should("be.calledOnceWith", true);
+    cy.findByRole("checkbox", { checked: true });
+  });
+
+  it("can't be changed by mnemonic if disabled", () => {
+    const onChange = cy.stub();
+    cy.mount(
+      <Checkbox isDisabled onChange={onChange} mnemonic="d">
+        Don't ask again
+      </Checkbox>
+    );
+    cy.window().focus();
+    cy.realPress(["Alt", "d"]);
+    cy.wrap(onChange).should("not.be.calledOnceWith", true);
+    cy.findByRole("checkbox", { checked: false });
+  });
 });
 
 function matchImageSnapshot(snapshotsName: string) {
-  cy.get("[data-loading-icon]").should("not.exist");
+  cy.get("[aria-busy=true]").should("not.exist");
   cy.percySnapshot(snapshotsName);
 }

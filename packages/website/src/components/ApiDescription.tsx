@@ -3,7 +3,7 @@ import Markdown from "markdown-to-jsx";
 // @ts-expect-error ¯\_(ツ)_/¯
 import { DocgenInfo } from "@storybook/addon-docs/dist/ts3.9/lib/docgen/types";
 import MDXComponents from "@theme/MDXComponents";
-import { parse } from "jsdoc-parse-plus";
+import { useAutoLinkedJsDoc } from "./component-linking";
 // import { ApiModel, ApiPackage } from "@microsoft/api-extractor-model";
 
 // const apiModel: ApiModel = new ApiModel();
@@ -49,20 +49,7 @@ export const ApiDescription = ({
   }
   return (
     <Markdown options={{ overrides: MDXComponents }}>
-      {deLinkify(docgenInfo.description)}
+      {useAutoLinkedJsDoc(docgenInfo.description)}
     </Markdown>
   );
 };
-
-/**
- * replaces jsdoc @link tags with inline code. Temporary hack until @microsoft/api-extractor-model is used.
- * Example: {@link something} will be converted to `something`
- */
-const deLinkify = (description: string) => {
-  const comment = toCommentBlock(description);
-  return (parse(comment, [], (link) => `\`${link.text}\``).description as any)
-    ?.value;
-};
-
-const toCommentBlock = (str: string) =>
-  ["/**", ...str.split("\n").map((line) => `* ${line}`), "*/"].join("\n");

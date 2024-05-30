@@ -10,6 +10,7 @@ import {
   ActionDefinition,
   ActionsProvider,
   ActionTooltip,
+  DefaultToolWindow,
   MultiViewToolWindow,
   PlatformIcon,
   styled,
@@ -35,6 +36,8 @@ import {
 } from "./vcs-logs.state";
 import { useCommitsTableActions } from "./CommitsView/useCommitsTableActions";
 import { notImplemented } from "../../Project/notImplemented";
+import { vcsRootsState } from "../file-status.state";
+import { VersionControlToolWindowZeroState } from "./VersionControlToolWindowZeroState";
 
 export const VERSION_CONTROL_TOOLWINDOW_ID = "Version Control";
 
@@ -68,7 +71,9 @@ export const searchInputRefState = atom<RefObject<HTMLInputElement>>({
 export const VersionControlToolWindow = () => {
   const tabKeys = useRecoilValue(vcsTabKeysState);
   const [activeTabKey, setActiveTabKey] = useRecoilState(vcsActiveTabKeyState);
-  return (
+  const repos = useRecoilValue(vcsRootsState);
+
+  return repos.length > 0 ? (
     <MultiViewToolWindow
       headerContent={<StyledToolWindowHeader>Git:</StyledToolWindowHeader>}
       activeKey={activeTabKey}
@@ -83,6 +88,10 @@ export const VersionControlToolWindow = () => {
         </MultiViewToolWindow.View>
       ))}
     </MultiViewToolWindow>
+  ) : (
+    <DefaultToolWindow headerContent="Version Control">
+      <VersionControlToolWindowZeroState />
+    </DefaultToolWindow>
   );
 };
 

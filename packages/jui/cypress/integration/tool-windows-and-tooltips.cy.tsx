@@ -9,7 +9,7 @@ import {
   ToolWindowsState,
   toolWindowState,
 } from "@intellij-platform/core";
-import darculaThemeJson from "../themes/darcula.theme.json";
+import darculaThemeJson from "../../themes/darcula.theme.json";
 
 const window = (id: string) => ({
   id,

@@ -15,7 +15,7 @@ const StyledDropdownButton = styled.button`
   gap: 0.25rem;
   padding-left: 0.25rem;
   cursor: pointer;
-  background: ${({ theme }) => theme.color("ComboBoxButton.background")};
+  background: transparent;
   color: ${({ theme }) => theme.commonColors.label({ disabled: true })};
 
   line-height: 1.5;

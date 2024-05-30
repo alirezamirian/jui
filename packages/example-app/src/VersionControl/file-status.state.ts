@@ -6,7 +6,7 @@ import {
   useRecoilCallback,
   useSetRecoilState,
 } from "recoil";
-import { sampleRepos } from "../Project/project.state";
+import { defaultProject, sampleRepos } from "../Project/project.state";
 import git, { findRoot, statusMatrix } from "isomorphic-git";
 import { fs } from "../fs/fs";
 import {
@@ -15,7 +15,9 @@ import {
   VcsDirectoryMapping,
 } from "./file-status";
 import * as path from "path";
-import { asyncFilter } from "../async-utils";
+import { notNull } from "@intellij-platform/core/utils/array-utils";
+import { persistentAtomEffect } from "../Project/persistence/persistentAtomEffect";
+import { array, literal, object, string, union } from "@recoiljs/refine";
 
 /**
  * git.status function has an issue with newly added files. it returns "*added" for both of these cases:
@@ -34,22 +36,68 @@ const status = async ({
     .then((rows) => rows[0]);
 };
 
-export const vcsRootsState = atom<VcsDirectoryMapping[]>({
+interface VcsDirectoryMappingStorage {
+  mapping?: MaybeArray<{ "@directory": string; "@vcs": "Git" }>;
+}
+const vcsDirectoryMappingChecker = array(
+  object({
+    dir: string(),
+    vcs: union(literal("Git")),
+  })
+);
+
+type MaybeArray<T> = Array<T> | T;
+const maybeArray = <T>(input: MaybeArray<T> | undefined): Array<T> =>
+  Array.isArray(input) ? input : input ? [input] : [];
+
+export const vcsRootsState = atom<ReadonlyArray<VcsDirectoryMapping>>({
   key: "vcsRoots",
   effects: [
-    ({ setSelf }) => {
-      setSelf(TMP_findGitRoots());
-    },
+    persistentAtomEffect<
+      ReadonlyArray<VcsDirectoryMapping>,
+      VcsDirectoryMappingStorage
+    >({
+      storageFile: "vcs.xml",
+      refine: vcsDirectoryMappingChecker,
+      componentName: "VcsDirectoryMappings",
+      // TODO: translate project dir to $PROJECT_DIR$
+      read: (gitSettings) => {
+        const mappings = maybeArray(gitSettings?.mapping)?.map((item) => ({
+          dir: item["@directory"],
+          vcs: item["@vcs"],
+        }));
+        return mappings.length > 0 ? mappings : TMP_findGitRoots();
+      },
+      update:
+        (value) =>
+        (currentValue): VcsDirectoryMappingStorage => ({
+          ...(currentValue || {}),
+          mapping: value.map(({ vcs, dir }) => ({
+            "@directory": dir,
+            "@vcs": vcs,
+          })),
+        }),
+    }),
   ],
 });
 const TMP_findGitRoots = () =>
-  asyncFilter(
-    ({ dir }) => fs.promises.stat(dir).then(Boolean),
-    Object.values(sampleRepos).map<VcsDirectoryMapping>(({ path }) => ({
-      dir: path,
-      vcs: "git",
-    }))
-  );
+  Promise.all(
+    [...Object.values(sampleRepos), defaultProject].map(
+      async ({ path: dir }) => {
+        const exists = await fs.promises.exists(dir);
+        if (exists) {
+          return git.findRoot({ fs, filepath: dir }).catch(() => null);
+        }
+      }
+    )
+  ).then((roots) => {
+    return [...new Set(roots.filter(notNull))].map<VcsDirectoryMapping>(
+      (dir) => ({
+        dir,
+        vcs: "Git",
+      })
+    );
+  });
 
 /**
  * temporary(?) hook to refresh vcs roots
@@ -72,7 +120,7 @@ export const vcsRootForFile = selectorFamily<string | null, string>({
     ({ get }) => {
       // FIXME: use vcsRoots.
       // return get(vcsRootsState).find(
-      //   (root) => root.vcs === "git" && isParentPath(root.dir, filepath)
+      //   (root) => root.vcs === "Git" && isParentPath(root.dir, filepath)
       // )?.dir ?? null;
       // function isParentPath(parent: string, dir: string) {
       //   const relative = path.relative(parent, dir);

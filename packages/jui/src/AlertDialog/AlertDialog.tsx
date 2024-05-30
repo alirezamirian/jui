@@ -7,7 +7,7 @@ import { OverlayMoveHandle } from "@intellij-platform/core/Overlay";
 import { styled } from "../styled";
 import { StyledWindowContainer } from "@intellij-platform/core/ModalWindow/ModalWindow";
 import { PlatformIcon } from "@intellij-platform/core/Icon";
-import { Button } from "@intellij-platform/core/Button";
+import { ButtonGroup } from "@intellij-platform/core/ButtonGroup";
 import { isEventOnEmptySpaces } from "@intellij-platform/core/utils/interaction-utils/useMove";
 
 export interface AlertDialogProps
@@ -112,7 +112,7 @@ const StyledCheckbox = styled.div`
   margin-left: -0.25rem;
 `;
 
-const StyledButtons = styled.div`
+const StyledButtons = styled(ButtonGroup)`
   display: flex;
   justify-self: end;
   gap: 1rem;
@@ -131,7 +131,9 @@ const StyledHelpIcon = styled.div`
  * [notification](https://jetbrains.github.io/ui/controls/notifications/) pattern for use cases where
  * immediate user action is required.
  * Since the use cases are quite specific, and the component is expected to be used with pretty specific
- * content items, the layout is not implemented as a separate component, the way it is in many other components.
+ * content items, the layout is not implemented as a separate component, the way it is in components like
+ * {@link ModalWindow} or {@link Menu}
+ *
  *
  */
 export const AlertDialog = ({

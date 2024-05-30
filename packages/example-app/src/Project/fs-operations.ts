@@ -26,10 +26,12 @@ export const deleteFileCallback =
             filepath: path.relative(repoDir, filepath),
           });
           await refreshFileStatus(filepath); // TODO(fs.watch): better done separately using fs.watch
-          const editor = await snapshot.getPromise(editorManagerState);
-          editor.closePath(filepath); // TODO(fs.watch): better done as an effect on editorState, using fs.watch. But fs.watch is not available at the moment.
         }
+      } catch (e) {
+        console.error(`error in deleting file ${filepath}`, e);
       } finally {
+        const editor = await snapshot.getPromise(editorManagerState);
+        editor.closePath(filepath); // TODO(fs.watch): better done as an effect on editorState, using fs.watch. But fs.watch is not available at the moment.
         refresh(dirContentState(path.dirname(filepath))); // TODO(fs.watch): better done separately using fs.watch
         reset(fileContentState(filepath)); // TODO(fs.watch): better done separately using fs.watch
       }

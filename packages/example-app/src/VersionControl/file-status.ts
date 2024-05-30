@@ -12,7 +12,7 @@ export type FileStatus =
 // platform/vcs-api/src/com/intellij/openapi/vcs/VcsDirectoryMapping.java
 export interface VcsDirectoryMapping {
   dir: string;
-  vcs: "git"; // only supported vcs for now.
+  vcs: "Git"; // only supported vcs for now.
 }
 
 // TODO: remove when upgraded TS to >=4.5

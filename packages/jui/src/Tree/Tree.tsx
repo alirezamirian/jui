@@ -14,7 +14,7 @@ import {
   CollectionRefProps,
   useCollectionRef,
 } from "@intellij-platform/core/Collections/useCollectionRef";
-import { useObjectRef } from "@react-aria/utils";
+import { filterDOMProps, useObjectRef } from "@react-aria/utils";
 
 export interface TreeProps<T extends object>
   extends Omit<StatelyTreeProps<T>, "disallowEmptySelection">,
@@ -74,6 +74,7 @@ export const Tree = React.forwardRef(
           fillAvailableSpace={fillAvailableSpace}
           {...virtualizerProps}
           {...treeProps}
+          {...filterDOMProps(props, { labelable: true })}
           style={style}
           className={className}
         >
