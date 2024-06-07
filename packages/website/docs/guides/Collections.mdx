@@ -12,7 +12,7 @@ to provide a uniform and flexible API that would allow for both static jsx-based
 When the API for dynamic items (`items` prop and a render function as `children`) is used, the render result for each
 item [is subject to caching](https://react-spectrum.adobe.com/react-stately/collections.html#why-not-array-map) based
 on the item object. It's important to understand this assumption that the rendering should only depend on the item, and
-not any other piece of state from the closure, for example.
+not any other piece of state, for example, from the closure.
 
 :::info
 The item renderer function should be a pure function that relies exclusively on its single argument: the item object.
@@ -20,7 +20,7 @@ The item renderer function should be a pure function that relies exclusively on 
 
 However, in certain scenarios, you might need to render UI elements based on factors other than the item object. Here are a few ways to achieve this:
 
-xwxw### Using context
+### Using context
 
 TODO (This is particularly useful for components implementing virtual rendering, where only a limited number of items are mounted at a time, and changes to additional state should affect only those without rebuilding the entire collection).
 
