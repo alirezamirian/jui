@@ -24,12 +24,18 @@ import "./jetbrains-mono-font.css";
 /**
  * Example app root component. It expects ThemeProvider to be provided based on where it's rendered.
  */
-export const App = ({ height }: { height?: CSSProperties["height"] }) => {
+export const App = ({
+  height,
+  autoCloneSampleRepo,
+}: {
+  height?: CSSProperties["height"];
+  autoCloneSampleRepo?: boolean;
+}) => {
   return (
     // TODO: add an error boundary
     <DefaultSuspense>
       <WaitForFs>
-        <ProjectInitializer>
+        <ProjectInitializer autoCloneSampleRepo={autoCloneSampleRepo}>
           <KeymapProvider keymap={exampleAppKeymap}>
             <RecoilRoot>
               <WindowManager>

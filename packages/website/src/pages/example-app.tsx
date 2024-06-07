@@ -44,7 +44,7 @@ export default function ExampleAppPage(): JSX.Element {
     useState<ComponentProps<typeof ExampleContext>["themeName"]>("darcula");
 
   return (
-    <LazyExampleApp themeName={themeName}>
+    <LazyExampleApp themeName={themeName} autoCloneSampleRepo>
       {(app) => (
         <ColumnContainer>
           <StyledBanner>

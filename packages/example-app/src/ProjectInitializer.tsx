@@ -53,9 +53,9 @@ export async function isSuccessfullyCloned(dir: string) {
 
 export const ProjectInitializer = ({
   children,
-  withSampleRepo = !location.search.includes("clone=false"),
+  autoCloneSampleRepo = false,
 }: {
-  withSampleRepo?: boolean;
+  autoCloneSampleRepo?: boolean;
   children?: React.ReactNode;
 }) => {
   const [state, setState] = useState<
@@ -82,7 +82,7 @@ export const ProjectInitializer = ({
             path,
             projectDir: defaultProject.path,
           });
-        } else if (withSampleRepo) {
+        } else if (autoCloneSampleRepo) {
           await ensureSampleRepo(sampleRepo.path, sampleRepo.url);
         }
         console.log("demo repo initialized");
