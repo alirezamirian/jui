@@ -30,5 +30,5 @@
   }
 `,m=a.zo.span`
   flex: 1;
-`;function h(){const[e,t]=(0,n.useState)("darcula");return n.createElement(s.R,{themeName:e},(r=>n.createElement(c,null,n.createElement(u,null,n.createElement(d,{to:"/"},n.createElement(l.vq,{icon:"actions/exit.svg"}),"\xa0 Quit example app"),n.createElement(m,null),n.createElement("label",null,"Theme: \xa0",n.createElement("select",{value:e,onChange:e=>{let{target:r}=e;return t(r.value)}},n.createElement("option",{value:"darcula"},"Darcula"),n.createElement("option",{value:"light"},"Light"),n.createElement("option",{value:"highContrast"},"High Contrast")))),r)))}h.__docgenInfo={description:"",methods:[],displayName:"ExampleAppPage"}}}]);
-//# sourceMappingURL=e3b22f57.2e4154a5.js.map
+`;function h(){const[e,t]=(0,n.useState)("darcula");return n.createElement(s.R,{themeName:e,autoCloneSampleRepo:!0},(r=>n.createElement(c,null,n.createElement(u,null,n.createElement(d,{to:"/"},n.createElement(l.vq,{icon:"actions/exit.svg"}),"\xa0 Quit example app"),n.createElement(m,null),n.createElement("label",null,"Theme: \xa0",n.createElement("select",{value:e,onChange:e=>{let{target:r}=e;return t(r.value)}},n.createElement("option",{value:"darcula"},"Darcula"),n.createElement("option",{value:"light"},"Light"),n.createElement("option",{value:"highContrast"},"High Contrast")))),r)))}h.__docgenInfo={description:"",methods:[],displayName:"ExampleAppPage"}}}]);
+//# sourceMappingURL=e3b22f57.3b6c03fb.js.map
