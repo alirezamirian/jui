@@ -32,7 +32,7 @@ export default defineConfig({
     viewportHeight: 800,
     baseUrl:
       // eslint-disable-next-line no-undef
-      process.env.CI !== "true"
+      process.env.CI === "true"
         ? "http://localhost:1234/" // example-app serve port
         : "http://localhost:6008/iframe.html?id=demos-example-app--example-app",
     setupNodeEvents(on, config) {
