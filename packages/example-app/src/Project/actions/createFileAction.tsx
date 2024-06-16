@@ -1,18 +1,12 @@
 import path from "path";
 import { selector, useRecoilCallback } from "recoil";
-import React, { ChangeEvent, useState } from "react";
+import React, { useState } from "react";
 import {
   ActionDefinition,
   Button,
   Checkbox,
-  Input,
   ModalWindow,
   PlatformIcon,
-  Popup,
-  PopupLayout,
-  PositionedTooltipTrigger,
-  styled,
-  ValidationTooltip,
   WindowLayout,
 } from "@intellij-platform/core";
 
@@ -25,8 +19,10 @@ import {
   windowManagerRefState,
 } from "../project.state";
 import { vcsRootForFile } from "../../VersionControl/file-status.state";
+import { stat } from "../../file-utils";
 import { createFileCallback } from "../fs-operations";
 import { gitAddCallback } from "../../VersionControl/gitAddCallback";
+import { NewItemPopup } from "./NewItemPopup";
 
 // TODO: expand to and select the new file in the project tree, if the action is initiated from projects view.
 export const createFileActionState = selector({
@@ -58,30 +54,13 @@ export const createFileActionState = selector({
       }
 
       popupManager.show(({ close }) => (
-        <NewFileNamePopup close={close} destinationDir={destinationDir} />
+        <NewFilePopup close={close} destinationDir={destinationDir} />
       ));
     }),
   }),
 });
 
-const StyledInput = styled(Input)`
-  width: 20.5rem;
-  /**
-   * To have the validation box shadow not clipped by the popup.
-   * Maybe it should be an option on input to make sure margin is always in sync with the box-shadow thickness
-   */
-  margin: 3px;
-  input {
-    padding-top: 1px;
-    padding-bottom: 1px;
-  }
-`;
-
-const StyledHeader = styled(Popup.Header)`
-  border-bottom: 1px solid ${({ theme }) => theme.commonColors.border()};
-`;
-
-function NewFileNamePopup({
+function NewFilePopup({
   destinationDir,
   close,
 }: {
@@ -91,7 +70,8 @@ function NewFileNamePopup({
   const createFile = useRecoilCallback(
     (callbackInterface) => {
       const createFile = createFileCallback(callbackInterface);
-      return async (filePath: string) => {
+      return async (destination: string, filename: string) => {
+        const fullpath = path.join(destinationDir, filename);
         const { snapshot } = callbackInterface;
         const editorManager = snapshot
           .getLoadable(editorManagerState)
@@ -99,8 +79,8 @@ function NewFileNamePopup({
         const windowManager = snapshot
           .getLoadable(windowManagerRefState)
           .getValue().current;
-        const repoDir = await snapshot.getPromise(vcsRootForFile(filePath));
-        await createFile(filePath);
+        const repoDir = await snapshot.getPromise(vcsRootForFile(fullpath));
+        await createFile(destinationDir, filename);
         // TODO: select it in the Project tool window, if it was created from the Project tool window
         close();
         editorManager.focus();
@@ -113,7 +93,7 @@ function NewFileNamePopup({
         );
         if (repoDir) {
           windowManager?.open(({ close }) => (
-            <AddFileToGitWindow filepath={filePath} close={close} />
+            <AddFileToGitWindow filepath={fullpath} close={close} />
           ));
         }
       };
@@ -121,74 +101,37 @@ function NewFileNamePopup({
     [close]
   );
   const [filename, setFilename] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [validationState, setValidationState] = useState<"valid" | "invalid">(
-    "valid"
-  );
+  const [validationMessage, setValidationMessage] = useState("");
   const submit = async () => {
     const fullPath = path.join(destinationDir, filename);
-    const exists = await fs.promises.exists(fullPath);
-    if (exists) {
-      const stats = await fs.promises.stat(fullPath);
-      setValidationState("invalid");
-      if (stats.isFile()) {
-        setErrorMessage(
-          `A file with the name '${path.basename(filename)}' already exists`
-        );
-      } else if (stats.isDirectory()) {
-        setErrorMessage(
-          `A directory with the name '${path.basename(
-            filename
-          )}' already exists`
-        );
-      }
+    const stats = await stat(fullPath);
+    if (stats?.isFile()) {
+      setValidationMessage(
+        `A file with the name '${path.basename(filename)}' already exists`
+      );
+    } else if (stats?.isDirectory()) {
+      setValidationMessage(
+        `A directory with the name '${path.basename(filename)}' already exists`
+      );
     } else {
-      await createFile(fullPath);
+      await createFile(destinationDir, filename);
     }
   };
-
   return (
-    <Popup>
-      <PopupLayout
-        header={<StyledHeader>New File</StyledHeader>}
-        content={
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (filename) {
-                submit(); // error handling?
-              }
-            }}
-            onMouseDown={() => {
-              setErrorMessage("");
-            }}
-          >
-            <PositionedTooltipTrigger
-              isOpen={Boolean(errorMessage)}
-              placement="top"
-              offset={6}
-              tooltip={
-                <ValidationTooltip type="error">
-                  {errorMessage}
-                </ValidationTooltip>
-              }
-            >
-              <StyledInput
-                appearance="embedded"
-                validationState={validationState}
-                placeholder="Name"
-                value={filename}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  setValidationState("valid");
-                  setErrorMessage("");
-                  setFilename(e.target.value);
-                }}
-              />
-            </PositionedTooltipTrigger>
-          </form>
+    <NewItemPopup
+      title="New File"
+      onSubmit={() => {
+        if (filename) {
+          submit(); // error handling?
         }
-      />
-    </Popup>
+      }}
+      value={filename}
+      onChange={(newValue) => {
+        setValidationMessage("");
+        setFilename(newValue);
+      }}
+      validationMessage={validationMessage}
+    />
   );
 }
 

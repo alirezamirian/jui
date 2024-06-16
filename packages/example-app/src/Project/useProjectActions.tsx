@@ -7,6 +7,7 @@ import {
 
 import { createFileActionState } from "./actions/createFileAction";
 import { searchEverywhereState } from "../SearchEverywhere/searchEverywhere.state";
+import { createDirectoryActionState } from "./actions/createDirectoryAction";
 
 export function useProjectActions(): ActionDefinition[] {
   const openSearchEverywhere = useRecoilCallback(
@@ -22,6 +23,7 @@ export function useProjectActions(): ActionDefinition[] {
   );
 
   const newFileAction = useRecoilValue(createFileActionState);
+  const newDirectoryAction = useRecoilValue(createDirectoryActionState);
   return [
     {
       id: CommonActionId.GO_TO_ACTION,
@@ -40,5 +42,6 @@ export function useProjectActions(): ActionDefinition[] {
       },
     },
     newFileAction,
+    newDirectoryAction,
   ];
 }

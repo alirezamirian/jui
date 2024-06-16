@@ -25,10 +25,17 @@ export const Default: StoryObj<InputProps> = {
   render: render,
 };
 
-export const Invalid: StoryObj<InputProps> = {
+export const Error: StoryObj<InputProps> = {
   render: render,
   args: {
-    validationState: "invalid",
+    validationState: "error",
+  },
+};
+
+export const Warning: StoryObj<InputProps> = {
+  render: render,
+  args: {
+    validationState: "warning",
   },
 };
 
@@ -47,12 +54,12 @@ export const Embedded: StoryObj<InputProps> = {
   },
 };
 
-export const EmbeddedInvalid: StoryObj<InputProps> = {
+export const EmbeddedError: StoryObj<InputProps> = {
   render: render,
   args: {
     appearance: "embedded",
     placeholder: "Embedded",
-    validationState: "invalid",
+    validationState: "error",
   },
 };
 

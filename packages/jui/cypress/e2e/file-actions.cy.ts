@@ -12,20 +12,39 @@ const deleteFile = (filename: string) => {
   cy.findByRole("treeitem", { name: new RegExp(filename) }).should("not.exist");
 };
 
+function createFileWithoutVcs(filename: string) {
+  const basename = filename.split("/").slice(-1)[0];
+
+  cy.step(`Create ${filename}`);
+  cy.createFile(filename);
+  cy.findByRole("tab", { name: basename, selected: true }); // The new file opened in the editor
+  cy.get("textarea").should("be.focus").realType("Test content"); // Editor focused
+}
+
+function createDirectory(pathname: string) {
+  cy.step(`Create ${pathname}`);
+  cy.findByRole("tree", { name: "Project structure tree" })
+    .findAllByRole("treeitem", { name: /workspace/i })
+    .first()
+    .click()
+    .should("be.focused");
+
+  cy.searchAndInvokeAction("Directory", "create directory");
+  cy.findByPlaceholderText("Name").should("be.focused");
+  cy.realType(pathname, { delay: 1 });
+  cy.realPress("Enter");
+}
+
 describe("files actions", () => {
-  it("can create, delete and recreate a file without vcs", () => {
+  beforeEach(() => {
     Cypress.on("uncaught:exception", (err, runnable) => {
       return !err.message.includes(
         "NetworkError: Failed to execute 'importScripts' on 'WorkerGlobalScope'"
       );
     });
+  });
 
-    function createFileWithoutVcs(filename: string) {
-      cy.step(`Create ${filename}`);
-      cy.createFile(filename);
-      cy.findByRole("tab", { name: filename, selected: true }); // The new file opened in the editor
-      cy.get("textarea").should("be.focus").realType("Test content"); // Editor focused
-    }
+  it("can create, delete and recreate a file without vcs", () => {
     cy.initialization();
 
     createFileWithoutVcs("test.ts");
@@ -48,12 +67,6 @@ describe("files actions", () => {
   });
 
   it("file creation and deletion, with vcs enabled", () => {
-    Cypress.on("uncaught:exception", (err, runnable) => {
-      return !err.message.includes(
-        "NetworkError: Failed to execute 'importScripts' on 'WorkerGlobalScope'"
-      );
-    });
-
     cy.initialization(gitInit());
 
     cy.step(`Create test.ts`);
@@ -102,5 +115,27 @@ describe("files actions", () => {
       .should("have.length", 2);
 
     cy.percySnapshot(); // To check file statuses
+  });
+
+  it("can create nested directories when creating a new file", () => {
+    cy.initialization();
+
+    createFileWithoutVcs("foo/bar/baz/test.ts");
+
+    // project view should be updated
+    cy.findTreeNodeInProjectView("foo").dblclick(); // it opens all nested children since they are the only child
+    cy.findTreeNodeInProjectView("bar");
+    cy.findTreeNodeInProjectView("baz");
+    cy.findTreeNodeInProjectView("test.ts");
+  });
+
+  it("can create nested directories when creating a new directory", () => {
+    cy.initialization();
+
+    createDirectory("foo/bar/baz");
+
+    cy.findTreeNodeInProjectView("foo").dblclick(); // it opens all nested children since they are the only child
+    cy.findTreeNodeInProjectView("bar");
+    cy.findTreeNodeInProjectView("baz");
   });
 });

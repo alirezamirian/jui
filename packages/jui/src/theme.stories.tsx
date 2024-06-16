@@ -556,10 +556,10 @@ export const Theme: StoryFn = () => {
           <InputField
             label="InputField (invalid)"
             placeholder="Placeholder"
-            validationState="invalid"
+            validationState="error"
           />
           <Input placeholder="Input" />
-          <Input placeholder="Input (invalid)" validationState="invalid" />
+          <Input placeholder="Input (invalid)" validationState="error" />
         </div>
       </ToolWindows>
       <StatusBar

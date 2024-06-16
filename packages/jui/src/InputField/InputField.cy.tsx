@@ -5,7 +5,7 @@ import { InputField } from "@intellij-platform/core";
 
 const {
   Default,
-  Invalid,
+  Error,
   Disabled,
   LabelAbove,
   WithPlaceholder,
@@ -30,8 +30,8 @@ describe("InputField", () => {
         <Disabled />
         <WithContextHelp />
         <WithBeforeAndAfterAddons />
-        <Invalid />
-        <Invalid /> {/* Focused */}
+        <Error />
+        <Error /> {/* Focused */}
       </div>
     );
     cy.findAllByRole("textbox").last().focus();
