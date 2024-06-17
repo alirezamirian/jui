@@ -178,7 +178,7 @@ export function gitAdd(...fileChanges: FileChange[]): Change<string[]> {
  * @param dirname directory name to create
  * @param changes further changes to run within the context of the created directory.
  */
-export function dir(dirname: string, changes: Change[]): Change {
+export function dir(dirname: string, changes: Change[] = []): Change {
   return async (args, context) => {
     const { fs, path, projectDir } = args;
     const dir = path.join(context?.dir ?? projectDir, dirname);

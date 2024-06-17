@@ -5,6 +5,7 @@ import FS from "browserfs/dist/node/core/FS";
 import { PromisifiedFS } from "./browser-fs";
 // @ts-expect-error caf doesn't have typing :/
 import { CAF } from "caf";
+import { fs } from "./fs";
 
 type CopyFsParams = {
   source: FS;
@@ -103,3 +104,11 @@ export async function ensureDir(fs: PromisifiedFS, dirPath: string) {
     throw new Error(`path is not a directory, but already exists: ${dirPath}`);
   }
 }
+
+/**
+ * A wrapper around stat which doesn't throw if nothing exists at the input pathname.
+ * It provides a more ergonomic signature for use cases where it's required to know if
+ * a file or directory exists on the pathname, distinguishing the two cases.
+ */
+export const stat = (pathname: string) =>
+  fs.promises.stat(pathname).catch(() => null);

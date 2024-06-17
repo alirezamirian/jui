@@ -1,4 +1,4 @@
-import { gitInit } from "../support/example-app";
+import { dir, file, gitInit } from "../support/example-app";
 
 beforeEach(() => {
   // cy.playback("GET", /https:\/\/raw\.githubusercontent.com/);
@@ -115,6 +115,30 @@ describe("files actions", () => {
       .should("have.length", 2);
 
     cy.percySnapshot(); // To check file statuses
+  });
+
+  it("can delete directories", () => {
+    cy.initialization(
+      dir("d1", [dir("d2", [dir("d3", [file("f1.ts")])])]),
+      dir("d4", [dir("d5", [dir("d6")])]),
+      file("f2.ts")
+    );
+    cy.findByRole("button", { name: "Expand All" }).click();
+
+    cy.findTreeNodeInProjectView("f1.ts").ctrlClick();
+    cy.findTreeNodeInProjectView("f2.ts").ctrlClick();
+    cy.findTreeNodeInProjectView("d3").ctrlClick();
+    cy.findTreeNodeInProjectView("d1").ctrlClick();
+    cy.findTreeNodeInProjectView("d5").ctrlClick();
+    cy.realPress("Backspace");
+    cy.findByRole("button", { name: "Delete" }).click();
+    cy.findTreeNodeInProjectView("d4").should("exist");
+    cy.findTreeNodeInProjectView("d1").should("not.exist");
+    cy.findTreeNodeInProjectView("d2").should("not.exist");
+    cy.findTreeNodeInProjectView("d3").should("not.exist");
+    cy.findTreeNodeInProjectView("d5").should("not.exist");
+    cy.findTreeNodeInProjectView("f1.ts").should("not.exist");
+    cy.findTreeNodeInProjectView("f2.ts").should("not.exist");
   });
 
   it("can create nested directories when creating a new file", () => {

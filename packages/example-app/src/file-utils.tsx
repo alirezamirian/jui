@@ -1,5 +1,4 @@
 import path from "path";
-import { fs } from "./fs/fs";
 
 export const FILE_ICON = "fileTypes/text";
 export const DIR_ICON = "nodes/folder";
@@ -67,11 +66,3 @@ function getParentPathsRecursive(
   }
   return previousPaths;
 }
-
-/**
- * A wrapper around stat which doesn't throw if nothing exists at the input pathname.
- * It provides a more ergonomic signature for use cases where it's required to know if
- * a file or directory exists on the pathname, distinguishing the two cases.
- */
-export const stat = (pathname: string) =>
-  fs.promises.stat(pathname).catch(() => null);

@@ -49,6 +49,42 @@ export const deleteFilesCallback =
     return Promise.all(filePaths.map(deleteFile));
   };
 
+export const deleteDirCallback =
+  (callbackInterface: CallbackInterface) => async (dir: string) => {
+    // TODO: use task API
+    const { refresh, reset, snapshot } = callbackInterface;
+    const deleteFile = deleteFileCallback(callbackInterface);
+    const releaseSnapshot = snapshot.retain();
+    const recursivelyDeleteDir = async (dirname: string) => {
+      const pathnames = await fs.promises.readdir(dirname);
+      await Promise.all(
+        pathnames.map(async (pathname) => {
+          const fullpath = path.resolve(dirname, pathname);
+          const stat = await fs.promises.stat(fullpath);
+          if (stat.isFile()) {
+            // potential improvement: refreshing dir content could wait until all files are deleted.
+            await deleteFile(fullpath);
+          } else if (stat.isDirectory()) {
+            await recursivelyDeleteDir(fullpath);
+          }
+        })
+      );
+      await fs.promises.rmdir(dirname);
+      refresh(dirContentState(dir));
+    };
+    try {
+      try {
+        await recursivelyDeleteDir(dir);
+      } catch (e) {
+        console.error(`error in deleting directory ${dir}`, e);
+      } finally {
+        refresh(dirContentState(path.dirname(dir))); // TODO(fs.watch): better done separately using fs.watch
+      }
+    } finally {
+      releaseSnapshot();
+    }
+  };
+
 export const createFileCallback = (callbackInterface: CallbackInterface) => {
   const refreshFileStatus = refreshFileStatusCallback(callbackInterface);
   return async (destinationDir: string, filename: string) => {

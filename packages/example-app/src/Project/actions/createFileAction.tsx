@@ -19,7 +19,7 @@ import {
   windowManagerRefState,
 } from "../project.state";
 import { vcsRootForFile } from "../../VersionControl/file-status.state";
-import { stat } from "../../file-utils";
+import { stat } from "../../fs/fs-utils";
 import { createFileCallback } from "../fs-operations";
 import { gitAddCallback } from "../../VersionControl/gitAddCallback";
 import { NewItemPopup } from "./NewItemPopup";

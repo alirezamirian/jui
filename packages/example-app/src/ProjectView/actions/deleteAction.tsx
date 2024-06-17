@@ -20,8 +20,13 @@ import {
 } from "../../Project/project.state";
 import { selectedNodesState } from "../ProjectView.state";
 import { findRootPaths } from "../../path-utils";
-import { deleteFilesCallback } from "../../Project/fs-operations";
+import {
+  deleteDirCallback,
+  deleteFileCallback,
+  deleteFilesCallback,
+} from "../../Project/fs-operations";
 import { IntlMessageFormat } from "intl-messageformat";
+import { dir } from "@intellij-platform/core/cypress/support/example-app";
 
 const fileCountMsg = new IntlMessageFormat(
   `{count, plural,
@@ -47,6 +52,8 @@ export const deleteActionState = selector({
     description: "Delete selected item",
     isDisabled: !get(activePathExistsState),
     actionPerformed: getCallback(({ snapshot }) => async () => {
+      const deleteDir = getCallback(deleteDirCallback);
+      const deleteFile = getCallback(deleteFileCallback);
       const selectedNodes = snapshot.getLoadable(selectedNodesState).getValue();
       const windowManager = snapshot
         .getLoadable(windowManagerRefState)
@@ -98,7 +105,8 @@ export const deleteActionState = selector({
           ),
         });
         if (confirmed) {
-          notImplemented();
+          directories.forEach((pathname) => deleteDir(pathname));
+          filePaths.forEach((pathname) => deleteFile(pathname));
         }
       } else {
         windowManager?.open(({ close }) => (

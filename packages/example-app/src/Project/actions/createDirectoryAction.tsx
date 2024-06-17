@@ -4,7 +4,8 @@ import React, { useEffect, useState } from "react";
 import { ActionDefinition, PlatformIcon } from "@intellij-platform/core";
 
 import { fs } from "../../fs/fs";
-import { DIR_ICON, stat } from "../../file-utils";
+import { stat } from "../../fs/fs-utils";
+import { DIR_ICON } from "../../file-utils";
 import { createDirectoryCallback } from "../fs-operations";
 import { useCancelableAsyncCallback } from "../../useCancelableAsyncCallback";
 import {
