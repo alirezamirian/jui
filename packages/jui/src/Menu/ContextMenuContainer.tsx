@@ -49,6 +49,11 @@ export const ContextMenuContainer = ({
         overlayRef={overlayRef}
         overlayProps={overlayProps}
         restoreFocus
+        /**
+         * Context menus don't autofocus the first item in the reference impl.
+         * Note that this just defines the default value, and can always be controlled per case on the rendered Menu
+         */
+        defaultAutoFocus={true}
       >
         {renderMenu()}
       </MenuOverlay>

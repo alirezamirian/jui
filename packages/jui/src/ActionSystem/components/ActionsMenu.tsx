@@ -59,7 +59,6 @@ export function ActionsMenu({
       selectedKeys={selectedKeys} // FIXME: keep isSelected on actions (toggle action)?
       disabledKeys={disabledKeys}
       items={actions}
-      autoFocus
     >
       {(action) => {
         if (action instanceof DividerItem) {

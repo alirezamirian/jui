@@ -1,7 +1,10 @@
 import React, { HTMLProps } from "react";
 import { MenuTriggerState } from "@react-stately/menu";
 import { FocusScope } from "@intellij-platform/core/utils/FocusScope";
-import { MenuOverlayContext } from "@intellij-platform/core/Menu/Menu";
+import {
+  MenuOverlayContext,
+  MenuProps,
+} from "@intellij-platform/core/Menu/Menu";
 import { Overlay } from "@intellij-platform/core/Overlay";
 
 /**
@@ -14,12 +17,17 @@ export function MenuOverlay({
   restoreFocus,
   overlayProps,
   overlayRef,
+  defaultAutoFocus,
   state,
 }: {
   children: React.ReactNode;
   restoreFocus?: boolean;
   overlayProps: HTMLProps<HTMLDivElement>;
   overlayRef: React.Ref<HTMLDivElement>;
+  /**
+   * Sets the default value of {@link Menu}'s {@link MenuProps#autoFocus} prop.
+   */
+  defaultAutoFocus?: MenuProps<unknown>["autoFocus"];
   state: MenuTriggerState;
 }) {
   if (!state.isOpen) {
@@ -32,7 +40,12 @@ export function MenuOverlay({
         forceRestoreFocus={restoreFocus}
         autoFocus
       >
-        <MenuOverlayContext.Provider value={state}>
+        <MenuOverlayContext.Provider
+          value={{
+            ...state,
+            defaultAutoFocus,
+          }}
+        >
           <div {...overlayProps} ref={overlayRef}>
             {children}
           </div>
