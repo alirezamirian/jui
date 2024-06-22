@@ -252,7 +252,7 @@ export const ContextMenu: StoryObj<{
         <ContextMenuContainer
           id="context-menu-container"
           renderMenu={() => (
-            <Menu aria-label="Editor Context Menu" {...menuProps}>
+            <Menu aria-label="Editor Context Menu" autoFocus {...menuProps}>
               <Item textValue="Column Selection Mode">
                 <MenuItemLayout
                   content="Column Selection Mode"

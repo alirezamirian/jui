@@ -1,7 +1,7 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { MenuTriggerState } from "@react-stately/menu";
 import { useOverlay } from "@react-aria/overlays";
-import { mergeProps } from "@react-aria/utils";
+import { mergeProps, useLayoutEffect } from "@react-aria/utils";
 import { useMouseEventOverlayPosition } from "@intellij-platform/core/utils/useMouseEventOverlayPosition";
 import { areInNestedOverlays } from "@intellij-platform/core/Overlay";
 
@@ -12,6 +12,7 @@ export const useContextMenu = (
   { isDisabled = false }: { isDisabled?: boolean },
   state: MenuTriggerState
 ) => {
+  const containerRef = useRef<number | null>(null);
   /**
    * NOTE: not using useMenuTrigger because:
    * - There is no option to have a trigger like this: "right click + long press only by touch" which seems to be the
@@ -27,13 +28,43 @@ export const useContextMenu = (
    *   TODO: add support for long touch
    */
   const onContextMenu = (e: React.MouseEvent<HTMLElement>) => {
+    containerRef.current = e.timeStamp;
+    updatePosition(e);
     e.preventDefault();
     // NOTE: we can't use offsetX/offsetY, because it would depend on the exact target that was clicked.
-    if (!state.isOpen) {
+    if (state.isOpen) {
+      /**
+       * If the context menu is already open, closing and reopening makes sure the menu properly gains the focus.
+       * Otherwise, the focus may go back to the background.
+       * It also better matches the reference impl.
+       */
+      state.close();
+      setTimeout(() => {
+        state.open(null);
+      });
+    } else {
       state.open(null);
     }
-    updatePosition(e);
   };
+  useEffect(() => {
+    const onOutsideContextMenu = (e: MouseEvent) => {
+      // Using timestamp an easy (and hopefully reliable) way to detect if it's the same
+      // event being handled by onContextMenu, avoiding the overhead of requiring a ref for the container.
+      if (containerRef.current !== e.timeStamp) {
+        state.close();
+      }
+    };
+    /**
+     * right clicks outside are not currently captured as "outside interaction" by react-aria's useOverlay hook.
+     * so we set up a global listener to close the context menu when contextmenu event is triggered outside the
+     * context menu container.
+     * to not require a ref just for this, the ref is manually updated when contextmenu event is triggered
+     * on the container (which happens before the event propagates to the document).
+     */
+    document.addEventListener("contextmenu", onOutsideContextMenu);
+    return () =>
+      document.removeEventListener("contextmenu", onOutsideContextMenu);
+  }, []);
 
   const overlayRef = useRef(null);
 
@@ -45,6 +76,7 @@ export const useContextMenu = (
       // but the menu overflows from the overlay container
       shouldFlip: true,
       offset: -8,
+      crossOffset: 2, // to not get the first item hovered on open
       isOpen: state.isOpen,
     });
   const { overlayProps } = useOverlay(
@@ -65,7 +97,9 @@ export const useContextMenu = (
 
   const containerProps: React.HTMLAttributes<HTMLElement> = isDisabled
     ? {}
-    : { onContextMenu };
+    : {
+        onContextMenu,
+      };
   return {
     /**
      * props to be applied on the container element which is supposed to have the context menu

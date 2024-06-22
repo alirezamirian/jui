@@ -729,6 +729,47 @@ describe("Menu with trigger", () => {
 });
 
 describe("ContextMenu", () => {
+  it("opens in the right position when mouse is not moved yet at all", () => {
+    cy.mount(<ContextMenu />);
+    // cy.rightClick() command is not suitable for this test case as it triggers some mousemove events before
+    // triggering the contextmenu event.
+    cy.get("#context-menu-container").trigger("contextmenu", {
+      clientX: 100,
+      clientY: 200,
+      force: true, // Ensure this action is not prevented by other event listeners
+    });
+
+    cy.findByRole("menu")
+      .invoke("offset")
+      .its("left")
+      .should("be.approximately", 100, 10);
+
+    cy.findByRole("menu")
+      .invoke("offset")
+      .its("top")
+      .should("be.approximately", 200, 10);
+  });
+
+  it("works when right clicking on the context menu trigger area while already open", () => {
+    cy.mount(<ContextMenu />);
+    cy.get("#context-menu-container").rightclick(150, 150, {
+      scrollBehavior: false,
+    });
+    cy.get("#context-menu-container").rightclick(100, 100, {
+      scrollBehavior: false,
+    });
+    cy.findByRole("menu").should("be.focused");
+  });
+
+  it("doesn't position menu in a way that first item would get automatically hovered and focused", () => {
+    cy.mount(<ContextMenu />);
+    cy.get("#context-menu-container").rightclick(100, 100, {
+      scrollBehavior: false,
+    });
+    // the menu is focused, not the menu item.
+    cy.findByRole("menu").should("be.focused");
+  });
+
   it("opens in the right position", () => {
     // NOTE: currently menu positioning doesn't exactly match the reference implementation. It flips instead of move
     // to viewport.
@@ -762,6 +803,17 @@ describe("ContextMenu", () => {
     cy.get("[role=menu]");
     cy.get("#context-menu-container").click("topLeft");
     cy.get("[role=menu]").should("not.exist");
+  });
+
+  it("is closed when right clicking outside the context menu trigger area", () => {
+    cy.mount(<ContextMenu />);
+    cy.get("#context-menu-container").rightclick(150, 150, {
+      scrollBehavior: false,
+    });
+    cy.get("body").rightclick(10, 10, {
+      scrollBehavior: false,
+    });
+    cy.findByRole("menu").should("not.exist");
   });
 
   it("is closed after an action is triggered", () => {

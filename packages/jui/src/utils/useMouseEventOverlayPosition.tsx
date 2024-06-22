@@ -28,7 +28,7 @@ import {
  * ```
  */
 let globalMoveHandler: null | ((e: MouseEvent) => void) = null;
-let lastMouseClientPos = { clientX: 0, clientY: 0 };
+let lastMouseClientPos: { clientX: number; clientY: number } | undefined;
 
 export function useMouseEventOverlayPosition(
   options: Omit<AriaPositionProps, "targetRef">
@@ -64,15 +64,25 @@ export function useMouseEventOverlayPosition(
     }
   }, []);
 
+  const updatePosition = (e?: React.MouseEvent) => {
+    const coordinatesSource = e || lastMouseClientPos;
+    if (targetRef.current && coordinatesSource) {
+      const { clientX, clientY } = coordinatesSource;
+      targetRef.current.style.left = `${
+        // not sure why crossOffset passed to useOverlayPosition doesn't work, so compensating for it here.
+        clientX + (options.crossOffset ?? 0)
+      }px`;
+      targetRef.current.style.top = `${clientY}px`;
+    }
+    _updatePosition();
+  };
   useLayoutEffect(() => {
-    if (options.isOpen && targetRef.current) {
-      targetRef.current.style.left = `${lastMouseClientPos.clientX}px`;
-      targetRef.current.style.top = `${lastMouseClientPos.clientY}px`;
+    if (options.isOpen) {
       updatePosition();
     }
   }, [options.isOpen, targetRef.current]);
 
-  const { updatePosition, ...result } = useOverlayPosition({
+  const { updatePosition: _updatePosition, ...result } = useOverlayPosition({
     ...options,
     targetRef,
   });
@@ -82,12 +92,6 @@ export function useMouseEventOverlayPosition(
     /**
      * Ref to be passed to be passed as targetRef
      */
-    updatePosition: (e?: React.MouseEvent) => {
-      if (targetRef.current && e) {
-        targetRef.current.style.left = `${e.clientX}px`;
-        targetRef.current.style.top = `${e.clientY}px`;
-      }
-      updatePosition();
-    },
+    updatePosition,
   };
 }
