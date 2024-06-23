@@ -1,6 +1,6 @@
 import React, { HTMLAttributes, RefObject } from "react";
 import { useButton } from "@react-aria/button";
-import { useMenuTrigger } from "@react-aria/menu";
+import { AriaMenuOptions, useMenuTrigger } from "@react-aria/menu";
 import { useOverlay, useOverlayPosition } from "@react-aria/overlays";
 import { mergeProps } from "@react-aria/utils";
 import { useMenuTriggerState } from "@react-stately/menu";
@@ -28,7 +28,11 @@ export interface MenuTriggerProps
    */
   positioningTargetRef?: React.RefObject<HTMLElement>;
   renderMenu: (props: {
-    menuProps: React.HTMLAttributes<HTMLElement>;
+    // AriaMenuOptions contains more properties than needed
+    menuProps: Pick<
+      AriaMenuOptions<unknown>,
+      "id" | "aria-labelledby" | "autoFocus" | "onClose"
+    >;
   }) => React.ReactNode;
 }
 

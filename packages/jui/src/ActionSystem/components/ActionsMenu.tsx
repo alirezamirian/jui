@@ -16,31 +16,36 @@ function isAction(item: ActionItem): item is Action {
   return "perform" in item;
 }
 
+type ControlledMenuProps = Pick<
+  MenuProps<ActionItem>,
+  "onAction" | "disabledKeys" | "items" | "children"
+>;
+type RenderMenu = (props: ControlledMenuProps) => React.ReactNode;
 export type ActionMenuProps = {
-  selectedKeys?: string[];
-  menuProps?: React.HTMLAttributes<HTMLElement>;
-  menuComponent?: React.ComponentType<
-    Pick<
-      MenuProps<ActionItem>,
-      | "onAction"
-      | "selectedKeys"
-      | "disabledKeys"
-      | "items"
-      | "autoFocus"
-      | "children"
-    >
-  >;
   actions: Array<ActionItem>;
-};
-
+  /**
+   * Allows for rendering a custom menu component, e.g. {@link SpeedSearchMenu}.
+   * If not provided, {@link Menu} is rendered, receiving additional props that
+   * are passed to `ActionsMenu`.
+   * If it is provided, additional {@link Menu} props are not allowed, and they
+   * can be passed directly to the returned menu element.
+   */
+  children?: RenderMenu;
+} & (
+  | {
+      children: RenderMenu;
+    }
+  | (Omit<MenuProps<ActionItem>, keyof ControlledMenuProps> & {
+      children?: never;
+    })
+);
 /**
  * Given a nested list of resolved actions, renders a menu corresponding to them.
  */
 export function ActionsMenu({
   actions,
-  selectedKeys,
-  menuProps,
-  menuComponent: MenuComponent = Menu,
+  children = (actionMenuProps) => <Menu {...otherProps} {...actionMenuProps} />,
+  ...otherProps
 }: ActionMenuProps) {
   const allActions = getAllActions(actions);
   const disabledKeys = allActions
@@ -48,25 +53,25 @@ export function ActionsMenu({
     .map(({ id }) => id);
 
   return (
-    <MenuComponent
-      {...menuProps}
-      onAction={(key) => {
-        const action = allActions.find(({ id }) => id === key);
-        if (action && isAction(action)) {
-          action.perform(); // TODO: pass context, containing the menu item as `element`
-        }
-      }}
-      selectedKeys={selectedKeys} // FIXME: keep isSelected on actions (toggle action)?
-      disabledKeys={disabledKeys}
-      items={actions}
-    >
-      {(action) => {
-        if (action instanceof DividerItem) {
-          return <Divider />;
-        }
-        return renderActionAsMenuItem(action);
-      }}
-    </MenuComponent>
+    <>
+      {children({
+        onAction: (key) => {
+          const action = allActions.find(({ id }) => id === key);
+          if (action && isAction(action)) {
+            action.perform(); // TODO: pass context, containing the menu item as `element`
+          }
+        },
+        disabledKeys,
+        // FIXME: keep isSelected on actions (toggle action) and control selectedKeys too?
+        items: actions,
+        children: (action) => {
+          if (action instanceof DividerItem) {
+            return <Divider />;
+          }
+          return renderActionAsMenuItem(action);
+        },
+      })}
+    </>
   );
 }
 
@@ -98,6 +103,7 @@ export function renderActionAsMenuItem(
     <Item
       key={action.id}
       textValue={action.title}
+      aria-label={action.title}
       childItems={isGroup ? action.children : undefined}
     >
       <MenuItemLayout
@@ -111,6 +117,8 @@ export function renderActionAsMenuItem(
 
 function getAllActions(items: ActionItem[]): Action[] {
   return flatten(
-    items.map((item) => ("children" in item ? item.children : item))
+    items.map((item) =>
+      "children" in item ? getAllActions(item.children) : item
+    )
   ).filter(isAction);
 }

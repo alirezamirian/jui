@@ -8,6 +8,11 @@ import {
 import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 describe("ActionsMenu", () => {
+  it("passes aria-label down to the menu component", () => {
+    cy.mount(<ActionsMenu actions={[]} aria-label="My action menu" />);
+    cy.findByRole("menu", { name: "My action menu" });
+  });
+
   it("renders menu item for actions", () => {
     const action1 = cy.stub().as("Action 1");
     const action2 = cy.stub().as("Action 1");
