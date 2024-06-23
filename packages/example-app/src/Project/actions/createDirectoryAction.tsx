@@ -14,12 +14,13 @@ import {
   projectPopupManagerRefState,
 } from "../project.state";
 import { NewItemPopup } from "./NewItemPopup";
+import { projectActionIds } from "../projectActionIds";
 
 // TODO: expand to and select the new directory in the project tree
 export const createDirectoryActionState = selector({
-  key: "action.NewDir",
+  key: `action.${projectActionIds.NewDir}`,
   get: ({ get, getCallback }): ActionDefinition => ({
-    id: "NewDir",
+    id: projectActionIds.NewDir,
     icon: <PlatformIcon icon={DIR_ICON} />,
     title: "Directory",
     description: "Create new directory",

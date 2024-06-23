@@ -17,6 +17,10 @@ import { ProjectViewPane } from "./ProjectViewPane";
 import { activeEditorTabState } from "../Editor/editor.state";
 import { ProjectViewActionIds } from "./ProjectViewActionIds";
 import { deleteActionState } from "./actions/deleteAction";
+import { copyActionState } from "./actions/copyAction";
+import { cutActionState } from "./actions/cutAction";
+import { pasteActionState } from "./actions/pasteAction";
+import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 const { SELECT_IN_PROJECT_VIEW } = ProjectViewActionIds;
 
@@ -55,7 +59,6 @@ function useProjectViewActions(): Array<ActionDefinition> {
       selectPathInProjectView(activeTab.filePath);
     }
   };
-  const deleteAction = useRecoilValue(deleteActionState);
 
   return [
     {
@@ -66,6 +69,9 @@ function useProjectViewActions(): Array<ActionDefinition> {
       isDisabled: !activeTab,
       description: "Selects a context file in the Project View",
     },
-    deleteAction, // could have been on project level, if it could handle delete in editor as well
-  ];
+    useRecoilValue(deleteActionState), // could have been on project level, if it could handle delete in editor as well
+    useRecoilValue(cutActionState),
+    useRecoilValue(copyActionState),
+    useRecoilValue(pasteActionState),
+  ].filter(notNull);
 }

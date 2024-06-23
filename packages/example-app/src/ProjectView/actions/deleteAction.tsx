@@ -26,7 +26,6 @@ import {
   deleteFilesCallback,
 } from "../../Project/fs-operations";
 import { IntlMessageFormat } from "intl-messageformat";
-import { dir } from "@intellij-platform/core/cypress/support/example-app";
 
 const fileCountMsg = new IntlMessageFormat(
   `{count, plural,
@@ -45,9 +44,9 @@ const dirCountMsg = new IntlMessageFormat(
 );
 
 export const deleteActionState = selector({
-  key: `action.${CommonActionId.Delete}`,
+  key: `action.${CommonActionId.DELETE}`,
   get: ({ get, getCallback }): ActionDefinition => ({
-    id: CommonActionId.Delete,
+    id: CommonActionId.DELETE,
     title: "Delete",
     description: "Delete selected item",
     isDisabled: !get(activePathExistsState),

@@ -23,12 +23,13 @@ import { stat } from "../../fs/fs-utils";
 import { createFileCallback } from "../fs-operations";
 import { gitAddCallback } from "../../VersionControl/gitAddCallback";
 import { NewItemPopup } from "./NewItemPopup";
+import { projectActionIds } from "../projectActionIds";
 
 // TODO: expand to and select the new file in the project tree, if the action is initiated from projects view.
 export const createFileActionState = selector({
-  key: "action.NewFile",
+  key: `action.${projectActionIds.NewFile}`,
   get: ({ get, getCallback }): ActionDefinition => ({
-    id: "NewFile",
+    id: projectActionIds.NewFile,
     icon: <PlatformIcon icon="fileTypes/text" />,
     title: "File",
     description: "Create new file",

@@ -1,4 +1,5 @@
 import {
+  ContextMenuContainer,
   HighlightedTextValue,
   Item,
   ItemLayout,
@@ -30,6 +31,7 @@ import {
 } from "./ProjectView.state";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
 import { useLatestRecoilValue } from "../recoil-utils";
+import { ProjectViewContextMenu } from "./ProjectViewContextMenu";
 
 export const ProjectViewPane = (): React.ReactElement => {
   const project = useRecoilValue(currentProjectState);
@@ -58,52 +60,57 @@ export const ProjectViewPane = (): React.ReactElement => {
   return (
     <DefaultSuspense>
       {treeState?.root && (
-        <SpeedSearchTree
-          aria-label="Project structure tree"
-          treeRef={treeRef}
-          {...activePathsProviderProps}
-          items={[treeState.root] as ProjectTreeNode[]}
-          onAction={(path) => {
-            editor.openPath(`${path}`);
-          }}
-          fillAvailableSpace
-          autoFocus
-          selectionMode="multiple"
-          selectedKeys={selectedKeys}
-          onSelectionChange={setSelectedKeys}
-          expandedKeys={expandedKeys}
-          onExpandedChange={setExpandedKeys}
+        <ContextMenuContainer
+          style={{ height: "100%" }}
+          renderMenu={() => <ProjectViewContextMenu />}
         >
-          {(item) => (
-            <Item
-              key={item.path}
-              textValue={item.name}
-              childItems={
-                "children" in item ? sortItems(item.children) : undefined
-              }
-            >
-              <ItemLayout>
-                {<ProjectViewNodeIcon node={item} />}
-                {item.type === "project" ? (
-                  <>
-                    <b>
-                      <HighlightedTextValue />
-                    </b>
-                    <ItemLayout.Hint>{project.path}</ItemLayout.Hint>
-                  </>
-                ) : (
-                  <FileTreeNodeText node={item} />
-                )}
-                {/* {"loadingState" in item &&
+          <SpeedSearchTree
+            aria-label="Project structure tree"
+            treeRef={treeRef}
+            {...activePathsProviderProps}
+            items={[treeState.root] as ProjectTreeNode[]}
+            onAction={(path) => {
+              editor.openPath(`${path}`);
+            }}
+            fillAvailableSpace
+            autoFocus
+            selectionMode="multiple"
+            selectedKeys={selectedKeys}
+            onSelectionChange={setSelectedKeys}
+            expandedKeys={expandedKeys}
+            onExpandedChange={setExpandedKeys}
+          >
+            {(item) => (
+              <Item
+                key={item.path}
+                textValue={item.name}
+                childItems={
+                  "children" in item ? sortItems(item.children) : undefined
+                }
+              >
+                <ItemLayout>
+                  {<ProjectViewNodeIcon node={item} />}
+                  {item.type === "project" ? (
+                    <>
+                      <b>
+                        <HighlightedTextValue />
+                      </b>
+                      <ItemLayout.Hint>{project.path}</ItemLayout.Hint>
+                    </>
+                  ) : (
+                    <FileTreeNodeText node={item} />
+                  )}
+                  {/* {"loadingState" in item &&
                       item.loadingState === "loading" && (
                         <TreeNodeHint>
                           <Img height={16} src={loading} darkSrc={loadingDark} />
                         </TreeNodeHint>
                       )}*/}
-              </ItemLayout>
-            </Item>
-          )}
-        </SpeedSearchTree>
+                </ItemLayout>
+              </Item>
+            )}
+          </SpeedSearchTree>
+        </ContextMenuContainer>
       )}
     </DefaultSuspense>
   );

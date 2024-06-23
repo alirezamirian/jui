@@ -11,6 +11,7 @@ export type ActionInResolvedGroup = Action & { parent: ResolvedActionGroup };
  * - `titledSection`: a section with divider and title.
  */
 type ActionGroupPresentation = "section" | "titledSection" | "popup";
+// TODO: rename popup to "submenu" and use 'popup' like when 'SUPPRESS_SUBMENU' clientProperty is set.
 
 export interface MutableActionGroup extends Action {
   children: Action[];

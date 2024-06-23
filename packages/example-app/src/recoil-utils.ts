@@ -36,7 +36,7 @@ export const createFocusBasedSetterHook = <T extends unknown, N extends T = T>(
       onBlur: (e: FocusEvent) => {
         if (
           e.relatedTarget instanceof Element &&
-          e.relatedTarget?.closest("[data-overlay-container]")
+          e.relatedTarget?.closest("[data-overlay-container], [role=menu]")
         ) {
           // hacky and probably not so reliable way to work around this issue:
           // There are actions that depend on focus-based contextual value. Like "Commit file/folder" action that
