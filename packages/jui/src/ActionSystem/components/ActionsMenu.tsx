@@ -8,7 +8,7 @@ import { type Action } from "@intellij-platform/core/ActionSystem/Action";
 
 type ActionGroupAsMenuItem = Pick<
   ActionGroup,
-  "id" | "icon" | "title" | "isDisabled" | "children" | "presentation"
+  "id" | "icon" | "title" | "isDisabled" | "children" | "menuPresentation"
 >;
 export type ActionItem = ActionGroupAsMenuItem | Action | DividerItem;
 
@@ -81,17 +81,21 @@ export function renderActionAsMenuItem(
   action: ActionAsMenuItem | ActionGroupAsMenuItem
 ) {
   const isGroup = "children" in action;
-  if (isGroup && action.presentation !== "popup") {
+  if (
+    isGroup &&
+    (action.menuPresentation === "section" ||
+      action.menuPresentation === "titledSection")
+  ) {
     return (
       <Section
         key={action.id}
         // @ts-expect-error: hasDivider is not yet made a public API.
         hasDivider
         aria-label={
-          action.presentation === "section" ? action.title : undefined
+          action.menuPresentation === "section" ? action.title : undefined
         }
         title={
-          action.presentation === "titledSection" ? action.title : undefined
+          action.menuPresentation === "titledSection" ? action.title : undefined
         }
         items={action.children}
       >
@@ -104,7 +108,11 @@ export function renderActionAsMenuItem(
       key={action.id}
       textValue={action.title}
       aria-label={action.title}
-      childItems={isGroup ? action.children : undefined}
+      childItems={
+        isGroup && action.menuPresentation === "submenu"
+          ? action.children
+          : undefined
+      }
     >
       <MenuItemLayout
         content={action.title}
@@ -118,7 +126,7 @@ export function renderActionAsMenuItem(
 function getAllActions(items: ActionItem[]): Action[] {
   return flatten(
     items.map((item) =>
-      "children" in item ? getAllActions(item.children) : item
+      [item].concat("children" in item ? getAllActions(item.children) : [])
     )
   ).filter(isAction);
 }

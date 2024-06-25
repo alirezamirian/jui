@@ -6,12 +6,22 @@ import {
 export type ActionInResolvedGroup = Action & { parent: ResolvedActionGroup };
 
 /**
- * - `popup`: shown as submenu (isPopup property in ActionGroup in the reference impl)
- * - `section`: a section with divider, but without section title
- * - `titledSection`: a section with divider and title.
+ * Different ways to show a group of actions in a menu.
+ * - `submenu`: renders children as submenu (corresponding, in the reference impl, to `isPopup` property of ActionGroup
+ *   being set to `true` and 'SUPPRESS_SUBMENU' clientProperty not being set)
+ * - `none`: renders the action group as a simple menu item, not rendering its children at all.
+ *   The action group will be performed, which typically opens a popup (see {@link useCreateDefaultActionGroup}),
+ *   showing the children.
+ *   (corresponding, in the reference impl, to `isPopup` property and 'SUPPRESS_SUBMENU' clientProperty being set
+ *   to true on the ActionGroup)
+ * - `section`: renders children in a section with divider, but without section title
+ * - `titledSection`: renders children in a section with divider and title.
  */
-type ActionGroupPresentation = "section" | "titledSection" | "popup";
-// TODO: rename popup to "submenu" and use 'popup' like when 'SUPPRESS_SUBMENU' clientProperty is set.
+type ActionGroupMenuPresentation =
+  | "section"
+  | "titledSection"
+  | "none"
+  | "submenu";
 
 export interface MutableActionGroup extends Action {
   children: Action[];
@@ -22,7 +32,7 @@ export interface MutableActionGroup extends Action {
   /**
    * How the action group should be rendered, in menus.
    */
-  presentation?: ActionGroupPresentation;
+  menuPresentation?: ActionGroupMenuPresentation;
 }
 export type ActionGroup = Readonly<MutableActionGroup>;
 
@@ -33,9 +43,11 @@ export interface ResolvedActionGroup extends ActionGroup {
 export interface ActionGroupDefinition extends ActionDefinition {
   children: ActionDefinition[]; // Should DividerItem be supported first-class here?
   /**
-   * If the action group should be rendered as a popup (submenu), in menus.
+   * Defines how the action group should be represented in menus.
+   * @default 'submenu'
+   * @see ActionGroupMenuPresentation
    */
-  presentation?: ActionGroupPresentation;
+  menuPresentation?: ActionGroupMenuPresentation;
 }
 
 export function isInResolvedActionGroup(

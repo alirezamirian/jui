@@ -67,7 +67,7 @@ export const useCreateDefaultActionGroup = () => {
     groupDefinition: Omit<ActionGroupDefinition, "actionPerformed">
   ): ActionGroupDefinition => {
     return {
-      presentation: "popup",
+      menuPresentation: "submenu",
       ...groupDefinition,
       actionPerformed: (context) =>
         openActionsInPopup(groupDefinition, context),

@@ -40,7 +40,7 @@ export function useProjectActions(): ActionDefinition[] {
   const copyReferencePopupGroup = createDefaultActionGroup({
     id: projectActionIds.CopyReferencePopupGroup,
     title: "Copy Path/Reference...",
-    // TODO: use "popup" presentation when the current "popup" option is renamed to "submenu"
+    menuPresentation: "none",
     children: [
       // TODO: CopyFileReferences action group popup is not the default popup, it shows the copyable value as a hint
       //  segment in each menu item. A custom actionPerformed should be implemented.
@@ -48,7 +48,7 @@ export function useProjectActions(): ActionDefinition[] {
         id: projectActionIds.CopyFileReference,
         title: "Copy File Reference", // in the original impl, there is no title
         isSearchable: false,
-        presentation: "section",
+        menuPresentation: "section",
         children: [
           // FIXME: actions are not triggered via UI
           useRecoilValue(copyAbsolutePathActionState),

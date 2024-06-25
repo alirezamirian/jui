@@ -47,7 +47,7 @@ describe("ActionsMenu", () => {
     cy.findByRole("menuitem", { name: "Action 2" });
   });
 
-  it("renders nested menu for groups with presentation set to 'popup'", () => {
+  it("renders nested menu for groups with menuPresentation set to 'submenu'", () => {
     const actionGroup1 = cy.stub().as("Action Group 1");
     const action1 = cy.stub().as("Action 1");
     const MyActionMenu = () => {
@@ -62,7 +62,7 @@ describe("ActionsMenu", () => {
             id: "Action Group 1",
             title: "Action Group 1",
             actionPerformed: actionGroup1,
-            presentation: "popup",
+            menuPresentation: "submenu",
             children: [
               {
                 id: "Action 1",
@@ -82,7 +82,7 @@ describe("ActionsMenu", () => {
     cy.findByRole("menuitem", { name: "Action 1" });
   });
 
-  it("renders menu section for groups with presentation is not set to 'section'", () => {
+  it("renders menu section for groups with menuPresentation set to 'section'", () => {
     const actionGroup1 = cy.stub().as("Action Group 1");
     const action1 = cy.stub().as("Action 1");
     const MyActionMenu = () => {
@@ -97,7 +97,7 @@ describe("ActionsMenu", () => {
             id: "Action Group 1",
             title: "Action Group 1",
             actionPerformed: actionGroup1,
-            presentation: "section",
+            menuPresentation: "section",
             children: [
               {
                 id: "Action 1",
@@ -115,6 +115,41 @@ describe("ActionsMenu", () => {
     cy.findByRole("group");
   });
 
+  it("triggers the action group when menuPresentation set to 'none'", () => {
+    const actionGroup1 = cy.stub().as("Action Group 1");
+    const action1 = cy.stub().as("Action 1");
+    const MyActionMenu = () => {
+      return (
+        <ActionsMenu actions={[useAction("Action Group 1")].filter(notNull)} />
+      );
+    };
+    cy.mount(
+      <ActionsProvider
+        actions={[
+          {
+            id: "Action Group 1",
+            title: "Action Group 1",
+            actionPerformed: actionGroup1,
+            menuPresentation: "none",
+            children: [
+              {
+                id: "Action 1",
+                title: "Action 1",
+                actionPerformed: action1,
+              },
+            ],
+          } as ActionGroupDefinition,
+        ]}
+      >
+        {() => <MyActionMenu />}
+      </ActionsProvider>
+    );
+    cy.findByRole("menuitem", { name: "Action 1" }).should("not.exist");
+    cy.findByRole("group", { name: "Action Group 1" }).should("not.exist");
+    cy.findByRole("menuitem", { name: "Action Group 1" }).click();
+    cy.wrap(actionGroup1).should("be.calledOnce");
+  });
+
   it("performs selected action", () => {
     const action1 = cy.stub().as("Action 1");
     const action2 = cy.stub().as("Action 2");
@@ -129,7 +164,7 @@ describe("ActionsMenu", () => {
             {
               id: "group 2",
               title: "Group 2 (not an action group)",
-              presentation: "popup",
+              menuPresentation: "submenu",
               children: [useAction("Action 2")],
             } as ActionItem,
           ].filter(notNull)}
@@ -148,7 +183,7 @@ describe("ActionsMenu", () => {
             id: "Action Group 1",
             title: "Action Group 1",
             actionPerformed: actionGroup1,
-            presentation: "popup",
+            menuPresentation: "submenu",
             children: [
               {
                 id: "Action Group 1 - Action 1",

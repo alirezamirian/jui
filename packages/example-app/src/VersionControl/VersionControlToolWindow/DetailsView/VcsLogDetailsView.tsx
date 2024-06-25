@@ -100,7 +100,7 @@ export function VcsLogDetailsView({ tabKey }: { tabKey: string }) {
         createActionGroup({
           id: GROUP_BY_ACTION_GROUP_ID,
           title: "Group By",
-          presentation: "titledSection",
+          menuPresentation: "titledSection",
           icon: <PlatformIcon icon="actions/groupBy.svg" />,
           children: availableGroupings.map((grouping) => ({
             id: groupingActionId(grouping),
@@ -113,7 +113,7 @@ export function VcsLogDetailsView({ tabKey }: { tabKey: string }) {
         }),
         createActionGroup({
           id: LAYOUT_ACTION_GROUP_ID,
-          presentation: "titledSection",
+          menuPresentation: "titledSection",
           title: "Layout",
           children: [
             useRedefineAction(
