@@ -806,7 +806,7 @@ describe("ContextMenu", () => {
   });
 
   it("is closed when right clicking outside the context menu trigger area", () => {
-    cy.mount(<ContextMenu />);
+    cy.mount(<ContextMenu noScroll />);
     cy.get("#context-menu-container").rightclick(150, 150, {
       scrollBehavior: false,
     });
