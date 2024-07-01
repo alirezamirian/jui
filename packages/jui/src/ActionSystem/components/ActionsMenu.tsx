@@ -4,7 +4,10 @@ import { Menu, MenuItemLayout, MenuProps } from "@intellij-platform/core/Menu";
 import { Divider, Item, Section } from "@intellij-platform/core/Collections";
 import { DividerItem } from "@intellij-platform/core/Collections/Divider"; // Importing from /Collections breaks the build for some reason
 import { type ActionGroup } from "@intellij-platform/core/ActionSystem/ActionGroup";
-import { type Action } from "@intellij-platform/core/ActionSystem/Action";
+import {
+  type Action,
+  ActionContext,
+} from "@intellij-platform/core/ActionSystem/Action";
 
 type ActionGroupAsMenuItem = Pick<
   ActionGroup,
@@ -23,6 +26,13 @@ type ControlledMenuProps = Pick<
 type RenderMenu = (props: ControlledMenuProps) => React.ReactNode;
 export type ActionMenuProps = {
   actions: Array<ActionItem>;
+
+  /**
+   * Context with which actions should be performed.
+   * Usually the context by which the ActionsMenu itself is opened.
+   * Pass a function for lazy evaluation when the action is selected from the menu.
+   */
+  actionContext?: ActionContext | (() => ActionContext);
   /**
    * Allows for rendering a custom menu component, e.g. {@link SpeedSearchMenu}.
    * If not provided, {@link Menu} is rendered, receiving additional props that
@@ -44,6 +54,7 @@ export type ActionMenuProps = {
  */
 export function ActionsMenu({
   actions,
+  actionContext,
   children = (actionMenuProps) => <Menu {...otherProps} {...actionMenuProps} />,
   ...otherProps
 }: ActionMenuProps) {
@@ -58,7 +69,11 @@ export function ActionsMenu({
         onAction: (key) => {
           const action = allActions.find(({ id }) => id === key);
           if (action && isAction(action)) {
-            action.perform(); // TODO: pass context, containing the menu item as `element`
+            action.perform(
+              typeof actionContext === "function"
+                ? actionContext?.()
+                : actionContext
+            );
           }
         },
         disabledKeys,

@@ -1,4 +1,5 @@
 import {
+  ActionContext,
   ActionsMenu,
   CommonActionId,
   DividerItem,
@@ -8,10 +9,15 @@ import { notNull } from "@intellij-platform/core/utils/array-utils";
 import React from "react";
 import { projectActionIds } from "../Project/projectActionIds";
 
-export function ProjectViewContextMenu() {
+export function ProjectViewContextMenu({
+  getActionContext,
+}: {
+  getActionContext: () => ActionContext;
+}) {
   return (
     <ActionsMenu
       aria-label="Project Tree actions"
+      actionContext={getActionContext}
       actions={[
         {
           ...useAction(projectActionIds.NewElement)!,

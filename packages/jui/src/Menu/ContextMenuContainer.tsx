@@ -1,12 +1,14 @@
-import React, { HTMLAttributes, HTMLProps } from "react";
+import React, { ForwardedRef, HTMLAttributes, HTMLProps } from "react";
 import { mergeProps } from "@react-aria/utils";
 import { useMenuTriggerState } from "@react-stately/menu";
 import { OverlayTriggerProps } from "@react-types/overlays";
 
-import { useContextMenu } from "./useContextMenu";
+import { useContextMenu, UseContextMenuProps } from "./useContextMenu";
 import { MenuOverlay } from "./MenuOverlay";
 
-interface ContextMenuContainerProps extends HTMLProps<HTMLDivElement> {
+interface ContextMenuContainerProps
+  extends HTMLProps<HTMLDivElement>,
+    UseContextMenuProps {
   /**
    * Will be called to return the Menu when context menu is triggered. Use {@link Menu} component to render a menu.
    */
@@ -25,38 +27,53 @@ interface ContextMenuContainerProps extends HTMLProps<HTMLDivElement> {
  * to be used to render context menu, when it's triggered.
  * Closes the menu when a menu action is triggered.
  */
-export const ContextMenuContainer = ({
-  children,
-  renderMenu,
-  ...props
-}: ContextMenuContainerProps) => {
-  const state = useMenuTriggerState({} as OverlayTriggerProps);
+export const ContextMenuContainer = React.forwardRef(
+  (
+    {
+      children,
+      renderMenu,
+      onOpen,
+      isDisabled,
+      ...props
+    }: ContextMenuContainerProps,
+    ref: ForwardedRef<HTMLDivElement>
+  ) => {
+    const state = useMenuTriggerState({} as OverlayTriggerProps);
 
-  const { overlayProps, containerProps, overlayRef } = useContextMenu(
-    {},
-    state
-  );
-  const allProps = mergeProps(props, containerProps);
-  return (
-    <>
-      {typeof children === "function" ? (
-        children(allProps)
-      ) : (
-        <div {...allProps}>{children}</div>
-      )}
-      <MenuOverlay
-        state={state}
-        overlayRef={overlayRef}
-        overlayProps={overlayProps}
-        restoreFocus
-        /**
-         * Context menus don't autofocus the first item in the reference impl.
-         * Note that this just defines the default value, and can always be controlled per case on the rendered Menu
-         */
-        defaultAutoFocus={true}
-      >
-        {renderMenu()}
-      </MenuOverlay>
-    </>
-  );
-};
+    const { overlayProps, containerProps, overlayRef } = useContextMenu(
+      { onOpen, isDisabled },
+      state
+    );
+    const allProps = mergeProps(props, containerProps);
+    return (
+      <>
+        {typeof children === "function" ? (
+          children(allProps)
+        ) : (
+          <div {...allProps} ref={ref}>
+            {children}
+          </div>
+        )}
+        <MenuOverlay
+          state={state}
+          overlayRef={overlayRef}
+          overlayProps={overlayProps}
+          restoreFocus
+          /**
+           * Context menus don't autofocus the first item in the reference impl.
+           * Note that this just defines the default value, and can always be controlled per case on the rendered Menu
+           */
+          defaultAutoFocus={true}
+        >
+          {renderMenu()}
+        </MenuOverlay>
+      </>
+    );
+  }
+);
+
+/**
+ * Data attribute name to be used to mark an element as the reference for positioning a contextual menu.
+ */
+export const MENU_POSITION_TARGET_DATA_ATTRIBUTE =
+  "data-context-menu-position-target";

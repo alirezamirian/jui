@@ -35,11 +35,7 @@ export function MenuOverlay({
   }
   return (
     <Overlay>
-      <FocusScope
-        restoreFocus={restoreFocus}
-        forceRestoreFocus={restoreFocus}
-        autoFocus
-      >
+      <FocusScope restoreFocus={restoreFocus} autoFocus>
         <MenuOverlayContext.Provider
           value={{
             ...state,

@@ -1,15 +1,31 @@
 import React, { useEffect, useRef } from "react";
 import { MenuTriggerState } from "@react-stately/menu";
 import { useOverlay } from "@react-aria/overlays";
-import { mergeProps, useLayoutEffect } from "@react-aria/utils";
+import { mergeProps } from "@react-aria/utils";
 import { useMouseEventOverlayPosition } from "@intellij-platform/core/utils/useMouseEventOverlayPosition";
 import { areInNestedOverlays } from "@intellij-platform/core/Overlay";
 
+export type UseContextMenuProps = {
+  /**
+   * Whether opening contextmenu is disabled.
+   */
+  isDisabled?: boolean;
+  /**
+   * Called when contextmenu is opened.
+   * @param args
+   */
+  onOpen?: (args: {
+    /**
+     * The target element on which contextmenu event was triggered.
+     */
+    target: Element;
+  }) => void;
+};
 /**
  * Functionality and accessibility of context menu.
  */
 export const useContextMenu = (
-  { isDisabled = false }: { isDisabled?: boolean },
+  { isDisabled = false, onOpen }: UseContextMenuProps,
   state: MenuTriggerState
 ) => {
   const containerRef = useRef<number | null>(null);
@@ -30,6 +46,7 @@ export const useContextMenu = (
   const onContextMenu = (e: React.MouseEvent<HTMLElement>) => {
     containerRef.current = e.timeStamp;
     updatePosition(e);
+    onOpen?.({ target: e.target as Element });
     e.preventDefault();
     // NOTE: we can't use offsetX/offsetY, because it would depend on the exact target that was clicked.
     if (state.isOpen) {

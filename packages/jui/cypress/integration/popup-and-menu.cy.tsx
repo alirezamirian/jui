@@ -1,6 +1,17 @@
 import React from "react";
 
-import { Button, Popup, PopupTrigger } from "@intellij-platform/core";
+import {
+  Button,
+  IconButton,
+  Item,
+  Menu,
+  MenuTrigger,
+  PlatformIcon,
+  Popup,
+  PopupManager,
+  PopupTrigger,
+  usePopupManager,
+} from "@intellij-platform/core";
 import { MenuPopupContent } from "@intellij-platform/core/Popup/story-helpers";
 
 describe("Popup and menu integration", () => {
@@ -33,5 +44,56 @@ describe("Popup and menu integration", () => {
       .first()
       .click();
     cy.wrap(onAction).should("be.calledTwice");
+  });
+
+  it("supports opening a popup as the action of a menu item", () => {
+    const Example = () => {
+      const popupManager = usePopupManager();
+      return (
+        <MenuTrigger
+          renderMenu={({ menuProps }) => (
+            <Menu
+              onAction={() => {
+                popupManager.show(
+                  <Popup>
+                    <Popup.Layout
+                      content={
+                        <Menu>
+                          <Item>Menu in popup</Item>
+                        </Menu>
+                      }
+                      header="My popup header"
+                    />
+                  </Popup>
+                );
+              }}
+              {...menuProps}
+              aria-label="Test Menu"
+            >
+              <Item>Open a popup</Item>
+            </Menu>
+          )}
+        >
+          {(triggerProps, ref) => (
+            <IconButton
+              {...triggerProps}
+              preventFocusOnPress={false}
+              aria-label="Open menu"
+              ref={ref}
+            >
+              <PlatformIcon icon="general/gearPlain" />
+            </IconButton>
+          )}
+        </MenuTrigger>
+      );
+    };
+    cy.mount(
+      <PopupManager>
+        <Example />
+      </PopupManager>
+    );
+    cy.findByRole("button", { name: "Open menu" }).click();
+    cy.contains("Open a popup").click();
+    cy.contains("My popup");
   });
 });

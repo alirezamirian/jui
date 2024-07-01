@@ -1,4 +1,5 @@
 import {
+  ActionContext,
   ContextMenuContainer,
   HighlightedTextValue,
   Item,
@@ -56,13 +57,41 @@ export const ProjectViewPane = (): React.ReactElement => {
       ? [] // FIXME
       : [...selectedKeys].filter((i): i is string => typeof i === "string");
   const activePathsProviderProps = useActivePathsProvider(selectedKeysArray);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const contextMenuTargetKey = useRef<string | undefined>();
+
+  /**
+   * A (temporary?) non-straightforward way to position popups (action groups with "none" menuPresentation")
+   * relative to the tree node content.
+   * It's implemented like this because the context menu API at the moment is too generic and disconnected from
+   * components like Tree.
+   * At minimum, this logic here can be extracted into a wrapper like TreeContextMenuContainer for reusability.
+   */
+  const getActionContext = (): ActionContext => {
+    return {
+      element:
+        containerRef.current?.querySelector(
+          `[data-key="${contextMenuTargetKey.current}"]`
+        ) ?? null,
+      event: null,
+    };
+  };
 
   return (
     <DefaultSuspense>
       {treeState?.root && (
         <ContextMenuContainer
+          ref={containerRef}
           style={{ height: "100%" }}
-          renderMenu={() => <ProjectViewContextMenu />}
+          onOpen={({ target }) =>
+            (contextMenuTargetKey.current =
+              target?.closest<HTMLElement>("[data-key]")?.dataset.key)
+          }
+          renderMenu={() => {
+            return (
+              <ProjectViewContextMenu getActionContext={getActionContext} />
+            );
+          }}
         >
           <SpeedSearchTree
             aria-label="Project structure tree"

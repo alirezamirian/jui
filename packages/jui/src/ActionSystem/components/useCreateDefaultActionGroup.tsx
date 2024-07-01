@@ -2,6 +2,7 @@ import { flatten } from "ramda";
 import React from "react";
 import { Popup, usePopupManager } from "@intellij-platform/core/Popup";
 import { SpeedSearchMenu } from "@intellij-platform/core/Menu";
+import { MENU_POSITION_TARGET_DATA_ATTRIBUTE } from "@intellij-platform/core/Menu/ContextMenuContainer";
 import { useEventCallback } from "@intellij-platform/core/utils/useEventCallback";
 import {
   ActionContext,
@@ -21,7 +22,22 @@ export const useCreateDefaultActionGroup = () => {
       context: ActionContext
     ) => {
       show(({ close }) => (
-        <Popup>
+        <Popup
+          // Maybe an option to conditionally use context-based positioning?
+          positioning={
+            context.element instanceof HTMLElement
+              ? {
+                  targetRef: {
+                    current:
+                      context.element.querySelector(
+                        `[${MENU_POSITION_TARGET_DATA_ATTRIBUTE}]`
+                      ) ?? context.element,
+                  },
+                  placement: "bottom",
+                }
+              : undefined
+          }
+        >
           <Popup.Layout
             content={
               /**
