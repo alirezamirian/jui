@@ -18,9 +18,15 @@ import { Input, InputProps } from "@intellij-platform/core/InputField/Input";
 type LabelPlacement = "above" | "before";
 
 export interface InputFieldProps
-  extends Omit<AriaFieldProps, "labelElementType">,
+  extends Omit<
+      AriaFieldProps,
+      "labelElementType" | "validationState" | "errorMessage"
+    >,
     FocusableProps,
-    Pick<InputProps, "addonBefore" | "addonAfter" | "inputRef"> {
+    Pick<
+      InputProps,
+      "addonBefore" | "addonAfter" | "inputRef" | "validationState"
+    > {
   /**
    * className applied on the field's wrapper div.
    */
@@ -76,6 +82,12 @@ export interface InputFieldProps
    * Whether to auto select the value initially
    */
   autoSelect?: boolean;
+
+  /**
+   * Validation message shown as a {@link ValidationTooltip} above the field.
+   * {@link ValidationTooltipProps#type} is defined based on `validationState`.
+   */
+  validationMessage?: React.ReactNode;
 }
 
 const StyledInputContainer = styled.div<{ labelPlacement?: LabelPlacement }>`
@@ -96,7 +108,6 @@ const StyledContextHelp = styled.div`
 
 const StyledBoxAndContextHelpWrapper = styled.div`
   display: flex;
-  width: 100%;
   flex-direction: column;
   gap: 0.25rem; /* Not checked with the reference impl */
 `;
@@ -106,6 +117,8 @@ const StyledBoxAndContextHelpWrapper = styled.div`
  */
 export const InputField = React.forwardRef(function InputField(
   {
+    validationState,
+    validationMessage,
     className,
     style,
     labelPlacement = "before",
@@ -120,7 +133,14 @@ export const InputField = React.forwardRef(function InputField(
 ): JSX.Element {
   const ref = useObjectRef(forwardedRef);
   const { fieldProps, errorMessageProps, labelProps, descriptionProps } =
-    useField(props);
+    useField({
+      ...props,
+      errorMessage: validationMessage,
+      validationState:
+        validationState === "error" || validationState === "warning"
+          ? "invalid"
+          : "valid",
+    });
 
   return (
     <StyledInputContainer
@@ -137,10 +157,12 @@ export const InputField = React.forwardRef(function InputField(
           placement="top start"
           crossOffset={36}
           showOnFocus
-          isDisabled={!props.errorMessage}
+          isDisabled={!validationMessage}
           tooltip={
-            <ValidationTooltip>
-              <div {...errorMessageProps}>{props.errorMessage}</div>
+            <ValidationTooltip
+              type={validationState !== "valid" ? validationState : undefined}
+            >
+              <div {...errorMessageProps}>{validationMessage}</div>
             </ValidationTooltip>
           }
           delay={0}
@@ -149,7 +171,7 @@ export const InputField = React.forwardRef(function InputField(
             inputRef={inputRef}
             placeholder={props.placeholder}
             disabled={props.isDisabled}
-            validationState={props.validationState}
+            validationState={validationState}
             autoSelect={props.autoSelect}
             autoFocus={props.autoFocus}
             addonAfter={addonAfter}

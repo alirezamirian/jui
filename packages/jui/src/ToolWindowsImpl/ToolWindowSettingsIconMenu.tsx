@@ -19,6 +19,7 @@ import {
   MAXIMIZE_TOOL_WINDOW_ACTION_ID,
   REMOVE_TOOL_WINDOW_FROM_SIDEBAR_ACTION_ID,
 } from "./ToolWindowActionIds";
+import { MenuTriggerProps } from "@intellij-platform/core/Menu";
 
 /**
  * Tool window gear icon menu, with a set of default actions and some extra ones.
@@ -27,7 +28,7 @@ import {
 export function ToolWindowSettingsIconMenu({
   menuProps,
 }: {
-  menuProps: React.HTMLAttributes<HTMLElement>;
+  menuProps: Parameters<MenuTriggerProps["renderMenu"]>[0]["menuProps"];
 }) {
   const { state } = useToolWindowState();
 
@@ -56,7 +57,7 @@ export function ToolWindowSettingsIconMenu({
     {
       id: "resize",
       title: "Resize",
-      presentation: "popup",
+      menuPresentation: "submenu",
       children: [...resizeActions.children, maximizeAction],
     },
     new DividerItem(),
@@ -65,8 +66,8 @@ export function ToolWindowSettingsIconMenu({
   return (
     <ActionsMenu
       actions={gearIconActions}
-      menuProps={menuProps}
       selectedKeys={[ViewModeToActionId[state.viewMode]]}
+      {...menuProps}
     />
   );
 }

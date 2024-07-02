@@ -27,16 +27,16 @@ const StyledInputBox = styled.div<{
   border: 1px solid
     ${({ theme, focused, disabled, validationState }) =>
       theme.commonColors.border({
-        focused: focused,
-        disabled: disabled,
-        invalid: validationState === "invalid",
+        focused,
+        disabled,
+        validationState,
       })};
   box-shadow: 0 0 0 0.125rem
     ${({ theme, focused = false, validationState, disabled }) =>
       disabled
         ? "transparent"
         : theme.commonColors.focusRing({
-            invalid: validationState === "invalid",
+            validationState,
             focused: focused,
           })};
   border-radius: 1px;
@@ -45,8 +45,8 @@ const StyledInputBox = styled.div<{
   ${({ appearance, validationState, disabled }) =>
     appearance === "embedded" &&
     css`
-      border-color: ${validationState !== "invalid" && "transparent"};
-      box-shadow: ${validationState !== "invalid" && "none"};
+      border-color: ${validationState !== "error" && "transparent"};
+      box-shadow: ${validationState !== "error" && "none"};
       background: ${!disabled && "transparent"};
     `};
 `;
@@ -101,7 +101,10 @@ const StyledLeftAddons = styled(StyledAddons)`
 `;
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  validationState?: ValidationState;
+  /**
+   *
+   */
+  validationState?: "valid" | "error" | "warning";
   /**
    * Whether to auto select the value initially
    */
@@ -133,7 +136,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 /**
  * Bare input, themed, and with a few extra features:
- * - Support for "invalid" state ({@param validationState}
+ * - Support for "error" and "warning" state ({@param validationState}
  * - Support for autoSelect.
  * - Disables spell check by default. It can be overwritten.
  * Use {@link InputField} for more features like an associated label, error message and context help.

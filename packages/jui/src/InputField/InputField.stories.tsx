@@ -2,6 +2,7 @@ import React from "react";
 import { Meta, StoryObj } from "@storybook/react";
 import * as inputStories from "./Input.stories";
 import { InputField, InputFieldProps } from "./InputField";
+import { dir } from "../../cypress/support/example-app";
 
 export default {
   title: "Components/InputField",
@@ -27,10 +28,17 @@ export const LabelAbove: StoryObj<InputFieldProps> = {
   },
 };
 
-export const Invalid: StoryObj<InputFieldProps> = {
+export const Error: StoryObj<InputFieldProps> = {
   render,
   args: {
-    validationState: "invalid",
+    validationState: "error",
+  },
+};
+
+export const Warning: StoryObj<InputFieldProps> = {
+  render,
+  args: {
+    validationState: "warning",
   },
 };
 
@@ -77,8 +85,8 @@ export const WithErrorMessage: StoryObj<InputFieldProps> = {
           {...props}
           value={branchName}
           onChange={setBranchName}
-          validationState={alreadyExisting ? "invalid" : "valid"}
-          errorMessage={
+          validationState={alreadyExisting ? "error" : "valid"}
+          validationMessage={
             alreadyExisting ? (
               <>
                 Branch name {branchName} already exists. <br />
@@ -94,5 +102,27 @@ export const WithErrorMessage: StoryObj<InputFieldProps> = {
   args: {
     label: "New branch name:",
     labelPlacement: "above",
+  },
+};
+
+export const WithWarningMessage: StoryObj<InputFieldProps> = {
+  render: (props) => {
+    const [name, setName] = React.useState("");
+
+    return (
+      <div style={{ marginTop: "2rem" }}>
+        <InputField
+          {...props}
+          value={name}
+          onChange={setName}
+          validationState={!name ? "warning" : "valid"}
+          validationMessage={!name ? <>Target name is not specified.</> : null}
+        />
+      </div>
+    );
+  },
+
+  args: {
+    label: "Target name:",
   },
 };

@@ -1,6 +1,7 @@
 import React from "react";
 import { styled } from "../styled";
 import { DOMAttributes } from "@react-types/shared";
+import { MENU_POSITION_TARGET_DATA_ATTRIBUTE } from "@intellij-platform/core/Menu/ContextMenuContainer";
 
 const GAP = "0.1875rem";
 const StyledItemLayout = styled.div`
@@ -45,7 +46,12 @@ const StyledGroup = styled.span.attrs({
 export const ItemLayout = (
   props: { children: React.ReactNode } & DOMAttributes
 ) => {
-  return <StyledItemLayout {...props} />;
+  return (
+    <StyledItemLayout
+      {...{ [MENU_POSITION_TARGET_DATA_ATTRIBUTE]: true }}
+      {...props}
+    />
+  );
 };
 
 /**

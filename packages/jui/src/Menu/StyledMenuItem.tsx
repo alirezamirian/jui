@@ -50,7 +50,7 @@ export const StyledMenuItem = styled.li<{
   ${({ isDisabled }) => isDisabled && disabledStyle};
 
   padding-right: 1.25rem;
-  line-height: 1.5; // to make the item have the right height
+  line-height: 1.3125rem; // to make the item have the right height
   display: flex;
   align-items: center;
 `;

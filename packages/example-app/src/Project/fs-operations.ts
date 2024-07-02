@@ -49,14 +49,50 @@ export const deleteFilesCallback =
     return Promise.all(filePaths.map(deleteFile));
   };
 
+export const deleteDirCallback =
+  (callbackInterface: CallbackInterface) => async (dir: string) => {
+    // TODO: use task API
+    const { refresh, reset, snapshot } = callbackInterface;
+    const deleteFile = deleteFileCallback(callbackInterface);
+    const releaseSnapshot = snapshot.retain();
+    const recursivelyDeleteDir = async (dirname: string) => {
+      const pathnames = await fs.promises.readdir(dirname);
+      await Promise.all(
+        pathnames.map(async (pathname) => {
+          const fullpath = path.resolve(dirname, pathname);
+          const stat = await fs.promises.stat(fullpath);
+          if (stat.isFile()) {
+            // potential improvement: refreshing dir content could wait until all files are deleted.
+            await deleteFile(fullpath);
+          } else if (stat.isDirectory()) {
+            await recursivelyDeleteDir(fullpath);
+          }
+        })
+      );
+      await fs.promises.rmdir(dirname);
+      refresh(dirContentState(dir));
+    };
+    try {
+      try {
+        await recursivelyDeleteDir(dir);
+      } catch (e) {
+        console.error(`error in deleting directory ${dir}`, e);
+      } finally {
+        refresh(dirContentState(path.dirname(dir))); // TODO(fs.watch): better done separately using fs.watch
+      }
+    } finally {
+      releaseSnapshot();
+    }
+  };
+
 export const createFileCallback = (callbackInterface: CallbackInterface) => {
   const refreshFileStatus = refreshFileStatusCallback(callbackInterface);
-  return async (filePath: string) => {
+  return async (destinationDir: string, filename: string) => {
+    const filePath = path.join(destinationDir, filename);
     const { snapshot, refresh, reset } = callbackInterface;
     const releaseSnapshot = snapshot.retain();
     try {
-      const destinationDir = path.dirname(filePath);
-      await ensureDir(fs.promises, destinationDir);
+      await ensureDir(fs.promises, path.dirname(filePath));
       if (await fs.promises.exists(filePath)) {
         throw new Error(`File ${filePath} already exists`);
       }
@@ -65,6 +101,25 @@ export const createFileCallback = (callbackInterface: CallbackInterface) => {
       (await snapshot.getPromise(editorManagerState)).openPath(filePath);
       await refreshFileStatus(filePath);
       refresh(dirContentState(destinationDir));
+    } finally {
+      releaseSnapshot();
+    }
+  };
+};
+
+export const createDirectoryCallback = (
+  callbackInterface: CallbackInterface
+) => {
+  return async (destination: string, dirPath: string) => {
+    const { snapshot, refresh, reset } = callbackInterface;
+    const releaseSnapshot = snapshot.retain();
+    const fullpath = path.join(destination, dirPath);
+    try {
+      if (await fs.promises.exists(fullpath)) {
+        throw new Error(`File ${fullpath} already exists`);
+      }
+      await ensureDir(fs.promises, fullpath);
+      refresh(dirContentState(destination));
     } finally {
       releaseSnapshot();
     }

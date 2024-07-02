@@ -1,4 +1,6 @@
 import {
+  ActionContext,
+  ContextMenuContainer,
   HighlightedTextValue,
   Item,
   ItemLayout,
@@ -30,6 +32,7 @@ import {
 } from "./ProjectView.state";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
 import { useLatestRecoilValue } from "../recoil-utils";
+import { ProjectViewContextMenu } from "./ProjectViewContextMenu";
 
 export const ProjectViewPane = (): React.ReactElement => {
   const project = useRecoilValue(currentProjectState);
@@ -54,56 +57,89 @@ export const ProjectViewPane = (): React.ReactElement => {
       ? [] // FIXME
       : [...selectedKeys].filter((i): i is string => typeof i === "string");
   const activePathsProviderProps = useActivePathsProvider(selectedKeysArray);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const contextMenuTargetKey = useRef<string | undefined>();
+
+  /**
+   * A (temporary?) non-straightforward way to position popups (action groups with "none" menuPresentation")
+   * relative to the tree node content.
+   * It's implemented like this because the context menu API at the moment is too generic and disconnected from
+   * components like Tree.
+   * At minimum, this logic here can be extracted into a wrapper like TreeContextMenuContainer for reusability.
+   */
+  const getActionContext = (): ActionContext => {
+    return {
+      element:
+        containerRef.current?.querySelector(
+          `[data-key="${contextMenuTargetKey.current}"]`
+        ) ?? null,
+      event: null,
+    };
+  };
 
   return (
     <DefaultSuspense>
       {treeState?.root && (
-        <SpeedSearchTree
-          aria-label="Project structure tree"
-          treeRef={treeRef}
-          {...activePathsProviderProps}
-          items={[treeState.root] as ProjectTreeNode[]}
-          onAction={(path) => {
-            editor.openPath(`${path}`);
+        <ContextMenuContainer
+          ref={containerRef}
+          style={{ height: "100%" }}
+          onOpen={({ target }) =>
+            (contextMenuTargetKey.current =
+              target?.closest<HTMLElement>("[data-key]")?.dataset.key)
+          }
+          renderMenu={() => {
+            return (
+              <ProjectViewContextMenu getActionContext={getActionContext} />
+            );
           }}
-          fillAvailableSpace
-          autoFocus
-          selectionMode="multiple"
-          selectedKeys={selectedKeys}
-          onSelectionChange={setSelectedKeys}
-          expandedKeys={expandedKeys}
-          onExpandedChange={setExpandedKeys}
         >
-          {(item) => (
-            <Item
-              key={item.path}
-              textValue={item.name}
-              childItems={
-                "children" in item ? sortItems(item.children) : undefined
-              }
-            >
-              <ItemLayout>
-                {<ProjectViewNodeIcon node={item} />}
-                {item.type === "project" ? (
-                  <>
-                    <b>
-                      <HighlightedTextValue />
-                    </b>
-                    <ItemLayout.Hint>{project.path}</ItemLayout.Hint>
-                  </>
-                ) : (
-                  <FileTreeNodeText node={item} />
-                )}
-                {/* {"loadingState" in item &&
+          <SpeedSearchTree
+            aria-label="Project structure tree"
+            treeRef={treeRef}
+            {...activePathsProviderProps}
+            items={[treeState.root] as ProjectTreeNode[]}
+            onAction={(path) => {
+              editor.openPath(`${path}`);
+            }}
+            fillAvailableSpace
+            autoFocus
+            selectionMode="multiple"
+            selectedKeys={selectedKeys}
+            onSelectionChange={setSelectedKeys}
+            expandedKeys={expandedKeys}
+            onExpandedChange={setExpandedKeys}
+          >
+            {(item) => (
+              <Item
+                key={item.path}
+                textValue={item.name}
+                childItems={
+                  "children" in item ? sortItems(item.children) : undefined
+                }
+              >
+                <ItemLayout>
+                  {<ProjectViewNodeIcon node={item} />}
+                  {item.type === "project" ? (
+                    <>
+                      <b>
+                        <HighlightedTextValue />
+                      </b>
+                      <ItemLayout.Hint>{project.path}</ItemLayout.Hint>
+                    </>
+                  ) : (
+                    <FileTreeNodeText node={item} />
+                  )}
+                  {/* {"loadingState" in item &&
                       item.loadingState === "loading" && (
                         <TreeNodeHint>
                           <Img height={16} src={loading} darkSrc={loadingDark} />
                         </TreeNodeHint>
                       )}*/}
-              </ItemLayout>
-            </Item>
-          )}
-        </SpeedSearchTree>
+                </ItemLayout>
+              </Item>
+            )}
+          </SpeedSearchTree>
+        </ContextMenuContainer>
       )}
     </DefaultSuspense>
   );

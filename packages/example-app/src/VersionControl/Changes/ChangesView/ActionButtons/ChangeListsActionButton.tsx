@@ -1,11 +1,12 @@
 import React from "react";
 import {
+  ActionsMenu,
   IconButtonWithMenu,
   PlatformIcon,
+  SpeedSearchMenu,
   useAction,
 } from "@intellij-platform/core";
 import { VcsActionIds } from "../../../VcsActionIds";
-import { ActionsMenu } from "@intellij-platform/core";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 export const ChangeListsActionButton = (): React.ReactElement => {
@@ -20,7 +21,11 @@ export const ChangeListsActionButton = (): React.ReactElement => {
   return (
     <IconButtonWithMenu
       renderMenu={({ menuProps }) => (
-        <ActionsMenu menuProps={menuProps} actions={actions} />
+        <ActionsMenu actions={actions}>
+          {(actionMenuProps) => (
+            <SpeedSearchMenu {...menuProps} {...actionMenuProps} />
+          )}
+        </ActionsMenu>
       )}
     >
       <PlatformIcon icon="vcs/changelist.svg" />

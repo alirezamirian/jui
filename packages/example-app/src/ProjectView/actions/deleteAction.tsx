@@ -20,7 +20,11 @@ import {
 } from "../../Project/project.state";
 import { selectedNodesState } from "../ProjectView.state";
 import { findRootPaths } from "../../path-utils";
-import { deleteFilesCallback } from "../../Project/fs-operations";
+import {
+  deleteDirCallback,
+  deleteFileCallback,
+  deleteFilesCallback,
+} from "../../Project/fs-operations";
 import { IntlMessageFormat } from "intl-messageformat";
 
 const fileCountMsg = new IntlMessageFormat(
@@ -40,13 +44,15 @@ const dirCountMsg = new IntlMessageFormat(
 );
 
 export const deleteActionState = selector({
-  key: `action.${CommonActionId.Delete}`,
+  key: `action.${CommonActionId.DELETE}`,
   get: ({ get, getCallback }): ActionDefinition => ({
-    id: CommonActionId.Delete,
+    id: CommonActionId.DELETE,
     title: "Delete",
     description: "Delete selected item",
     isDisabled: !get(activePathExistsState),
     actionPerformed: getCallback(({ snapshot }) => async () => {
+      const deleteDir = getCallback(deleteDirCallback);
+      const deleteFile = getCallback(deleteFileCallback);
       const selectedNodes = snapshot.getLoadable(selectedNodesState).getValue();
       const windowManager = snapshot
         .getLoadable(windowManagerRefState)
@@ -98,7 +104,8 @@ export const deleteActionState = selector({
           ),
         });
         if (confirmed) {
-          notImplemented();
+          directories.forEach((pathname) => deleteDir(pathname));
+          filePaths.forEach((pathname) => deleteFile(pathname));
         }
       } else {
         windowManager?.open(({ close }) => (

@@ -343,11 +343,11 @@ export class Theme<P extends string = string> {
       border: ({
         focused,
         disabled,
-        invalid,
+        validationState,
       }: {
         focused?: boolean;
         disabled?: boolean;
-        invalid?: boolean;
+        validationState?: "error" | "warning" | "valid";
       } = {}) => {
         if (disabled) {
           return (
@@ -358,8 +358,11 @@ export class Theme<P extends string = string> {
             )
           );
         }
-        if (invalid) {
-          return this.commonColors.focusRing({ invalid: true, focused });
+        if (validationState === "error" || validationState === "warning") {
+          return this.commonColors.focusRing({
+            validationState,
+            focused,
+          });
         }
         return focused
           ? theme.color("Component.focusedBorderColor") ||
@@ -376,13 +379,13 @@ export class Theme<P extends string = string> {
 
       // corresponding to JBUI.CurrentTheme.Focus https://github.com/JetBrains/intellij-community/blob/4a3c219eb390b90229bdde75e4abf11bc04e5e2a/platform/util/ui/src/com/intellij/util/ui/JBUI.java#LL1414C3-L1414C3
       focusRing: ({
-        invalid,
+        validationState,
         focused,
       }: {
-        invalid?: boolean;
+        validationState?: "error" | "warning" | "valid";
         focused?: boolean;
       } = {}) => {
-        if (invalid) {
+        if (validationState === "error") {
           if (focused) {
             return (
               theme.color("Component.errorFocusColor") ||
@@ -398,6 +401,24 @@ export class Theme<P extends string = string> {
               "Focus.inactiveErrorBorderColor" as UnknownThemeProp<"Focus.inactiveErrorBorderColor">
             ) ||
             "#ebbcbc"
+          );
+        }
+        if (validationState === "warning") {
+          if (focused) {
+            return (
+              theme.color("Component.warningFocusColor") ||
+              theme.color(
+                "Focus.activeWarningBorderColor" as UnknownThemeProp<"Focus.activeWarningBorderColor">
+              ) ||
+              "#e2a53a"
+            );
+          }
+          return (
+            theme.color("Component.inactiveWarningFocusColor") ||
+            theme.color(
+              "Focus.inactiveWarningBorderColor" as UnknownThemeProp<"Focus.inactiveWarningBorderColor">
+            ) ||
+            "#ffd385"
           );
         }
         return focused

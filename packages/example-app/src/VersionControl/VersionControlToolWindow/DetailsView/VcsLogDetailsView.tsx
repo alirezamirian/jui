@@ -1,4 +1,4 @@
-import React, { HTMLAttributes, useMemo } from "react";
+import React, { HTMLAttributes } from "react";
 import {
   atom,
   isRecoilValue,
@@ -10,7 +10,6 @@ import {
 } from "recoil";
 import {
   ActionButton,
-  ActionDefinition,
   ActionGroupMenu,
   ActionsProvider,
   ActionTooltip,
@@ -24,7 +23,6 @@ import {
   Toolbar,
   TooltipTrigger,
   useActionGroup,
-  useActions,
   useCreateDefaultActionGroup,
   useTreeActions,
 } from "@intellij-platform/core";
@@ -42,6 +40,7 @@ import {
 } from "../vcs-logs.state";
 import { VcsActionIds } from "../../VcsActionIds";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
+import { useRedefineAction } from "../../../useRedefineAction";
 
 const splitViewSizeState = atom({
   key: "vcs/toolwindow/splitViewSize",
@@ -101,7 +100,7 @@ export function VcsLogDetailsView({ tabKey }: { tabKey: string }) {
         createActionGroup({
           id: GROUP_BY_ACTION_GROUP_ID,
           title: "Group By",
-          presentation: "titledSection",
+          menuPresentation: "titledSection",
           icon: <PlatformIcon icon="actions/groupBy.svg" />,
           children: availableGroupings.map((grouping) => ({
             id: groupingActionId(grouping),
@@ -114,7 +113,7 @@ export function VcsLogDetailsView({ tabKey }: { tabKey: string }) {
         }),
         createActionGroup({
           id: LAYOUT_ACTION_GROUP_ID,
-          presentation: "titledSection",
+          menuPresentation: "titledSection",
           title: "Layout",
           children: [
             useRedefineAction(
@@ -220,39 +219,15 @@ function VcsLogsDetailsViewOptionsMenu({
   const selectedKeys = useRecoilValue(selectedKeysState);
   return (
     group && (
-      <ActionGroupMenu
-        menuComponent={SpeedSearchMenu}
-        menuProps={menuProps}
-        actionGroup={group}
-        selectedKeys={selectedKeys}
-      />
+      <ActionGroupMenu actionGroup={group}>
+        {(actionMenuProps) => (
+          <SpeedSearchMenu
+            {...menuProps}
+            {...actionMenuProps}
+            selectedKeys={selectedKeys}
+          />
+        )}
+      </ActionGroupMenu>
     )
   );
-}
-
-/**
- * Currently, action groups are expected to **define** the child actions, instead of just referencing already defined
- * actions. In such model, where groups are not just a grouping of existing actions, this hook allows for redefining
- * existing actions to be used within a group. Kind of a temporary solution while action system evolves.
- */
-function useRedefineAction(
-  actionId: string,
-  newId: string
-): ActionDefinition | null {
-  const actions = useActions();
-
-  const action = useMemo(() => actions.find(({ id }) => id === actionId), []);
-  if (!action) {
-    return null;
-  }
-  const { perform, id, ...commonProperties } = action;
-  return {
-    ...commonProperties,
-    id: newId,
-    useShortcutsOf: id,
-    isSearchable: false,
-    actionPerformed: (context) => {
-      perform(context);
-    },
-  };
 }

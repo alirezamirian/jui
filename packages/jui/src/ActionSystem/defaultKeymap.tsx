@@ -235,11 +235,38 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
-  [CommonActionId.Delete]: [
+  [CommonActionId.DELETE]: [
     {
       type: "keyboard",
       firstKeyStroke: {
         code: "Backspace",
+      },
+    },
+  ],
+  [CommonActionId.COPY]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        code: "KeyC",
+      },
+    },
+  ],
+  [CommonActionId.CUT]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        code: "KeyX",
+      },
+    },
+  ],
+  [CommonActionId.PASTE]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        code: "KeyV",
       },
     },
   ],

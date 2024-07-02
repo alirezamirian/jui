@@ -38,4 +38,6 @@ export const VcsActionIds = {
   SHOW_DIFF_PREVIEW: "Vcs.Log.ShowDiffPreview",
   PRESENTATION_SETTINGS: "Vcs.PresentationSettings",
   FILE_HISTORY_PRESENTATION_SETTINGS: "Vcs.FileHistory.PresentationSettings",
+
+  CopyPathFromRepositoryRootProvider: "CopyPathFromRepositoryRootProvider",
 };

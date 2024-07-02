@@ -61,7 +61,7 @@ export function CreateNewBranchWindow({ close }: { close: () => void }) {
 
   const error = validateBranchName(branches, branchName);
   const isValid = !error || (error === "EXISTING" && overwrite);
-  const validationState = !isValid && isErrorVisible ? "invalid" : "valid";
+  const validationState = !isValid && isErrorVisible ? "error" : "valid";
 
   const create = () => {
     if (isValid) {
@@ -113,8 +113,8 @@ export function CreateNewBranchWindow({ close }: { close: () => void }) {
                 setIsErrorVisible(true);
               }}
               validationState={validationState}
-              errorMessage={
-                validationState === "invalid" &&
+              validationMessage={
+                validationState === "error" &&
                 error &&
                 ErrorMessages[error](branchName)
               }
@@ -144,7 +144,7 @@ export function CreateNewBranchWindow({ close }: { close: () => void }) {
                   variant="default"
                   type="submit"
                   form="create_branch_form" // Using form in absence of built-in support for default button
-                  isDisabled={validationState === "invalid"}
+                  isDisabled={validationState === "error"}
                 >
                   Create
                 </Button>

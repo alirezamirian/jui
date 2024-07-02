@@ -55,7 +55,7 @@ export function RenameBranchWindow({
   const renameBranch = useRenameBranch();
 
   const error = validateBranchName(branches, newBranchName);
-  const validationState = error && touched ? "invalid" : "valid";
+  const validationState = error && touched ? "error" : "valid";
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -93,8 +93,8 @@ export function RenameBranchWindow({
                   setTouched(true);
                 }}
                 validationState={validationState}
-                errorMessage={
-                  error && validationState === "invalid"
+                validationMessage={
+                  error && validationState === "error"
                     ? ErrorMessages[error]?.(branchName)
                     : undefined
                 }

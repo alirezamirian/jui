@@ -34,7 +34,7 @@ export default defineConfig({
       // eslint-disable-next-line no-undef
       process.env.CI === "true"
         ? "http://localhost:1234/" // example-app serve port
-        : "http://localhost:6008/iframe.html?id=demos-example-app--example-app",
+        : "http://localhost:6008/iframe.html?id=demos-example-app--example-app&viewMode=story",
     setupNodeEvents(on, config) {
       initPlugin(on, config);
       addPlaybackTask(on, config);

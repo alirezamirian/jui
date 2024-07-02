@@ -43,9 +43,9 @@ const deletablePathsUnderChangesTreeSelectionState = selector({
 });
 
 const deleteActionState = selector({
-  key: `vcs.changesView.action.${CommonActionId.Delete}`,
+  key: `vcs.changesView.action.${CommonActionId.DELETE}`,
   get: ({ get, getCallback }): ActionDefinition => ({
-    id: CommonActionId.Delete,
+    id: CommonActionId.DELETE,
     title: "Delete",
     description: "Delete selected item",
     isDisabled: get(deletablePathsUnderChangesTreeSelectionState).length === 0,

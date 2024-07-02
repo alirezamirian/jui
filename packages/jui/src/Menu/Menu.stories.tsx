@@ -238,9 +238,10 @@ const StyledContainer = styled.div`
 
 export const ContextMenu: StoryObj<{
   children?: ReactNode;
+  noScroll?: boolean;
   menuProps?: Partial<MenuProps<object>>;
 }> = {
-  render: ({ children, menuProps = {} }) => {
+  render: ({ children, noScroll, menuProps = {} }) => {
     return (
       <>
         <div
@@ -286,7 +287,9 @@ export const ContextMenu: StoryObj<{
             </Menu>
           )}
         >
-          <StyledContainer>Right click somewhere. {children}</StyledContainer>
+          <StyledContainer style={{ height: noScroll ? "75vh" : undefined }}>
+            Right click somewhere. {children}
+          </StyledContainer>
         </ContextMenuContainer>
       </>
     );

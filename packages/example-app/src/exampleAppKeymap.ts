@@ -131,4 +131,22 @@ export const exampleAppKeymap: Keymap = {
       },
     },
   ],
+  CopyPaths: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta", "Shift"],
+        code: "KeyC",
+      },
+    },
+  ],
+  NewElement: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        code: "KeyN",
+      },
+    },
+  ],
 };

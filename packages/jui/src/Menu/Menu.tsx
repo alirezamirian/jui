@@ -74,7 +74,13 @@ export interface MenuProps<T>
  *  Note that MenuOverlayContext could be used directly in action handlers too, but baking it into the menu makes it
  *  much more convenient, which seems more important than breaking the nice separation between Menu and MenuTrigger.
  */
-export const MenuOverlayContext = React.createContext({ close: () => {} });
+export const MenuOverlayContext = React.createContext<{
+  close: () => void;
+  defaultAutoFocus: MenuProps<unknown>["autoFocus"];
+}>({
+  close: () => {},
+  defaultAutoFocus: undefined,
+});
 export const MenuContext = React.createContext<
   Pick<
     MenuProps<unknown>,
@@ -97,7 +103,8 @@ export function useMenu<T>(
   state: TreeState<T>,
   ref: RefObject<HTMLElement>
 ) {
-  const { close } = useContext(MenuOverlayContext);
+  const { close, defaultAutoFocus } = useContext(MenuOverlayContext);
+  const autoFocus = props.autoFocus ?? defaultAutoFocus;
   const onClose = () => {
     props.onClose?.();
     close();
@@ -116,12 +123,12 @@ export function useMenu<T>(
   };
   const menuContextValue: React.ContextType<typeof MenuContext> = {
     submenuBehavior,
-    autoFocus: props.autoFocus,
+    autoFocus,
     onAction,
     onClose,
   };
   const { menuProps } = useMenuAria(
-    { ...props, onAction, onClose },
+    { ...props, onAction, onClose, autoFocus },
     state,
     ref
   );
