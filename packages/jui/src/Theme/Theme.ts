@@ -21,6 +21,7 @@ enum CssProperties {
   CURRENT_FOREGROUND = "--jui-foreground",
   CURRENT_BACKGROUND = "--jui-background",
 }
+const COMPONENT_ARC = 5;
 
 const defaultValues: { [key in KnownThemePropertyPath]?: string } = {
   "*.disabledForeground": "#8C8C8C",
@@ -47,6 +48,13 @@ export class Theme<P extends string = string> {
   private readonly DEFAULTS;
 
   public CssProperties = CssProperties;
+
+  /**
+   * Default border radius for components
+   */
+  borderRadius = {
+    default: COMPONENT_ARC / 2,
+  };
 
   constructor(
     public readonly themeJson: ThemeJson,

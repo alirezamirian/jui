@@ -90,7 +90,7 @@ export interface InputFieldProps
   validationMessage?: React.ReactNode;
 }
 
-const StyledInputContainer = styled.div<{ labelPlacement?: LabelPlacement }>`
+const StyledLabelContainer = styled.div<{ labelPlacement?: LabelPlacement }>`
   display: inline-flex;
   flex-direction: ${({ labelPlacement }) =>
     labelPlacement === "above" ? "column" : "row"};
@@ -143,7 +143,7 @@ export const InputField = React.forwardRef(function InputField(
     });
 
   return (
-    <StyledInputContainer
+    <StyledLabelContainer
       ref={ref}
       labelPlacement={labelPlacement}
       className={className}
@@ -190,6 +190,6 @@ export const InputField = React.forwardRef(function InputField(
           </StyledContextHelp>
         )}
       </StyledBoxAndContextHelpWrapper>
-    </StyledInputContainer>
+    </StyledLabelContainer>
   );
 });

@@ -1,0 +1,121 @@
+---
+---
+
+# Dropdown
+
+`Dropdown` component implements [Drop-Down List](https://plugins.jetbrains.com/docs/intellij/drop-down.html), which is
+similar to [html select](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select) in web.
+It's also known as non-searchable [ComboBox][intellij-platform-combobox], in the reference implementation.
+
+See also:
+
+- `ComboBox`
+
+### Features
+
+- A label to be associated with the dropdown, placed before or above the dropdown.
+  [See the spec](https://plugins.jetbrains.com/docs/intellij/drop-down.html#label).
+- Grouping options into sections (See "With sections" example below).
+- Invalid state (see "Validated" example below).
+
+#### Remaining
+
+### Live example
+
+```jsx live themed
+<div
+  style={{
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "start",
+    gap: "1rem",
+    flexWrap: "wrap",
+  }}
+>
+  <Dropdown label="Output level:" defaultSelectedKey="Info">
+    <Item key="Debug">Debug</Item>
+    <Item key="Info">Info</Item>
+    <Item key="Warning">Warning</Item>
+    <Item key="Error">Error</Item>
+  </Dropdown>
+
+  <Dropdown label="Validated:" isInvalid defaultSelectedKey="Info">
+    <Item key="Debug">Debug</Item>
+    <Item key="Info">Info</Item>
+    <Item key="Warning">Warning</Item>
+    <Item key="Error">Error</Item>
+  </Dropdown>
+
+  <Dropdown label="With sections" defaultSelectedKey="project">
+    <Section title="Stored in Project">
+      <Item key="project">Project</Item>
+    </Section>
+    <Section title="Stored in IDE">
+      <Item>Default</Item>
+      <Item>Custom code style</Item>
+      <Item>Emac</Item>
+    </Section>
+  </Dropdown>
+
+  <Dropdown
+    label="Module SDK:"
+    items={[
+      {
+        name: "Project SDK",
+        hint: "corretto-11",
+      },
+      {
+        name: "openjdk-22",
+        hint: 'Java version "22.0.1"',
+      },
+      {
+        name: "12",
+        hint: "Oracle OpenJDK version 12.0.1",
+      },
+    ]}
+    defaultSelectedKey="Project SDK"
+  >
+    {({ name, hint }) => (
+      <Item key={name} textValue={`${name} ${hint}`}>
+        <ItemLayout>
+          <PlatformIcon icon="nodes/Module.svg" />
+          {name}
+          <ItemLayout.Hint>{hint}</ItemLayout.Hint>
+        </ItemLayout>
+      </Item>
+    )}
+  </Dropdown>
+
+  <Dropdown
+    label="label placed above:"
+    labelPlacement="above"
+    defaultSelectedKey="option2"
+  >
+    <Item key="option1">Option 1</Item>
+    <Item key="option2">Option 2</Item>
+    <Item key="option3">Option 3</Item>
+    <Item key="option4">Option 4</Item>
+  </Dropdown>
+</div>
+```
+
+## Known differences
+
+There are a few differences between `Dropdown` and ([the reference implementation][intellij-platform-combobox]).
+
+### Sizing based on the options
+
+Swing implementation of ComboBox sets the size of the combobox trigger [based on the options][swing-combobox-sizing].
+That requires calculating the size of the options before the dropdown menu is opened, which is not straightforward,
+and doesn't really seem necessary.
+
+### Selection change while navigating options
+
+In [the reference implementation][intellij-platform-combobox],
+the selected value changes as you navigate through the options by keyboard.
+It's not the case however, when an option is focused by being hovered over with the mouse.
+Changing selected value when options are navigated by keyboard is not implemented due to the UX benefit not being clear
+and to avoid the imposed complications in the implementation.
+
+[intellij-platform-combobox]: https://github.com/JetBrains/intellij-community/blob/master/platform/platform-api/src/com/intellij/openapi/ui/ComboBox.java
+[swing-combobox-sizing]: https://docs.oracle.com/javase/8/docs/api/javax/swing/plaf/basic/BasicComboBoxUI.html#getDisplaySize--

@@ -5,7 +5,7 @@ type StyledListProps = {
   fillAvailableSpace?: boolean;
 };
 export const StyledList = styled.div
-  .attrs<StyledListProps>({ role: "list" })
+  .attrs<StyledListProps>((props) => ({ role: props.role || "list" }))
   .withConfig<StyledListProps>({
     shouldForwardProp: (prop) => prop !== "fillAvailableSpace",
   })<StyledListProps>`

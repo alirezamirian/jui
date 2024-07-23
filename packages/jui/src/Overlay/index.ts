@@ -14,3 +14,4 @@ export * from "./OverlayMoveHandle";
 export * from "./OverlayResizeHandles";
 export * from "./bounds-helpers";
 export * from "./Overlay";
+export { Popover, type PopoverProps } from "./Popover";
