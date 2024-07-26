@@ -108,7 +108,10 @@ export default function Home(): JSX.Element {
               </SectionType.Subtitle>
             </PageSection2.Container>
             <ExampleWindowFrame>
-              <LazyExampleApp height="calc(100vh - 200px)" />
+              <LazyExampleApp
+                height="calc(100vh - 200px)"
+                autoCloneSampleRepo
+              />
             </ExampleWindowFrame>
           </PageSection2>
         </main>
