@@ -178,7 +178,9 @@ export const Default = {
   },
 };
 
-const open = (toolWindow: typeof windows[number]): typeof windows[number] => ({
+const open = (
+  toolWindow: (typeof windows)[number]
+): (typeof windows)[number] => ({
   ...toolWindow,
   initialState: { ...toolWindow.initialState, isVisible: true },
 });

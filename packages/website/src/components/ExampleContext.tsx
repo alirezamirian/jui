@@ -10,6 +10,7 @@ export type ExampleContextThemeName = "light" | "darcula" | "highContrast";
 
 export const ExampleContext: React.FC<{
   themeName?: ExampleContextThemeName;
+  children?: React.ReactNode;
 }> = ({ children, themeName = "darcula" }) => {
   const themeJson = (
     {

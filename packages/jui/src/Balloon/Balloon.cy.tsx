@@ -18,7 +18,9 @@ body{
   padding: 10px;
 }
 `;
-const WithGlobalPadding: React.FC = ({ children }) => (
+const WithGlobalPadding: React.FC<{ children?: React.ReactNode }> = ({
+  children,
+}) => (
   <>
     <GlobalStyles />
     {children}
@@ -82,7 +84,7 @@ describe("Balloon", () => {
   });
 
   it("expands when clicked anywhere on the body, including the spacing around it", () => {
-    const checkClickExpands = (...args: Parameters<typeof cy["click"]>) => {
+    const checkClickExpands = (...args: Parameters<(typeof cy)["click"]>) => {
       cy.mount(
         <WithGlobalPadding>
           <Default data-testid="balloon" />
@@ -100,7 +102,7 @@ describe("Balloon", () => {
   });
 
   it("collapses when clicked anywhere on the footer, including the spacing around it", () => {
-    const checkClickCollapses = (...args: Parameters<typeof cy["click"]>) => {
+    const checkClickCollapses = (...args: Parameters<(typeof cy)["click"]>) => {
       cy.mount(
         <WithGlobalPadding>
           <Default data-testid="balloon" defaultExpanded />

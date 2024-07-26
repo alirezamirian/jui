@@ -43,6 +43,7 @@ type BalloonElement = ReactElement<BalloonProps, typeof Balloon>;
 export interface BalloonManagerProps {
   disablePortal?: boolean;
   BalloonsContainer?: React.ElementType;
+  children?: React.ReactNode;
 }
 
 /**

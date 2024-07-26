@@ -30,26 +30,27 @@ export default {
   },
 } as Meta<ListProps<object>>;
 
-const renderInPane = (props: ListProps<typeof legends[number]>) => (
+const renderInPane = (props: ListProps<(typeof legends)[number]>) => (
   <Pane>
     <List {...props} />
   </Pane>
 );
-export const SingleSelection: StoryObj<ListProps<typeof legends[number]>> = {
+export const SingleSelection: StoryObj<ListProps<(typeof legends)[number]>> = {
   render: renderInPane,
   args: {
     selectionMode: "single",
   },
 };
 
-export const allowEmptySelection: StoryObj<ListProps<typeof legends[number]>> =
-  {
-    render: renderInPane,
-    args: {
-      selectionMode: "single",
-      allowEmptySelection: true,
-    },
-  };
+export const allowEmptySelection: StoryObj<
+  ListProps<(typeof legends)[number]>
+> = {
+  render: renderInPane,
+  args: {
+    selectionMode: "single",
+    allowEmptySelection: true,
+  },
+};
 
 export const WithConnectedInput = commonListStories.withConnectedInput(List);
 

@@ -7,7 +7,7 @@ import { useContextMenu, UseContextMenuProps } from "./useContextMenu";
 import { MenuOverlay } from "./MenuOverlay";
 
 interface ContextMenuContainerProps
-  extends HTMLProps<HTMLDivElement>,
+  extends Omit<HTMLProps<HTMLDivElement>, "children">,
     UseContextMenuProps {
   /**
    * Will be called to return the Menu when context menu is triggered. Use {@link Menu} component to render a menu.

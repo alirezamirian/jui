@@ -180,7 +180,7 @@ export const Input = React.forwardRef(function Input(
 
   useEffect(() => {
     if (autoSelect) {
-      inputRef.current.select();
+      inputRef.current?.select();
     }
   }, [autoSelect]);
 
@@ -195,7 +195,7 @@ export const Input = React.forwardRef(function Input(
         onMouseDown: (event: MouseEvent) => {
           if (event.target !== inputRef.current) {
             event.preventDefault();
-            inputRef.current.focus();
+            inputRef.current?.focus();
           }
         },
       })}

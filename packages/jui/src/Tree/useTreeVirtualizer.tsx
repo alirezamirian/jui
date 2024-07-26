@@ -5,6 +5,7 @@ import { TreeState } from "@react-stately/tree";
 import { VirtualizerProps } from "@react-aria/virtualizer";
 import { LayoutInfo, Rect, Size } from "@react-stately/virtualizer";
 import { VariableWidthListLayout } from "@intellij-platform/core/VariableWidthListLayout";
+import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 class FlattenedTreeLayout<T> extends VariableWidthListLayout<T> {
   buildChild(node: Node<T>, x: number, y: number): LayoutNode {
@@ -32,9 +33,9 @@ class FlattenedTreeLayout<T> extends VariableWidthListLayout<T> {
      * This needs to be maintained with version upgrades, until TreeLayout is supported:
      * https://github.com/adobe/react-spectrum/issues/2396
      */
-    const visibleNodes = [...this.collection.getKeys()].map((key) =>
-      this.collection.getItem(key)
-    );
+    const visibleNodes = [...this.collection.getKeys()]
+      .map((key) => this.collection.getItem(key))
+      .filter(notNull);
     for (let node of visibleNodes) {
       let layoutNode = this.buildChild(node, 0, y);
       y = layoutNode.layoutInfo.rect.maxY;

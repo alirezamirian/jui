@@ -189,6 +189,7 @@ export const Balloon = ({
  * If enabled wraps its children in a clickable area (with the expand/collapse arrow),f for toggling expanded state.
  */
 const ToggleWrapper: React.FC<{
+  children?: React.ReactNode;
   enabled: boolean;
   expanded: boolean;
   Component?: typeof StyledToggleExpandButtonContainer;

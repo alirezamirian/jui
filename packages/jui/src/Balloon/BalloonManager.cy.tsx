@@ -10,7 +10,9 @@ body{
   padding: 10px;
 }
 `;
-const WithGlobalPadding: React.FC = ({ children }) => (
+const WithGlobalPadding: React.FC<{ children?: React.ReactNode }> = ({
+  children,
+}) => (
   <>
     <GlobalStyles />
     {children}

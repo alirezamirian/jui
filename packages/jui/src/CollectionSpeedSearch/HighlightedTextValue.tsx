@@ -11,10 +11,10 @@ type CollectionSpeedSearchItemContextValue = {
 const CollectionSpeedSearchItemContext =
   React.createContext<null | CollectionSpeedSearchItemContextValue>(null);
 
-export const SpeedSearchItemHighlightsProvider: React.FC<{ itemKey: Key }> = ({
-  children,
-  itemKey,
-}) => {
+export const SpeedSearchItemHighlightsProvider: React.FC<{
+  children?: React.ReactNode;
+  itemKey: Key;
+}> = ({ children, itemKey }) => {
   const context = useContext(CollectionSpeedSearchContext);
   if (!context) {
     throw new Error(
@@ -23,7 +23,7 @@ export const SpeedSearchItemHighlightsProvider: React.FC<{ itemKey: Key }> = ({
     );
   }
   const item = context.collection.getItem(itemKey);
-  const text = item?.textValue;
+  const text = item?.textValue ?? "";
   if (!text && item?.props.textValue === undefined) {
     console.warn(
       "no textValue specified on Item. When using SpeedSearch, you need to specify textValue for item, which will be the basis for search"

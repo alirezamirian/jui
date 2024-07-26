@@ -219,7 +219,9 @@ const useSelectParentOfRemovedSelectedNode = (state: TreeState<unknown>) => {
               state.selectionManager.setFocusedKey(key);
               return;
             }
-            key = previousCollectionRef.current.getItem(key)?.parentKey;
+            key =
+              previousCollectionRef.current.getItem(key)?.parentKey ??
+              undefined;
           }
         }
       }

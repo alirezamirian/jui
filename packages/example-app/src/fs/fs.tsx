@@ -29,10 +29,10 @@ export const persistentFsPreference = localStorageSetting<"yes" | "no">(
 // to assume any code requiring FS is executed via components rendered inside WaitForFs.
 // Also, we can gather exports of this file into an interface to make it easier to provide two implementations, for
 // browser and node.
-const fsPromise: Promise<FSModuleWithPromises> = (persistentFsPreference.get() ===
-"yes"
-  ? createIndexedDBFS()
-  : createInMemoryFS()
+const fsPromise: Promise<FSModuleWithPromises> = (
+  persistentFsPreference.get() === "yes"
+    ? createIndexedDBFS()
+    : createInMemoryFS()
 )
   .then(initializeFS)
   .then((theFs) => {
@@ -83,7 +83,9 @@ const fsResource = wrapPromise(fsPromise);
  * Suspense aware wrapper for waiting for FS to be initialized. initialization API in some fs backends such as
  * BrowserFs, is async. That's why it's safe to use this on a high level.
  */
-export const WaitForFs: React.FC = ({ children }) => {
+export const WaitForFs: React.FC<{ children?: React.ReactNode }> = ({
+  children,
+}) => {
   fsResource.read();
   return children as React.ReactElement;
 };

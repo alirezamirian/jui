@@ -38,6 +38,7 @@ export const useToolWindowState = () => {
  */
 export const ToolWindowStateProvider: React.FC<
   {
+    children?: React.ReactNode;
     id: Key;
     containerRef: RefObject<HTMLElement>;
     mainContentFocusableRef: RefObject<{ focus: () => void }>;

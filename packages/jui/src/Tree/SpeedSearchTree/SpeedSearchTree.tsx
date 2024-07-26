@@ -1,4 +1,4 @@
-import React, { CSSProperties, ForwardedRef } from "react";
+import React, { ForwardedRef } from "react";
 import { Node } from "@react-types/shared";
 import { Virtualizer } from "@react-aria/virtualizer";
 import { CollectionSpeedSearchContext } from "@intellij-platform/core/CollectionSpeedSearch";

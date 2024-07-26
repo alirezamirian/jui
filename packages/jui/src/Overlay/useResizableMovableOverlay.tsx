@@ -180,7 +180,7 @@ export function useResizableMovableOverlay(
     },
     finishInteraction: () => {
       if (currentInteraction && overlayRef.current) {
-        setBounds(getBounds(overlayRef.current), currentInteraction.type);
+        setBounds(getBounds(overlayRef.current));
       }
       setCurrentInteraction(null);
     },

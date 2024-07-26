@@ -14,7 +14,7 @@ export class TreeKeyboardDelegate<T> extends ListKeyboardDelegate<T> {
 
   getKeyLeftOf(key: React.Key): React.Key {
     const item = this.collection.getItem(key);
-    return item.parentKey ?? this.getKeyAbove(key);
+    return item?.parentKey ?? this.getKeyAbove(key);
   }
 
   getKeyRightOf(key: React.Key): React.Key {

@@ -15,6 +15,7 @@ import { DefaultToolWindowHeader } from "./DefaultToolWindowHeader";
 import { useToolWindowActions } from "./useToolWindowActions";
 
 export interface DefaultToolWindowProps extends DOMProps {
+  children?: React.ReactNode;
   /**
    * title to be shown on the left side of the tool window header.
    */

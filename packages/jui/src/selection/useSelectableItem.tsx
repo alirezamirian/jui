@@ -14,15 +14,7 @@ export const useSelectableItem: typeof useOriginalSelectableItem = (
 ) => {
   const onContextMenu: MouseEventHandler<HTMLElement> = (e) => {
     if (!options.selectionManager.isSelected(options.key)) {
-      options.selectionManager.select(options.key, {
-        type: "press",
-        pointerType: "mouse",
-        target: e.currentTarget,
-        shiftKey: e.shiftKey,
-        metaKey: e.metaKey,
-        ctrlKey: e.ctrlKey,
-        altKey: e.altKey,
-      });
+      options.selectionManager.select(options.key);
     }
   };
   const result = useOriginalSelectableItem(options);
