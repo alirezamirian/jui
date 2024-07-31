@@ -26,12 +26,19 @@ export function useSvgIcon(
         // For querying for icons that are not loaded yet. Especially useful for visual testing
         ref.current.ariaBusy = "true";
       }
-      const svg = await theme.getSvgIcon(path, selected).catch((e) => {
-        if (fallbackPath) {
-          return theme.getSvgIcon(fallbackPath, selected);
-        }
-        throw e;
-      });
+      const svg = await theme
+        .getSvgIcon(path, selected)
+        .catch((e) => {
+          if (fallbackPath) {
+            return theme.getSvgIcon(fallbackPath, selected);
+          }
+          throw e;
+        })
+        .finally(() => {
+          if (ref?.current) {
+            ref.current.ariaBusy = "false";
+          }
+        });
       if (svg) {
         const element = ref?.current;
         if (!unmounted && element) {
@@ -39,7 +46,6 @@ export function useSvgIcon(
           const svgElement = document.createElement("svg");
           element.appendChild(svgElement);
           svgElement.outerHTML = makeIdsUnique(svg); // UNSAFE! Would require sanitization, or icon sources must be trusted.
-          element.ariaBusy = "false";
         }
       } else {
         console.error("Could not resolve icon:", path);
