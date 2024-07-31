@@ -1,4 +1,4 @@
-import React, { RefObject, useState } from "react";
+import { RefObject, useState } from "react";
 import { useControlledState } from "@react-stately/utils";
 import {
   Bounds,
@@ -127,7 +127,7 @@ export function useResizableMovableOverlay(
   UNSAFE_measureContentSize: () => void;
 } {
   const [bounds, setBounds] = useControlledState<Partial<Bounds> | undefined>(
-    inputBounds!,
+    inputBounds,
     defaultBounds!,
     // onBoundsChange is called with Bounds object. Not Partial<Bounds>, and not undefined.
     onBoundsChange as (
@@ -180,7 +180,8 @@ export function useResizableMovableOverlay(
     },
     finishInteraction: () => {
       if (currentInteraction && overlayRef.current) {
-        setBounds(getBounds(overlayRef.current));
+        // @ts-expect-error https://github.com/adobe/react-spectrum/issues/6784
+        setBounds(getBounds(overlayRef.current), currentInteraction.type);
       }
       setCurrentInteraction(null);
     },

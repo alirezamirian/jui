@@ -45,7 +45,6 @@ export const Tab = forwardRef(function Tab<T extends object>(
   } = useTab(
     {
       key,
-      // @ts-expect-error  TODO(@react-aria/tabs): update to ^3.6.0 to support this
       shouldSelectOnPressUp,
     },
     state,

@@ -60,6 +60,7 @@ export const commonListStories = {
       const selectionManagerRef = React.useRef<SelectionManager>(null);
       const { collectionSearchInputProps } = useCollectionSearchInput({
         collectionRef: listRef,
+        onAction: props.onAction,
         selectionManager: selectionManagerRef.current,
       });
       return (

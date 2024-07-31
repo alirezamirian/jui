@@ -60,6 +60,9 @@ export interface ProgressBarProps extends Omit<AriaProgressBarProps, "label"> {
    */
   dense?: boolean;
 
+  /** Whether the value's label is displayed. True by default if there's a label, false by default if not. */
+  showValueLabel?: boolean;
+
   style?: HTMLAttributes<unknown>["style"];
   className?: HTMLAttributes<unknown>["className"];
 }
@@ -92,12 +95,15 @@ export const ProgressBar = ({
   dense,
   className,
   style,
+  valueLabel,
+  showValueLabel = Boolean(valueLabel),
   ...props
 }: ProgressBarProps): React.ReactElement => {
   const { progressBarProps, labelProps } = useProgressBar({
     ...props,
     label: name,
     value,
+    valueLabel,
     maxValue,
     minValue,
   });
@@ -134,9 +140,7 @@ export const ProgressBar = ({
             <StyledProgressBarProgress style={{ width: `${percentage}%` }} />
           )}
         </StyledProgressBarTrack>
-        {props.showValueLabel && (
-          <span>{props.valueLabel ?? `${percentage}%`}</span>
-        )}
+        {showValueLabel && <span>{valueLabel ?? `${percentage}%`}</span>}
         <ProgressBarContext.Provider value={contextValue}>
           {button}
         </ProgressBarContext.Provider>

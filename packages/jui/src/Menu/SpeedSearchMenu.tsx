@@ -97,7 +97,7 @@ function useSpeedSearchMenu<T>(
       () =>
         new ListCollection(
           rootKey
-            ? state.collection.getChildren?.(rootKey) ?? []
+            ? state.collection.getItem(rootKey)?.childNodes ?? []
             : state.collection
         ),
       [rootKey, state.collection]

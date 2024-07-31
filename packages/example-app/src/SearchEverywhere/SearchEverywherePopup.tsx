@@ -278,13 +278,52 @@ export function SearchEverywherePopup() {
 
   const collectionRef = useRef<HTMLDivElement>(null);
   const selectionManagerRef = useRef<SelectionManager>(null);
+  const onAction = (key: React.Key) => {
+    if (key === LOAD_MORE_ITEM_KEY) {
+      setSearchResultLimit((limit) => limit + SEARCH_RESULT_LIMIT);
+      const nextItem = searchResult[visibleSearchResult.length + 1];
+      if (nextItem) {
+        // nextItem is expected to always have value
+
+        // Timeout needed to let the item get rendered first. Could be done in an effect instead,
+        // if we want to avoid setTimeout
+        setTimeout(() => {
+          setSelectedKeys(new Set([nextItem.key]));
+          selectionManagerRef.current?.setFocusedKey(nextItem.key);
+        });
+      }
+    } else {
+      close();
+      // Making sure the popup is fully closed before the new action is performed. One edge case that can
+      // make a difference is actions like FindAction that open the same popup. By performing an action
+      // async, we make sure the popup is closed and reopened, which is good, because otherwise, the user
+      // won't get any feedback when choosing such actions.
+      setTimeout(() => {
+        const itemWrapper = searchResult.find((item) => item.key === key);
+        itemWrapper?.contributor.processSelectedItem(itemWrapper.item);
+        /**
+         * The 50ms timeout is a workaround for an issue in FocusScope:
+         * restoreFocus only works if the previously focused element is in the dom, when the focus
+         * scope is unmounted. In case of SearchEveryWhere, actions like "Rollback" open a modal
+         * window, which has a focus scope, when the window is opened, the currently focused
+         * element (which will be the one to restore focus to), is search everywhere dialog, which
+         * is immediately closed. So when the modal window is closed, it tries to move focus back
+         * to search everywhere dialog, which is long gone! It would be nice if FocusScope could
+         * track a chain of nodes to restore focus to.
+         * With this 50ms timeout, focus is first restored to where it was, after SearchEveryWhere
+         * is closed, and then the actions is performed, for focus restoration to work.
+         */
+      }, 50);
+    }
+  };
+
   const { collectionSearchInputProps } = useCollectionSearchInput({
     collectionRef,
+    onAction,
     selectionManager: selectionManagerRef.current,
   });
 
   const tips = useTips();
-
   return (
     <ContentAwarePopup
       persistedBoundsState={searchEverywhereState.bounds}
@@ -391,53 +430,7 @@ export function SearchEverywherePopup() {
                         fillAvailableSpace
                         selectedKeys={selectedKeys}
                         onSelectionChange={setSelectedKeys}
-                        onAction={(key) => {
-                          if (key === LOAD_MORE_ITEM_KEY) {
-                            setSearchResultLimit(
-                              (limit) => limit + SEARCH_RESULT_LIMIT
-                            );
-                            const nextItem =
-                              searchResult[visibleSearchResult.length + 1];
-                            if (nextItem) {
-                              // nextItem is expected to always have value
-
-                              // Timeout needed to let the item get rendered first. Could be done in an effect instead,
-                              // if we want to avoid setTimeout
-                              setTimeout(() => {
-                                setSelectedKeys(new Set([nextItem.key]));
-                                selectionManagerRef.current?.setFocusedKey(
-                                  nextItem.key
-                                );
-                              });
-                            }
-                          } else {
-                            close();
-                            // Making sure the popup is fully closed before the new action is performed. One edge case that can
-                            // make a difference is actions like FindAction that open the same popup. By performing an action
-                            // async, we make sure the popup is closed and reopened, which is good, because otherwise, the user
-                            // won't get any feedback when choosing such actions.
-                            setTimeout(() => {
-                              const itemWrapper = searchResult.find(
-                                (item) => item.key === key
-                              );
-                              itemWrapper?.contributor.processSelectedItem(
-                                itemWrapper.item
-                              );
-                              /**
-                               * The 50ms timeout is a workaround for an issue in FocusScope:
-                               * restoreFocus only works if the previously focused element is in the dom, when the focus
-                               * scope is unmounted. In case of SearchEveryWhere, actions like "Rollback" open a modal
-                               * window, which has a focus scope, when the window is opened, the currently focused
-                               * element (which will be the one to restore focus to), is search everywhere dialog, which
-                               * is immediately closed. So when the modal window is closed, it tries to move focus back
-                               * to search everywhere dialog, which is long gone! It would be nice if FocusScope could
-                               * track a chain of nodes to restore focus to.
-                               * With this 50ms timeout, focus is first restored to where it was, after SearchEveryWhere
-                               * is closed, and then the actions is performed, for focus restoration to work.
-                               */
-                            }, 50);
-                          }
-                        }}
+                        onAction={onAction}
                       >
                         {({ key, item, contributor }) => {
                           if (key === LOAD_MORE_ITEM_KEY) {

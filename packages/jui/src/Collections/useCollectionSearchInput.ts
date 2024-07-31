@@ -1,4 +1,4 @@
-import React, { RefObject } from "react";
+import React, { Key, RefObject } from "react";
 import { SelectionManager } from "@react-stately/selection";
 import { useEventCallback } from "@intellij-platform/core/utils/useEventCallback";
 import { DOMAttributes } from "@react-types/shared";
@@ -28,6 +28,7 @@ import { DOMAttributes } from "@react-types/shared";
 export const useCollectionSearchInput = ({
   collectionRef,
   selectionManager,
+  onAction,
 }: {
   /**
    * ref to the html element of the collection component
@@ -39,9 +40,17 @@ export const useCollectionSearchInput = ({
    * `useCollectionRef`, to get a hold of selection manager, from outside.
    */
   selectionManager: SelectionManager | null | undefined;
+  /**
+   * onAction callback passed to the collection component. It's needed since some upgrade of @react-aria/interactions,
+   * since a check is added to not have keyup events on outside elements trigger onPress. That's to prevent scenarios
+   * where focus is moved between keydown and keyup, but is also breaking the previous solution of just replying
+   * input keyboard events on the list item.
+   * @param key
+   */
+  onAction?: (key: Key) => void;
 }): { collectionSearchInputProps: DOMAttributes<HTMLInputElement> } => {
   const relayEventsToCollection = useEventCallback(
-    (event: React.KeyboardEvent) => {
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
       // Relay ArrowUp and ArrowDown to the container
       if (
         event.type === "keydown" &&
@@ -52,13 +61,20 @@ export const useCollectionSearchInput = ({
         collectionRef.current?.dispatchEvent(
           new KeyboardEvent(event.type, event.nativeEvent)
         );
-      }
-      // Relay Enter to the focused item
-      else if (event.key === "Enter" && selectionManager?.focusedKey) {
-        collectionRef.current
-          ?.querySelector(`[data-key="${selectionManager?.focusedKey}"]`)
-          ?.dispatchEvent(new KeyboardEvent(event.type, event.nativeEvent));
-        event.preventDefault();
+      } else if (
+        event.type === "keydown" &&
+        event.key === "Enter" &&
+        selectionManager?.focusedKey != null
+      ) {
+        event.currentTarget.addEventListener(
+          "keyup",
+          (event: KeyboardEvent) => {
+            if (event.key === "Enter" && selectionManager?.focusedKey != null) {
+              onAction?.(selectionManager?.focusedKey);
+            }
+          },
+          { once: true, capture: true }
+        );
       }
     }
   );
@@ -66,7 +82,6 @@ export const useCollectionSearchInput = ({
   return {
     collectionSearchInputProps: {
       onKeyDown: relayEventsToCollection,
-      onKeyUp: relayEventsToCollection,
       onKeyPress: relayEventsToCollection,
     },
   };
