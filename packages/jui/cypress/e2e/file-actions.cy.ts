@@ -44,8 +44,7 @@ describe("files actions", () => {
     });
   });
 
-  // FIXME
-  it.skip("can create, delete and recreate a file without vcs", () => {
+  it("can create, delete and recreate a file without vcs", () => {
     cy.initialization();
 
     createFileWithoutVcs("test.ts");
