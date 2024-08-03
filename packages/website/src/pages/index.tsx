@@ -13,9 +13,9 @@ import {
   PageSection2 as SectionType,
 } from "./_index/PageSection2";
 
-const demoAppClickHandler = (e) => {
+const demoAppClickHandler = (e: React.MouseEvent) => {
   e.preventDefault();
-  document.getElementById("demo-app").scrollIntoView({ behavior: "smooth" });
+  document.getElementById("demo-app")?.scrollIntoView({ behavior: "smooth" });
 };
 function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();

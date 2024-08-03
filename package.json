@@ -4,7 +4,7 @@
     "packages/*"
   ],
   "scripts": {
-    "type-check": "yarn workspaces foreach run type-check",
+    "typecheck": "yarn workspaces foreach run typecheck",
     "test": "yarn workspaces foreach run test",
     "cypress:component": "yarn workspaces foreach run cypress:component",
     "cypress:e2e": "yarn workspaces foreach run cypress:e2e",

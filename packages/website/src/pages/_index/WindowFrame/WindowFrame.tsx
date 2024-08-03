@@ -11,7 +11,7 @@ export function WindowFrame({
   children: React.ReactNode;
   title?: React.ReactNode;
 } & Pick<HTMLProps<HTMLDivElement>, "style" | "className">) {
-  const onLinkClick = (e) => e.preventDefault();
+  const onLinkClick = (e: React.MouseEvent) => e.preventDefault();
   return (
     <div {...otherProps} className={clsx(classes.window, otherProps.className)}>
       <div className={classes.titlebar}>

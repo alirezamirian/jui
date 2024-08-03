@@ -8,7 +8,7 @@ function useDocs() {
   return (
     useDocusaurusContext().globalData["docusaurus-plugin-content-docs"]
       .default as GlobalPluginData
-  ).versions.find((version) => version.name === "current").docs;
+  ).versions.find((version) => version.name === "current")?.docs;
 }
 
 /**
@@ -19,8 +19,8 @@ function useDocs() {
 export function useComponentLinkMap(): { [componentName: string]: string } {
   const docs = useDocs();
   return useMemo(() => {
-    const linkMap = {};
-    docs.forEach((doc) => {
+    const linkMap: Record<string, string> = {};
+    docs?.forEach((doc) => {
       // maybe change the criteria based on sidebar later, if components are moved to a dedicated sidebar
       const componentName = doc.id.match(/components\/(.*)/)?.[1];
       if (componentName) {

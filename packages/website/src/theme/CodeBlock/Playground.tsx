@@ -175,6 +175,7 @@ function EditorWithHeader() {
 export default function Playground({
   children,
   transformCode,
+  ref,
   ...props
 }: Props): JSX.Element {
   const prismTheme = usePrismTheme();
@@ -183,7 +184,7 @@ export default function Playground({
 
   return (
     <>
-      <div className={styles.playgroundContainer}>
+      <div ref={ref} className={styles.playgroundContainer}>
         <LiveProvider
           code={children.replace(/\n$/, "")}
           noInline={noInline}
