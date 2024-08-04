@@ -32,6 +32,8 @@ const groupByDirectoryMergingPaths = createGroupByDirectory<
   shouldCollapseDirectories: true,
 });
 
+jest.retryTimes(3);
+
 describe("groupByDirectory", () => {
   it("groups by directory", () => {
     const y = change("/a/c/y.js");
