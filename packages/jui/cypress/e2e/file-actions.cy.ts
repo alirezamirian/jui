@@ -8,7 +8,7 @@ const deleteFile = (filename: string) => {
   cy.step(`Delete ${filename}`);
   cy.findTreeNodeInProjectView(filename).click().should("be.focused");
   cy.realPress("Backspace");
-  cy.findByRole("button", { name: "Ok" }).click();
+  cy.findByRole("button", { name: "Ok" }).realClick();
   cy.findByRole("treeitem", { name: new RegExp(filename) }).should("not.exist");
 };
 

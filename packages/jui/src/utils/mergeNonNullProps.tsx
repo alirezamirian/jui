@@ -10,7 +10,7 @@ import { filter } from "ramda";
 export const mergeNonNullProps: typeof mergeProps = (...propsArray) => {
   return mergeProps(
     ...propsArray.map((props): typeof props =>
-      filter((value) => value != undefined, props)
+      filter((value) => value != undefined, props ?? [])
     )
   );
 };

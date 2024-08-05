@@ -39,7 +39,7 @@ export const SpeedSearchTreeWithCheckboxes = React.forwardRef(
           invalidators: [nestedSelection, ...otherInvalidators],
         }}
         onNodeKeyDown={(event, item) => {
-          if (event.key === " ") {
+          if (event.key === " " && item.value) {
             nestedSelection.toggle(item.value);
           }
           onNodeKeyDown?.(event, item);

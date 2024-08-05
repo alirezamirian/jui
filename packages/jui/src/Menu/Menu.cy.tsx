@@ -147,10 +147,9 @@ describe("Menu", () => {
     cy.findByRole("menuitem", { name: "View Mode" }).should("have.focus");
   });
 
-  // in the absence of it.fail():
-  it("(as a known issue) doesn't focus menu when there is a selected item, even in nested menus", () => {
+  it("focuses menu when there is a selected item, even in nested menus", () => {
     cy.mount(<Nested autoFocus selectedKeys={["Pinned"]} />);
-    cy.findByRole("menu").should("not.have.focus"); // "not" is because of the known issue
+    cy.findByRole("menu").should("have.focus");
   });
 
   it("closes previously opened submenu, when a new submenu opens", () => {

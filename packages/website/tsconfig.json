@@ -1,13 +1,31 @@
 {
   // This file is not used in compilation. It is here just for a nice editor experience.
+  // TODO(TS5): change to an array to extend the root tsconfig too, and remove some duplication
   "extends": "@tsconfig/docusaurus/tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "resolveJsonModule": true,
+    "resolveJsonModule": true, // Could be inherited from root tsconfig
+    "experimentalDecorators": true, // Could be inherited from root tsconfig
+    "strict": true, // Could be inherited from root tsconfig
+    "target": "ES2022", // Could be inherited from root tsconfig
+    "module": "commonjs", // Could be inherited from root tsconfig.
+    "lib": null, // needed to undo the lib set in docusaurus base tsconfig, as if it's unset.
+    "types": [
+      "node",
+      "@docusaurus/module-type-aliases",
+      "@docusaurus/theme-classic",
+      "@docusaurus/theme-live-codeblock" // addition with respect to the default types in @tsconfig/docusaurus/tsconfig.json
+    ],
     "paths": {
       "jui": ["../jui/src"],
-      "jui/*": ["../jui/src/*"]
-    },
-    "jsx": "react"
-  }
+      "jui/*": ["../jui/src/*"],
+      "@intellij-platform/core": ["../jui/src"], // Could be inherited from root tsconfig
+      "@intellij-platform/core/*": ["../jui/src/*"] // Could be inherited from root tsconfig
+    }
+  },
+  "include": [
+    "src",
+    // declaration files are not directly imported by another module but are necessary for the code to compile
+    "../example-app/**/*.d.ts"
+  ]
 }

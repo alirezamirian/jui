@@ -7,9 +7,11 @@ export type StyledListItemProps = {
   disabled: boolean;
 };
 
-export const StyledListItem = styled.div.attrs<StyledListItemProps>({
-  role: "listitem",
-})<StyledListItemProps>`
+export const StyledListItem = styled.div.attrs<StyledListItemProps>(
+  (props) => ({
+    role: props.role || "listitem",
+  })
+)<StyledListItemProps>`
   ${({ containerFocused, selected, disabled, theme }) => {
     let backgroundColor;
     let color = disabled

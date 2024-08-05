@@ -58,9 +58,17 @@ export function BranchesTree({ tabKey }: { tabKey: string }) {
   const selectionManagerRef = useRef<TreeSelectionManager>(null);
   const [isInputFocused, setInputFocused] = useState(false);
   const setBranchFilter = useSetRecoilState(vcsLogFilterCurrentTab.branch);
+  const onAction = (key: React.Key) => {
+    const branch = keyToBranch(`${key}`);
+    if (branch) {
+      setBranchFilter([branch]);
+    }
+  };
+
   const { collectionSearchInputProps } = useCollectionSearchInput({
     collectionRef: ref,
     selectionManager: selectionManagerRef.current,
+    onAction,
   });
   /**
    * TODO: remaining from search:
@@ -114,12 +122,7 @@ export function BranchesTree({ tabKey }: { tabKey: string }) {
         onSelectionChange={setSelectedKeys}
         expandedKeys={expandedKeys}
         onExpandedChange={setExpandedKeys}
-        onAction={(key) => {
-          const branch = keyToBranch(`${key}`);
-          if (branch) {
-            setBranchFilter([branch]);
-          }
-        }}
+        onAction={onAction}
         fillAvailableSpace
         // speed search related props
         showAsFocused={isInputFocused}

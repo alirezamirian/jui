@@ -50,7 +50,6 @@ export function useTreeRef<T extends {}>(
            * for scrolling an item into view, but it's only implemented in way that is reactive to changes to the
            * focused key. {@see useCollectionAutoScroll}
            */
-          // @ts-expect-error: setFocusedKey typing mistakenly doesn't accept null, while it should
           selectionManager.setFocusedKey(null);
           setTimeout(() => {
             selectionManager.setFocusedKey(key);

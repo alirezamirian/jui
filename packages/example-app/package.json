@@ -5,9 +5,9 @@
   "scripts": {
     "dev": "../../node_modules/.bin/parcel serve",
     "serve": "PORT=1234 ../../node_modules/.bin/serve ./dist",
-    "jest:type-check": "tsc --project tsconfig.jest.json",
+    "jest:typecheck": "tsc --project tsconfig.jest.json",
     "test": "jest",
-    "type-check": "tsc --project tsconfig.app.json && yarn run jest:type-check",
+    "typecheck": "tsc --project tsconfig.app.json && yarn run jest:typecheck",
     "build": "../../node_modules/.bin/parcel build"
   },
   "source": "src/index.html",

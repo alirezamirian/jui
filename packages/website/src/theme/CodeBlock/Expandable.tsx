@@ -42,11 +42,13 @@ export function Expandable({
   isExpandable: boolean;
   setIsExpandable: (isExpandable: boolean) => void;
 }) {
-  const ref = useRef<HTMLDivElement>();
+  const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const expandable = ref.current?.scrollHeight > ref.current?.offsetHeight;
-    if (expandable !== isExpandable) {
-      setIsExpandable(expandable);
+    if (ref.current) {
+      const expandable = ref.current?.scrollHeight > ref.current?.offsetHeight;
+      if (expandable !== isExpandable) {
+        setIsExpandable(expandable);
+      }
     }
   });
   return (

@@ -14,8 +14,10 @@ export default {
   argTypes: { },
 } as Meta<<%= componentName %>Props>;
 
-const Template: Story<<%= componentName %>Props> = (props) => {
+const render = (props: <%= componentName %>Props) => {
   return <<%= componentName %> {...props} />;
 };
 
-export const Default: Story<<%= componentName %>Props> = Template.bind({});
+export const Default: StoryObj<<%= componentName %>Props> = {
+  render: render,
+};

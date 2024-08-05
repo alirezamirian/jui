@@ -43,7 +43,7 @@ export function useCollectionSpeedSearchResult<T>({
     if (speedSearch.active) {
       // it's important not to iterate on items, since they can be nested.
       [...collection.getKeys()]
-        .map((key) => collection.getItem(key))
+        .map((key) => collection.getItem(key)!)
         .filter(({ type }) => type === "item")
         .forEach((item) => {
           const matchedRanges = minusculeMatch(item.textValue, searchTerm);

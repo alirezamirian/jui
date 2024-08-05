@@ -23,11 +23,6 @@ export function ListItem<T>({ item, children }: ListItemProps<T>) {
     onAction: () => onAction?.(item.key),
     selectionManager: state.selectionManager,
   });
-  let { pressProps } = usePress({
-    ...itemProps,
-    isDisabled,
-    preventFocusOnPress: false,
-  });
 
   return (
     <StyledListItem
@@ -37,7 +32,7 @@ export function ListItem<T>({ item, children }: ListItemProps<T>) {
       aria-disabled={isDisabled}
       aria-selected={isSelected}
       aria-label={item["aria-label"]}
-      {...pressProps}
+      {...itemProps}
       ref={ref}
     >
       <ItemStateContext.Provider

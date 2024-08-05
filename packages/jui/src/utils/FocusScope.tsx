@@ -57,7 +57,7 @@ const GetFocusManager = React.forwardRef(function FocusScopeHandle(
   props: {},
   ref: ForwardedRef<FocusManager>
 ) {
-  const focusManager = useFocusManager();
+  const focusManager = useFocusManager()!;
   useImperativeHandle(ref, () => focusManager, [focusManager]);
   return null;
 });

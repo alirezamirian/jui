@@ -1,10 +1,16 @@
-import { Collection, Node } from "@react-types/shared";
+import {
+  Collection,
+  CollectionStateBase,
+  Expandable,
+  MultipleSelection,
+  Node,
+} from "@react-types/shared";
 import { TreeProps as _TreeProps, TreeState } from "@react-stately/tree";
 import {
   TreeRefValue,
   useTreeRef,
 } from "@intellij-platform/core/Tree/useTreeRef";
-import { ForwardedRef, Key, useEffect, useMemo } from "react";
+import { ForwardedRef, Key, useCallback, useEffect, useMemo } from "react";
 import { useMultipleSelectionState } from "@react-stately/selection";
 import { useCollection } from "@react-stately/collections";
 import { useControlledState } from "@react-stately/utils";
@@ -48,7 +54,9 @@ export class TreeCollection<T> extends _TreeCollection<T> {
   }
 }
 export interface TreeProps<T>
-  extends _TreeProps<T>,
+  extends CollectionStateBase<T, TreeCollection<T>>,
+    Expandable,
+    MultipleSelection,
     CollectionCacheInvalidationProps {
   childExpansionBehaviour?: "multi" | "single";
 }
@@ -93,12 +101,13 @@ export function useTreeState<T extends object>(
 
   const context = useCollectionCacheInvalidation(props);
 
-  // @ts-expect-error imprecise typing in @react-stately/selection
   let tree = useCollection<T, TreeCollection<T>>(
     props,
-    (nodes) => new TreeCollection(nodes, { expandedKeys }),
-    context,
-    [expandedKeys]
+    useCallback(
+      (nodes) => new TreeCollection(nodes, { expandedKeys }),
+      [expandedKeys]
+    ),
+    context
   );
 
   const selectionManager = new TreeSelectionManager(
@@ -146,6 +155,7 @@ export function useTreeState<T extends object>(
     disabledKeys,
     toggleKey,
     selectionManager,
+    setExpandedKeys,
   };
 }
 
@@ -199,7 +209,7 @@ function toggleTreeNode(
   key: Key
 ): Set<Key> {
   // toggling a non-expandable node should be no-op
-  if (!expandedKeys.has(key) && !tree.getItem(key).hasChildNodes) {
+  if (!expandedKeys.has(key) && !tree.getItem(key)?.hasChildNodes) {
     return expandedKeys;
   }
   const newKeys = toggleKey(expandedKeys, key);

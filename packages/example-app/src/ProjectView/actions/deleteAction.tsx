@@ -1,5 +1,5 @@
 import path from "path";
-import { selector, useRecoilCallback } from "recoil";
+import { selector } from "recoil";
 import React from "react";
 
 import {
@@ -22,7 +22,6 @@ import { selectedNodesState } from "../ProjectView.state";
 import { findRootPaths } from "../../path-utils";
 import {
   deleteDirCallback,
-  deleteFileCallback,
   deleteFilesCallback,
 } from "../../Project/fs-operations";
 import { IntlMessageFormat } from "intl-messageformat";
@@ -52,7 +51,7 @@ export const deleteActionState = selector({
     isDisabled: !get(activePathExistsState),
     actionPerformed: getCallback(({ snapshot }) => async () => {
       const deleteDir = getCallback(deleteDirCallback);
-      const deleteFile = getCallback(deleteFileCallback);
+      const deleteFiles = getCallback(deleteFilesCallback);
       const selectedNodes = snapshot.getLoadable(selectedNodesState).getValue();
       const windowManager = snapshot
         .getLoadable(windowManagerRefState)
@@ -105,12 +104,31 @@ export const deleteActionState = selector({
         });
         if (confirmed) {
           directories.forEach((pathname) => deleteDir(pathname));
-          filePaths.forEach((pathname) => deleteFile(pathname));
+          deleteFiles(filePaths);
         }
       } else {
-        windowManager?.open(({ close }) => (
-          <DeleteFilesConfirmationDialog filePaths={filePaths} close={close} />
-        ));
+        windowManager
+          ?.open<boolean>(({ close }) => (
+            <DeleteFilesConfirmationDialog
+              filePaths={filePaths}
+              close={close}
+            />
+          ))
+          .then((confirmed) => {
+            if (confirmed) {
+              requestAnimationFrame(() => {
+                // It's important that the focus is restored to the previously focused item, which typically is the
+                // file in project view, that's being deleted.
+                // If the file is deleted before the focus is restored, the DOM element that was going to be focused
+                // will be removed by the time focus restoration logic runs.
+                // Even though `windowManager.open()` was changed to return a promise which is supposed to be resolved
+                // **after** the modal window is closed,
+                // in the CI environment the focus is not properly restored.
+                // In lack of a better solution, the deletion is done async with a setTimeout.
+                deleteFiles(filePaths);
+              });
+            }
+          });
       }
     }),
   }),
@@ -120,11 +138,9 @@ function DeleteFilesConfirmationDialog({
   close,
   filePaths,
 }: {
-  close: () => void;
+  close: (confirmed?: true) => void;
   filePaths: string[];
 }) {
-  const deleteFiles = useRecoilCallback(deleteFilesCallback, []);
-
   return (
     <ModalWindow minWidth="content" minHeight="content">
       <WindowLayout
@@ -165,15 +181,14 @@ function DeleteFilesConfirmationDialog({
             left={<HelpButton onPress={() => notImplemented()}></HelpButton>}
             right={
               <>
-                <Button onPress={close}>Cancel</Button>
+                <Button onPress={() => close()}>Cancel</Button>
                 <Button
                   autoFocus
                   type="submit"
                   form="delete_dialog_form" // Using form in absence of built-in support for default button
                   variant="default"
                   onPress={() => {
-                    deleteFiles(filePaths);
-                    close();
+                    close(true);
                   }}
                 >
                   Ok

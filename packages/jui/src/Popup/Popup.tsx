@@ -119,7 +119,6 @@ export const _Popup = (
     ref,
     onInteractOutsideStart: (e) => {
       if (
-        !ref.current?.contains(document.activeElement) && // If we are focused, shouldCloseOnBlur will call onClose.
         !nonDismissable &&
         shouldCloseOnInteractOutside(e.target as Element)
       ) {

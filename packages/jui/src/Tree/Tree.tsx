@@ -1,12 +1,11 @@
-import React, { CSSProperties, ForwardedRef, RefObject, useRef } from "react";
+import React, { CSSProperties, ForwardedRef, RefObject } from "react";
 import { Node } from "@react-types/shared";
 import { Virtualizer } from "@react-aria/virtualizer";
-import { TreeProps as StatelyTreeProps } from "@react-stately/tree";
 import { StyledTree } from "./StyledTree";
 import { TreeRefValue } from "./useTreeRef";
 import { TreeNode } from "./TreeNode";
 import { TreeContext } from "./TreeContext";
-import { useTreeState } from "./useTreeState";
+import { useTreeState, TreeProps as StatelyTreeProps } from "./useTreeState";
 import { SelectableTreeProps, useSelectableTree } from "./useSelectableTree";
 import { useTreeVirtualizer } from "./useTreeVirtualizer";
 import { CollectionCacheInvalidationProps } from "@intellij-platform/core/Collections/useCollectionCacheInvalidation";

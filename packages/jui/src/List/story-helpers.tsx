@@ -28,7 +28,7 @@ export const itemRenderer =
     renderItem: (item: Legend, content?: ReactNode) => JSX.Element,
     content?: ReactNode
   ) =>
-  (item: typeof legends[number]) => {
+  (item: (typeof legends)[number]) => {
     if (item instanceof DividerItem) {
       return <Divider key={item.key} />;
     }
@@ -60,6 +60,7 @@ export const commonListStories = {
       const selectionManagerRef = React.useRef<SelectionManager>(null);
       const { collectionSearchInputProps } = useCollectionSearchInput({
         collectionRef: listRef,
+        onAction: props.onAction,
         selectionManager: selectionManagerRef.current,
       });
       return (

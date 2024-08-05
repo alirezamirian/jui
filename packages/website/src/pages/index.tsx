@@ -13,9 +13,9 @@ import {
   PageSection2 as SectionType,
 } from "./_index/PageSection2";
 
-const demoAppClickHandler = (e) => {
+const demoAppClickHandler = (e: React.MouseEvent) => {
   e.preventDefault();
-  document.getElementById("demo-app").scrollIntoView({ behavior: "smooth" });
+  document.getElementById("demo-app")?.scrollIntoView({ behavior: "smooth" });
 };
 function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
@@ -108,7 +108,10 @@ export default function Home(): JSX.Element {
               </SectionType.Subtitle>
             </PageSection2.Container>
             <ExampleWindowFrame>
-              <LazyExampleApp height="calc(100vh - 200px)" />
+              <LazyExampleApp
+                height="calc(100vh - 200px)"
+                autoCloneSampleRepo
+              />
             </ExampleWindowFrame>
           </PageSection2>
         </main>

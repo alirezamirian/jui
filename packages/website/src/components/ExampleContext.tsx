@@ -10,6 +10,7 @@ export type ExampleContextThemeName = "light" | "darcula" | "highContrast";
 
 export const ExampleContext: React.FC<{
   themeName?: ExampleContextThemeName;
+  children?: React.ReactNode;
 }> = ({ children, themeName = "darcula" }) => {
   const themeJson = (
     {
@@ -35,12 +36,15 @@ export const ExampleContext: React.FC<{
 /**
  * TODO: add a surrounding UI for examples, with tools for theme selection for example.
  */
-export const Example: React.FC = ({ children }) => (
+export const Example: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
   <ExampleContext>
     <div
       // @ts-expect-error: css prop is not working for some reason
       css={`
-        background: ${({ theme }) => theme.color("*.background")};
+        background: ${({ theme }: { theme: Theme }) =>
+          theme.color("*.background")};
       `}
     >
       {children}
@@ -85,10 +89,14 @@ function undoUseKeyboardNavigation() {
   document
     .querySelectorAll<HTMLLinkElement>("link[rel=stylesheet]")
     .forEach((linkEl) => {
-      for (let i = 0; i < linkEl.sheet.cssRules.length; i++) {
-        const rule = linkEl.sheet.cssRules.item(i);
-        if (rule.cssText?.startsWith("body:not(.navigation-with-keyboard)")) {
-          linkEl.sheet.deleteRule(i); // We can change the rule to only disable it within the boundary of example
+      if (linkEl.sheet) {
+        for (let i = 0; i < linkEl.sheet.cssRules.length; i++) {
+          const rule = linkEl.sheet.cssRules.item(i);
+          if (
+            rule?.cssText?.startsWith("body:not(.navigation-with-keyboard)")
+          ) {
+            linkEl.sheet.deleteRule(i); // We can change the rule to only disable it within the boundary of example
+          }
         }
       }
     });

@@ -93,7 +93,7 @@ function convertChildren<T>(children: React.ReactNode): React.ReactNode {
 export function patchCollectionProps<T>({
   children,
   ...props
-}: CollectionBase<T>): CollectionBase<T> {
+}: Partial<CollectionBase<T>>): CollectionBase<T> {
   return {
     ...props,
     children:

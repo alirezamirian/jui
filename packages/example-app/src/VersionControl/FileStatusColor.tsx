@@ -25,18 +25,18 @@ export const useFileStatusColor = (filepath: string): string | undefined => {
   return useStatusColor(fileStatus ?? "NOT_CHANGED");
 };
 
-export const FileStatusColor: React.FC<{ filepath: string }> = ({
-  children,
-  filepath,
-}) => {
+export const FileStatusColor: React.FC<{
+  filepath: string;
+  children?: React.ReactNode;
+}> = ({ children, filepath }) => {
   const color = useFileStatusColor(filepath);
   return <span style={{ color }}>{children}</span>;
 };
 
-export const StatusColor: React.FC<{ status: FileStatus }> = ({
-  children,
-  status,
-}) => {
+export const StatusColor: React.FC<{
+  status: FileStatus;
+  children?: React.ReactNode;
+}> = ({ children, status }) => {
   const theme = useTheme() as Theme;
   const color = theme.currentForegroundAware(useStatusColor(status));
   return <span style={{ color }}>{children}</span>;

@@ -27,7 +27,7 @@ export const EditorTheme: StoryObj<StoryProps> = {
   render: (props) => {
     return (
       <EditorTabs {...props} items={editorTabs} active>
-        {(tab: typeof editorTabs[number]) => (
+        {(tab: (typeof editorTabs)[number]) => (
           <Item key={tab.title} textValue={tab.title}>
             <EditorTabContent
               icon={<PlatformIcon icon={tab.icon} />}
@@ -44,7 +44,7 @@ export const DebuggerTheme: StoryObj<StoryProps> = {
   render: (props) => {
     return (
       <DebuggerTabs {...props} items={debuggerTabs}>
-        {(tab: typeof debuggerTabs[number]) => (
+        {(tab: (typeof debuggerTabs)[number]) => (
           <Item key={tab.title} textValue={tab.title}>
             <DebuggerTabContent
               icon={tab.icon && <PlatformIcon icon={tab.icon} />}
@@ -60,7 +60,7 @@ export const ToolWindowTheme: StoryObj<StoryProps> = {
   render: (props) => {
     return (
       <ToolWindowTabs {...props} items={toolWindowTabs}>
-        {(tab: typeof toolWindowTabs[number]) => (
+        {(tab: (typeof toolWindowTabs)[number]) => (
           <Item key={tab.title} textValue={tab.title}>
             <TabContentLayout
               startIcon={<PlatformIcon icon={tab.icon} />}

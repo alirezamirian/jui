@@ -213,7 +213,7 @@ const selectedKeysState = selector({
 function VcsLogsDetailsViewOptionsMenu({
   menuProps,
 }: {
-  menuProps: HTMLAttributes<HTMLDivElement>;
+  menuProps: Omit<HTMLAttributes<HTMLDivElement>, "autoFocus">;
 }) {
   const group = useActionGroup(VIEW_OPTIONS_ACTION_GROUP_ID);
   const selectedKeys = useRecoilValue(selectedKeysState);

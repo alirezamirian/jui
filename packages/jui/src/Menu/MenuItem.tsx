@@ -54,7 +54,7 @@ function useMenuItem<T extends unknown>(
   state: TreeState<T>,
   ref: RefObject<FocusableElement>
 ): MenuItemAria {
-  const item = state.collection.getItem(props.key!);
+  const item = state.collection.getItem(props.key!)!;
   const isDisabled = state.disabledKeys.has(item.key);
   const isExpanded = state.expandedKeys.has(item.key);
   const hasSubmenu = item.hasChildNodes;

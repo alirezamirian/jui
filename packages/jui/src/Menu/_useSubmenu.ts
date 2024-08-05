@@ -17,7 +17,7 @@ export class MenuKeyboardDelegate<T> extends ListKeyboardDelegate<T> {
     this.keys = [...collection.getKeys()]
       .map((key) => collection.getItem(key))
       .flatMap((item) => {
-        if (item.parentKey == rootKey) {
+        if (item && item.parentKey == rootKey) {
           if (item.type === "item") {
             return [item.key];
           } else if (item.type === "section") {
@@ -70,7 +70,7 @@ export function useSubmenu<T>(
         return;
       }
       const root = state.collection.getItem(rootKey);
-      if (e.key === "ArrowLeft" && state.expandedKeys.has(root.key)) {
+      if (e.key === "ArrowLeft" && root && state.expandedKeys.has(root.key)) {
         state.toggleKey(root.key);
         state.selectionManager.setFocused(true);
         return;

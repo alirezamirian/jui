@@ -8,6 +8,7 @@ import { MenuTriggerProps as AriaMenuTriggerProps } from "@react-types/menu";
 
 import { MenuOverlay } from "./MenuOverlay";
 import { AriaButtonProps } from "@react-types/button";
+import { Alignment } from "@react-types/shared";
 
 export interface MenuTriggerProps
   extends Omit<AriaMenuTriggerProps, "closeOnSelect"> {
@@ -34,6 +35,22 @@ export interface MenuTriggerProps
       "id" | "aria-labelledby" | "autoFocus" | "onClose"
     >;
   }) => React.ReactNode;
+
+  /**
+   * Alignment of the menu relative to the trigger.
+   * @default 'start'
+   */
+  align?: Alignment;
+  /**
+   * Where the Menu opens relative to its trigger.
+   * @default 'bottom'
+   */
+  direction?: "bottom" | "top" | "left" | "right" | "start" | "end";
+  /**
+   * Whether the menu should automatically flip direction when space is limited.
+   * @default true
+   */
+  shouldFlip?: boolean;
 }
 
 // FIXME: Escape doesn't close the menu
@@ -56,13 +73,7 @@ export const MenuTrigger: React.FC<MenuTriggerProps> = ({
   positioningTargetRef,
   ...otherProps
 }) => {
-  const menuTriggerProps: AriaMenuTriggerProps = {
-    ...otherProps,
-    direction,
-    align,
-    shouldFlip,
-  };
-  const state = useMenuTriggerState(menuTriggerProps);
+  const state = useMenuTriggerState(otherProps);
   const triggerRef = React.useRef(null);
   const overlayRef = React.useRef(null);
   // FIXME: Menu props is not used, but it's just about labelBy and id. Only needed for accessibility, but it would
@@ -121,8 +132,8 @@ export const MenuTrigger: React.FC<MenuTriggerProps> = ({
 };
 
 function getPlacement(
-  direction: Required<AriaMenuTriggerProps>["direction"],
-  align: Required<AriaMenuTriggerProps>["align"]
+  direction: Required<MenuTriggerProps>["direction"],
+  align: Required<MenuTriggerProps>["align"]
 ) {
   switch (direction) {
     case "left":

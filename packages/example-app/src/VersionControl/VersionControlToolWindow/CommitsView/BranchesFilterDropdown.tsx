@@ -89,7 +89,7 @@ function BranchesFilterMenu({
   onBranchesSelected,
 }: {
   onBranchesSelected: (branches: string[]) => void;
-  menuProps: HTMLAttributes<HTMLElement>;
+  menuProps: Omit<HTMLAttributes<HTMLElement>, "autoFocus">;
 }) {
   const [favoriteBranches, setFavoriteBranches] = useState<BranchMenuItem[]>(
     []

@@ -21,20 +21,24 @@ export class TreeSelectionManager extends SelectionManager {
   expandSelection() {
     if (this.focusedKey) {
       const node = this.collection.getItem(this.focusedKey);
-      const { expandKeys } = this.getExpandAndShrinkKeys(node);
-      if (expandKeys.length > 0) {
-        this.setSelectedKeys([...this.selectedKeys, ...expandKeys]);
+      if (node) {
+        const { expandKeys } = this.getExpandAndShrinkKeys(node);
+        if (expandKeys.length > 0) {
+          this.setSelectedKeys([...this.selectedKeys, ...expandKeys]);
+        }
       }
     }
   }
   shrinkSelection() {
     if (this.focusedKey) {
       const node = this.collection.getItem(this.focusedKey);
-      const { shrinkKeys } = this.getExpandAndShrinkKeys(node);
-      if (shrinkKeys.length > 0) {
-        this.setSelectedKeys(
-          [...this.selectedKeys].filter((key) => !shrinkKeys.includes(key))
-        );
+      if (node) {
+        const { shrinkKeys } = this.getExpandAndShrinkKeys(node);
+        if (shrinkKeys.length > 0) {
+          this.setSelectedKeys(
+            [...this.selectedKeys].filter((key) => !shrinkKeys.includes(key))
+          );
+        }
       }
     }
   }
@@ -62,13 +66,14 @@ export class TreeSelectionManager extends SelectionManager {
     const newKeys = keys.filter((key) => key !== previousChild);
     const parentDescendants = parent
       ? getAllDescendants(parent, newKeys).map(({ key }) => key)
-      : this.getAllRoots().flatMap((key) =>
-          key !== node.key
-            ? getAllDescendants(this.collection.getItem(key), newKeys)
+      : this.getAllRoots().flatMap((key) => {
+          const item = this.collection.getItem(key);
+          return key !== node.key && item
+            ? getAllDescendants(item, newKeys)
                 .map(({ key }) => key)
                 .concat(key)
-            : []
-        );
+            : [];
+        });
     if (parent && parentDescendants.every((key) => this.isSelected(key))) {
       return this.recursivelyGetExpandAndShrinkKeys(parent, keys, node.key);
     }
@@ -95,7 +100,7 @@ export class TreeSelectionManager extends SelectionManager {
 
   private getAllRoots() {
     return [...this.collection.getKeys()].filter(
-      (key) => this.collection.getItem(key).parentKey == null
+      (key) => this.collection.getItem(key)?.parentKey == null
     );
   }
 }
