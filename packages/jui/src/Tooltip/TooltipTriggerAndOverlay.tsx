@@ -12,7 +12,7 @@ import { mergeProps, useLayoutEffect } from "@react-aria/utils";
 
 import { TooltipContext } from "./TooltipContext";
 
-interface TooltipTriggerBaseProps {
+interface TooltipTriggerBaseProps<T extends HTMLElement = HTMLElement> {
   /**
    * Tooltip content. The value should be an element of type {@link Tooltip}.
    */
@@ -23,7 +23,7 @@ interface TooltipTriggerBaseProps {
   trigger:
     | React.ReactNode
     | ((
-        props: HTMLAttributes<HTMLElement> & { ref: RefObject<HTMLElement> }
+        props: HTMLAttributes<HTMLElement> & { ref: RefObject<T> }
       ) => React.ReactNode);
 
   state: TooltipTriggerState;
@@ -31,7 +31,7 @@ interface TooltipTriggerBaseProps {
   showOnFocus?: boolean;
   positionAria: PositionAria;
   overlayRef: RefObject<HTMLDivElement>;
-  triggerRef: RefObject<HTMLElement>;
+  triggerRef: RefObject<T>;
   isDisabled?: boolean;
 }
 
@@ -42,7 +42,7 @@ interface TooltipTriggerBaseProps {
  * TODO: Implement timeout-based auto-hide (https://jetbrains.github.io/ui/controls/tooltip/#19)
  * TODO: shadow
  */
-export const TooltipTriggerAndOverlay = ({
+export const TooltipTriggerAndOverlay = <T extends HTMLElement>({
   tooltip,
   trigger,
   state,
@@ -51,7 +51,7 @@ export const TooltipTriggerAndOverlay = ({
   showOnFocus,
   positionAria,
   ...props
-}: TooltipTriggerBaseProps): JSX.Element => {
+}: TooltipTriggerBaseProps<T>): JSX.Element => {
   const [isInteractive, setInteractive] = useState(false);
   const { triggerProps, tooltipProps } = useTooltipTrigger(
     props,
@@ -102,9 +102,9 @@ export const TooltipTriggerAndOverlay = ({
   );
 };
 
-function normalizeChildren(
-  children: TooltipTriggerBaseProps["trigger"],
-  triggerProps: HTMLAttributes<HTMLElement> & { ref: RefObject<HTMLElement> }
+function normalizeChildren<T extends HTMLElement = HTMLElement>(
+  children: TooltipTriggerBaseProps<T>["trigger"],
+  triggerProps: HTMLAttributes<HTMLElement> & { ref: RefObject<T> }
 ) {
   if (typeof children === "function") {
     return children(triggerProps);

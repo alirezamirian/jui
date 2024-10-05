@@ -63,6 +63,15 @@ export const WithContextHelp: StoryObj<InputFieldProps> = {
   },
 };
 
+export const WithContextHelpAfter: StoryObj<InputFieldProps> = {
+  render,
+  args: {
+    label: "Thread count:",
+    contextHelp: "-T option",
+    contextHelpPlacement: "after",
+  },
+};
+
 export const WithAfterAddons: StoryObj<InputFieldProps> = {
   render,
 

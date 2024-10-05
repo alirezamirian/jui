@@ -47,7 +47,7 @@ export const WithNoVisibleLabel: StoryObj<DropdownProps<object>> = {
 };
 
 export const WidthDistribution: StoryObj<{ width: number }> = {
-  render: ({ width, ...props }) => {
+  render: ({ width = 210, ...props }) => {
     return (
       <div
         style={{
@@ -58,6 +58,7 @@ export const WidthDistribution: StoryObj<{ width: number }> = {
         }}
       >
         <Dropdown
+          {...props}
           label="Long label (flexible width)"
           defaultSelectedKey="1"
           style={{ width }}
@@ -66,6 +67,18 @@ export const WidthDistribution: StoryObj<{ width: number }> = {
           <Item key="2">Long option</Item>
         </Dropdown>
         <Dropdown
+          {...props}
+          label="Dropdown stretching:"
+          defaultSelectedKey="Info"
+          style={{ width: width * 2 }}
+        >
+          <Item key="Debug">Debug</Item>
+          <Item key="Info">Info</Item>
+          <Item key="Warning">Warning</Item>
+          <Item key="Error">Error</Item>
+        </Dropdown>
+        <Dropdown
+          {...props}
           label="Dropdown not stretching:"
           labelPlacement="above"
           defaultSelectedKey="Info"
@@ -80,7 +93,7 @@ export const WidthDistribution: StoryObj<{ width: number }> = {
     );
   },
   argTypes: {
-    width: { type: "number", defaultValue: 210 },
+    width: { type: "number" },
   },
 };
 
@@ -146,7 +159,7 @@ export const WithCustomOptions: StoryObj<
 export const WithDisabledOptions: StoryObj<DropdownProps<object>> = {
   render,
   args: {
-    label: "With Disabled Options",
+    label: "Disabled Options",
     defaultSelectedKey: "Error",
     disabledKeys: ["Debug", "Info"],
   },
@@ -162,10 +175,46 @@ export const FlippedMenu: StoryObj<DropdownProps<object>> = {
   },
 };
 
-export const Invalid: StoryObj<DropdownProps<object>> = {
+export const WithContextHelp: StoryObj<DropdownProps<object>> = {
   render,
   args: {
-    label: "Validated",
-    isInvalid: true,
+    label: "Default Manifest:",
+    defaultSelectedKey: "o1",
+    children: [<Item key="o1">META-INF/MANIFEST.MF</Item>],
+    contextHelp: "File location relative to a module's content root",
+  },
+};
+
+export const WithContextHelpAfter: StoryObj<DropdownProps<object>> = {
+  render,
+  args: {
+    label: "Plugin update policy:",
+    defaultSelectedKey: "o1",
+    children: [<Item key="o1">Default</Item>],
+    contextHelp: "Ignored by Maven 3+",
+    contextHelpPlacement: "after",
+  },
+};
+
+export const WithError: StoryObj<DropdownProps<object>> = {
+  render,
+  args: {
+    label: "With Error",
+    validationState: "error",
+  },
+};
+
+export const WithWarning: StoryObj<DropdownProps<object>> = {
+  render,
+  args: {
+    label: "With Warning",
+    validationState: "warning",
+  },
+};
+
+export const AutoFocus: StoryObj<DropdownProps<object>> = {
+  render,
+  args: {
+    autoFocus: true,
   },
 };

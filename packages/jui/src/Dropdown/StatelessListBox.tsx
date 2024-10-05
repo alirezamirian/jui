@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { ForwardedRef, useRef } from "react";
 import {
   AriaListBoxOptions,
   useListBox,
@@ -12,16 +12,22 @@ import { StyledListItem } from "@intellij-platform/core/List/StyledListItem";
 import { StyledList } from "@intellij-platform/core/List/StyledList";
 import { StyledVerticalSeparator } from "@intellij-platform/core/StyledSeparator";
 import { styled } from "@intellij-platform/core/styled";
+import { useObjectRef } from "@react-aria/utils";
 
-export function StatelessListBox<T extends object>({
-  state,
-  minWidth,
-  ...props
-}: AriaListBoxOptions<T> & {
-  state: ListState<T>;
-  minWidth?: number;
-}) {
-  const ref = useRef(null);
+export const StatelessListBox = React.forwardRef(function StatelessListBox<
+  T extends object
+>(
+  {
+    state,
+    minWidth,
+    ...props
+  }: AriaListBoxOptions<T> & {
+    state: ListState<T>;
+    minWidth?: number;
+  },
+  forwardedRef: ForwardedRef<HTMLDivElement>
+) {
+  const ref = useObjectRef(forwardedRef);
   const { listBoxProps, labelProps } = useListBox(props, state, ref);
 
   return (
@@ -38,8 +44,7 @@ export function StatelessListBox<T extends object>({
       </StyledList>
     </>
   );
-}
-
+});
 function Option<T extends object>({
   item,
   state,

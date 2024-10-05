@@ -3,8 +3,100 @@
 
 # ComboBox
 
-🚧 Coming soon
+[Combobox](https://plugins.jetbrains.com/docs/intellij/combo-box.html) implementation.
+It's also known as editable [ComboBox][intellij-platform-combobox], in the reference implementation.
 
 See also:
 
 - `Dropdown`
+
+### Live example
+
+```jsx live themed
+<div
+  style={{
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "start",
+    gap: "1rem",
+    flexWrap: "wrap",
+  }}
+>
+  <ComboBox label="Script:" defaultSelectedKey="build">
+    <Item key="start">start</Item>
+    <Item key="build">build</Item>
+    <Item key="test">test</Item>
+    <Item key="deploy">deploy</Item>
+  </ComboBox>
+
+  <ComboBox
+    label="Validated:"
+    validationState="error"
+    defaultSelectedKey="Info"
+  >
+    <Item key="start">start</Item>
+    <Item key="build">build</Item>
+    <Item key="test">test</Item>
+    <Item key="deploy">deploy</Item>
+  </ComboBox>
+
+  <ComboBox
+    label="label placed above:"
+    labelPlacement="above"
+    defaultSelectedKey="option2"
+  >
+    <Item key="option1">Option 1</Item>
+    <Item key="option2">Option 2</Item>
+    <Item key="option3">Option 3</Item>
+    <Item key="option4">Option 4</Item>
+  </ComboBox>
+</div>
+```
+
+## Filtering
+
+By default, items are **not filtered** based the input value.
+Filtering options is possible by controlling `value` and `items` props:
+
+```jsx live themed noInline
+const items = [
+  { name: "start" },
+  { name: "build" },
+  { name: "test" },
+  { name: "deploy" },
+];
+
+function WithFiltering() {
+  const [value, setValue] = React.useState("");
+  const filteredItems = React.useMemo(
+    () =>
+      items.filter((item) =>
+        item.name.toLowerCase().startsWith(value.toLowerCase())
+      ),
+    [value]
+  );
+  return (
+    <ComboBox
+      items={filteredItems}
+      menuTrigger="input"
+      value={value}
+      onValueChange={setValue}
+    >
+      {({ name }) => <Item key={name}>{name}</Item>}
+    </ComboBox>
+  );
+}
+
+render(<WithFiltering />);
+```
+
+:::tip
+When filtering options based on input value, use `menuTrigger="input"` to have the dropdown open as the input is typed in.
+:::
+
+## Known differences
+
+Combobox has the [same differences](./Dropdown#known-differences) with the reference implementation as
+[Dropdown](./Dropdown) has.
+
+[intellij-platform-combobox]: https://github.com/JetBrains/intellij-community/blob/master/platform/platform-api/src/com/intellij/openapi/ui/ComboBox.java
