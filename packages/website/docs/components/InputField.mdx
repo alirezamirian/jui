@@ -44,3 +44,26 @@ An input box with an associated label, error message, and context help. See also
   <InputField label="Label above:" labelPlacement="above" />
 </div>
 ```
+
+## Label Alignment
+
+Use `LabeledControlsAlignmentProvider` to align InputField with other labeled controls, according to
+[the design guidelines](https://jetbrains.github.io/ui/principles/layout/#05).
+
+```jsx live themed
+<LabeledControlsAlignmentProvider>
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      gap: "1rem",
+      width: 400,
+    }}
+  >
+    <InputField label="Host name:" />
+    <ComboBox label="Port number:">
+      <Item key="80">80</Item>
+    </ComboBox>
+  </div>
+</LabeledControlsAlignmentProvider>
+```

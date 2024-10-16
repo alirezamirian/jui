@@ -1,5 +1,12 @@
 import { styled } from "@intellij-platform/core/styled";
-import React, { ForwardedRef, forwardRef } from "react";
+import React, {
+  ForwardedRef,
+  forwardRef,
+  RefObject,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+} from "react";
 import { DOMAttributes } from "@react-types/shared";
 
 export type LabelPlacement = "above" | "before";
@@ -41,6 +48,8 @@ export const WithLabel = forwardRef(function WithLabel(
   } & DOMAttributes,
   forwardedRef: ForwardedRef<HTMLDivElement>
 ) {
+  const labelRef = React.useRef<HTMLLabelElement>(null);
+  useAlignedLabels({ ref: labelRef, enabled: labelPlacement !== "above" });
   return (
     <StyledLabelContainer
       {...props}
@@ -48,7 +57,7 @@ export const WithLabel = forwardRef(function WithLabel(
       ref={forwardedRef}
     >
       {label && (
-        <StyledLabel {...labelProps} isDisabled={isDisabled}>
+        <StyledLabel {...labelProps} isDisabled={isDisabled} ref={labelRef}>
           {label}
         </StyledLabel>
       )}
@@ -56,3 +65,72 @@ export const WithLabel = forwardRef(function WithLabel(
     </StyledLabelContainer>
   );
 });
+
+function useAlignedLabels({
+  ref,
+  enabled,
+}: {
+  ref: RefObject<HTMLElement>;
+  enabled?: boolean;
+}) {
+  const { applyLabelWidth, commonWidth } = useContext(LabelAlignmentContext);
+  useLayoutEffect(() => {
+    const apply = (): boolean => {
+      const width = ref.current?.offsetWidth;
+      if (width) {
+        applyLabelWidth(width);
+        return true;
+      }
+      return false;
+    };
+    // In some situations, the width is zero in the first render.
+    if (!apply()) {
+      setTimeout(apply, 0);
+    }
+  });
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.style.width =
+        commonWidth && enabled ? `${commonWidth}px` : "";
+    }
+  }, [commonWidth, enabled]);
+}
+
+const LabelAlignmentContext = React.createContext<{
+  commonWidth: number | null;
+  applyLabelWidth: (width: number) => void;
+}>({ commonWidth: null, applyLabelWidth: () => {} });
+
+/**
+ * Provides a context for
+ * [labeled input controls](https://jetbrains.github.io/ui/principles/layout/#labeled-input-controls)
+ * with side-positioned labels to have their input boxes aligned.
+ * It doesn't render anything in DOM and only provides a context used
+ * by labeled controls to set a common width on labels so that the input boxes
+ * align.
+ * Labeled input controls are:
+ * - {@link InputField}
+ * - {@link ComboBox}
+ * - {@link Dropdown}
+ */
+export function LabeledControlsAlignmentProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [commonWidth, setCommonWidth] = React.useState<null | number>(null);
+
+  const applyLabelWidth = (width: number) => {
+    setCommonWidth((currentWidth) =>
+      width > (currentWidth ?? 0)
+        ? width + 1 /* without 1px it wraps in some cases ¯\_(ツ)_/¯ */
+        : currentWidth
+    );
+  };
+  return (
+    <LabelAlignmentContext.Provider value={{ commonWidth, applyLabelWidth }}>
+      {children}
+    </LabelAlignmentContext.Provider>
+  );
+}

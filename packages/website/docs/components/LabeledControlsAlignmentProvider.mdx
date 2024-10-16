@@ -1,0 +1,28 @@
+import { ApiDescription } from "@site/src/components/ApiDescription";
+import { LabeledControlsAlignmentProvider } from "@intellij-platform/core";
+
+# LabeledControlsAlignmentProvider
+
+<ApiDescription of={LabeledControlsAlignmentProvider} />
+
+```jsx live themed
+<LabeledControlsAlignmentProvider>
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      gap: "1rem",
+      width: 400,
+    }}
+  >
+    <InputField label="InputField:" />
+    <InputField label="Second InputField:" />
+    <Dropdown label="Dropdown:">
+      <Item key="80">80</Item>
+    </Dropdown>
+    <ComboBox label="ComboBox:">
+      <Item key="80">80</Item>
+    </ComboBox>
+  </div>
+</LabeledControlsAlignmentProvider>
+```

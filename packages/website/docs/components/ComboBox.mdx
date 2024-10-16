@@ -94,6 +94,29 @@ render(<WithFiltering />);
 When filtering options based on input value, use `menuTrigger="input"` to have the dropdown open as the input is typed in.
 :::
 
+## Label Alignment
+
+Use `LabeledControlsAlignmentProvider` to align combobox with other labeled controls, according to
+[the design guidelines](https://jetbrains.github.io/ui/principles/layout/#05).
+
+```jsx live themed
+<LabeledControlsAlignmentProvider>
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      gap: "1rem",
+      width: 400,
+    }}
+  >
+    <InputField label="Host name:" />
+    <ComboBox label="Port number:">
+      <Item key="80">80</Item>
+    </ComboBox>
+  </div>
+</LabeledControlsAlignmentProvider>
+```
+
 ## Known differences
 
 Combobox has the [same differences](./Dropdown#known-differences) with the reference implementation as

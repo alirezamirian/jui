@@ -101,6 +101,29 @@ See also:
 </div>
 ```
 
+## Label Alignment
+
+Use `LabeledControlsAlignmentProvider` to align Dropdown with other labeled controls, according to
+[the design guidelines](https://jetbrains.github.io/ui/principles/layout/#05).
+
+```jsx live themed
+<LabeledControlsAlignmentProvider>
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      gap: "1rem",
+      width: 400,
+    }}
+  >
+    <InputField label="Host name:" />
+    <Dropdown label="Port number:">
+      <Item key="80">80</Item>
+    </Dropdown>
+  </div>
+</LabeledControlsAlignmentProvider>
+```
+
 ## Known differences
 
 There are a few differences between `Dropdown` and ([the reference implementation][intellij-platform-combobox]).
