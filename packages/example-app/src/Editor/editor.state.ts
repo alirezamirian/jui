@@ -32,6 +32,7 @@ const temporaryTabsDefaultValue = selector({
       ],
       get(currentProjectFilesState).filter((item) => item.type === "file")
     )
+      .filter((file) => !file.path.includes(".idea"))
       .slice(0, 12)
       // map project file to editor state object
       .map((file) => ({

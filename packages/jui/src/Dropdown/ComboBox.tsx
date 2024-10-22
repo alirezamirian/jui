@@ -3,10 +3,10 @@ import React, {
   ForwardedRef,
   forwardRef,
   HTMLProps,
+  Ref,
   useRef,
 } from "react";
 import { mergeProps, useObjectRef } from "@react-aria/utils";
-import { useFilter } from "@react-aria/i18n";
 import { AriaComboBoxProps, useComboBox } from "@react-aria/combobox";
 import { useComboBoxState } from "@react-stately/combobox";
 import { styled } from "@intellij-platform/core/styled";
@@ -76,6 +76,7 @@ export interface ComboBoxProps<T extends object>
     HTMLProps<HTMLInputElement>,
     "value" | "defaultValue" | "as"
   >;
+  inputRef?: Ref<HTMLInputElement>;
 }
 
 const StyledComboBoxContainer = styled(StyledContainer)`
@@ -148,13 +149,14 @@ export const ComboBox = forwardRef(
       contextHelp,
       contextHelpPlacement,
       inputProps,
+      inputRef: inputRefProp,
       ...props
     }: ComboBoxProps<T>,
     forwardedRef: ForwardedRef<HTMLDivElement>
   ): React.JSX.Element => {
     const ref = useObjectRef(forwardedRef);
     const buttonRef = useRef<HTMLButtonElement>(null);
-    const inputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useObjectRef(inputRefProp);
     const dropdownContainerRef = useRef<HTMLDivElement>(null);
     const popoverRef = useRef<HTMLDivElement>(null);
     const listBoxRef = useRef<HTMLDivElement>(null);

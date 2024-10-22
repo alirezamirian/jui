@@ -1,32 +1,40 @@
 import React, { useEffect, useState } from "react";
 import path from "path";
-import git, { clone } from "isomorphic-git";
+import git, { clone, GitProgressEvent } from "isomorphic-git";
 import http from "isomorphic-git/http/web";
-import styled from "styled-components";
-import { WINDOW_SHADOW } from "@intellij-platform/core";
-import { defaultProject, sampleRepo } from "./Project/project.state";
+import { defaultProject, autoClonedRepo } from "./Project/project.state";
 import { fs } from "./fs/fs";
 import { ensureDir } from "./fs/fs-utils";
+import {
+  AlertDialog,
+  Button,
+  Popup,
+  ProgressBar,
+} from "@intellij-platform/core";
 
-const StyledDialog = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: ${({ theme }) => theme.color("*.background")};
-  color: ${({ theme }) => theme.color("*.foreground")};
-  ${WINDOW_SHADOW};
-  text-align: center;
-  line-height: 1.5;
-`;
-const StyledDialogHeader = styled.div`
-  background: ${({ theme }) => theme.color("Popup.Header.activeBackground")};
-  padding: 4px;
-  text-align: center;
-`;
-const StyledDialogContent = styled.div`
-  padding: 8px 16px;
-`;
+const defaultWorkspaceFiles = {
+  ".idea/vcs.xml": `<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GitRememberedInputs">
+    <option name="visitedUrls">
+      <list>
+        <UrlAndUserName>
+          <option name="url" value="https://github.com/alirezamirian/jui.git"></option>
+          <option name="userName" value=""></option>
+        </UrlAndUserName>
+        <UrlAndUserName>
+          <option name="url" value="https://github.com/thurwitz/example-branches.git"></option>
+          <option name="userName" value=""></option>
+        </UrlAndUserName>
+      </list>
+    </option>
+    <option name="cloneParentDir" value="/workspace"></option>
+  </component>
+  <component name="VcsDirectoryMappings"></component>
+</project>
+
+`,
+};
 
 export async function isSuccessfullyCloned(dir: string) {
   try {
@@ -51,6 +59,20 @@ export async function isSuccessfullyCloned(dir: string) {
   return true;
 }
 
+const defaultInitializer = async () => {
+  await ensureDir(fs.promises, defaultProject.path);
+  await Promise.all(
+    Object.entries(defaultWorkspaceFiles).map(async ([filename, content]) => {
+      const fullPath = path.join(defaultProject.path, filename);
+      if (await fs.promises.exists(fullPath)) {
+        return;
+      }
+      await ensureDir(fs.promises, path.dirname(fullPath));
+      await fs.promises.writeFile(fullPath, content, "utf-8");
+    })
+  );
+};
+
 export const ProjectInitializer = ({
   children,
   autoCloneSampleRepo = false,
@@ -58,6 +80,10 @@ export const ProjectInitializer = ({
   autoCloneSampleRepo?: boolean;
   children?: React.ReactNode;
 }) => {
+  const [cloneProgress, setCloneProgress] = useState<GitProgressEvent | null>(
+    null
+  );
+
   const [state, setState] = useState<
     "error" | "cloning" | "uninitialized" | "initialized"
   >("uninitialized");
@@ -65,25 +91,24 @@ export const ProjectInitializer = ({
     async function ensureSampleRepo(dir: string, repoUrl: string) {
       if (!(await isSuccessfullyCloned(dir))) {
         setState("cloning");
-        await cloneRepo({ dir, url: repoUrl });
+        await cloneRepo({ dir, url: repoUrl, onProgress: setCloneProgress });
       }
     }
     // noinspection JSIgnoredPromiseFromCall: error handling done in the function
     init();
     async function init() {
-      await ensureDir(fs.promises, defaultProject.path);
-      const externalInit = (window as any).INITIALIZE_APP; // Giving a chance for external fs initialization. Used in e2e tests
+      const initializer =
+        (window as any).INITIALIZE_APP ?? // Giving a chance for external fs initialization. Used in e2e tests
+        defaultInitializer;
       try {
-        if (externalInit) {
-          console.log("external initialization...");
-          await externalInit({
-            fs,
-            git,
-            path,
-            projectDir: defaultProject.path,
-          });
-        } else if (autoCloneSampleRepo) {
-          await ensureSampleRepo(sampleRepo.path, sampleRepo.url);
+        await initializer({
+          fs,
+          git,
+          path,
+          projectDir: defaultProject.path,
+        });
+        if (autoCloneSampleRepo) {
+          await ensureSampleRepo(autoClonedRepo.path, autoClonedRepo.url);
         }
         console.log("demo repo initialized");
         setState("initialized");
@@ -94,29 +119,64 @@ export const ProjectInitializer = ({
     }
   }, []);
 
-  if (state === "uninitialized") {
-    return null;
+  const fraction = cloneProgress?.total
+    ? cloneProgress.loaded / cloneProgress.total
+    : 0;
+
+  switch (state) {
+    case "uninitialized":
+      return null;
+    case "initialized":
+      return <>{children}</>;
+    case "cloning":
+      return (
+        <Popup minWidth={450}>
+          <Popup.Layout
+            header="Cloning sample git repository"
+            content={
+              <div style={{ padding: "1rem" }}>
+                <ProgressBar
+                  name={`Cloning repository ${autoClonedRepo.url}`}
+                  isIndeterminate={!cloneProgress}
+                  details={
+                    fraction
+                      ? `${cloneProgress?.phase}: ${Math.round(
+                          fraction * 100
+                        )}% ${cloneProgress?.loaded}/${cloneProgress?.total}`
+                      : cloneProgress?.phase
+                  }
+                  aria-label={`Progress of cloning sample repo`}
+                  value={
+                    cloneProgress
+                      ? cloneProgress.loaded / cloneProgress.total
+                      : 0
+                  }
+                  maxValue={1}
+                />
+              </div>
+            }
+          />
+        </Popup>
+      );
+    case "error":
+      return (
+        <AlertDialog
+          type="error"
+          heading="Something went wrong!"
+          body="Could not initialize example app"
+          buttons={
+            <Button
+              variant="default"
+              onPress={() => {
+                window.location.reload();
+              }}
+            >
+              Reload
+            </Button>
+          }
+        />
+      );
   }
-  if (state === "initialized") {
-    return <>{children}</>;
-  }
-  return (
-    <div style={{ minHeight: "100vh", position: "relative" }}>
-      <StyledDialog>
-        <StyledDialogHeader>Cloning sample repo</StyledDialogHeader>
-        <StyledDialogContent>
-          {state === "cloning" ? (
-            <>
-              Cloning <b>{sampleRepo.url}</b>. <br />
-              It may take several seconds.
-            </>
-          ) : (
-            <>Something went wrong!</>
-          )}
-        </StyledDialogContent>
-      </StyledDialog>
-    </div>
-  );
 };
 
 export async function cloneRepo({

@@ -22,7 +22,7 @@ import { LabelPlacement, WithLabel } from "@intellij-platform/core/Field/Label";
 export interface InputFieldProps
   extends Omit<
       AriaFieldProps,
-      "labelElementType" | "validationState" | "errorMessage"
+      "labelElementType" | "validationState" | "errorMessage" | "isInvalid"
     >,
     FocusableProps,
     Pick<

@@ -14,6 +14,7 @@ import { fs } from "../../fs/fs";
 import { ensureDir } from "../../fs/fs-utils";
 import { currentProjectState } from "../project.state";
 import { StorageFiles } from "./persistentAtomEffect";
+import { ensureArray } from "../../ensureArray";
 
 type ComponentState = { [key: string]: unknown; "@name": string };
 type WorkspaceState = {
@@ -51,9 +52,7 @@ async function readWorkspace(
 
   const workspace = xmlParser.parse(xmlData);
   workspace.project = workspace.project || {};
-  workspace.project.component = workspace.project.component || {
-    component: [],
-  };
+  workspace.project.component = ensureArray(workspace.project.component);
   return workspace;
 }
 async function writeWorkspace(
@@ -81,9 +80,6 @@ export function PersistentStateProvider({
     useRecoilValue(currentProjectState).path,
     ".idea"
   );
-  const workspacePromiseRef = useRef<{
-    [key: string]: Promise<WorkspaceState | null>;
-  }>({});
 
   const resolveStorageFile = (storageFile: string) =>
     path.join(
@@ -94,11 +90,7 @@ export function PersistentStateProvider({
   const getWorkspace = (storageFile: string) => {
     // FIXME: caching the first read can cause issues when multiple writes happen, where they override each other.
     const resolvedStorageFile = resolveStorageFile(storageFile);
-    if (!workspacePromiseRef.current[resolvedStorageFile]) {
-      workspacePromiseRef.current[resolvedStorageFile] =
-        readWorkspace(resolvedStorageFile);
-    }
-    return workspacePromiseRef.current[resolvedStorageFile];
+    return readWorkspace(resolvedStorageFile);
   };
 
   // preload common storage files
@@ -132,7 +124,7 @@ export function PersistentStateProvider({
         for (const storageFile in changesByFile) {
           const changes = changesByFile[storageFile];
           const workspace: WorkspaceState = (await readWorkspace(
-            storageFile
+            resolveStorageFile(storageFile)
           )) || {
             "?xml": { "@version": "1.0", "@encoding": "UTF-8" },
             project: { "@version": "4", component: [] },

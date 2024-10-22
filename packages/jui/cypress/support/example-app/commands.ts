@@ -45,8 +45,13 @@ function initialize(
 ) {
   cy.visit("/", {
     onBeforeLoad(win: Cypress.AUTWindow) {
-      return ((win as any).INITIALIZE_APP = ({ fs, git, path }: AppGlobals) =>
-        Promise.all(
+      return ((win as any).INITIALIZE_APP = async ({
+        fs,
+        git,
+        path,
+      }: AppGlobals) => {
+        await fs.promises.mkdir("/workspace");
+        return Promise.all(
           initializeFns.map(async (fn) =>
             fn({
               fs,
@@ -55,7 +60,8 @@ function initialize(
               projectDir: "/workspace",
             })
           )
-        ));
+        );
+      });
     },
   });
   // Without this, the keyboard events in potential next commands may get triggered before the app is fully loaded.

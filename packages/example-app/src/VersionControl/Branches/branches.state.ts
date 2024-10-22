@@ -21,6 +21,7 @@ import { asyncFilter } from "../../async-utils";
 import { getTrackingBranch } from "./branch-utils";
 import { array, literal, object, string, union } from "@recoiljs/refine";
 import { persistentAtomEffect } from "../../Project/persistence/persistentAtomEffect";
+import { ensureArray, MaybeArray } from "../../ensureArray";
 
 export type LocalBranch = {
   name: string;
@@ -173,9 +174,6 @@ const PREDEFINED_FAVORITE_BRANCH_NAMES = [
   { branchType: "REMOTE", branchName: "origin/master" },
 ];
 
-type MaybeArray<T> = Array<T> | T;
-const maybeArray = <T>(input: MaybeArray<T> | undefined): Array<T> =>
-  Array.isArray(input) ? input : input ? [input] : [];
 interface BranchStorage {
   map: MaybeArray<{
     entry: {
@@ -208,8 +206,8 @@ interface GitSettingsStorage {
 
 function readBranchStorage(branchStorage: BranchStorage | undefined) {
   return (
-    maybeArray(branchStorage?.map).flatMap<BranchInfo>((entry) =>
-      maybeArray(entry?.entry.value.list).map(
+    ensureArray(branchStorage?.map).flatMap<BranchInfo>((entry) =>
+      ensureArray(entry?.entry.value.list).map(
         ({ "branch-info": { "@source": branchName, "@repo": repoRoot } }) => ({
           branchType: entry?.entry["@type"],
           branchName,
