@@ -2974,7 +2974,6 @@ __metadata:
     storybook-addon-theme-provider: ^0.1.10
     stream-browserify: ^3.0.0
     ts-loader: ^8
-    typescript: "workspace:*"
     webpack: 5
   peerDependencies:
     react: ">=16.8"
@@ -17580,7 +17579,6 @@ __metadata:
     recoil-sync: ^0.2.0
     serve: ^14.2.3
     styled-components: ^5
-    typescript: "workspace:*"
     uuid: ^9.0.1
     xterm-for-react: ^1.0.4
   languageName: unknown
@@ -24832,7 +24830,6 @@ __metadata:
     react-dom: ^17.0.1
     stream-browserify: ^3.0.0
     styled-components: ^5
-    typescript: "workspace:*"
     url-loader: ^4.1.1
     webpack: ^5.73.0
   languageName: unknown
