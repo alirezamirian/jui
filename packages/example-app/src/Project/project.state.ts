@@ -24,30 +24,10 @@ export interface ProjectFsItem extends FsItem {
   relativePath: string;
 }
 
-export const sampleRepos = {
-  JUI: {
-    path: "/workspace/jui",
-    url: "https://github.com/alirezamirian/jui.git",
-  },
-  "React Spectrum": {
-    path: "/workspace/react-spectrum",
-    url: "https://github.com/adobe/react-spectrum.git",
-  },
-  Recoil: {
-    path: "/workspace/recoil",
-    url: "https://github.com/facebookexperimental/Recoil.git",
-  },
-  ExampleRepo: {
-    path: "/workspace/example-repo",
-    url: "https://github.com/thurwitz/example-branches.git",
-  },
+export const autoClonedRepo = {
+  path: "/workspace/jui",
+  url: "https://github.com/alirezamirian/jui.git",
 };
-const sampleRepoKey: keyof typeof sampleRepos = "JUI";
-
-/**
- * temporary hard coded sample repo, until clone UI is implemented.
- */
-export const sampleRepo = sampleRepos[sampleRepoKey];
 
 export const defaultProject = {
   name: "Workspace",

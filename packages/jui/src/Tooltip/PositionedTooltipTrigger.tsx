@@ -9,9 +9,11 @@ import { TooltipTriggerProps as AriaTooltipTriggerProps } from "@react-aria/tool
 import { useTooltipTriggerState } from "@react-stately/tooltip";
 import { AriaPositionProps, useOverlayPosition } from "@react-aria/overlays";
 import { TooltipTriggerAndOverlay } from "./TooltipTriggerAndOverlay";
+import { useObjectRef } from "@react-aria/utils";
 
-export interface PositionedTooltipTriggerProps
-  extends Omit<AriaTooltipTriggerProps, "trigger">,
+export interface PositionedTooltipTriggerProps<
+  T extends HTMLElement = HTMLElement
+> extends Omit<AriaTooltipTriggerProps, "trigger">,
     Pick<
       AriaPositionProps,
       "placement" | "offset" | "crossOffset" | "shouldFlip"
@@ -26,7 +28,7 @@ export interface PositionedTooltipTriggerProps
   children:
     | React.ReactNode
     | ((
-        props: HTMLAttributes<HTMLElement> & { ref: RefObject<HTMLElement> }
+        props: HTMLAttributes<HTMLElement> & { ref: RefObject<T> }
       ) => React.ReactNode);
 
   /**
@@ -34,13 +36,21 @@ export interface PositionedTooltipTriggerProps
    * is hovered, but it can improve accessibility to show the tooltip on focus as well.
    */
   showOnFocus?: boolean;
+
+  /**
+   * Ref to trigger.
+   * If not provided, a ref will be created internally.
+   * Useful for when a ref to the trigger is necessary where PositionedTooltipTrigger
+   * is used.
+   */
+  triggerRef?: RefObject<T>;
 }
 
 /**
  * Sets {@param tooltip} for its {@param children}. Tooltip will be positioned based relative to the trigger.
  * The default tooltip positioning is based on cursor, which is implemented by {@link TooltipTrigger}
  */
-export const PositionedTooltipTrigger = ({
+export const PositionedTooltipTrigger = <T extends HTMLElement>({
   tooltip,
   children,
   /**
@@ -50,15 +60,17 @@ export const PositionedTooltipTrigger = ({
   delay = 500,
   offset = 8,
   showOnFocus,
+  triggerRef: inputTriggerRef,
   ...props
-}: PositionedTooltipTriggerProps): JSX.Element => {
+}: PositionedTooltipTriggerProps<T>): JSX.Element => {
   const state = useTooltipTriggerState({
     ...props,
     delay,
   });
 
   const overlayRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLElement>(null);
+  const fallbackRef = useObjectRef<T>(inputTriggerRef);
+  const triggerRef = inputTriggerRef || fallbackRef;
 
   const positionAria = useOverlayPosition({
     ...props,

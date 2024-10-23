@@ -17,9 +17,6 @@ describe("Checkbox", () => {
     matchImageSnapshot("Checkbox-unchecked");
     cy.contains(CHECKBOX_LABEL_TEXT).click();
 
-    // svg is already loaded, so the workaround in matchImageSnapshot won't work :/ can be removed when icons loading
-    // in tests is improved in general
-    cy.wait(50);
     matchImageSnapshot("Checkbox-checked-and-focused");
   });
 

@@ -16,7 +16,7 @@ export function useSvgIcon(
   const itemState = useContext(ItemStateContext);
   const selected = itemState?.isSelected || itemState?.isContainerFocused;
   useEffect(() => {
-    let unmounted = false;
+    let canceled = false;
     const fetchIcon = async () => {
       if (!path) {
         console.error("icon path is empty");
@@ -35,13 +35,13 @@ export function useSvgIcon(
           throw e;
         })
         .finally(() => {
-          if (ref?.current) {
+          if (ref?.current && !canceled) {
             ref.current.ariaBusy = "false";
           }
         });
       if (svg) {
         const element = ref?.current;
-        if (!unmounted && element) {
+        if (!canceled && element) {
           element.querySelector("svg")?.remove();
           const svgElement = document.createElement("svg");
           element.appendChild(svgElement);
@@ -53,7 +53,7 @@ export function useSvgIcon(
     };
     fetchIcon().catch(console.error);
     return () => {
-      unmounted = true;
+      canceled = true;
     };
   }, [path, selected]);
 }

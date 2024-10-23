@@ -5,7 +5,7 @@
 
 `Dropdown` component implements [Drop-Down List](https://plugins.jetbrains.com/docs/intellij/drop-down.html), which is
 similar to [html select](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select) in web.
-It's also known as non-searchable [ComboBox][intellij-platform-combobox], in the reference implementation.
+It's also known as non-editable [ComboBox][intellij-platform-combobox], in the reference implementation.
 
 See also:
 
@@ -17,8 +17,6 @@ See also:
   [See the spec](https://plugins.jetbrains.com/docs/intellij/drop-down.html#label).
 - Grouping options into sections (See "With sections" example below).
 - Invalid state (see "Validated" example below).
-
-#### Remaining
 
 ### Live example
 
@@ -39,7 +37,11 @@ See also:
     <Item key="Error">Error</Item>
   </Dropdown>
 
-  <Dropdown label="Validated:" isInvalid defaultSelectedKey="Info">
+  <Dropdown
+    label="Validated:"
+    validationState="error"
+    defaultSelectedKey="Info"
+  >
     <Item key="Debug">Debug</Item>
     <Item key="Info">Info</Item>
     <Item key="Warning">Warning</Item>
@@ -97,6 +99,29 @@ See also:
     <Item key="option4">Option 4</Item>
   </Dropdown>
 </div>
+```
+
+## Label Alignment
+
+Use `LabeledControlsAlignmentProvider` to align Dropdown with other labeled controls, according to
+[the design guidelines](https://jetbrains.github.io/ui/principles/layout/#05).
+
+```jsx live themed
+<LabeledControlsAlignmentProvider>
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      gap: "1rem",
+      width: 400,
+    }}
+  >
+    <InputField label="Host name:" />
+    <Dropdown label="Port number:">
+      <Item key="80">80</Item>
+    </Dropdown>
+  </div>
+</LabeledControlsAlignmentProvider>
 ```
 
 ## Known differences

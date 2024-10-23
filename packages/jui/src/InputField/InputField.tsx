@@ -4,29 +4,32 @@ import React, {
   ForwardedRef,
   HTMLProps,
 } from "react";
-import { styled } from "@intellij-platform/core/styled";
 import { AriaFieldProps, useField } from "@react-aria/label";
 import { mergeProps, useObjectRef } from "@react-aria/utils";
 import { FocusableProps } from "@react-types/shared";
-import { Label } from "@intellij-platform/core/Label";
 import {
   PositionedTooltipTrigger,
   ValidationTooltip,
 } from "@intellij-platform/core/Tooltip";
 import { Input, InputProps } from "@intellij-platform/core/InputField/Input";
-
-type LabelPlacement = "above" | "before";
+import { styled } from "@intellij-platform/core/styled";
+import {
+  ContextHelpProps,
+  WithInlineContextHelp,
+} from "@intellij-platform/core/Field/ContextHelp";
+import { LabelPlacement, WithLabel } from "@intellij-platform/core/Field/Label";
 
 export interface InputFieldProps
   extends Omit<
       AriaFieldProps,
-      "labelElementType" | "validationState" | "errorMessage"
+      "labelElementType" | "validationState" | "errorMessage" | "isInvalid"
     >,
     FocusableProps,
     Pick<
       InputProps,
       "addonBefore" | "addonAfter" | "inputRef" | "validationState"
-    > {
+    >,
+    ContextHelpProps {
   /**
    * className applied on the field's wrapper div.
    */
@@ -39,11 +42,6 @@ export interface InputFieldProps
    * Label to be associated with the input.
    */
   label?: React.ReactNode;
-  /**
-   * Context help, shown below the input. A typical use case is
-   * [to provide example values](https://jetbrains.github.io/ui/principles/context_help/#07).
-   */
-  contextHelp?: React.ReactNode;
   /**
    * Placement of the label with respect to the input box.
    */
@@ -90,26 +88,8 @@ export interface InputFieldProps
   validationMessage?: React.ReactNode;
 }
 
-const StyledLabelContainer = styled.div<{ labelPlacement?: LabelPlacement }>`
-  display: inline-flex;
-  flex-direction: ${({ labelPlacement }) =>
-    labelPlacement === "above" ? "column" : "row"};
-  align-items: start;
-  gap: 0.375rem;
-`;
-
-const StyledLabel = styled(Label)`
-  margin-top: 0.25rem;
-  line-height: 1.2;
-`;
-const StyledContextHelp = styled.div`
-  color: ${({ theme }) => theme.commonColors.contextHelpForeground};
-`;
-
-const StyledBoxAndContextHelpWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem; /* Not checked with the reference impl */
+const StyledInput = styled(Input)`
+  width: 100%;
 `;
 
 /**
@@ -123,6 +103,7 @@ export const InputField = React.forwardRef(function InputField(
     style,
     labelPlacement = "before",
     contextHelp,
+    contextHelpPlacement,
     inputProps = {},
     addonBefore,
     addonAfter,
@@ -143,16 +124,20 @@ export const InputField = React.forwardRef(function InputField(
     });
 
   return (
-    <StyledLabelContainer
+    <WithLabel
       ref={ref}
+      label={props.label}
       labelPlacement={labelPlacement}
+      isDisabled={props.isDisabled}
+      labelProps={labelProps}
       className={className}
       style={style}
     >
-      <StyledLabel {...labelProps} disabled={props.isDisabled}>
-        {props.label}
-      </StyledLabel>
-      <StyledBoxAndContextHelpWrapper>
+      <WithInlineContextHelp
+        contextHelp={contextHelp}
+        contextHelpPlacement={contextHelpPlacement}
+        descriptionProps={descriptionProps}
+      >
         <PositionedTooltipTrigger
           placement="top start"
           crossOffset={36}
@@ -167,7 +152,7 @@ export const InputField = React.forwardRef(function InputField(
           }
           delay={0}
         >
-          <Input
+          <StyledInput
             inputRef={inputRef}
             placeholder={props.placeholder}
             disabled={props.isDisabled}
@@ -184,12 +169,7 @@ export const InputField = React.forwardRef(function InputField(
             })}
           />
         </PositionedTooltipTrigger>
-        {contextHelp && (
-          <StyledContextHelp {...descriptionProps}>
-            {contextHelp}
-          </StyledContextHelp>
-        )}
-      </StyledBoxAndContextHelpWrapper>
-    </StyledLabelContainer>
+      </WithInlineContextHelp>
+    </WithLabel>
   );
 });

@@ -136,7 +136,7 @@ https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8
         </tr>
         <tr>
             <td colspan="3"><a href="https://plugins.jetbrains.com/docs/intellij/combo-box.html">Combo Box</a></td>
-            <td>🚧</td>
+            <td>✅</td>
         </tr>
         <tr>
             <td rowspan="3"><a href="https://jetbrains.github.io/ui/controls/menu_list/">Menu List</a> <sup>1</sup></td>

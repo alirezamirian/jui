@@ -1,6 +1,7 @@
 import React from "react";
 import { composeStories } from "@storybook/react";
 import * as stories from "./Dropdown.stories";
+import { Dropdown, Item } from "@intellij-platform/core";
 
 const {
   Default,
@@ -10,7 +11,9 @@ const {
   WithNoVisibleLabel,
   WithSection,
   WithCustomOptions,
-  Invalid,
+  WithError,
+  WithWarning,
+  WithContextHelp,
 } = composeStories(stories);
 
 describe("Dropdown", () => {
@@ -26,7 +29,9 @@ describe("Dropdown", () => {
         }}
       >
         <Default />
-        <Invalid />
+        <WithError />
+        <WithWarning />
+        <WithContextHelp />
         <WidthDistribution width={210} />
         <WidthDistribution width={210} />
         <Disabled />
@@ -37,7 +42,7 @@ describe("Dropdown", () => {
       .last()
       .click();
     cy.findByRole("option", { name: "Long option" }).click();
-    cy.findAllByRole("button", { name: /With Disabled Options/ })
+    cy.findAllByRole("button", { name: /Disabled Options/ })
       .last()
       .click();
     matchImageSnapshot("Dropdown");
@@ -60,6 +65,16 @@ describe("Dropdown", () => {
     cy.findByRole("button", { name: /Output level/ });
   });
 
+  it("can be autofocused", () => {
+    cy.mount(
+      <Dropdown autoFocus defaultSelectedKey="start">
+        <Item key="start">start</Item>
+        <Item key="build">build</Item>
+      </Dropdown>
+    );
+    cy.findByRole("button").should("be.focused");
+  });
+
   it("can select a value", () => {
     cy.mount(<Default />);
     cy.findByRole("button").click();
@@ -68,7 +83,7 @@ describe("Dropdown", () => {
     cy.contains("Warning");
   });
 
-  it("can select an option with using keyboard", () => {
+  it("can select an option using keyboard", () => {
     cy.mount(<Default />);
     cy.findByRole("button").focus();
     cy.realPress("Space");
@@ -96,7 +111,7 @@ describe("Dropdown", () => {
     cy.findByRole("listbox").should("not.exist");
   });
 
-  it("does not close the popover when tabbing and focuses is lost because there is nothing else to get focused", () => {
+  it("does not close the popover when tabbing and focus is lost because there is nothing else to get focused", () => {
     cy.mount(<Default />);
     cy.contains("Info").click();
     cy.findByRole("listbox"); // should be opened

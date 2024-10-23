@@ -42,6 +42,7 @@ export * from "./SearchInput";
 export * from "./AlertDialog";
 export * from "./Mnemonic";
 export * from "./Dropdown";
+export { LabeledControlsAlignmentProvider } from "./Field/Label";
 
 export { type Bounds } from "./Overlay";
 export { type TextRange } from "./TextRange";

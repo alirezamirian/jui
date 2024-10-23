@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ForwardedRef } from "react";
 import {
   AriaPopoverProps,
   DismissButton,
@@ -10,6 +10,7 @@ import { OverlayTriggerState } from "@react-stately/overlays";
 import { WINDOW_SHADOW } from "@intellij-platform/core/style-constants";
 
 import { styled } from "../styled";
+import { useObjectRef } from "@react-aria/utils";
 
 export interface PopoverProps extends Omit<AriaPopoverProps, "popoverRef"> {
   children: React.ReactNode;
@@ -24,13 +25,11 @@ const StyledPopover = styled.div`
   outline: none; // Focus will be reflected in header. No need for outline or any other focus style on the container
   ${WINDOW_SHADOW}; // FIXME: OS-dependant style?
 `;
-export function Popover({
-  children,
-  state,
-  offset = 8,
-  ...props
-}: PopoverProps) {
-  const popoverRef = React.useRef(null);
+export const Popover = React.forwardRef(function Popover(
+  { children, state, offset = 8, ...props }: PopoverProps,
+  forwardedRef: ForwardedRef<HTMLDivElement>
+) {
+  const popoverRef = useObjectRef(forwardedRef);
   const { popoverProps } = usePopover(
     {
       ...props,
@@ -50,4 +49,4 @@ export function Popover({
       </StyledPopover>
     </Overlay>
   );
-}
+});

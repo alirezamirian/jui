@@ -226,8 +226,13 @@ export function deleteFile(filename: string): FileChange {
  */
 export function persistedGitSettings({
   gitRoots,
+  rememberedInputs: { urls, cloneParentDir } = {},
 }: {
-  gitRoots: string[];
+  rememberedInputs?: {
+    urls?: string[];
+    cloneParentDir?: string;
+  };
+  gitRoots?: string[];
 }): Change {
   return async (args, context) => {
     const { projectDir, path } = args;
@@ -235,13 +240,40 @@ export function persistedGitSettings({
       ".idea/vcs.xml",
       `<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="GitRememberedInputs">
+    <option name="visitedUrls">
+      <list>
+        ${
+          urls
+            ?.map(
+              (url) => `<UrlAndUserName>
+          <option name="url" value="${url}" />
+          <option name="userName" value="" />
+        </UrlAndUserName>`
+            )
+            .join("\n        ") ?? ""
+        }
+      </list>
+    </option>
+    ${
+      cloneParentDir
+        ? `<option name="cloneParentDir" value="${cloneParentDir}" />`
+        : ""
+    }
+  </component>
+
   <component name="VcsDirectoryMappings">
-    ${gitRoots
-      .map(
-        (gitRoot) =>
-          `<mapping directory="${path.join(projectDir, gitRoot)}" vcs="Git" />`
-      )
-      .join("\n    ")}
+    ${
+      gitRoots
+        ?.map(
+          (gitRoot) =>
+            `<mapping directory="${path.join(
+              projectDir,
+              gitRoot
+            )}" vcs="Git" />`
+        )
+        .join("\n    ") ?? ""
+    }
   </component>
 </project>`
     )(args, context);

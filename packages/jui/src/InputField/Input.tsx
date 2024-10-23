@@ -6,7 +6,6 @@ import React, {
 } from "react";
 import { mergeProps, useObjectRef } from "@react-aria/utils";
 import { FocusableOptions, useFocusable } from "@react-aria/focus";
-import { ValidationState } from "@react-types/shared";
 import { useFocusWithin } from "@react-aria/interactions";
 import { UnknownThemeProp } from "@intellij-platform/core/Theme";
 import { styled, css } from "@intellij-platform/core/styled";
@@ -101,9 +100,6 @@ const StyledLeftAddons = styled(StyledAddons)`
 `;
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  /**
-   *
-   */
   validationState?: "valid" | "error" | "warning";
   /**
    * Whether to auto select the value initially

@@ -287,19 +287,19 @@
 
     "OptionPane": {
       "messageForeground": "#bbbbbb",
-      "errorIcon":{
+      "errorIcon": {
         "os.windows": "AllIcons.General.ErrorDialog",
         "os.linux": "AllIcons.General.ErrorDialog"
       },
-      "warningIcon":{
+      "warningIcon": {
         "os.windows": "AllIcons.General.WarningDialog",
         "os.linux": "AllIcons.General.WarningDialog"
       },
-      "informationIcon":{
+      "informationIcon": {
         "os.windows": "AllIcons.General.InformationDialog",
         "os.linux": "AllIcons.General.InformationDialog"
       },
-      "questionIcon":{
+      "questionIcon": {
         "os.windows": "AllIcons.General.QuestionDialog",
         "os.linux": "AllIcons.General.QuestionDialog"
       }
@@ -367,7 +367,7 @@
       "UI": "com.intellij.ide.ui.laf.darcula.ui.DarculaRadioButtonMenuItemUI"
     },
 
-    "RootPaneUI":{
+    "RootPaneUI": {
       "os.windows": "com.intellij.ide.ui.laf.darcula.ui.DarculaRootPaneUI"
     },
 
@@ -535,7 +535,7 @@
     "infoText": "#bbbbbb",
     "text.grayFilter": "-15,-10,100",
     "text": "#bbbbbb",
-    "textInactiveText" : "#808080",
+    "textInactiveText": "#808080",
     "textText": "#bbbbbb",
     "window": "#3c3f41",
 

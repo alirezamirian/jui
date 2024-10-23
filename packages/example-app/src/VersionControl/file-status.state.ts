@@ -4,9 +4,7 @@ import {
   CallbackInterface,
   selectorFamily,
   useRecoilCallback,
-  useSetRecoilState,
 } from "recoil";
-import { defaultProject, sampleRepos } from "../Project/project.state";
 import git, { findRoot, statusMatrix } from "isomorphic-git";
 import { fs } from "../fs/fs";
 import {
@@ -18,6 +16,7 @@ import * as path from "path";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
 import { persistentAtomEffect } from "../Project/persistence/persistentAtomEffect";
 import { array, literal, object, string, union } from "@recoiljs/refine";
+import { ensureArray, MaybeArray } from "../ensureArray";
 
 /**
  * git.status function has an issue with newly added files. it returns "*added" for both of these cases:
@@ -30,7 +29,7 @@ import { array, literal, object, string, union } from "@recoiljs/refine";
 const status = async ({
   filepath,
   ...args
-}: Parameters<typeof git["status"]>[0]) => {
+}: Parameters<(typeof git)["status"]>[0]) => {
   return git
     .statusMatrix({ ...args, filepaths: [filepath] })
     .then((rows) => rows[0]);
@@ -46,10 +45,6 @@ const vcsDirectoryMappingChecker = array(
   })
 );
 
-type MaybeArray<T> = Array<T> | T;
-const maybeArray = <T>(input: MaybeArray<T> | undefined): Array<T> =>
-  Array.isArray(input) ? input : input ? [input] : [];
-
 export const vcsRootsState = atom<ReadonlyArray<VcsDirectoryMapping>>({
   key: "vcsRoots",
   effects: [
@@ -62,7 +57,7 @@ export const vcsRootsState = atom<ReadonlyArray<VcsDirectoryMapping>>({
       componentName: "VcsDirectoryMappings",
       // TODO: translate project dir to $PROJECT_DIR$
       read: (gitSettings) => {
-        const mappings = maybeArray(gitSettings?.mapping)?.map((item) => ({
+        const mappings = ensureArray(gitSettings?.mapping)?.map((item) => ({
           dir: item["@directory"],
           vcs: item["@vcs"],
         }));
@@ -80,16 +75,15 @@ export const vcsRootsState = atom<ReadonlyArray<VcsDirectoryMapping>>({
     }),
   ],
 });
+
 const TMP_findGitRoots = () =>
   Promise.all(
-    [...Object.values(sampleRepos), defaultProject].map(
-      async ({ path: dir }) => {
-        const exists = await fs.promises.exists(dir);
-        if (exists) {
-          return git.findRoot({ fs, filepath: dir }).catch(() => null);
-        }
+    ["/workspace/jui", "/workspace"].map(async (dir) => {
+      const exists = await fs.promises.exists(dir);
+      if (exists) {
+        return git.findRoot({ fs, filepath: dir }).catch(() => null);
       }
-    )
+    })
   ).then((roots) => {
     return [...new Set(roots.filter(notNull))].map<VcsDirectoryMapping>(
       (dir) => ({
@@ -98,17 +92,6 @@ const TMP_findGitRoots = () =>
       })
     );
   });
-
-/**
- * temporary(?) hook to refresh vcs roots
- */
-export const useRefreshVcsRoots = () => {
-  const setVcsRoots = useSetRecoilState(vcsRootsState);
-  return () =>
-    TMP_findGitRoots().then((roots) => {
-      setVcsRoots(roots);
-    });
-};
 
 /**
  * Given the absolute path of a file, returns the relevant VCS root path, if any.
