@@ -14,7 +14,7 @@ describe("vcs => rollback", () => {
     deleteFile("removed-file.ts")
   );
 
-  it.only("can rollback a combination of additions and modifications, not deleting local copies", () => {
+  it("can rollback a combination of additions and modifications, not deleting local copies", () => {
     cy.initialization(withDifferentChangeTypes);
 
     cy.step("Verify initial state");

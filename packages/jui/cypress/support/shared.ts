@@ -23,6 +23,7 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+/* global JQuery */
 
 import "cypress-real-events/support";
 import "cypress-plugin-snapshots/commands";

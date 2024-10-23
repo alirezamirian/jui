@@ -3,6 +3,8 @@
 // TODO: remove this file when a new version of cypress-plugin-snapshots is release. remember to add
 //  "cypress-plugin-snapshots" to "types" array in tsconfig.cypress.json
 // See more: https://github.com/meinaart/cypress-plugin-snapshots/issues/193
+/* global JQuery */
+
 declare namespace Cypress {
   interface Chainable<Subject = any> {
     toMatchSnapshot(
@@ -23,7 +25,7 @@ declare namespace Cypress {
           thresholdType: "percent" | "pixels";
           resizeDevicePixelRatio: boolean;
         }>;
-        screenshotConfig: Partial<ScreenshotDefaultsOptions>;
+        screenshotConfig: Partial<Cypress.ScreenshotDefaultsOptions>;
         name: string;
         separator: string;
       }>

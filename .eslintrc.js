@@ -52,7 +52,12 @@ module.exports = {
       },
     },
     {
-      files: ["packages/jui/scripts/**", "babel.config.js", ".eslintrc.js"],
+      files: [
+        "packages/jui/scripts/**",
+        "babel.config.js",
+        ".eslintrc.js",
+        "**/webpack.config.ts",
+      ],
       env: {
         node: true,
       },
@@ -63,6 +68,7 @@ module.exports = {
       excludedFiles: [
         "packages/**/*.+(stories|test|spec|cy).tsx",
         "packages/jui/src/**/story-helpers.tsx",
+        "**/cypress/**",
       ],
       rules: {
         "no-restricted-imports": [
@@ -86,10 +92,11 @@ module.exports = {
     },
     {
       // Only cypress test files
-      files: ["packages/**/*.cy.+(ts|tsx)"],
+      files: ["packages/**/*.cy.+(ts|tsx)", "**/cypress/**"],
       plugins: ["cypress", "no-only-tests"],
       env: {
         "cypress/globals": true,
+        node: true,
       },
       rules: {
         "no-only-tests/no-only-tests": ERROR,

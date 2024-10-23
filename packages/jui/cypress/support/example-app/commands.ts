@@ -1,5 +1,6 @@
 /// <reference types="cypress-real-events" />
 /// <reference types="@testing-library/cypress" />
+/* global JQuery */
 
 import { AppGlobals } from "./AppGlobals";
 
