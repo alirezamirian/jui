@@ -10,7 +10,9 @@ import {
   Button,
   Popup,
   ProgressBar,
+  styled,
 } from "@intellij-platform/core";
+import { StyledPopupContainer } from "@intellij-platform/core/Popup/Popup";
 
 const defaultWorkspaceFiles = {
   ".idea/vcs.xml": `<?xml version="1.0" encoding="UTF-8"?>
@@ -73,6 +75,19 @@ const defaultInitializer = async () => {
   );
 };
 
+/**
+ * Used instead of Popup to have it not be fixed positioned, since this popup
+ * is auto rendered in website's homepage, and example-app is rendered inline
+ * there.
+ */
+const InlinePopup = styled(StyledPopupContainer)<{ minWidth?: number }>`
+  min-width: ${({ minWidth }) => (minWidth ? `${minWidth}px` : "")};
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+`;
+
 export const ProjectInitializer = ({
   children,
   autoCloneSampleRepo = false,
@@ -130,7 +145,7 @@ export const ProjectInitializer = ({
       return <>{children}</>;
     case "cloning":
       return (
-        <Popup minWidth={450}>
+        <InlinePopup minWidth={450}>
           <Popup.Layout
             header="Cloning sample git repository"
             content={
@@ -156,7 +171,7 @@ export const ProjectInitializer = ({
               </div>
             }
           />
-        </Popup>
+        </InlinePopup>
       );
     case "error":
       return (

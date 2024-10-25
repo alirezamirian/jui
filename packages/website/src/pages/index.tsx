@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import clsx from "clsx";
 import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
@@ -7,7 +7,7 @@ import styles from "./_index/index.module.css";
 import HomepageFeatures from "./_index/HomepageFeatures";
 import { WindowFrame } from "./_index/WindowFrame/WindowFrame";
 import { LazyExampleApp } from "../components/LazyExampleApp";
-import styled from "styled-components";
+import { styled } from "@intellij-platform/core";
 import {
   PageSection2,
   PageSection2 as SectionType,
@@ -107,12 +107,9 @@ export default function Home(): JSX.Element {
                 JUI offers, rather than being a real IDE.
               </SectionType.Subtitle>
             </PageSection2.Container>
-            <ExampleWindowFrame>
-              <LazyExampleApp
-                height="calc(100vh - 200px)"
-                autoCloneSampleRepo
-              />
-            </ExampleWindowFrame>
+            <LazyExampleApp height="calc(100vh - 200px)" autoCloneSampleRepo>
+              {(app) => <ExampleWindowFrame>{app}</ExampleWindowFrame>}
+            </LazyExampleApp>
           </PageSection2>
         </main>
       </Layout>
@@ -124,4 +121,5 @@ const ExampleWindowFrame = styled(WindowFrame)`
   margin-top: 2rem;
   width: clamp(85%, 1200px, calc(100vw - 1rem));
   min-height: calc(100vh - 200px);
+  background: ${({ theme }) => theme.commonColors.panelBackground};
 `;
