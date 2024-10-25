@@ -16,8 +16,8 @@ import {
 import { useOverflowObserver } from "@intellij-platform/core/utils/overflow-utils/useOverflowObserver";
 import { PlatformIcon } from "@intellij-platform/core/Icon";
 import { Overlay, useOverlayPosition } from "@react-aria/overlays";
-import { StyledPopupContainer } from "@intellij-platform/core/Popup/Popup";
 import { mergeProps } from "@react-aria/utils";
+import { StyledPopupContainer } from "@intellij-platform/core/Popup/StyledPopupContainer";
 
 type ToolbarBorderProp =
   | true

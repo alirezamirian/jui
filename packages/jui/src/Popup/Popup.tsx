@@ -7,7 +7,9 @@ import { filterDOMProps, useObjectRef } from "@react-aria/utils";
 import { pipe } from "ramda";
 
 import {
+  areInNestedOverlays,
   ensureInViewport,
+  Overlay,
   OverlayInteractionHandler,
   OverlayResizeHandles,
   position,
@@ -15,8 +17,6 @@ import {
   useResizableMovableOverlay,
 } from "@intellij-platform/core/Overlay";
 import { styled } from "@intellij-platform/core/styled";
-import { WINDOW_SHADOW } from "@intellij-platform/core/style-constants";
-import { areInNestedOverlays, Overlay } from "@intellij-platform/core/Overlay";
 import { mergeNonNullProps } from "@intellij-platform/core/utils/mergeNonNullProps";
 import { useFocusForwarder } from "@intellij-platform/core/utils/useFocusForwarder";
 
@@ -25,16 +25,7 @@ import { PopupHeader } from "./PopupHeader";
 import { PopupContext, PopupControllerContext } from "./PopupContext";
 import { PopupLayout } from "./PopupLayout";
 import { StyledPopupHint } from "./StyledPopupHint";
-
-export const StyledPopupContainer = styled.div`
-  position: fixed;
-  box-sizing: border-box;
-  // not checked if there should be a better substitute for * in the following colors. Maybe "Component"?
-  background-color: ${({ theme }) => theme.color("*.background")};
-  color: ${({ theme }) => theme.color("*.foreground")};
-  outline: none; // Focus will be reflected in header. No need for outline or any other focus style on the container
-  ${WINDOW_SHADOW}; // FIXME: OS-dependant style?
-`;
+import { StyledPopupContainer } from "@intellij-platform/core/Popup/StyledPopupContainer";
 
 /**
  * only needed for setting overflow to hidden to make sure nothing will overflow a window under any circumstances.

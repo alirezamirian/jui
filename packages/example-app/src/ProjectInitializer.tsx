@@ -12,7 +12,7 @@ import {
   ProgressBar,
   styled,
 } from "@intellij-platform/core";
-import { StyledPopupContainer } from "@intellij-platform/core/Popup/Popup";
+import { StyledPopupContainer } from "@intellij-platform/core/Popup/StyledPopupContainer";
 
 const defaultWorkspaceFiles = {
   ".idea/vcs.xml": `<?xml version="1.0" encoding="UTF-8"?>

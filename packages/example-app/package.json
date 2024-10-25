@@ -17,7 +17,8 @@
     "@intellij-platform/core/utils/array-utils": "@intellij-platform/core/src/utils/array-utils",
     "@intellij-platform/core/utils/useEventCallback": "@intellij-platform/core/src/utils/useEventCallback",
     "@intellij-platform/core/StyledSeparator": "@intellij-platform/core/src/StyledSeparator",
-    "@intellij-platform/core/List/StyledListItem": "@intellij-platform/core/src/List/StyledListItem"
+    "@intellij-platform/core/List/StyledListItem": "@intellij-platform/core/src/List/StyledListItem",
+    "@intellij-platform/core/Popup/StyledPopupContainer": "@intellij-platform/core/src/Popup/StyledPopupContainer"
   },
   "dependencies": {
     "@intellij-platform/core": "workspace:^",
