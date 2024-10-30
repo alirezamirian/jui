@@ -4,7 +4,7 @@ import { useMenuTriggerState } from "@react-stately/menu";
 import { OverlayTriggerProps } from "@react-types/overlays";
 
 import { useContextMenu, UseContextMenuProps } from "./useContextMenu";
-import { MenuOverlay } from "./MenuOverlay";
+import { MenuOverlayFromOrigin } from "@intellij-platform/core/Menu/MenuOverlayFromOrigin";
 
 interface ContextMenuContainerProps
   extends Omit<HTMLProps<HTMLDivElement>, "children">,
@@ -40,7 +40,7 @@ export const ContextMenuContainer = React.forwardRef(
   ) => {
     const state = useMenuTriggerState({} as OverlayTriggerProps);
 
-    const { overlayProps, containerProps, overlayRef } = useContextMenu(
+    const { positionOrigin, containerProps, overlayRef } = useContextMenu(
       { onOpen, isDisabled },
       state
     );
@@ -54,19 +54,20 @@ export const ContextMenuContainer = React.forwardRef(
             {children}
           </div>
         )}
-        <MenuOverlay
-          state={state}
-          overlayRef={overlayRef}
-          overlayProps={overlayProps}
-          restoreFocus
-          /**
-           * Context menus don't autofocus the first item in the reference impl.
-           * Note that this just defines the default value, and can always be controlled per case on the rendered Menu
-           */
-          defaultAutoFocus={true}
-        >
-          {renderMenu()}
-        </MenuOverlay>
+        {state.isOpen && (
+          <MenuOverlayFromOrigin
+            onClose={state.close}
+            ref={overlayRef}
+            origin={positionOrigin}
+            /**
+             * Context menus don't autofocus the first item in the reference impl.
+             * Note that this just defines the default value, and can always be controlled per case on the rendered Menu
+             */
+            defaultAutoFocus={true}
+          >
+            {renderMenu()}
+          </MenuOverlayFromOrigin>
+        )}
       </>
     );
   }

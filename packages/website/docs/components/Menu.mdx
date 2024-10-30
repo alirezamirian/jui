@@ -316,6 +316,76 @@ just by composition of those components and `ContextMenuContainer`. A caveat to 
 element that will be added if you want context menu, which may need some styling to have no effect on the layout.
 :::
 
+### MenuOverlayFromOrigin
+
+`ContextMenuContainer` uses `MenuOverlayFromOrigin` under the hood,
+to position the menu overlay based on the contextmenu event's coordinate.
+For use cases where `ContextMenuContainer` can't be used, `MenuOverlayFromOrigin` can be used directly
+to place a menu in an overlay that's positioned based on a pointer event, which can be used to implement contextmenu.
+
+```tsx live noPadding
+function ContextMenuExample() {
+  const [origin, setOrigin] = React.useState(null);
+  return (
+    <>
+      <MonacoEditor
+        height={200}
+        defaultValue="\nRight click somewhere to open the context menu.\n"
+        options={{ contextmenu: false }}
+        onMount={(monacoEditor) => {
+          monacoEditor.focus();
+          monacoEditor.onContextMenu((c) => {
+            c.event.preventDefault();
+            Promise.resolve().then(() => {
+              setOrigin(c.event.browserEvent);
+            });
+          });
+        }}
+      ></MonacoEditor>
+      {origin && (
+        <MenuOverlayFromOrigin
+          origin={origin}
+          /**
+           * Context menus don't autofocus the first item in the reference impl.
+           * Note that this just defines the default value, and can always be controlled per case on the rendered Menu
+           */
+          defaultAutoFocus={true}
+          onClose={() => setOrigin(null)}
+        >
+          <Menu>
+            <Item>
+              <MenuItemLayout
+                icon={<PlatformIcon icon={"actions/copy"} />}
+                content="Copy"
+                shortcut={"⌘C"}
+              />
+            </Item>
+            <Item>
+              <MenuItemLayout
+                icon={<PlatformIcon icon={"actions/paste-menu"} />}
+                content="Paste"
+                shortcut={"⌘V"}
+              />
+            </Item>
+            <Divider />
+            <Item title="Open in">
+              <Item>Finder</Item>
+              <Item>Terminal</Item>
+              <Item textValue="Github">
+                <MenuItemLayout
+                  icon={<PlatformIcon icon={"vcs/vendors/github.svg"} />}
+                  content="Github"
+                />
+              </Item>
+            </Item>
+          </Menu>
+        </MenuOverlayFromOrigin>
+      )}
+    </>
+  );
+}
+```
+
 ## Submenu Behaviour
 
 By default, menu items with submenu open the submenu on hover. Pressing such items also opens the submenu, if not
