@@ -30,25 +30,29 @@ export const Editor = (props: Omit<EditorProps, "theme">) => {
   return (
     <StyledEditor
       {...props}
-      options={{
-        minimap: { enabled: false },
-        lineHeight: 22,
-        showFoldingControls: "always",
-        renderIndentGuides: true,
-        overviewRulerBorder: false,
-        fontFamily: "JetBrains Mono",
-        fontSize,
-        scrollbar: {
-          verticalScrollbarSize: 14,
-          horizontalScrollbarSize: 8,
-          verticalSliderSize: 8,
-          horizontalSliderSize: 8,
-          horizontal: "auto",
-          vertical: "visible",
-          alwaysConsumeMouseWheel: false, // to let example-app be rendered as a part of a page.
-        },
-        ...props.options,
-      }}
+      options={
+        {
+          minimap: { enabled: false },
+          lineHeight: 22,
+          showFoldingControls: "always",
+          guides: {
+            indentation: true,
+          },
+          overviewRulerBorder: false,
+          fontFamily: "JetBrains Mono",
+          fontSize,
+          scrollbar: {
+            verticalScrollbarSize: 14,
+            horizontalScrollbarSize: 8,
+            verticalSliderSize: 8,
+            horizontalSliderSize: 8,
+            horizontal: "auto",
+            vertical: "visible",
+            alwaysConsumeMouseWheel: false, // to let example-app be rendered as a part of a page.
+          },
+          ...props.options,
+        } as EditorProps["options"]
+      }
       theme={editorTheme as any} // FIXME
     />
   );

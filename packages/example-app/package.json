@@ -23,7 +23,7 @@
   "dependencies": {
     "@intellij-platform/core": "workspace:^",
     "@isomorphic-git/lightning-fs": "^4.6.0",
-    "@monaco-editor/react": "^4.2.2",
+    "@monaco-editor/react": "^4.6.0",
     "@recoiljs/refine": "^0.1.1",
     "browserfs": "^2.0.0",
     "caf": "^15.0.0-preB",
@@ -32,7 +32,7 @@
     "fast-xml-parser": "^4.2.7",
     "intl-messageformat": "^9.11.2",
     "isomorphic-git": "^1.24.3",
-    "monaco-editor": "^0.28.1",
+    "monaco-editor": "^0.52.0",
     "pify": "^5.0.0",
     "ramda": "^0.27.1",
     "react": "17",

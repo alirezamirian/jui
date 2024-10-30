@@ -4013,69 +4013,68 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@monaco-editor/loader@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "@monaco-editor/loader@npm:1.1.1"
+"@monaco-editor/loader@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "@monaco-editor/loader@npm:1.4.0"
   dependencies:
     state-local: ^1.0.6
   peerDependencies:
     monaco-editor: ">= 0.21.0 < 1"
-  checksum: 2ee812929ba8e98fbb6ed7edce507439ab3ff97684e713b7e214919a040121fb87c7309faf70b26d14d697209f64536729273e9abc181d83bc582f50fbee4a46
+  checksum: 374ec0ea872ee15b33310e105a43217148161480d3955c5cece87d0f801754cd2c45a3f6c539a75da18a066c1615756fb87eaf1003f1df6a64a0cbce5d2c3749
   languageName: node
   linkType: hard
 
-"@monaco-editor/react@npm:^4.2.2":
-  version: 4.2.2
-  resolution: "@monaco-editor/react@npm:4.2.2"
+"@monaco-editor/react@npm:^4.6.0":
+  version: 4.6.0
+  resolution: "@monaco-editor/react@npm:4.6.0"
   dependencies:
-    "@monaco-editor/loader": ^1.1.1
-    prop-types: ^15.7.2
+    "@monaco-editor/loader": ^1.4.0
   peerDependencies:
     monaco-editor: ">= 0.25.0 < 1"
-    react: ^16.8.0 || ^17.0.0
-    react-dom: ^16.8.0 || ^17.0.0
-  checksum: d6c6764954cf1a09dc69a289f2fab8f26fc2117fa3c092c30648898bfee508005bf576975aa3a81ef0ef480528688c091fdec0b731e5f7239be64d6690d647a1
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 9d44e76c5baad6db5f84c90a5540fbd3c9af691b97d76cf2a99b3c8273004d0efe44c2572d80e9d975c9af10022c21e4a66923924950a5201e82017c8b20428c
   languageName: node
   linkType: hard
 
-"@msgpackr-extract/msgpackr-extract-darwin-arm64@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@msgpackr-extract/msgpackr-extract-darwin-arm64@npm:2.0.2"
+"@msgpackr-extract/msgpackr-extract-darwin-arm64@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@msgpackr-extract/msgpackr-extract-darwin-arm64@npm:3.0.3"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@msgpackr-extract/msgpackr-extract-darwin-x64@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@msgpackr-extract/msgpackr-extract-darwin-x64@npm:2.0.2"
+"@msgpackr-extract/msgpackr-extract-darwin-x64@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@msgpackr-extract/msgpackr-extract-darwin-x64@npm:3.0.3"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@msgpackr-extract/msgpackr-extract-linux-arm64@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@msgpackr-extract/msgpackr-extract-linux-arm64@npm:2.0.2"
+"@msgpackr-extract/msgpackr-extract-linux-arm64@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@msgpackr-extract/msgpackr-extract-linux-arm64@npm:3.0.3"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"@msgpackr-extract/msgpackr-extract-linux-arm@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@msgpackr-extract/msgpackr-extract-linux-arm@npm:2.0.2"
+"@msgpackr-extract/msgpackr-extract-linux-arm@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@msgpackr-extract/msgpackr-extract-linux-arm@npm:3.0.3"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@msgpackr-extract/msgpackr-extract-linux-x64@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@msgpackr-extract/msgpackr-extract-linux-x64@npm:2.0.2"
+"@msgpackr-extract/msgpackr-extract-linux-x64@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@msgpackr-extract/msgpackr-extract-linux-x64@npm:3.0.3"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"@msgpackr-extract/msgpackr-extract-win32-x64@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@msgpackr-extract/msgpackr-extract-win32-x64@npm:2.0.2"
+"@msgpackr-extract/msgpackr-extract-win32-x64@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@msgpackr-extract/msgpackr-extract-win32-x64@npm:3.0.3"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -4516,7 +4515,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@parcel/packager-ts@npm:^2.8.3":
+"@parcel/packager-ts@npm:2.8.3":
   version: 2.8.3
   resolution: "@parcel/packager-ts@npm:2.8.3"
   dependencies:
@@ -8433,12 +8432,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/helpers@npm:^0.4.12, legacy-swc-helpers@npm:@swc/helpers@=0.4.14":
-  version: 0.4.14
-  resolution: "@swc/helpers@npm:0.4.14"
+"@swc/helpers@npm:^0.4.12":
+  version: 0.4.37
+  resolution: "@swc/helpers@npm:0.4.37"
   dependencies:
+    "@swc/legacy-helpers": "npm:@swc/helpers@=0.4.14"
     tslib: ^2.4.0
-  checksum: 273fd3f3fc461a92f3790cc551ea054745c6d6959afbe1232e6d7aa1c722bbc114d308aab96bef5c78fc0303c85c7b472ef00e2253251cc89737f3b1af56e5a5
+  checksum: e9577992c74e6f5e94fed4d1e527564031cd1f6e1018c8a9c6fa529edbf9285d20ebeef585a7661e7ba1851df04e087b60e175a7dc88bcec4b99d21fa9dc3116
   languageName: node
   linkType: hard
 
@@ -8467,6 +8467,15 @@ __metadata:
   dependencies:
     tslib: ^2.4.0
   checksum: ce3a5146d738b707f0608bba731aa1fd0a8e3f75f140ff7281225d775a769f085f085e0293b570a9d201c76e09951af178c9222d8c706d4ed0d1c85b25f55cb6
+  languageName: node
+  linkType: hard
+
+"@swc/legacy-helpers@npm:@swc/helpers@=0.4.14, legacy-swc-helpers@npm:@swc/helpers@=0.4.14":
+  version: 0.4.14
+  resolution: "@swc/helpers@npm:0.4.14"
+  dependencies:
+    tslib: ^2.4.0
+  checksum: 273fd3f3fc461a92f3790cc551ea054745c6d6959afbe1232e6d7aa1c722bbc114d308aab96bef5c78fc0303c85c7b472ef00e2253251cc89737f3b1af56e5a5
   languageName: node
   linkType: hard
 
@@ -9556,9 +9565,9 @@ __metadata:
   linkType: hard
 
 "abortcontroller-polyfill@npm:^1.1.9":
-  version: 1.7.3
-  resolution: "abortcontroller-polyfill@npm:1.7.3"
-  checksum: 55739d7f0c9bd6afa2aabb3148778967c4dd4dcff91f6b9259df38da34f9882d3f7730b0954e9767a19cc16a8dd9a58915da4e8a50220300d45af3817d7557b1
+  version: 1.7.6
+  resolution: "abortcontroller-polyfill@npm:1.7.6"
+  checksum: f650d15c7a4c1f71a03890e13854b9567052fb1b25d9d32569b9045c310dc3fa45aa5a6607a852ce25fe11d494317b2c278401e656232251340f25f1ae7c8c2b
   languageName: node
   linkType: hard
 
@@ -12800,6 +12809,13 @@ __metadata:
   bin:
     detect-libc: ./bin/detect-libc.js
   checksum: daaaed925ffa7889bd91d56e9624e6c8033911bb60f3a50a74a87500680652969dbaab9526d1e200a4c94acf80fc862a22131841145a0a8482d60a99c24f4a3e
+  languageName: node
+  linkType: hard
+
+"detect-libc@npm:^2.0.1":
+  version: 2.0.3
+  resolution: "detect-libc@npm:2.0.3"
+  checksum: 2ba6a939ae55f189aea996ac67afceb650413c7a34726ee92c40fb0deb2400d57ef94631a8a3f052055eea7efb0f99a9b5e6ce923415daa3e68221f963cfc27d
   languageName: node
   linkType: hard
 
@@ -17557,7 +17573,7 @@ __metadata:
   dependencies:
     "@intellij-platform/core": "workspace:^"
     "@isomorphic-git/lightning-fs": ^4.6.0
-    "@monaco-editor/react": ^4.2.2
+    "@monaco-editor/react": ^4.6.0
     "@recoiljs/refine": ^0.1.1
     "@types/diff": ^5.0.9
     "@types/jest": ^29.5.2
@@ -17570,7 +17586,7 @@ __metadata:
     intl-messageformat: ^9.11.2
     isomorphic-git: ^1.24.3
     jest: ^29.5.0
-    monaco-editor: ^0.28.1
+    monaco-editor: ^0.52.0
     pify: ^5.0.0
     ramda: ^0.27.1
     react: 17
@@ -17682,79 +17698,97 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lightningcss-darwin-arm64@npm:1.19.0":
-  version: 1.19.0
-  resolution: "lightningcss-darwin-arm64@npm:1.19.0"
+"lightningcss-darwin-arm64@npm:1.28.2":
+  version: 1.28.2
+  resolution: "lightningcss-darwin-arm64@npm:1.28.2"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"lightningcss-darwin-x64@npm:1.19.0":
-  version: 1.19.0
-  resolution: "lightningcss-darwin-x64@npm:1.19.0"
+"lightningcss-darwin-x64@npm:1.28.2":
+  version: 1.28.2
+  resolution: "lightningcss-darwin-x64@npm:1.28.2"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"lightningcss-linux-arm-gnueabihf@npm:1.19.0":
-  version: 1.19.0
-  resolution: "lightningcss-linux-arm-gnueabihf@npm:1.19.0"
+"lightningcss-freebsd-x64@npm:1.28.2":
+  version: 1.28.2
+  resolution: "lightningcss-freebsd-x64@npm:1.28.2"
+  conditions: os=freebsd & cpu=x64
+  languageName: node
+  linkType: hard
+
+"lightningcss-linux-arm-gnueabihf@npm:1.28.2":
+  version: 1.28.2
+  resolution: "lightningcss-linux-arm-gnueabihf@npm:1.28.2"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"lightningcss-linux-arm64-gnu@npm:1.19.0":
-  version: 1.19.0
-  resolution: "lightningcss-linux-arm64-gnu@npm:1.19.0"
+"lightningcss-linux-arm64-gnu@npm:1.28.2":
+  version: 1.28.2
+  resolution: "lightningcss-linux-arm64-gnu@npm:1.28.2"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"lightningcss-linux-arm64-musl@npm:1.19.0":
-  version: 1.19.0
-  resolution: "lightningcss-linux-arm64-musl@npm:1.19.0"
+"lightningcss-linux-arm64-musl@npm:1.28.2":
+  version: 1.28.2
+  resolution: "lightningcss-linux-arm64-musl@npm:1.28.2"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"lightningcss-linux-x64-gnu@npm:1.19.0":
-  version: 1.19.0
-  resolution: "lightningcss-linux-x64-gnu@npm:1.19.0"
+"lightningcss-linux-x64-gnu@npm:1.28.2":
+  version: 1.28.2
+  resolution: "lightningcss-linux-x64-gnu@npm:1.28.2"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"lightningcss-linux-x64-musl@npm:1.19.0":
-  version: 1.19.0
-  resolution: "lightningcss-linux-x64-musl@npm:1.19.0"
+"lightningcss-linux-x64-musl@npm:1.28.2":
+  version: 1.28.2
+  resolution: "lightningcss-linux-x64-musl@npm:1.28.2"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"lightningcss-win32-x64-msvc@npm:1.19.0":
-  version: 1.19.0
-  resolution: "lightningcss-win32-x64-msvc@npm:1.19.0"
+"lightningcss-win32-arm64-msvc@npm:1.28.2":
+  version: 1.28.2
+  resolution: "lightningcss-win32-arm64-msvc@npm:1.28.2"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"lightningcss-win32-x64-msvc@npm:1.28.2":
+  version: 1.28.2
+  resolution: "lightningcss-win32-x64-msvc@npm:1.28.2"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
 "lightningcss@npm:^1.16.1":
-  version: 1.19.0
-  resolution: "lightningcss@npm:1.19.0"
+  version: 1.28.2
+  resolution: "lightningcss@npm:1.28.2"
   dependencies:
     detect-libc: ^1.0.3
-    lightningcss-darwin-arm64: 1.19.0
-    lightningcss-darwin-x64: 1.19.0
-    lightningcss-linux-arm-gnueabihf: 1.19.0
-    lightningcss-linux-arm64-gnu: 1.19.0
-    lightningcss-linux-arm64-musl: 1.19.0
-    lightningcss-linux-x64-gnu: 1.19.0
-    lightningcss-linux-x64-musl: 1.19.0
-    lightningcss-win32-x64-msvc: 1.19.0
+    lightningcss-darwin-arm64: 1.28.2
+    lightningcss-darwin-x64: 1.28.2
+    lightningcss-freebsd-x64: 1.28.2
+    lightningcss-linux-arm-gnueabihf: 1.28.2
+    lightningcss-linux-arm64-gnu: 1.28.2
+    lightningcss-linux-arm64-musl: 1.28.2
+    lightningcss-linux-x64-gnu: 1.28.2
+    lightningcss-linux-x64-musl: 1.28.2
+    lightningcss-win32-arm64-msvc: 1.28.2
+    lightningcss-win32-x64-msvc: 1.28.2
   dependenciesMeta:
     lightningcss-darwin-arm64:
       optional: true
     lightningcss-darwin-x64:
+      optional: true
+    lightningcss-freebsd-x64:
       optional: true
     lightningcss-linux-arm-gnueabihf:
       optional: true
@@ -17766,9 +17800,11 @@ __metadata:
       optional: true
     lightningcss-linux-x64-musl:
       optional: true
+    lightningcss-win32-arm64-msvc:
+      optional: true
     lightningcss-win32-x64-msvc:
       optional: true
-  checksum: c51de34b7379f9da391d0c1157893bb1484357d1ce2212a8c7943690d7a4fed7f2fa0d2dd7a92004b4444662011564ec7bf31f458a1638c856c529fe07285177
+  checksum: 6860b65b4352c2bcc3b81bf4950ad754ec431bac89fe44e608325976a096f98985b998a8dda6dc924abb87d0e946e4a8051514ca562d1e453c737184edda4702
   languageName: node
   linkType: hard
 
@@ -18677,10 +18713,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:^0.28.1":
-  version: 0.28.1
-  resolution: "monaco-editor@npm:0.28.1"
-  checksum: 4205c12410f154ade2282eee5ad4ca1df1e2ee5e6097e3b18a8606abc535d7ee2f1b54b8ce282db2ba24e8143c6ed4cd06d35dcfb77d457dd9514ca9f0d2e4fd
+"monaco-editor@npm:^0.52.0":
+  version: 0.52.0
+  resolution: "monaco-editor@npm:0.52.0"
+  checksum: 76ab4ea38dfd2bc5687a2d777d7fc14fd7182ac6ed1ed6819b76a47924434bf3a08bcb75c68cd5aff20db86a7633ac46b335a6971ae21a8723a7dcf3e8289931
   languageName: node
   linkType: hard
 
@@ -18719,18 +18755,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msgpackr-extract@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "msgpackr-extract@npm:2.0.2"
+"msgpackr-extract@npm:^3.0.2":
+  version: 3.0.3
+  resolution: "msgpackr-extract@npm:3.0.3"
   dependencies:
-    "@msgpackr-extract/msgpackr-extract-darwin-arm64": 2.0.2
-    "@msgpackr-extract/msgpackr-extract-darwin-x64": 2.0.2
-    "@msgpackr-extract/msgpackr-extract-linux-arm": 2.0.2
-    "@msgpackr-extract/msgpackr-extract-linux-arm64": 2.0.2
-    "@msgpackr-extract/msgpackr-extract-linux-x64": 2.0.2
-    "@msgpackr-extract/msgpackr-extract-win32-x64": 2.0.2
+    "@msgpackr-extract/msgpackr-extract-darwin-arm64": 3.0.3
+    "@msgpackr-extract/msgpackr-extract-darwin-x64": 3.0.3
+    "@msgpackr-extract/msgpackr-extract-linux-arm": 3.0.3
+    "@msgpackr-extract/msgpackr-extract-linux-arm64": 3.0.3
+    "@msgpackr-extract/msgpackr-extract-linux-x64": 3.0.3
+    "@msgpackr-extract/msgpackr-extract-win32-x64": 3.0.3
     node-gyp: latest
-    node-gyp-build-optional-packages: 5.0.2
+    node-gyp-build-optional-packages: 5.2.2
   dependenciesMeta:
     "@msgpackr-extract/msgpackr-extract-darwin-arm64":
       optional: true
@@ -18744,19 +18780,21 @@ __metadata:
       optional: true
     "@msgpackr-extract/msgpackr-extract-win32-x64":
       optional: true
-  checksum: 6b24c0e89eae881012484787082a50290f78d2dc69df28c28838c65f9cda3f585272c73b9ebbf386f9958c16a9956f0cabddf2ccfc1229ee612a6b88e9519c68
+  bin:
+    download-msgpackr-prebuilds: bin/download-prebuilds.js
+  checksum: 3b5ae152821feff843380f0b091afbebd80bd224e644f4410abd33d05da3159eb8b0d45c7dcf7d5226ce1d5c71cd68052f066788f46ea7a3cd8791a1c740a079
   languageName: node
   linkType: hard
 
 "msgpackr@npm:^1.5.4":
-  version: 1.6.1
-  resolution: "msgpackr@npm:1.6.1"
+  version: 1.11.2
+  resolution: "msgpackr@npm:1.11.2"
   dependencies:
-    msgpackr-extract: ^2.0.2
+    msgpackr-extract: ^3.0.2
   dependenciesMeta:
     msgpackr-extract:
       optional: true
-  checksum: 1c34b1c314e8db2bcb6debb10034bd965f6333812d7a29248745af8e0204cc571484e48bbc09b6cef4e244523acb32db5e9e2637aafbebf03d97bb3898657800
+  checksum: 53b30ddd68fd98ae95690017787f3b54414191314f3d36329cc01c073ec35fece87c86de731ef521d1f1b8adeb294008184ad0266d3a0e62cf0867dc728dcbd1
   languageName: node
   linkType: hard
 
@@ -18917,17 +18955,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-gyp-build-optional-packages@npm:5.0.2":
-  version: 5.0.2
-  resolution: "node-gyp-build-optional-packages@npm:5.0.2"
-  bin:
-    node-gyp-build-optional: optional.js
-    node-gyp-build-optional-packages: bin.js
-    node-gyp-build-test: build-test.js
-  checksum: 6fca33cd1e297a446dead8a9bc7a48988be30098c219e75e8466d0218dea6b03bf5da092fe20301cb8b72218356c656422f1a64520c37ebc30eb596b012d1ad9
-  languageName: node
-  linkType: hard
-
 "node-gyp-build-optional-packages@npm:5.0.3":
   version: 5.0.3
   resolution: "node-gyp-build-optional-packages@npm:5.0.3"
@@ -18936,6 +18963,19 @@ __metadata:
     node-gyp-build-optional-packages-optional: optional.js
     node-gyp-build-optional-packages-test: build-test.js
   checksum: be3f0235925c8361e5bc1a03848f5e24815b0df8aa90bd13f1eac91cd86264bbb8b7689ca6cd083b02c8099c7b54f9fb83066c7bb77c2389dc4eceab921f084f
+  languageName: node
+  linkType: hard
+
+"node-gyp-build-optional-packages@npm:5.2.2":
+  version: 5.2.2
+  resolution: "node-gyp-build-optional-packages@npm:5.2.2"
+  dependencies:
+    detect-libc: ^2.0.1
+  bin:
+    node-gyp-build-optional-packages: bin.js
+    node-gyp-build-optional-packages-optional: optional.js
+    node-gyp-build-optional-packages-test: build-test.js
+  checksum: 3c10d7380901ab5febcd153d2632917fe7507edb15a3405e9ef19801834a4c2162459a67b9944887f737f8718baeb4aaf0002c829a8214011930f2de80e4b42f
   languageName: node
   linkType: hard
 
@@ -19317,9 +19357,9 @@ __metadata:
   linkType: hard
 
 "ordered-binary@npm:^1.2.4":
-  version: 1.2.5
-  resolution: "ordered-binary@npm:1.2.5"
-  checksum: fd0f1322a67064fa7e35bada142b05c50442976907e834a0c4d19b64aa621cd6941fc3d0f87eede91359ace9a932119f3c2248eb43fd52e6103ba1210aa3c506
+  version: 1.5.3
+  resolution: "ordered-binary@npm:1.5.3"
+  checksum: 1a118c2ad7b5bcba5c0d512cb702e609779b44f431a7e72974107e4367015f8936e02772012cff92231c2c6872e8f8b35d1829cf7a21d58a795844f162706aec
   languageName: node
   linkType: hard
 
@@ -19503,7 +19543,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"parcel@npm:^2.8.3":
+"parcel@npm:2.8.3":
   version: 2.8.3
   resolution: "parcel@npm:2.8.3"
   dependencies:
@@ -21501,10 +21541,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"regenerator-runtime@npm:^0.13.3, regenerator-runtime@npm:^0.13.4, regenerator-runtime@npm:^0.13.7":
+"regenerator-runtime@npm:^0.13.3, regenerator-runtime@npm:^0.13.4":
   version: 0.13.10
   resolution: "regenerator-runtime@npm:0.13.10"
   checksum: 09893f5a9e82932642d9a999716b6c626dc53ef2a01307c952ebbf8e011802360163a37c304c18a6c358548be5a72b448e37209954a18696f21e438c81cbb4b9
+  languageName: node
+  linkType: hard
+
+"regenerator-runtime@npm:^0.13.7":
+  version: 0.13.11
+  resolution: "regenerator-runtime@npm:0.13.11"
+  checksum: 27481628d22a1c4e3ff551096a683b424242a216fee44685467307f14d58020af1e19660bf2e26064de946bad7eff28950eae9f8209d55723e2d9351e632bbb4
   languageName: node
   linkType: hard
 
@@ -22007,7 +22054,7 @@ __metadata:
   dependencies:
     "@babel/eslint-parser": ^7.18.9
     "@microsoft/api-extractor": ^7.25.0
-    "@parcel/packager-ts": ^2.8.3
+    "@parcel/packager-ts": 2.8.3
     "@parcel/transformer-typescript-types": 2.8.3
     "@typescript-eslint/eslint-plugin": ^5.30.7
     "@typescript-eslint/parser": ^5.30.7
@@ -22021,7 +22068,7 @@ __metadata:
     eslint-plugin-no-only-tests: ^3.1.0
     eslint-plugin-react: ^7.30.1
     eslint-plugin-react-hooks: ^4.6.0
-    parcel: ^2.8.3
+    parcel: 2.8.3
     prettier: ^2.8.1
     typescript: 4.7.4
   languageName: unknown
@@ -23447,7 +23494,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser@npm:^5.10.0, terser@npm:^5.16.8, terser@npm:^5.2.0":
+"terser@npm:^5.10.0, terser@npm:^5.16.8":
   version: 5.19.2
   resolution: "terser@npm:5.19.2"
   dependencies:
@@ -23458,6 +23505,20 @@ __metadata:
   bin:
     terser: bin/terser
   checksum: e059177775b4d4f4cff219ad89293175aefbd1b081252270444dc83e42a2c5f07824eb2a85eae6e22ef6eb7ef04b21af36dd7d1dd7cfb93912310e57d416a205
+  languageName: node
+  linkType: hard
+
+"terser@npm:^5.2.0":
+  version: 5.37.0
+  resolution: "terser@npm:5.37.0"
+  dependencies:
+    "@jridgewell/source-map": ^0.3.3
+    acorn: ^8.8.2
+    commander: ^2.20.0
+    source-map-support: ~0.5.20
+  bin:
+    terser: bin/terser
+  checksum: 70c06a8ce1288ff4370a7e481beb6fc8b22fc4995371479f49df1552aa9cf8e794ace66e1da6e87057eda1745644311213f5043bda9a06cf55421eff68b3ac06
   languageName: node
   linkType: hard
 
@@ -24434,7 +24495,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"v8-compile-cache@npm:^2.0.0, v8-compile-cache@npm:^2.0.3":
+"v8-compile-cache@npm:^2.0.0":
+  version: 2.4.0
+  resolution: "v8-compile-cache@npm:2.4.0"
+  checksum: 8eb6ddb59d86f24566503f1e6ca98f3e6f43599f05359bd3ab737eaaf1585b338091478a4d3d5c2646632cf8030288d7888684ea62238cdce15a65ae2416718f
+  languageName: node
+  linkType: hard
+
+"v8-compile-cache@npm:^2.0.3":
   version: 2.3.0
   resolution: "v8-compile-cache@npm:2.3.0"
   checksum: adb0a271eaa2297f2f4c536acbfee872d0dd26ec2d76f66921aa7fc437319132773483344207bdbeee169225f4739016d8d2dbf0553913a52bb34da6d0334f8e
