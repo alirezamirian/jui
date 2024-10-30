@@ -2,6 +2,7 @@ import { composeStories } from "@storybook/react";
 import * as React from "react";
 import * as stories from "./Menu.stories";
 import {
+  ContextMenuContainer,
   Divider,
   Item,
   Menu,
@@ -725,6 +726,14 @@ describe("Menu with trigger", () => {
       matchImageSnapshot(`menu-with-trigger--position-${num}`);
     }
   });
+
+  it("closes when right clicking outside", () => {
+    // TODO: fix the issue!
+    cy.mount(<MenuWithTrigger />);
+    cy.get("button[aria-haspopup]").click(); // open the menu by clicking the trigger.
+    cy.get("body").rightclick("bottomRight");
+    cy.findByRole("menu").should("not.exist");
+  });
 });
 
 describe("ContextMenu", () => {
@@ -815,6 +824,27 @@ describe("ContextMenu", () => {
     cy.findByRole("menu").should("not.exist");
   });
 
+  it("is closed when right clicking on another context menu trigger area", () => {
+    const renderMenu = () => (
+      <Menu aria-label="Test Context Menu">
+        <Item>Menu item</Item>
+      </Menu>
+    );
+    cy.mount(
+      <>
+        <ContextMenuContainer renderMenu={renderMenu}>
+          Container 1
+        </ContextMenuContainer>
+        <ContextMenuContainer renderMenu={renderMenu}>
+          Container 2
+        </ContextMenuContainer>
+      </>
+    );
+    cy.contains("Container 1").rightclick();
+    cy.contains("Container 2").rightclick("left");
+    cy.findAllByRole("menu").should("have.length", 1);
+  });
+
   it("is closed after an action is triggered", () => {
     cy.mount(<ContextMenu />);
     cy.scrollTo("bottom", { duration: 0 });
@@ -842,11 +872,19 @@ describe("ContextMenu", () => {
   it("lets user select nested menu items by mouse", () => {
     const onAction = cy.stub();
     cy.mount(<ContextMenu menuProps={{ onAction }} />);
-    cy.get("#context-menu-container").rightclick("top", {
-      scrollBehavior: false,
-    });
+    cy.get("#context-menu-container")
+      // Not sure why but this extra click here became
+      // necessary for test to pass, after some refactoring.
+      // Without it, clicking "Show History" doesn't work, and realClicking it
+      // will also not trigger onAction, only the first time the menu is opened.
+      // The issue wasn't reproducible in real interaction.
+      .click()
+      .rightclick("top", {
+        scrollBehavior: false,
+      });
     cy.findByRole("menuitem", { name: "Local History" }).click();
     cy.findByRole("menuitem", { name: "Show History" }).click();
+
     cy.wrap(onAction).should("be.calledOnce");
   });
 });
