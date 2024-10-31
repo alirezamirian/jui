@@ -6,12 +6,14 @@ import { MENU_POSITION_TARGET_DATA_ATTRIBUTE } from "@intellij-platform/core/Men
 import { useEventCallback } from "@intellij-platform/core/utils/useEventCallback";
 import {
   ActionContext,
+  ActionDefinition,
   type ActionGroupDefinition,
   isActionGroupDefinition,
   useGetActionShortcut,
 } from "@intellij-platform/core/ActionSystem";
 
 import { renderActionAsMenuItem } from "./ActionsMenu";
+import { DividerItem } from "@intellij-platform/core/Collections";
 
 export const useCreateDefaultActionGroup = () => {
   const { show } = usePopupManager();
@@ -47,15 +49,22 @@ export const useCreateDefaultActionGroup = () => {
                */
               <SpeedSearchMenu
                 aria-label={title}
-                items={children}
+                items={children.map((item) =>
+                  item === "divider" ? new DividerItem() : item
+                )}
                 onAction={(key) => {
                   // The need for calculating `allActions` is a consequence of the issue explained in the note above.
                   const allActions = flatten(
                     children.map((item) =>
-                      isActionGroupDefinition(item) ? item.children : item
+                      item !== "divider" && isActionGroupDefinition(item)
+                        ? item.children
+                        : item
                     )
                   );
-                  const action = allActions.find((action) => action.id === key);
+                  const action = allActions.find(
+                    (action): action is ActionDefinition =>
+                      typeof action === "object" && action.id === key
+                  );
                   if (action && !action.isDisabled) {
                     action.actionPerformed(context);
                   }
@@ -64,11 +73,15 @@ export const useCreateDefaultActionGroup = () => {
                 autoFocus="first"
               >
                 {(item) =>
-                  renderActionAsMenuItem({
-                    ...item,
-                    // a consequence of the issue explained in the note above.
-                    shortcut: getActionShortcut(item.id),
-                  })
+                  renderActionAsMenuItem(
+                    item instanceof DividerItem
+                      ? item
+                      : {
+                          ...item,
+                          // a consequence of the issue explained in the note above.
+                          shortcut: getActionShortcut(item.id),
+                        }
+                  )
                 }
               </SpeedSearchMenu>
             }

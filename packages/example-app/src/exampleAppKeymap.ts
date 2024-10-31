@@ -1,6 +1,9 @@
 import { Keymap } from "@intellij-platform/core";
 import { SearchEverywhereActionIds } from "./SearchEverywhere/SearchEverywhereActionIds";
 import { VcsActionIds } from "./VersionControl/VcsActionIds";
+import { AppActionIds } from "./appActionIds";
+import { editorActionIds } from "./Editor/editorActionIds";
+import { projectActionIds } from "./Project/projectActionIds";
 
 export const exampleAppKeymap: Keymap = {
   ActivateProjectWindow: [
@@ -140,12 +143,151 @@ export const exampleAppKeymap: Keymap = {
       },
     },
   ],
-  NewElement: [
+  [AppActionIds.PASTE_MULTIPLE]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta", "Shift"],
+        code: "KeyV",
+      },
+    },
+  ],
+  [projectActionIds.NewElement]: [
     {
       type: "keyboard",
       firstKeyStroke: {
         modifiers: ["Meta"],
         code: "KeyN",
+      },
+    },
+  ],
+  [AppActionIds.GENERATE]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        code: "KeyN",
+      },
+    },
+  ],
+  [editorActionIds.EXPAND_REGION]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        code: "NumpadAdd",
+      },
+    },
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        code: "Equal",
+      },
+    },
+  ],
+  [editorActionIds.EXPAND_REGION_RECURSIVELY]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta", "Alt"],
+        code: "NumpadAdd",
+      },
+    },
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta", "Alt"],
+        code: "Equal",
+      },
+    },
+  ],
+  [editorActionIds.EXPAND_ALL_REGIONS]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta", "Shift"],
+        code: "NumpadAdd",
+      },
+    },
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta", "Shift"],
+        code: "Equal",
+      },
+    },
+  ],
+  ...([1, 2, 3, 4, 5] as const).reduce((result, level) => {
+    result[editorActionIds[`EXPAND_ALL_TO_LEVEL${level}`]] = [
+      {
+        type: "keyboard",
+        firstKeyStroke: {
+          modifiers: ["Alt", "Meta"],
+          code: "Multiply",
+        },
+        secondKeyStroke: {
+          code: `Digit${level}`,
+        },
+      },
+      {
+        type: "keyboard",
+        firstKeyStroke: {
+          modifiers: ["Alt", "Meta"],
+          code: "Multiply",
+        },
+        secondKeyStroke: {
+          code: `Numpad${level}`,
+        },
+      },
+    ];
+    return result;
+  }, {} as Keymap),
+  [editorActionIds.COLLAPSE_REGION]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        code: "Minus",
+      },
+    },
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta"],
+        code: "NumpadSubtract",
+      },
+    },
+  ],
+  [editorActionIds.COLLAPSE_REGION_RECURSIVELY]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta", "Alt"],
+        code: "Minus",
+      },
+    },
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta", "Alt"],
+        code: "NumpadSubtract",
+      },
+    },
+  ],
+  [editorActionIds.COLLAPSE_ALL_REGIONS]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta", "Shift"],
+        code: "Minus",
+      },
+    },
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta", "Shift"],
+        code: "NumpadSubtract",
       },
     },
   ],

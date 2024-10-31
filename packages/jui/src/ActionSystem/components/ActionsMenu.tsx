@@ -93,7 +93,7 @@ export function ActionsMenu({
 type ActionAsMenuItem = Omit<Action, "perform" | "shortcuts">;
 
 export function renderActionAsMenuItem(
-  action: ActionAsMenuItem | ActionGroupAsMenuItem
+  action: ActionAsMenuItem | ActionGroupAsMenuItem | DividerItem
 ) {
   const isGroup = "children" in action;
   if (
@@ -117,6 +117,9 @@ export function renderActionAsMenuItem(
         {renderActionAsMenuItem}
       </Section>
     );
+  }
+  if (action instanceof DividerItem) {
+    return <Divider />;
   }
   return (
     <Item
