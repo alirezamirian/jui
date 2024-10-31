@@ -11,6 +11,7 @@
     "build": "../../node_modules/.bin/parcel build"
   },
   "source": "src/index.html",
+  "//alias": "Nested imports from @intellij-platform/core/* are not a part of public API and are listed individually here, until it's clearer if they should be a part of the public API",
   "alias": {
     "caf": "caf/dist/esm/index.mjs",
     "@intellij-platform/core/utils/tree-utils": "@intellij-platform/core/src/utils/tree-utils",

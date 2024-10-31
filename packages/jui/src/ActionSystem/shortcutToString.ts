@@ -28,6 +28,10 @@ const defaultKeyToStr: {
   Enter: "⏎",
   Quote: "'",
   Minus: "-",
+  Subtract: "-",
+  NumpadAdd: "+",
+  Multiply: "*",
+  NumpadMultiply: "*",
   Equal: "+",
   Backspace: "⌫",
   // lowercase to uppercase map
