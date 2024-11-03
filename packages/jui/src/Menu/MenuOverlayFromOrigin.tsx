@@ -1,10 +1,11 @@
-import React, { ForwardedRef } from "react";
+import React, { ForwardedRef, useEffect, useMemo } from "react";
 import {
   MenuOverlay,
   MenuOverlayProps,
 } from "@intellij-platform/core/Menu/MenuOverlay";
 import { useOverlayPositionFromOrigin } from "@intellij-platform/core/Menu/useOverlayPositionFromOrigin";
-import { useObjectRef } from "@react-aria/utils";
+import { getScrollParent, isScrollable, useObjectRef } from "@react-aria/utils";
+import { createGlobalStyle } from "styled-components";
 
 interface MenuOverlayFromOriginProps
   extends Pick<MenuOverlayProps, "onClose" | "defaultAutoFocus"> {
@@ -24,10 +25,23 @@ interface MenuOverlayFromOriginProps
          * See {@link MouseEvent.clientX}
          */
         clientY: number;
+
+        /**
+         * Origin's target element.
+         * Used to find the scrollable parent and disable scrolling while
+         * the overlay is rendered.
+         */
+        target?: EventTarget | HTMLElement | null;
       }
     | undefined;
   children: React.ReactNode;
 }
+
+const DisableScrollStyles = createGlobalStyle`
+  .disable-scroll {
+      overflow: hidden !important;
+  }
+`;
 
 /**
  * Menu overlay position based on an origin point on the screen.
@@ -44,8 +58,29 @@ export const MenuOverlayFromOrigin = React.forwardRef(
       origin,
       containerPadding: { x: 0, y: 4 },
     });
+
+    const scrollParent: null | Element = useMemo(() => {
+      if (!(origin?.target instanceof HTMLElement)) {
+        return null;
+      }
+      return isScrollable(origin.target)
+        ? origin.target
+        : getScrollParent(origin.target);
+    }, [origin?.target]);
+
+    useEffect(() => {
+      // Known issue: closing contextmenu causes a jump in scroll (see project view in example app)
+      // It's an issue that existed before the change to disable scroll when the contextmenu is open,
+      // so it should not have anythign to do with changing overflow hidden when the menu is open.
+      scrollParent?.classList?.add("disable-scroll");
+      return () => {
+        scrollParent?.classList?.remove("disable-scroll");
+      };
+    }, []);
+
     return (
       <>
+        <DisableScrollStyles />
         {Boolean(origin) && (
           <MenuOverlay
             overlayProps={positionProps}

@@ -234,6 +234,11 @@ export const FileEditor = () => {
                         setContextMenu(c);
                       });
                     });
+                    monacoEditor.onDidScrollChange(() => {
+                      // It doesn't seem easy to disable scroll on Monaco editor, so just closing the context menu on
+                      // scroll, just like the default Monaco context menu.
+                      setContextMenu(null);
+                    });
                     enableJsx(monaco);
                     editorRef.current = monacoEditor;
                     monacoEditor.onDidChangeCursorPosition((e) => {
