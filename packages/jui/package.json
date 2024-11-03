@@ -113,7 +113,7 @@
     "cypress-plugin-snapshots": "1.4.4",
     "cypress-plugin-steps": "^1.1.1",
     "cypress-plugin-xhr-toggle": "^1.2.1",
-    "cypress-real-events": "1.7.4",
+    "cypress-real-events": "^1.13.0",
     "hygen": "^6.2.11",
     "jest": "^29.0.3",
     "path-browserify": "^1.0.1",

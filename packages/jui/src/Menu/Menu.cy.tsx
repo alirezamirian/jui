@@ -887,6 +887,105 @@ describe("ContextMenu", () => {
 
     cy.wrap(onAction).should("be.calledOnce");
   });
+
+  it("disables the scroll of the document when the menu is open", () => {
+    const ScrollListener = (props: { onScroll: () => void }) => {
+      React.useEffect(() => {
+        const onScroll = () => {
+          props.onScroll();
+        };
+        document.addEventListener("scroll", onScroll);
+        return () => {
+          document.removeEventListener("scroll", onScroll);
+        };
+      });
+      return null;
+    };
+    const onScroll = cy.stub().as("onScroll");
+    cy.mount(
+      <>
+        <ScrollListener onScroll={onScroll} />
+        <ContextMenuContainer
+          id="container"
+          style={{ margin: "10rem 0", height: "100vh", background: "#aaa" }}
+          renderMenu={() => (
+            <Menu aria-label="Test Context Menu">
+              <Item>Menu item</Item>
+            </Menu>
+          )}
+        >
+          {" "}
+        </ContextMenuContainer>
+      </>
+    );
+    cy.get("#container").rightclick("top", {
+      scrollBehavior: false,
+    });
+    cy.findByRole("menu");
+    cy.get("#container").realMouseWheel({
+      deltaY: 5,
+      scrollBehavior: false, //  we don't want cypress to do any extra scrolling
+    });
+    cy.wait(200); // maybe a bug in realMouseWheel, but before the wait, the next command runs before scrolling happens
+    cy.wrap(onScroll).should("not.be.called");
+  });
+
+  it("disables the scroll when the menu is open", () => {
+    const onScroll = cy.stub().as("onScroll");
+    cy.mount(
+      <ContextMenuContainer
+        id="container"
+        onScroll={onScroll}
+        style={{ height: "100vh", overflow: "auto", background: "#aaa" }}
+        renderMenu={() => (
+          <Menu aria-label="Test Context Menu">
+            <Item>Menu item</Item>
+          </Menu>
+        )}
+      >
+        <div style={{ height: "200vh" }}></div>
+      </ContextMenuContainer>
+    );
+    cy.get("#container").rightclick("left", {
+      scrollBehavior: false,
+    });
+    cy.findByRole("menu");
+    cy.get("#container").realMouseWheel({
+      deltaY: 5,
+      scrollBehavior: false, //  we don't want cypress to do any extra scrolling
+    });
+    cy.wait(200); // maybe a bug in realMouseWheel, but before the wait, the next command runs before scrolling happens
+    cy.wrap(onScroll).should("not.be.called");
+  });
+
+  it("disables the scroll of the scrollable parent when the menu is open", () => {
+    const onScroll = cy.stub().as("onScroll");
+    cy.mount(
+      <ContextMenuContainer
+        id="container"
+        style={{ height: "100vh", overflow: "auto", background: "#aaa" }}
+        renderMenu={() => (
+          <Menu aria-label="Test Context Menu">
+            <Item>Menu item</Item>
+          </Menu>
+        )}
+      >
+        <div style={{ height: "100vh", overflow: "auto" }} onScroll={onScroll}>
+          <div style={{ height: "200vh" }}></div>
+        </div>
+      </ContextMenuContainer>
+    );
+    cy.get("#container").rightclick("left", {
+      scrollBehavior: false,
+    });
+    cy.findByRole("menu");
+    cy.get("#container").realMouseWheel({
+      deltaY: 5,
+      scrollBehavior: false, //  we don't want cypress to do any extra scrolling
+    });
+    cy.wait(200); // maybe a bug in realMouseWheel, but before the wait, the next command runs before scrolling happens
+    cy.wrap(onScroll).should("not.be.called");
+  });
 });
 
 function matchImageSnapshot(snapshotsName: string) {
