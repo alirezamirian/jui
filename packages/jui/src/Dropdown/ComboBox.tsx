@@ -274,7 +274,7 @@ export const ComboBox = forwardRef(
               {...listBoxProps}
               ref={listBoxRef}
               state={state}
-              minWidth={minWidth}
+              style={{ minWidth }}
             />
           </Popover>
         )}

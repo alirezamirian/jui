@@ -1,30 +1,26 @@
-import { createAction } from "../../createAction";
-import { windowManagerRefState } from "../../Project/project.state";
-import { VcsActionIds } from "../VcsActionIds";
+import path from "path";
+import React, { useRef, useState } from "react";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
-  ActionTooltip,
-  AutoHoverPlatformIcon,
   Button,
   ComboBox,
-  InputField,
   Item,
   LabeledControlsAlignmentProvider,
   ModalWindow,
   styled,
-  TooltipTrigger,
   WindowLayout,
 } from "@intellij-platform/core";
-import React, { useRef, useState } from "react";
-import { notImplemented } from "../../Project/notImplemented";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { windowManagerRefState } from "../../Project/project.state";
+import { fs } from "../../fs/fs";
+import { stat } from "../../fs/fs-utils";
+import { createAction } from "../../createAction";
+import { VcsActionIds } from "../VcsActionIds";
 import {
   cloneParentDirState,
   gitVisitedUrlsState,
 } from "../gitRememberedInputs.state";
-import path from "path";
 import { useClone } from "../useClone";
-import { fs } from "../../fs/fs";
-import { stat } from "../../fs/fs-utils";
+import { PathInputField } from "./PathInputField";
 
 export const gitCloneActionSelector = createAction({
   id: VcsActionIds.GIT_CLONE,
@@ -130,7 +126,7 @@ function GitCloneWindow({
   }
 
   return (
-    <ModalWindow minWidth={600}>
+    <ModalWindow minWidth={600} minHeight="content">
       <WindowLayout
         header="Get from Version Control"
         content={
@@ -156,7 +152,7 @@ function GitCloneWindow({
                 >
                   {({ url }) => <Item key={url}>{url}</Item>}
                 </ComboBox>
-                <InputField
+                <PathInputField
                   inputRef={dirInputRef}
                   label="Directory:"
                   value={directory}
@@ -164,21 +160,6 @@ function GitCloneWindow({
                     dirError && showValidationErrors ? "error" : "valid"
                   }
                   validationMessage={showValidationErrors && dirError}
-                  addonAfter={
-                    <TooltipTrigger
-                      tooltip={<ActionTooltip actionName="Browse... (⇧⏎)" />}
-                    >
-                      {(props) => (
-                        <AutoHoverPlatformIcon
-                          {...props}
-                          style={{ marginRight: ".2rem" }}
-                          role="button"
-                          onClick={notImplemented}
-                          icon="general/openDisk.svg"
-                        />
-                      )}
-                    </TooltipTrigger>
-                  }
                   onChange={(value) => {
                     setDirectory(value);
                     setAutoFillDirectory(false);

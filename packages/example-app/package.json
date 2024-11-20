@@ -14,6 +14,8 @@
   "//alias": "Nested imports from @intellij-platform/core/* are not a part of public API and are listed individually here, until it's clearer if they should be a part of the public API",
   "alias": {
     "caf": "caf/dist/esm/index.mjs",
+    "@intellij-platform/core/utils/usePrevious": "@intellij-platform/core/src/utils/usePrevious",
+    "@intellij-platform/core/Menu/StyledMenu": "@intellij-platform/core/src/Menu/StyledMenu",
     "@intellij-platform/core/utils/tree-utils": "@intellij-platform/core/src/utils/tree-utils",
     "@intellij-platform/core/utils/array-utils": "@intellij-platform/core/src/utils/array-utils",
     "@intellij-platform/core/utils/useEventCallback": "@intellij-platform/core/src/utils/useEventCallback",

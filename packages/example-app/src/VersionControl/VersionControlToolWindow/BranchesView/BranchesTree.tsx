@@ -67,7 +67,7 @@ export function BranchesTree({ tabKey }: { tabKey: string }) {
 
   const { collectionSearchInputProps } = useCollectionSearchInput({
     collectionRef: ref,
-    selectionManager: selectionManagerRef.current,
+    selectionManagerRef,
     onAction,
   });
   /**
