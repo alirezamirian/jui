@@ -320,7 +320,7 @@ export function SearchEverywherePopup() {
   const { collectionSearchInputProps } = useCollectionSearchInput({
     collectionRef,
     onAction,
-    selectionManager: selectionManagerRef.current,
+    selectionManagerRef,
   });
 
   const tips = useTips();

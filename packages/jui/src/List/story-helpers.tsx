@@ -61,7 +61,7 @@ export const commonListStories = {
       const { collectionSearchInputProps } = useCollectionSearchInput({
         collectionRef: listRef,
         onAction: props.onAction,
-        selectionManager: selectionManagerRef.current,
+        selectionManagerRef,
       });
       return (
         <Pane>

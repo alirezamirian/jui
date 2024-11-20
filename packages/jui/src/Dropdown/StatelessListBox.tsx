@@ -1,29 +1,32 @@
-import React, { ForwardedRef, useRef } from "react";
+import React, { CSSProperties, ForwardedRef } from "react";
 import {
   AriaListBoxOptions,
   useListBox,
   useListBoxSection,
   useOption,
 } from "@react-aria/listbox";
+import { useObjectRef } from "@react-aria/utils";
 import { ListState } from "@react-stately/list";
 import { Node } from "@react-types/shared";
 
+import { ItemStateContext } from "@intellij-platform/core/Collections";
 import { StyledListItem } from "@intellij-platform/core/List/StyledListItem";
 import { StyledList } from "@intellij-platform/core/List/StyledList";
 import { StyledVerticalSeparator } from "@intellij-platform/core/StyledSeparator";
 import { styled } from "@intellij-platform/core/styled";
-import { useObjectRef } from "@react-aria/utils";
 
 export const StatelessListBox = React.forwardRef(function StatelessListBox<
   T extends object
 >(
   {
     state,
-    minWidth,
+    style,
+    className,
     ...props
   }: AriaListBoxOptions<T> & {
     state: ListState<T>;
-    minWidth?: number;
+    style?: CSSProperties;
+    className?: string;
   },
   forwardedRef: ForwardedRef<HTMLDivElement>
 ) {
@@ -33,7 +36,12 @@ export const StatelessListBox = React.forwardRef(function StatelessListBox<
   return (
     <>
       <div {...labelProps}>{props.label}</div>
-      <StyledList {...listBoxProps} ref={ref} style={{ minWidth }}>
+      <StyledList
+        {...listBoxProps}
+        ref={ref}
+        style={style}
+        className={className}
+      >
         {[...state.collection].map((item) =>
           item.type === "section" ? (
             <ListBoxSection key={item.key} section={item} state={state} />
@@ -55,16 +63,27 @@ function Option<T extends object>({
   const ref = React.useRef<HTMLDivElement>(null);
   const { optionProps } = useOption({ key: item.key }, state, ref);
 
+  const isDisabled = state.disabledKeys.has(item.key);
+  const isSelected = state.selectionManager.focusedKey === item.key;
   return (
-    <StyledListItem
-      {...optionProps}
-      ref={ref}
-      disabled={state.disabledKeys.has(item.key)}
-      selected={state.selectionManager.focusedKey === item.key}
-      containerFocused
+    <ItemStateContext.Provider
+      value={{
+        isDisabled,
+        isContainerFocused: state.selectionManager.isFocused,
+        isSelected,
+        node: item,
+      }}
     >
-      {item.rendered}
-    </StyledListItem>
+      <StyledListItem
+        {...optionProps}
+        ref={ref}
+        disabled={isDisabled}
+        selected={isSelected}
+        containerFocused
+      >
+        {item.rendered}
+      </StyledListItem>
+    </ItemStateContext.Provider>
   );
 }
 

@@ -190,6 +190,19 @@ export function dir(dirname: string, changes: Change[] = []): Change {
 }
 
 /**
+ * Runs the passed changes within the context of the provided directory
+ * @param dir directory to run changes in
+ * @param changes changes to run within the context of the provided directory.
+ */
+export function cd(dir: string, ...changes: Change[]): Change {
+  return async (args, context) => {
+    for (const change of changes) {
+      await change(args, { ...context, dir });
+    }
+  };
+}
+
+/**
  * Creates an initializer which writes a file on a path specified by {@link filename}
  * @param filename path of the file to write, relative to the project directory.
  * @param content the content of the file. The default content will indicate filename and the current branch
