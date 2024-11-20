@@ -46,10 +46,28 @@ describe("Input", () => {
       cy.mount(<Input ref={ref} />);
       cy.wrap(ref).its("current").should("be.instanceOf", HTMLDivElement);
     });
+
     it("forwards ref to the input element", () => {
       const ref = React.createRef<HTMLInputElement>();
       cy.mount(<Input inputRef={ref} />);
       cy.wrap(ref).its("current").should("be.instanceOf", HTMLInputElement);
+    });
+
+    it("doesn't stop propagation of keyboard events", () => {
+      const onKeyDown = cy.stub();
+      const onKeyUp = cy.stub();
+      const onParentKeyDown = cy.stub();
+      const onParentKeyUp = cy.stub();
+      cy.mount(
+        <div onKeyDown={onParentKeyDown} onKeyUp={onParentKeyUp}>
+          <Input onKeyDown={onKeyDown} onKeyUp={onKeyUp} />
+        </div>
+      );
+      cy.get("input").focus().type("a");
+      cy.wrap(onKeyDown).should("be.calledOnce");
+      cy.wrap(onKeyUp).should("be.calledOnce");
+      cy.wrap(onParentKeyDown).should("be.calledOnce");
+      cy.wrap(onParentKeyUp).should("be.calledOnce");
     });
   });
 });
