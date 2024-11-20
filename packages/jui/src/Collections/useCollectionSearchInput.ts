@@ -27,7 +27,7 @@ import { DOMAttributes } from "@react-types/shared";
  */
 export const useCollectionSearchInput = ({
   collectionRef,
-  selectionManager,
+  selectionManagerRef,
   onAction,
 }: {
   /**
@@ -39,7 +39,7 @@ export const useCollectionSearchInput = ({
    * {@link CollectionRefProps.selectionManagerRef} can be used on collection components that implement
    * `useCollectionRef`, to get a hold of selection manager, from outside.
    */
-  selectionManager: SelectionManager | null | undefined;
+  selectionManagerRef: RefObject<SelectionManager | null> | null | undefined;
   /**
    * onAction callback passed to the collection component. It's needed since some upgrade of @react-aria/interactions,
    * since a check is added to not have keyup events on outside elements trigger onPress. That's to prevent scenarios
@@ -64,13 +64,17 @@ export const useCollectionSearchInput = ({
       } else if (
         event.type === "keydown" &&
         event.key === "Enter" &&
-        selectionManager?.focusedKey != null
+        selectionManagerRef?.current?.focusedKey != null
       ) {
+        event.preventDefault(); // in forms, pressing Enter on input submits the form
         event.currentTarget.addEventListener(
           "keyup",
           (event: KeyboardEvent) => {
-            if (event.key === "Enter" && selectionManager?.focusedKey != null) {
-              onAction?.(selectionManager?.focusedKey);
+            if (
+              event.key === "Enter" &&
+              selectionManagerRef?.current?.focusedKey != null
+            ) {
+              onAction?.(selectionManagerRef?.current?.focusedKey);
             }
           },
           { once: true, capture: true }
