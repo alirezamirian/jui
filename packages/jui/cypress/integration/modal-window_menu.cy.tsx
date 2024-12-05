@@ -1,14 +1,60 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
-  IconButton,
   FocusScope,
+  IconButton,
   Item,
   Menu,
+  MenuOverlayFromOrigin,
   MenuTrigger,
   ModalWindow,
   PlatformIcon,
   WindowLayout,
 } from "@intellij-platform/core";
+
+it("allows the focus to go out of modal window and into nested overlays such as menu", () => {
+  const Example = () => {
+    const [showMenu, setShowMenu] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
+    return (
+      <ModalWindow>
+        <WindowLayout
+          header="Modal window"
+          content={
+            <div style={{ padding: "1rem" }}>
+              <input
+                ref={inputRef}
+                onInput={(e) => setShowMenu(e.currentTarget.value !== "")}
+              />
+              {showMenu && (
+                <MenuOverlayFromOrigin
+                  origin={{
+                    clientX: inputRef.current?.getBoundingClientRect().x ?? 0,
+                    clientY:
+                      inputRef.current?.getBoundingClientRect().bottom ?? 0,
+                  }}
+                  onClose={() => {
+                    setShowMenu(false);
+                  }}
+                >
+                  <div style={{ padding: "0.375rem", background: "#000" }}>
+                    <button onClick={() => setShowMenu(false)}>
+                      focused element inside nested overlay
+                    </button>
+                  </div>
+                </MenuOverlayFromOrigin>
+              )}
+            </div>
+          }
+        />
+      </ModalWindow>
+    );
+  };
+  cy.mount(<Example />);
+  cy.get("input").type("a");
+  cy.focused().should("contain.text", "focused element inside nested overlay");
+  cy.realPress("Enter");
+  cy.get("input").should("be.focused");
+});
 
 it("moves focus to the modal window, when opened by a menu item action", () => {
   cy.mount(<ModalOnMenuItem />);
