@@ -173,7 +173,15 @@ function useFocusContainmentFix<T extends HTMLElement>() {
     if (
       !probablyFocusedElement ||
       (probablyFocusedElement instanceof Element &&
-        !e.currentTarget.contains(probablyFocusedElement))
+        !e.currentTarget.contains(probablyFocusedElement) &&
+        // The following condition is added to exclude cases where the focus
+        // is going to an overlay that is opened from within the modal window.
+        // The condition is suboptimal as there is no check on whether the
+        // overlay is a logical child of the modal or not.
+        // However, it seems justified since the entire hook is a temporary hack,
+        // and also it doesn't seem likely for an overlay outside the modal
+        // to grab the focus.
+        !probablyFocusedElement.closest("[data-overlay-root]"))
     ) {
       const elementToFocus = lastFocusedElementRef.current;
       if (elementToFocus) {
