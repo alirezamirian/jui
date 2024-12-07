@@ -5,11 +5,16 @@ import React, { Key, RefObject } from "react";
 export class TreeKeyboardDelegate<T> extends ListKeyboardDelegate<T> {
   constructor(
     private collection: Collection<Node<T>>,
-    private disabledKeys: Set<Key>,
+    disabledKeys: Set<Key>,
     ref: RefObject<HTMLElement>,
     collator?: Intl.Collator
   ) {
-    super(collection, disabledKeys, ref, collator);
+    super({
+      collection,
+      disabledKeys,
+      ref,
+      collator,
+    });
   }
 
   getKeyLeftOf(key: React.Key): React.Key {
