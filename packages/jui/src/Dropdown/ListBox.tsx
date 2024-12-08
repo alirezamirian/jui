@@ -2,14 +2,11 @@ import React, { ForwardedRef } from "react";
 import { AriaListBoxOptions, AriaListBoxProps } from "@react-aria/listbox";
 import { useListState } from "@react-stately/list";
 import { StatelessListBox } from "@intellij-platform/core/Dropdown/StatelessListBox";
-import {
-  CollectionRefProps,
-  useCollectionRef,
-} from "@intellij-platform/core/Collections/useCollectionRef";
+import { CollectionFocusProxyProps } from "@intellij-platform/core/Collections";
 
 export interface ListBoxProps<T extends object>
   extends AriaListBoxProps<T>,
-    CollectionRefProps,
+    CollectionFocusProxyProps,
     Pick<
       AriaListBoxOptions<T>,
       "shouldFocusOnHover" | "shouldUseVirtualFocus"
@@ -26,7 +23,6 @@ export const ListBox = React.forwardRef(function ListBox<T extends object>(
     selectionMode: "single",
     ...props,
   });
-  useCollectionRef(props, state);
 
   return <StatelessListBox state={state} ref={forwardedRef} {...props} />;
 });
