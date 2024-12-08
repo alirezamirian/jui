@@ -7,6 +7,10 @@ import { mergeProps } from "@react-aria/utils";
 import { CollectionRefProps } from "@intellij-platform/core/Collections/useCollectionRef";
 import { useEventCallback } from "@intellij-platform/core/utils/useEventCallback";
 import { ListContextType } from "@intellij-platform/core/List/ListContext";
+import {
+  CollectionFocusProxyProps,
+  useCollectionFocusProxy,
+} from "@intellij-platform/core/Collections";
 
 export interface ListProps
   extends Omit<
@@ -18,6 +22,7 @@ export interface ListProps
       | "disabledKeys" // Grouped as state, the second argument, like in useListBox
       | "ref" // Third argument
     >,
+    CollectionFocusProxyProps,
     CollectionRefProps {
   allowEmptySelection?: boolean;
   /**
@@ -31,7 +36,7 @@ export interface ListProps
 // import { useSelectableList } from "@react-aria/selection";
 
 export function useList<T>(
-  { onAction, showAsFocused, ...props }: ListProps,
+  { onAction, showAsFocused, focusProxyRef, ...props }: ListProps,
   state: ListState<T>,
   ref: React.RefObject<HTMLElement>
 ) {
@@ -47,6 +52,14 @@ export function useList<T>(
     // if selectOnFocus is going to be an option (which is not in intellij UI), we should also conditionally show outline on items
     selectOnFocus: true,
   });
+
+  useCollectionFocusProxy({
+    focusProxyRef,
+    onAction,
+    state,
+    collectionRef: ref,
+  });
+
   const [focused, setFocused] = useState(false);
 
   const { focusWithinProps } = useFocusWithin({

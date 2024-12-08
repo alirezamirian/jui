@@ -94,7 +94,11 @@ export const Dynamic: StoryFn = () => {
           onSelectionChange={setSelectedKeys}
         >
           {(item) => (
-            <Item key={item.name} title={item.name} childItems={item.children}>
+            <Item
+              key={item.name}
+              title={item.children ? item.name : undefined}
+              childItems={item.children}
+            >
               {item.name}
             </Item>
           )}

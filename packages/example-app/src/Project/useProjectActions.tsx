@@ -30,7 +30,7 @@ export function useProjectActions(): ActionDefinition[] {
   const newFileAction = useRecoilValue(createFileActionState);
   const newDirectoryAction = useRecoilValue(createDirectoryActionState);
   const newElementActionGroup = createDefaultActionGroup({
-    id: "NewElement",
+    id: projectActionIds.NewElement,
     title: "New...",
     description: "Create new class, interface, file or directory",
     isSearchable: true,

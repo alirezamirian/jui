@@ -9,6 +9,41 @@ const { Dynamic, HighlightsWithSpace } = composeStories(stories);
 const OS_NORMALIZED_META = Cypress.platform === "darwin" ? "Meta" : "Control";
 
 describe("SpeedSearchTree", () => {
+  it("expands/collapses and navigates nodes by arrow keys", () => {
+    cy.mount(
+      <SpeedSearchTree selectionMode="multiple">
+        <Item title="node 1">
+          <Item>node 1.1</Item>
+          <Item>node 1.2</Item>
+        </Item>
+      </SpeedSearchTree>
+    );
+
+    cy.findByRole("treeitem") // only one should be visible initially
+      .click() // focus
+      .realPress("ArrowRight");
+    // node 1 should be expanded
+    cy.findByRole("treeitem", { name: "node 1.1" });
+    cy.findByRole("treeitem", { name: "node 1.2" });
+    // but selection doesn't go to the children right away
+    cy.findByRole("treeitem", { name: "node 1", selected: true });
+    cy.realPress("ArrowDown");
+    cy.findByRole("treeitem", { name: "node 1.1", selected: true });
+    cy.realPress("ArrowDown");
+    cy.findByRole("treeitem", { name: "node 1.2", selected: true });
+    cy.realPress("ArrowLeft"); // selection should move to node 1 but it remains expanded
+    cy.findByRole("treeitem", { name: "node 1", selected: true });
+    cy.realPress("ArrowLeft"); // the second ArrowLeft closes the node
+    cy.findAllByRole("treeitem").should("have.length", 1);
+
+    cy.realPress("ArrowRight"); // expanding the node again and going down with ArrowRight this time
+    cy.findByRole("treeitem", { name: "node 1", selected: true });
+    cy.realPress("ArrowRight");
+    cy.findByRole("treeitem", { name: "node 1.1", selected: true });
+    cy.realPress("ArrowRight");
+    cy.findByRole("treeitem", { name: "node 1.2", selected: true });
+  });
+
   it("supports Speed Search in dynamic items mode", () => {
     cy.mount(<Dynamic />);
 

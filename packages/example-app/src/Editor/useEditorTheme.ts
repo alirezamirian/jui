@@ -34,6 +34,7 @@ export const useEditorTheme = () => {
   useLayoutEffect(() => {
     if (monaco) {
       const name = `jui-theme-${theme.name.replace(" ", "")}`;
+      const bracketColor = theme.dark ? "#dcdcdc" : "#000";
       monaco.editor.defineTheme(name, {
         base: theme.dark ? "vs-dark" : "vs",
         inherit: true,
@@ -44,12 +45,17 @@ export const useEditorTheme = () => {
               // FIXME: read from color scheme files. List of available keys: https://github.com/microsoft/monaco-editor/issues/1631
               "editor.background": "#2B2B2B",
               "editor.lineHighlightBackground": "#323232",
-              "editor.lineHighlightBorder": "none",
               "editorLineNumber.foreground": "#606366", // LINE_NUMBERS_COLOR
               "editorActiveLineNumber.foreground": "#a4a3a3", // LINE_NUMBER_ON_CARET_ROW_COLOR
               "editorIndentGuide.background": "#373737", // INDENT_GUIDE
               "editorIndentGuide.activeBackground": "#505050", // SELECTED_INDENT_GUIDE
               "editorGutter.background": theme.dark ? "#313335" : "#f0f0f0",
+              "editorBracketHighlight.foreground1": bracketColor,
+              "editorBracketHighlight.foreground2": bracketColor,
+              "editorBracketHighlight.foreground3": bracketColor,
+              "editorBracketHighlight.foreground4": bracketColor,
+              "editorBracketMatch.background": "#43454b", // in new UI
+              "editorBracketMatch.border": "#00000000", // in new UI
             }
           : {},
         // token rules for syntax highlighting

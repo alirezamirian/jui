@@ -1,11 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import {
-  PlatformIcon,
-  SpeedSearchTree,
-  styled,
-  useCollectionSearchInput,
-} from "@intellij-platform/core";
+import { PlatformIcon, SpeedSearchTree, styled } from "@intellij-platform/core";
 
 import {
   branchTreeNodeRenderers,
@@ -20,8 +15,6 @@ import {
 } from "./BranchesTree.state";
 import { StyledHeader } from "../styled-components";
 import { vcsLogFilterCurrentTab } from "../vcs-logs.state";
-import { TreeSelectionManager } from "@intellij-platform/core/Tree/TreeSelectionManager";
-import { mergeProps } from "@react-aria/utils";
 import { useLatestRecoilValue } from "../../../recoil-utils";
 
 const StyledSearchInput = styled.input`
@@ -55,7 +48,6 @@ export function BranchesTree({ tabKey }: { tabKey: string }) {
   const treeRef = useRecoilValue(branchesTreeRefState(tabKey));
   const ref = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const selectionManagerRef = useRef<TreeSelectionManager>(null);
   const [isInputFocused, setInputFocused] = useState(false);
   const setBranchFilter = useSetRecoilState(vcsLogFilterCurrentTab.branch);
   const onAction = (key: React.Key) => {
@@ -65,11 +57,6 @@ export function BranchesTree({ tabKey }: { tabKey: string }) {
     }
   };
 
-  const { collectionSearchInputProps } = useCollectionSearchInput({
-    collectionRef: ref,
-    selectionManager: selectionManagerRef.current,
-    onAction,
-  });
   /**
    * TODO: remaining from search:
    * - Make the search input red when there is no match
@@ -102,20 +89,18 @@ export function BranchesTree({ tabKey }: { tabKey: string }) {
           tabIndex={-1}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          {...mergeProps(collectionSearchInputProps, {
-            onFocus: () => {
-              setInputFocused(true);
-            },
-            onBlur: () => {
-              setInputFocused(false);
-            },
-          })}
+          onFocus={() => {
+            setInputFocused(true);
+          }}
+          onBlur={() => {
+            setInputFocused(false);
+          }}
         />
       </StyledHeader>
       <SpeedSearchTree
         ref={ref}
         treeRef={treeRef}
-        selectionManagerRef={selectionManagerRef}
+        focusProxyRef={searchInputRef}
         items={branchesTreeNodes ?? []}
         selectionMode="multiple"
         selectedKeys={selectedKeys}

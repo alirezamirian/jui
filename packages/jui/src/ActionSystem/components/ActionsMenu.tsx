@@ -55,7 +55,7 @@ export type ActionMenuProps = {
 export function ActionsMenu({
   actions,
   actionContext,
-  children = (actionMenuProps) => <Menu {...otherProps} {...actionMenuProps} />,
+  children = (actionMenuProps) => <Menu {...actionMenuProps} />,
   ...otherProps
 }: ActionMenuProps) {
   const allActions = getAllActions(actions);
@@ -66,6 +66,7 @@ export function ActionsMenu({
   return (
     <>
       {children({
+        ...otherProps,
         onAction: (key) => {
           const action = allActions.find(({ id }) => id === key);
           if (action && isAction(action)) {
@@ -93,7 +94,7 @@ export function ActionsMenu({
 type ActionAsMenuItem = Omit<Action, "perform" | "shortcuts">;
 
 export function renderActionAsMenuItem(
-  action: ActionAsMenuItem | ActionGroupAsMenuItem
+  action: ActionAsMenuItem | ActionGroupAsMenuItem | DividerItem
 ) {
   const isGroup = "children" in action;
   if (
@@ -117,6 +118,9 @@ export function renderActionAsMenuItem(
         {renderActionAsMenuItem}
       </Section>
     );
+  }
+  if (action instanceof DividerItem) {
+    return <Divider />;
   }
   return (
     <Item
