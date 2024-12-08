@@ -5,20 +5,15 @@ import { StyledTree } from "./StyledTree";
 import { TreeRefValue } from "./useTreeRef";
 import { TreeNode } from "./TreeNode";
 import { TreeContext } from "./TreeContext";
-import { useTreeState, TreeProps as StatelyTreeProps } from "./useTreeState";
+import { TreeProps as StatelyTreeProps, useTreeState } from "./useTreeState";
 import { SelectableTreeProps, useSelectableTree } from "./useSelectableTree";
 import { useTreeVirtualizer } from "./useTreeVirtualizer";
 import { CollectionCacheInvalidationProps } from "@intellij-platform/core/Collections/useCollectionCacheInvalidation";
-import {
-  CollectionRefProps,
-  useCollectionRef,
-} from "@intellij-platform/core/Collections/useCollectionRef";
 import { filterDOMProps, useObjectRef } from "@react-aria/utils";
 
 export interface TreeProps<T extends object>
   extends Omit<StatelyTreeProps<T>, "disallowEmptySelection">,
     CollectionCacheInvalidationProps,
-    CollectionRefProps,
     Omit<SelectableTreeProps<T>, "keyboardDelegate" | "isVirtualized"> {
   fillAvailableSpace?: boolean;
   /**
@@ -52,7 +47,6 @@ export const Tree = React.forwardRef(
     forwardedRef: ForwardedRef<HTMLDivElement>
   ) => {
     const state = useTreeState(props, treeRef);
-    useCollectionRef(props, state);
     const ref = useObjectRef(forwardedRef);
 
     const { treeProps, treeContext } = useSelectableTree(

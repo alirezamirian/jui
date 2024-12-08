@@ -18,10 +18,15 @@ import { hasAnyModifier } from "@intellij-platform/core/utils/keyboard-utils";
 import { FocusEvents } from "@react-types/shared/src/events";
 import { FocusStrategy } from "@react-types/shared/src/selection";
 import { groupBy } from "ramda";
+import {
+  CollectionFocusProxyProps,
+  useCollectionFocusProxy,
+} from "@intellij-platform/core/Collections";
 
 export interface SelectableTreeProps<T>
   extends DOMProps,
-    Omit<FocusEvents, "onFocusChange"> {
+    Omit<FocusEvents, "onFocusChange">,
+    CollectionFocusProxyProps {
   isVirtualized?: boolean;
   keyboardDelegate?: KeyboardDelegate;
   /**
@@ -49,6 +54,7 @@ export function useSelectableTree<T>(
     onBlur,
     autoFocus,
     showAsFocused,
+    focusProxyRef,
     ...props
   }: SelectableTreeProps<T>,
   state: TreeState<T>,
@@ -84,6 +90,14 @@ export function useSelectableTree<T>(
       [state.collection, state.disabledKeys, props.keyboardDelegate]
     ),
   });
+
+  useCollectionFocusProxy({
+    collectionRef: ref,
+    state,
+    onAction,
+    focusProxyRef,
+  });
+
   const { focusWithinProps } = useFocusWithin({
     onFocusWithinChange: setFocused,
   });

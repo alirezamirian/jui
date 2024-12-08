@@ -6,7 +6,6 @@ import {
   SpeedSearchProps,
   SpeedSearchStateProps,
 } from "@intellij-platform/core/SpeedSearch";
-import { useCollectionRef } from "@intellij-platform/core/Collections/useCollectionRef";
 import useForwardedRef from "@intellij-platform/core/utils/useForwardedRef";
 import { StyledTree } from "../StyledTree";
 import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
@@ -44,7 +43,6 @@ export const SpeedSearchTree = React.forwardRef(
       { ...props, disallowEmptySelection: !props.allowEmptySelection },
       treeRef
     );
-    useCollectionRef(props, state);
     const ref = useForwardedRef(forwardedRef);
     const {
       treeProps,

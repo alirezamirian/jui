@@ -9,11 +9,23 @@ import { useObjectRef } from "@react-aria/utils";
 import { ListState } from "@react-stately/list";
 import { Node } from "@react-types/shared";
 
-import { ItemStateContext } from "@intellij-platform/core/Collections";
+import {
+  CollectionFocusProxyProps,
+  ItemStateContext,
+  useCollectionFocusProxy,
+} from "@intellij-platform/core/Collections";
 import { StyledListItem } from "@intellij-platform/core/List/StyledListItem";
 import { StyledList } from "@intellij-platform/core/List/StyledList";
 import { StyledVerticalSeparator } from "@intellij-platform/core/StyledSeparator";
 import { styled } from "@intellij-platform/core/styled";
+
+interface StatelessListBoxProps<T extends object>
+  extends AriaListBoxOptions<T>,
+    CollectionFocusProxyProps {
+  state: ListState<T>;
+  style?: CSSProperties;
+  className?: string;
+}
 
 export const StatelessListBox = React.forwardRef(function StatelessListBox<
   T extends object
@@ -22,16 +34,20 @@ export const StatelessListBox = React.forwardRef(function StatelessListBox<
     state,
     style,
     className,
+    focusProxyRef,
     ...props
-  }: AriaListBoxOptions<T> & {
-    state: ListState<T>;
-    style?: CSSProperties;
-    className?: string;
-  },
+  }: StatelessListBoxProps<T>,
   forwardedRef: ForwardedRef<HTMLDivElement>
 ) {
   const ref = useObjectRef(forwardedRef);
   const { listBoxProps, labelProps } = useListBox(props, state, ref);
+
+  useCollectionFocusProxy({
+    state,
+    collectionRef: ref,
+    focusProxyRef,
+    onAction: props.onAction,
+  });
 
   return (
     <>
