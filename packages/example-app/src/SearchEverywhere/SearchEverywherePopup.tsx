@@ -17,7 +17,6 @@ import {
   Tabs,
   Tooltip,
   TooltipTrigger,
-  useCollectionSearchInput,
   useGetActionShortcut,
 } from "@intellij-platform/core";
 import { useTips } from "./useTips";
@@ -276,7 +275,7 @@ export function SearchEverywherePopup() {
 
   const close = () => setOpen(false);
 
-  const collectionRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const selectionManagerRef = useRef<SelectionManager>(null);
   const onAction = (key: React.Key) => {
     if (key === LOAD_MORE_ITEM_KEY) {
@@ -316,12 +315,6 @@ export function SearchEverywherePopup() {
       }, 50);
     }
   };
-
-  const { collectionSearchInputProps } = useCollectionSearchInput({
-    collectionRef,
-    onAction,
-    selectionManagerRef,
-  });
 
   const tips = useTips();
   return (
@@ -398,7 +391,7 @@ export function SearchEverywherePopup() {
                     <PlatformIcon icon="actions/search" />
                     <FocusScope contain>
                       <Input
-                        {...collectionSearchInputProps}
+                        ref={searchInputRef}
                         autoFocus
                         onFocus={(event) => {
                           event.target.select();
@@ -421,7 +414,7 @@ export function SearchEverywherePopup() {
                   {pattern && (
                     <StyledSearchResultsContainer>
                       <List
-                        ref={collectionRef}
+                        focusProxyRef={searchInputRef}
                         selectionManagerRef={selectionManagerRef}
                         items={visibleSearchResult}
                         selectionMode="single"

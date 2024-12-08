@@ -15,11 +15,9 @@ import {
   PlatformIcon,
   styled,
   TooltipTrigger,
-  useCollectionSearchInput,
   WINDOW_SHADOW,
 } from "@intellij-platform/core";
 import { MENU_VERTICAL_PADDING } from "@intellij-platform/core/Menu/StyledMenu";
-import { TreeSelectionManager } from "@intellij-platform/core/Tree/TreeSelectionManager";
 import { usePrevious } from "@intellij-platform/core/utils/usePrevious";
 import { notImplemented } from "../../Project/notImplemented";
 import { DIR_ICON } from "../../file-utils";
@@ -76,15 +74,9 @@ export function PathInputField({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const collectionRef = useRef<HTMLDivElement>(null);
-  const selectionManagerRef = useRef<TreeSelectionManager>(null);
   const onAutocompleteSuggestionSelected = (key: React.Key) => {
     setValue(path.join(`${key}`, path.sep)); // TODO: handle completion with tab
   };
-  const { collectionSearchInputProps } = useCollectionSearchInput({
-    collectionRef,
-    onAction: onAutocompleteSuggestionSelected,
-    selectionManagerRef,
-  });
   // Path search query is kept in a separate state because it needs to be updated when autocomplete action triggers.
   // Otherwise, it could be a computed value based on `isAutocompleteVisible` and `directory`
   const [pathSearchQuery, setPathSearchQuery] = useState("");
@@ -175,7 +167,6 @@ export function PathInputField({
             inputProps={mergeProps(
               props.inputProps ?? {},
               shortcutHandlerProps,
-              collectionSearchInputProps,
               {
                 onKeyDown: (e: React.KeyboardEvent) => {
                   if (e.key === "Escape") {
@@ -218,7 +209,7 @@ export function PathInputField({
           <StyledPopover>
             <ListBoxStyledAsMenu
               ref={collectionRef}
-              selectionManagerRef={selectionManagerRef}
+              focusProxyRef={inputRef}
               aria-label="Directories"
               shouldFocusOnHover
               shouldUseVirtualFocus
