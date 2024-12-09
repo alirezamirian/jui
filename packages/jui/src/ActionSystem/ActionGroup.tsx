@@ -2,6 +2,7 @@ import {
   Action,
   ActionDefinition,
 } from "@intellij-platform/core/ActionSystem/Action";
+import { DividerItem } from "@intellij-platform/core/Collections";
 
 export type ActionInResolvedGroup = Action & { parent: ResolvedActionGroup };
 
@@ -24,7 +25,7 @@ type ActionGroupMenuPresentation =
   | "submenu";
 
 export interface MutableActionGroup extends Action {
-  children: Action[];
+  children: Array<Action | DividerItem>;
   /**
    * Whether the action group is searchable. See {@link getAvailableActionsFor}.
    */
@@ -41,7 +42,7 @@ export interface ResolvedActionGroup extends ActionGroup {
   children: ActionInResolvedGroup[];
 }
 export interface ActionGroupDefinition extends ActionDefinition {
-  children: ActionDefinition[]; // Should DividerItem be supported first-class here?
+  children: Array<ActionDefinition | "divider">;
   /**
    * Defines how the action group should be represented in menus.
    * @default 'submenu'

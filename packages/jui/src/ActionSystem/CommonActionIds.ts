@@ -14,4 +14,5 @@ export const CommonActionId = {
   CUT: "$Cut",
   PASTE: "$Paste",
   DELETE: "$Delete",
+  CODE_COMPLETION: "CodeCompletion",
 };

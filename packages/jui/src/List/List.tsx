@@ -11,12 +11,14 @@ import { CollectionRefProps } from "@intellij-platform/core/Collections/useColle
 import { Virtualizer } from "@react-aria/virtualizer";
 import { useListVirtualizer } from "@intellij-platform/core/List/useListVirtualizer";
 import { ListContext } from "@intellij-platform/core/List/ListContext";
+import { CollectionFocusProxyProps } from "@intellij-platform/core/Collections";
 
 export type ListProps<T extends object> = Omit<
   Omit<AriaListBoxProps<T>, "disallowEmptySelection">,
   keyof AsyncLoadable
 > &
-  CollectionRefProps & {
+  CollectionRefProps &
+  CollectionFocusProxyProps & {
     /**
      * fills the available horizontal or vertical space, when rendered in a flex container.
      */

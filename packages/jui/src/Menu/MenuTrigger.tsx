@@ -1,8 +1,7 @@
 import React, { HTMLAttributes, RefObject } from "react";
 import { useButton } from "@react-aria/button";
 import { AriaMenuOptions, useMenuTrigger } from "@react-aria/menu";
-import { useOverlay, useOverlayPosition } from "@react-aria/overlays";
-import { mergeProps } from "@react-aria/utils";
+import { useOverlayPosition } from "@react-aria/overlays";
 import { useMenuTriggerState } from "@react-stately/menu";
 import { MenuTriggerProps as AriaMenuTriggerProps } from "@react-types/menu";
 
@@ -89,22 +88,6 @@ export const MenuTrigger: React.FC<MenuTriggerProps> = ({
     preventFocusOnPress,
   };
   const { buttonProps } = useButton(ariaButtonProps, triggerRef);
-  const { overlayProps } = useOverlay(
-    {
-      onClose: () => {
-        return state.close();
-      },
-      shouldCloseOnBlur: false,
-      isOpen: state.isOpen,
-      isKeyboardDismissDisabled: false,
-      isDismissable: true,
-      shouldCloseOnInteractOutside: (element) => {
-        // FIXME: this is kind of hacky and should be removed when nested menu is properly supported
-        return !element.matches("[role=menu] *");
-      },
-    },
-    overlayRef
-  );
 
   const { overlayProps: positionProps } = useOverlayPosition({
     targetRef: positioningTargetRef ?? triggerRef,
@@ -113,20 +96,23 @@ export const MenuTrigger: React.FC<MenuTriggerProps> = ({
     shouldFlip,
     offset: 0,
     containerPadding: 0,
+    onClose: () => state.close(),
     isOpen: state.isOpen,
   });
 
   return (
     <>
       {children(buttonProps, triggerRef)}
-      <MenuOverlay
-        overlayProps={mergeProps(overlayProps, positionProps)}
-        overlayRef={overlayRef}
-        state={state}
-        restoreFocus={restoreFocus}
-      >
-        {renderMenu({ menuProps })}
-      </MenuOverlay>
+      {state.isOpen && (
+        <MenuOverlay
+          overlayProps={positionProps}
+          overlayRef={overlayRef}
+          onClose={state.close}
+          restoreFocus={restoreFocus}
+        >
+          {renderMenu({ menuProps })}
+        </MenuOverlay>
+      )}
     </>
   );
 };

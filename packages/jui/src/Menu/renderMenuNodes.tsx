@@ -19,7 +19,7 @@ export function renderMenuNodes<T>(
         return (
           <>
             {node.props.hasDivider && (
-              <ListDivider key={node.key + "-divider"} />
+              <ListDivider key={node.key + "-divider1"} />
             )}
             <MenuSection
               key={node.key}
@@ -27,6 +27,9 @@ export function renderMenuNodes<T>(
               state={state}
               filter={filter}
             />
+            {node.props.hasDivider && (
+              <ListDivider key={node.key + "-divider2"} />
+            )}
           </>
         );
       case "divider":

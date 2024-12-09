@@ -146,8 +146,6 @@ export const Input = React.forwardRef(function Input(
     style,
     className,
     inputRef: inputRefProp,
-    onKeyDown,
-    onKeyUp,
     onFocus,
     onBlur,
     autoFocus,
@@ -164,8 +162,6 @@ export const Input = React.forwardRef(function Input(
       autoFocus,
       onFocus,
       onBlur,
-      onKeyDown,
-      onKeyUp,
     } as FocusableOptions,
     inputRef
   );
