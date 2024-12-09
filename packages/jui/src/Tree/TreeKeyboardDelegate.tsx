@@ -20,12 +20,12 @@ export class TreeKeyboardDelegate<T> extends ListKeyboardDelegate<T> {
     });
   }
 
-  getKeyLeftOf(key: React.Key): React.Key {
+  getKeyLeftOf(key: React.Key): React.Key | null {
     const item = this.collection.getItem(key);
     return item?.parentKey ?? this.getKeyAbove(key);
   }
 
-  getKeyRightOf(key: React.Key): React.Key {
+  getKeyRightOf(key: React.Key): React.Key | null {
     return this.getKeyBelow(key);
   }
 }
