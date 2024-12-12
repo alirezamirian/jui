@@ -21,7 +21,19 @@ export const useSelectableCollection: typeof useAriaSelectableCollection = (
     ) {
       selectionManager.replaceSelection(selectionManager.focusedKey);
     }
-  });
+
+    // Working around https://github.com/adobe/react-spectrum/issues/7512
+    // FIXME: remove the workaround the issue is closed
+    if (
+      selectionManager.firstSelectedKey &&
+      selectionManager.focusedKey == null
+    ) {
+      // initialize the focusedKey so that the buggy code that mutates selection
+      // onFocus doesn't get to run.
+      selectionManager.setFocusedKey(selectionManager.firstSelectedKey);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return {
     collectionProps: {
       ...collectionProps,
