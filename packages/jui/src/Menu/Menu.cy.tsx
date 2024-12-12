@@ -922,6 +922,12 @@ describe("ContextMenu", () => {
       scrollBehavior: false,
     });
     cy.findByRole("menu");
+
+    // onScroll was called in a run of the pipeline on the CI env.
+    // Not sure why but trying to work around the flakiness by a wait.
+    // https://cloud.cypress.io/projects/o1ooqz/runs/255/overview/0aa04a42-1030-4ab6-a8b2-1fe08069a705?roarHideRunsWithDiffGroupsAndTags=1
+    cy.wait(100);
+
     cy.get("#container").realMouseWheel({
       deltaY: 5,
       scrollBehavior: false, //  we don't want cypress to do any extra scrolling
