@@ -889,51 +889,44 @@ describe("ContextMenu", () => {
   });
 
   it("disables the scroll of the document when the menu is open", () => {
-    const ScrollListener = (props: { onScroll: () => void }) => {
-      React.useEffect(() => {
-        const onScroll = () => {
-          props.onScroll();
-        };
-        document.addEventListener("scroll", onScroll);
-        return () => {
-          document.removeEventListener("scroll", onScroll);
-        };
-      });
-      return null;
-    };
-    const onScroll = cy.stub().as("onScroll");
     cy.mount(
       <>
-        <ScrollListener onScroll={onScroll} />
+        <div style={{ height: "10rem" }} id="element-above" />
         <ContextMenuContainer
           id="container"
-          style={{ margin: "10rem 0", height: "100vh", background: "#aaa" }}
+          style={{
+            height: "100vh",
+            overflow: "auto",
+            background: "#aaa",
+          }}
           renderMenu={() => (
             <Menu aria-label="Test Context Menu">
               <Item>Menu item</Item>
             </Menu>
           )}
         >
-          {" "}
+          scrollable container
+          <div style={{ height: "150vh" }}></div>
         </ContextMenuContainer>
       </>
     );
     cy.get("#container").rightclick("top", {
       scrollBehavior: false,
     });
-    cy.findByRole("menu");
-
-    // onScroll was called in a run of the pipeline on the CI env.
-    // Not sure why but trying to work around the flakiness by a wait.
-    // https://cloud.cypress.io/projects/o1ooqz/runs/255/overview/0aa04a42-1030-4ab6-a8b2-1fe08069a705?roarHideRunsWithDiffGroupsAndTags=1
-    cy.wait(100);
-
-    cy.get("#container").realMouseWheel({
-      deltaY: 5,
-      scrollBehavior: false, //  we don't want cypress to do any extra scrolling
-    });
-    cy.wait(200); // maybe a bug in realMouseWheel, but before the wait, the next command runs before scrolling happens
-    cy.wrap(onScroll).should("not.be.called");
+    cy.window()
+      .its("scrollY")
+      .then((scrollBefore) => {
+        cy.get("#element-above").realMouseWheel({
+          deltaY: 5,
+          scrollBehavior: false, //  we don't want cypress to do any extra scrolling
+        });
+        cy.wait(200); // maybe a bug in realMouseWheel, but before the wait, the next command runs before scrolling happens
+        cy.window()
+          .its("scrollY")
+          .then((scrollAfter) => {
+            expect(scrollAfter).to.eq(scrollBefore);
+          });
+      });
   });
 
   it("disables the scroll when the menu is open", () => {
