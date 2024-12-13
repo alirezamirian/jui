@@ -19,6 +19,7 @@ import {
   ActionDefinition,
   MutableAction,
 } from "./Action";
+import { DividerItem } from "@intellij-platform/core/Collections";
 
 /**
  * Represents the properties required for the ActionsProvider component.
@@ -62,9 +63,15 @@ export function ActionsProvider(props: ActionsProviderProps): JSX.Element {
   const keymap = useKeymap();
   const actions: Action[] = [];
   dfsVisit(
-    (action: Action | null) =>
-      action && isActionGroup(action) ? action.children : null,
-    (action) => actions.push(action),
+    (action: Action | DividerItem | null) =>
+      action && !(action instanceof DividerItem) && isActionGroup(action)
+        ? action.children
+        : null,
+    (action) => {
+      if (action && !(action instanceof DividerItem)) {
+        actions.push(action);
+      }
+    },
     recursivelyCreateActions(keymap, props.actions)
   );
 
@@ -119,52 +126,61 @@ function isMutableActionGroup(
 
 function recursivelyCreateActions(
   keymap: Keymap | null,
-  actionDefinitions: ActionDefinition[],
+  actionDefinitions: Array<ActionDefinition | DividerItem>,
   parent: ActionGroup
-): Array<ActionInResolvedGroup>;
+): Array<ActionInResolvedGroup | DividerItem>;
 function recursivelyCreateActions(
   keymap: Keymap | null,
-  actionDefinitions: ActionDefinition[]
-): Array<Action | ActionGroup>;
+  actionDefinitions: Array<ActionDefinition | DividerItem>
+): Array<Action | ActionGroup | DividerItem>;
 function recursivelyCreateActions(
   keymap: Keymap | null,
-  actionDefinitions: ActionDefinition[],
+  actionDefinitions: Array<ActionDefinition | DividerItem>,
   parent?: ActionGroup
-): Array<Action | ActionInResolvedGroup | ActionGroup> {
-  return actionDefinitions.map((actionDefinition: ActionDefinition): Action => {
-    const shortcuts =
-      keymap?.[actionDefinition.id] ??
-      (actionDefinition.useShortcutsOf
-        ? keymap?.[actionDefinition.useShortcutsOf]
-        : undefined);
-    const firstShortcut = shortcuts?.[0];
-    const action: MutableAction | ActionInResolvedGroup = {
-      ...actionDefinition,
-      ...(isActionGroupDefinition(actionDefinition)
-        ? { parent: parent ?? null }
-        : {}),
-      shortcuts,
-      shortcut: firstShortcut ? shortcutToString(firstShortcut) : undefined, // Maybe it should be all shortcuts?
-      perform: (context) => {
-        if (!action.isDisabled) {
-          actionDefinition.actionPerformed(
-            context || { event: null, element: null }
-          );
-        }
-      },
-    };
-    if (
-      isMutableActionGroup(action) &&
-      isActionGroupDefinition(actionDefinition)
-    ) {
-      action.children = recursivelyCreateActions(
-        keymap,
-        actionDefinition.children,
-        action
-      );
+): Array<Action | ActionInResolvedGroup | ActionGroup | DividerItem> {
+  return actionDefinitions.map(
+    (
+      actionDefinition: ActionDefinition | DividerItem
+    ): Action | DividerItem => {
+      if (actionDefinition instanceof DividerItem) {
+        return actionDefinition;
+      }
+      const shortcuts =
+        keymap?.[actionDefinition.id] ??
+        (actionDefinition.useShortcutsOf
+          ? keymap?.[actionDefinition.useShortcutsOf]
+          : undefined);
+      const firstShortcut = shortcuts?.[0];
+      const action: MutableAction | ActionInResolvedGroup = {
+        ...actionDefinition,
+        ...(isActionGroupDefinition(actionDefinition)
+          ? { parent: parent ?? null }
+          : {}),
+        shortcuts,
+        shortcut: firstShortcut ? shortcutToString(firstShortcut) : undefined, // Maybe it should be all shortcuts?
+        perform: (context) => {
+          if (!action.isDisabled) {
+            actionDefinition.actionPerformed(
+              context || { event: null, element: null }
+            );
+          }
+        },
+      };
+      if (
+        isMutableActionGroup(action) &&
+        isActionGroupDefinition(actionDefinition)
+      ) {
+        action.children = recursivelyCreateActions(
+          keymap,
+          actionDefinition.children.map((child) =>
+            child === "divider" ? new DividerItem() : child
+          ),
+          action
+        );
+      }
+      return action;
     }
-    return action;
-  });
+  );
 }
 
 /**

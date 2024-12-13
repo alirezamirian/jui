@@ -270,4 +270,13 @@ export const defaultKeymap: Keymap = {
       },
     },
   ],
+  [CommonActionId.CODE_COMPLETION]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Control"],
+        code: "Space",
+      },
+    },
+  ],
 };

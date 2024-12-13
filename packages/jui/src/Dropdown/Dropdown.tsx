@@ -108,7 +108,7 @@ export const Dropdown = forwardRef(
             <StatelessListBox
               {...menuProps}
               state={state}
-              minWidth={minWidth}
+              style={{ minWidth }}
             />
           </Popover>
         )}

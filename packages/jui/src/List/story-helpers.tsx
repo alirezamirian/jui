@@ -1,7 +1,6 @@
 import { Legend, legends } from "../../test-data";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useRef } from "react";
 import { Story } from "@storybook/react";
-import { SelectionManager } from "@react-stately/selection";
 import {
   Divider,
   DividerItem,
@@ -10,7 +9,6 @@ import {
   List,
   ListProps,
   Section,
-  useCollectionSearchInput,
 } from "@intellij-platform/core";
 
 import { Pane } from "../story-components";
@@ -55,24 +53,20 @@ export const renderItemTextWithHighlights = (item: Legend) => (
 export const commonListStories = {
   withConnectedInput: (ListCmp: typeof List) => {
     const WithConnectedInput: Story<ListProps<any>> = (props) => {
+      const inputRef = useRef<HTMLInputElement>(null);
       const [isFocused, setIsFocused] = React.useState(false);
       const listRef = React.useRef<HTMLDivElement>(null);
-      const selectionManagerRef = React.useRef<SelectionManager>(null);
-      const { collectionSearchInputProps } = useCollectionSearchInput({
-        collectionRef: listRef,
-        onAction: props.onAction,
-        selectionManager: selectionManagerRef.current,
-      });
+
       return (
         <Pane>
           <input
-            {...collectionSearchInputProps}
+            ref={inputRef}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
           />
           <ListCmp
-            selectionManagerRef={selectionManagerRef}
             ref={listRef}
+            focusProxyRef={inputRef}
             selectionMode="single"
             items={legends}
             showAsFocused={isFocused}
