@@ -4,22 +4,28 @@ import { Configuration, ProvidePlugin } from "webpack";
 import CircularDependencyPlugin from "circular-dependency-plugin";
 // @ts-expect-error noImplicitAny
 import alias from "../../../config/lib-src-webpack-alias";
+import { StorybookConfig } from "@storybook/react-webpack5";
 
 module.exports = {
-  stories: [
-    // Now that we ended up having all stories defined in ../packages/jui/src, we can even move back storybook
-    // configuration and deps to packages/jui, and it would work just fine. But on the other hand, it kind of
-    // belongs here
-    "../src/**/*.stories.mdx",
-    "../src/**/*.stories.@(js|jsx|ts|tsx)",
-  ],
+  stories: ["../src/**/*.stories.@(js|jsx|ts|tsx)"],
 
   addons: [
     getAbsolutePath("@storybook/addon-links"),
     getAbsolutePath("@storybook/addon-essentials"),
     getAbsolutePath("storybook-addon-theme-provider"),
+    getAbsolutePath("@storybook/addon-webpack5-compiler-swc"),
+    "@chromatic-com/storybook",
   ],
-
+  swc: () => ({
+    jsc: {
+      parser: {
+        syntax: "typescript",
+        tsx: true,
+        dynamicImport: true,
+        decorators: true,
+      },
+    },
+  }),
   webpackFinal: async (config: Configuration) => {
     config.resolve = config.resolve || {};
     config.resolve.fallback = {

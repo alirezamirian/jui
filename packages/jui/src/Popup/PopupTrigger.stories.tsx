@@ -37,10 +37,6 @@ export default {
       </Popup>
     ),
   },
-  parameters: {
-    // Excluding onBoundsChanging for story performance only
-    actions: { argTypesRegex: "^on((?!BoundsChanging).)*$" },
-  },
   argTypes: {},
 } as Meta<PopupTriggerProps>;
 
