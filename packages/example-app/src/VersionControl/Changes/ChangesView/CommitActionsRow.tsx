@@ -1,5 +1,5 @@
 import React from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useAtom, useAtomValue } from "jotai";
 import {
   IconButton,
   ActionHelpTooltip,
@@ -13,7 +13,7 @@ import {
 
 import { ChangesSummary } from "../ChangesSummary";
 import { notImplemented } from "../../../Project/notImplemented";
-import { amendCommitState, includedChangesState } from "./ChangesView.state";
+import { amendCommitAtom, includedChangesAtom } from "./ChangesView.state";
 import { focusCommitMessage } from "./ChangesViewSplitter";
 
 const StyledActionsRow = styled.div`
@@ -33,7 +33,7 @@ const StyledChangesSummaryContainer = styled.span`
   z-index: 1;
 `;
 const ChangesViewChangesSummary = () => {
-  const changes = useRecoilValue(includedChangesState);
+  const changes = useAtomValue(includedChangesAtom);
   return <ChangesSummary changes={changes} />;
 };
 
@@ -42,7 +42,7 @@ const ChangesViewChangesSummary = () => {
  * bellow changes tree, in commit tool window.
  */
 export function CommitActionsRow() {
-  const [amend, setAmend] = useRecoilState(amendCommitState);
+  const [amend, setAmend] = useAtom(amendCommitAtom);
 
   return (
     <StyledActionsRow>

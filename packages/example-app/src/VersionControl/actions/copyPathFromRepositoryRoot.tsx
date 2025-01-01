@@ -1,25 +1,22 @@
-import { selector } from "recoil";
-import { ActionDefinition } from "@intellij-platform/core";
+import { atom } from "jotai";
 
 import {
-  activePathExistsState,
-  activePathsState,
+  activePathExistsAtom,
+  activePathsAtom,
 } from "../../Project/project.state";
 import { notImplemented } from "../../Project/notImplemented";
 import { VcsActionIds } from "../VcsActionIds";
+import { actionAtom } from "../../actionAtom";
 
-export const copyPathFromRepositoryRootActionState = selector({
-  key: `action.${VcsActionIds.CopyPathFromRepositoryRootProvider}`,
-  get: ({ get, getCallback }): ActionDefinition => ({
-    id: VcsActionIds.CopyPathFromRepositoryRootProvider,
-    title: "Path From Repository Root",
-    isDisabled: !get(activePathExistsState),
-    actionPerformed: getCallback(({ snapshot, refresh }) => async () => {
-      notImplemented();
-      const activePaths = snapshot.getLoadable(activePathsState).getValue();
-      if (activePaths.length === 0) {
-        return;
-      }
-    }),
-  }),
+export const copyPathFromRepositoryRootActionAtom = actionAtom({
+  id: VcsActionIds.CopyPathFromRepositoryRootProvider,
+  title: "Path From Repository Root",
+  isDisabled: atom((get) => !get(activePathExistsAtom)),
+  actionPerformed: async ({ get }) => {
+    notImplemented();
+    const activePaths = get(activePathsAtom);
+    if (activePaths.length === 0) {
+      return;
+    }
+  },
 });

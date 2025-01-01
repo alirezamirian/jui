@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { StyledVerticalSeparator } from "@intellij-platform/core/StyledSeparator";
 import {
   IconButton,
@@ -12,10 +12,10 @@ import {
   TooltipTrigger,
 } from "@intellij-platform/core";
 
-import { tasksState, useCancelTask } from "../tasks";
+import { tasksAtom, useCancelTask } from "../tasks";
 import {
-  showProgressPanelState,
-  tasksPopupBoundsState,
+  showProgressPanelAtom,
+  tasksPopupBoundsAtom,
 } from "./IdeStatusBar.state";
 
 const StyledPopupTitle = styled.div`
@@ -27,10 +27,10 @@ const StyledPopupTitle = styled.div`
 `;
 
 export function TasksPopup() {
-  const setShowProgressPanel = useSetRecoilState(showProgressPanelState);
-  const tasks = useRecoilValue(tasksState);
+  const setShowProgressPanel = useSetAtom(showProgressPanelAtom);
+  const tasks = useAtomValue(tasksAtom);
   const cancel = useCancelTask();
-  const [bounds, setBounds] = useRecoilState(tasksPopupBoundsState);
+  const [bounds, setBounds] = useAtom(tasksPopupBoundsAtom);
 
   return (
     <Popup

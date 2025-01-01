@@ -1,22 +1,24 @@
-import React from "react";
-import { useRecoilCallback, useRecoilValue } from "recoil";
+import React, { useCallback } from "react";
+import { useAtomValue } from "jotai";
+import { useAtomCallback } from "jotai/utils";
 
 import { GroupByActionButton } from "../../../GroupByActionButton";
 import {
-  availableGroupingsState,
-  branchTreeGroupingState,
+  availableGroupingsAtom,
+  branchTreeGroupingAtoms,
 } from "./BranchesTree.state";
 
 export function BranchesGroupByActionButton() {
   //  TODO: Generalize and convert to actions
-  const toggleGroup = useRecoilCallback(
-    ({ set }) =>
-      (id: "directory" | "repository") => {
-        set(branchTreeGroupingState(id), (value) => !value);
+  const toggleGroup = useAtomCallback(
+    useCallback(
+      (get, set) => (id: "directory" | "repository") => {
+        set(branchTreeGroupingAtoms(id), (value) => !value);
       },
-    []
+      []
+    )
   );
-  const availableGroupings = useRecoilValue(availableGroupingsState);
+  const availableGroupings = useAtomValue(availableGroupingsAtom);
 
   return (
     <GroupByActionButton

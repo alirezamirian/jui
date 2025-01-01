@@ -1,7 +1,7 @@
 import { styled, Theme } from "@intellij-platform/core";
 import React, { ForwardedRef, HTMLAttributes } from "react";
-import { useRecoilValue } from "recoil";
-import { vcsRootsState } from "../file-status.state";
+import { useAtomValue } from "jotai";
+import { vcsRootsAtom } from "../file-status.state";
 import { useTheme } from "styled-components";
 
 const StyledRepoColorSquare = styled.span`
@@ -24,7 +24,7 @@ const StyledRepoColorSquare = styled.span`
 `;
 
 const useRepoRootColor = (rootPath: string) => {
-  const index = useRecoilValue(vcsRootsState).findIndex(
+  const index = useAtomValue(vcsRootsAtom).findIndex(
     (root) => root.dir === rootPath
   );
   const theme = useTheme() as Theme;

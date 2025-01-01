@@ -1,5 +1,5 @@
 import React, { CSSProperties, useRef } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useAtom, useAtomValue } from "jotai";
 import {
   ActionDefinition,
   ActionsProvider,
@@ -20,19 +20,18 @@ import { IdeStatusBar } from "../StatusBar/IdeStatusBar";
 import { usePersistenceFsNotification } from "../usePersistenceFsNotification";
 import { RollbackWindow } from "../VersionControl/Changes/Rollback/RollbackWindow";
 import { rollbackViewState } from "../VersionControl/Changes/Rollback/rollbackView.state";
-import { toolWindowsState } from "./toolWindows.state";
+import { toolWindowsStateAtom } from "./toolWindows.state";
 import { SearchEverywherePopup } from "../SearchEverywhere/SearchEverywherePopup";
 import { useProjectActions } from "./useProjectActions";
 import { searchEverywhereState } from "../SearchEverywhere/searchEverywhere.state";
 import { useVcsActions } from "../VersionControl/useVcsActions";
 import { _balloonManagerRef } from "./notImplemented";
-import { PersistentStateProvider } from "./persistence/PersistentStateProvider";
 import { useTestActions } from "../testActions/useTestActions";
 import { ToolWindowsRefContext } from "./useToolWindowManager";
 import {
-  projectPopupManagerRefState,
-  windowManagerRefState,
-  alertDialogRefState,
+  alertDialogRefAtom,
+  projectPopupManagerRefAtom,
+  windowManagerRefAtom,
 } from "./project.state";
 
 const StyledWindowFrame = styled.div`
@@ -44,16 +43,16 @@ const StyledWindowFrame = styled.div`
 
 export const Project = ({ height }: { height: CSSProperties["height"] }) => {
   const toolWindowRef = useRef<ToolWindowRefValue>(null);
-  const [state, setState] = useRecoilState(toolWindowsState);
-  const isRollbackWindowOpen = useRecoilValue(rollbackViewState.isOpen);
-  const isSearchEveryWhereOpen = useRecoilValue(searchEverywhereState.isOpen);
+  const [state, setState] = useAtom(toolWindowsStateAtom);
+  const isRollbackWindowOpen = useAtomValue(rollbackViewState.isOpenAtom);
+  const isSearchEveryWhereOpen = useAtomValue(searchEverywhereState.isOpen);
 
-  useRecoilValue(projectPopupManagerRefState).current = usePopupManager();
-  useRecoilValue(windowManagerRefState).current = useWindowManager();
-  useRecoilValue(alertDialogRefState).current = useAlertDialog();
+  useAtomValue(projectPopupManagerRefAtom).current = usePopupManager();
+  useAtomValue(windowManagerRefAtom).current = useWindowManager();
+  useAtomValue(alertDialogRefAtom).current = useAlertDialog();
 
   return (
-    <PersistentStateProvider>
+    <>
       <SyncChangeListsState />
       <BalloonManager disablePortal>
         <SetBalloonManagerRef />
@@ -84,7 +83,7 @@ export const Project = ({ height }: { height: CSSProperties["height"] }) => {
           </StyledWindowFrame>
         </ToolWindowsRefContext.Provider>
       </BalloonManager>
-    </PersistentStateProvider>
+    </>
   );
 };
 

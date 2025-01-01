@@ -1,11 +1,8 @@
-import {
-  atom,
-  atomFamily,
-  CallbackInterface,
-  selectorFamily,
-  useRecoilCallback,
-} from "recoil";
+import { atom, Getter, Setter } from "jotai";
+import { atomFamily, useAtomCallback } from "jotai/utils";
+import { withAtomEffect } from "jotai-effect";
 import git, { findRoot, statusMatrix } from "isomorphic-git";
+import { z } from "zod";
 import { fs } from "../fs/fs";
 import {
   convertGitStatus,
@@ -14,9 +11,9 @@ import {
 } from "./file-status";
 import * as path from "path";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
-import { persistentAtomEffect } from "../Project/persistence/persistentAtomEffect";
-import { array, literal, object, string, union } from "@recoiljs/refine";
-import { ensureArray, MaybeArray } from "../ensureArray";
+import { atomWithRefresh } from "../atom-utils/atomWithRefresh";
+import { atomWithPersistence } from "../persistence/atomWithPersistence";
+import { maybeArray } from "../persistence/schema-utils";
 
 /**
  * git.status function has an issue with newly added files. it returns "*added" for both of these cases:
@@ -35,47 +32,6 @@ const status = async ({
     .then((rows) => rows[0]);
 };
 
-interface VcsDirectoryMappingStorage {
-  mapping?: MaybeArray<{ "@directory": string; "@vcs": "Git" }>;
-}
-const vcsDirectoryMappingChecker = array(
-  object({
-    dir: string(),
-    vcs: union(literal("Git")),
-  })
-);
-
-export const vcsRootsState = atom<ReadonlyArray<VcsDirectoryMapping>>({
-  key: "vcsRoots",
-  effects: [
-    persistentAtomEffect<
-      ReadonlyArray<VcsDirectoryMapping>,
-      VcsDirectoryMappingStorage
-    >({
-      storageFile: "vcs.xml",
-      refine: vcsDirectoryMappingChecker,
-      componentName: "VcsDirectoryMappings",
-      // TODO: translate project dir to $PROJECT_DIR$
-      read: (gitSettings) => {
-        const mappings = ensureArray(gitSettings?.mapping)?.map((item) => ({
-          dir: item["@directory"],
-          vcs: item["@vcs"],
-        }));
-        return mappings.length > 0 ? mappings : TMP_findGitRoots();
-      },
-      update:
-        (value) =>
-        (currentValue): VcsDirectoryMappingStorage => ({
-          ...(currentValue || {}),
-          mapping: value.map(({ vcs, dir }) => ({
-            "@directory": dir,
-            "@vcs": vcs,
-          })),
-        }),
-    }),
-  ],
-});
-
 const TMP_findGitRoots = () =>
   Promise.all(
     ["/workspace/jui", "/workspace"].map(async (dir) => {
@@ -93,25 +49,61 @@ const TMP_findGitRoots = () =>
     );
   });
 
+const vcsDirectoryMappingsSchema = z
+  .object({
+    mapping: maybeArray(
+      z.object({
+        "@directory": z.string(),
+        "@vcs": z.enum(["Git"]),
+      })
+    ).optional(),
+  })
+  .optional();
+type VcsDirectoryMappingStorage =
+  (typeof vcsDirectoryMappingsSchema)["_output"];
+
+export const vcsRootsAtom = atomWithPersistence(
+  [] as ReadonlyArray<VcsDirectoryMapping>,
+  {
+    componentName: "VcsDirectoryMappings",
+    schema: vcsDirectoryMappingsSchema,
+    storageFile: "vcs.xml",
+    read: (state) => {
+      // TODO: translate project dir to $PROJECT_DIR$
+      return (
+        state?.mapping?.map((item) => ({
+          dir: item["@directory"],
+          vcs: item["@vcs"],
+        })) ?? TMP_findGitRoots()
+      );
+    },
+    write: (value, state): VcsDirectoryMappingStorage => ({
+      ...(state || {}),
+      mapping:
+        value?.map(({ vcs, dir }) => ({
+          "@directory": dir,
+          "@vcs": vcs,
+        })) ?? [],
+    }),
+  }
+);
+
 /**
  * Given the absolute path of a file, returns the relevant VCS root path, if any.
  */
-export const vcsRootForFile = selectorFamily<string | null, string>({
-  key: "gitRootForFile",
-  get:
-    (filepath: string) =>
-    ({ get }) => {
-      // FIXME: use vcsRoots.
-      // return get(vcsRootsState).find(
-      //   (root) => root.vcs === "Git" && isParentPath(root.dir, filepath)
-      // )?.dir ?? null;
-      // function isParentPath(parent: string, dir: string) {
-      //   const relative = path.relative(parent, dir);
-      //   return relative && !relative.startsWith("..") && !path.isAbsolute(relative);
-      // }
-      return findRoot({ fs, filepath }).catch(() => null);
-    },
-});
+export const vcsFootForFileAtom = atomFamily((filepath: string) =>
+  atom(() => {
+    // FIXME: use vcsRoots.
+    // return get(vcsRootsState).find(
+    //   (root) => root.vcs === "Git" && isParentPath(root.dir, filepath)
+    // )?.dir ?? null;
+    // function isParentPath(parent: string, dir: string) {
+    //   const relative = path.relative(parent, dir);
+    //   return relative && !relative.startsWith("..") && !path.isAbsolute(relative);
+    // }
+    return findRoot({ fs, filepath }).catch(() => null);
+  })
+);
 
 type RepoStatus = {
   [relativeFilePath: string]: FileStatus;
@@ -130,127 +122,117 @@ const fetchRepoStatusFromFs = async (repoDir: string) => {
 
 /**
  * A mapping from relative file paths to file status, calculated efficiently for all files in a repo.
- * It's an atom to allow updating it for a single file, when status of a file is changed, instead of querying
- * the whole status matrix.
- * UPDATE: going from setting `default` to the selector that fetches the repo status from fs, and refreshing the atom's
- * state by calling `reset`/`refresh` on it, to having an empty object as default value, and updating it based on
- * the refreshed selector. That is to make sure repoStatusState will not block UI, since many pieces of state depend
- * on it, and if it's async, it will require lots of local loading handling, or Suspense boundaries, for something
- * that's usually not critical for the UX to be completely up-to-date. In cases that we do need to know if repo status
- * is being updated, a separate atom is created to hold that state. It's a little non-idiomatic use of Recoil, but
- * it seems justified for the use case. Also, it could perhaps be a feature to be supported first-class, to allow
- * atoms that can preserve the state stale, contain both the current/stale value and the loading state.
+ * It's a writable sync atom to allow updating it for a single file when the status of a file is changed.
+ * It could have been an async atom wrapped by {@link unwrapLatestWithLoading}, which would simplify
+ * keeping the loading state per repo while the latest sync value is always available, but note that
+ * we want it to be writable as well, since in many scenarios a single file changes and the repo
+ * status can be patched with that single change, instead of being fully recalculated.
  */
-export const repoStatusState = atomFamily<RepoStatus, string>({
-  key: "vcs.repoStatus",
-  effects: (repoDir: string) => [
-    ({ setSelf }) => {
-      setSelf(fetchRepoStatusFromFs(repoDir));
-    },
-  ],
+export const repoStatusAtoms = atomFamily((repoDir: string) => {
+  const targetAtom = atom<RepoStatus>({});
+  return withAtomEffect(targetAtom, (_get, set) => {
+    fetchRepoStatusFromFs(repoDir).then((repoStatus) => {
+      set(targetAtom, repoStatus);
+    });
+  });
 });
 
-export const repoStatusUpdatingState = atom<boolean>({
-  key: "vcs.repoStatus.updating",
-  default: false,
-});
+export const isRepoStatusUpdatingAtom = atomFamily((_repoRoot: string) =>
+  atom(false)
+);
+
+export const isAnyRepoStatusUpdatingAtom = atom<boolean>((get) =>
+  get(vcsRootsAtom).some(({ dir }) => get(isRepoStatusUpdatingAtom(dir)))
+);
 
 /**
  * Keeps FileStatus of files based on their absolute path.
  * NOTE: updating files status is now not connected to file updates, as there is no proper (V)FS API allowing change
  * listener. `useUpdateFileStatus` and `useUpdateVcsFileStatuses` can be used to update status of a file, or all files
  * in a git root.
- * NOTE: Do **not** use recoil `refresh` API to update file status, as it may update status for the whole repo (if
- * {@link repoStatusState} is not yet written into), which is not very efficient.
+ * NOTE: Do **not** refresh `fileStatusAtom`s directly to update file status, as it may update status for
+ * the entire repo (if {@link repoStatusAtoms} is not yet written into), which is not very efficient.
  * use {@link useRefreshFileStatus} or {@link refreshFileStatusCallback} to efficiently refresh
  * the status of a single file.
  */
-export const fileStatusState = selectorFamily<FileStatus, string>({
-  key: "vcs.fileStatus",
-  /**
-   * using a selector for the default value allows for using standard recoil API like `reset`/`refresh` to update
-   * the status for a given file.
-   */
-  get:
-    (filepath: string) =>
-    async ({ get }) => {
-      const repoRoot = get(vcsRootForFile(filepath));
-      if (repoRoot) {
-        const relativePath = path.relative(repoRoot, filepath);
-        const repoStatus = get(repoStatusState(repoRoot));
-        if (!repoStatus[relativePath]) {
-          console.log(
-            "file status missing in repo status state, fetching individually",
-            filepath
-          );
-        }
-        return (
-          repoStatus[relativePath] ??
-          convertGitStatus(
-            await status({
-              fs,
-              dir: repoRoot,
-              filepath: relativePath,
-            })
-          )
+export const fileStatusAtoms = atomFamily((filepath: string) =>
+  atomWithRefresh(async (get): Promise<FileStatus> => {
+    const repoRoot = await get(vcsFootForFileAtom(filepath));
+    if (repoRoot) {
+      const relativePath = path.relative(repoRoot, filepath);
+      const repoStatus = get(repoStatusAtoms(repoRoot));
+      if (!repoStatus[relativePath]) {
+        console.log(
+          "file status missing in repo status state, fetching individually",
+          filepath
         );
       }
-      return "NOT_CHANGED";
-    },
-});
-
-export const refreshFileStatusCallback =
-  ({ set, snapshot }: CallbackInterface) =>
-  /**
-   * Adds a file or directory to git index
-   * @param fullPath
-   */
-  async (fullPath: string) => {
-    const repoRoot = snapshot.getLoadable(vcsRootForFile(fullPath)).getValue();
-    if (repoRoot) {
-      const relativePath = path.relative(repoRoot, fullPath);
-      const rows = await git.statusMatrix({
-        fs,
-        dir: repoRoot,
-        filepaths: [relativePath],
-      });
-      set(repoStatusState(repoRoot), (statusMap) => {
-        const newStatusMap = {
-          ...statusMap,
-        };
-        if (rows.length === 0) {
-          // if file is removed and doesn't exist in HEAD, it will not appear on the status matrix
-          delete newStatusMap[relativePath];
-        }
-        rows.forEach((row) => {
-          newStatusMap[row[0]] = convertGitStatus(row);
-        });
-        return newStatusMap;
-      });
+      return (
+        repoStatus[relativePath] ??
+        // TODO(jotai): files that are initially shown in project view all hit this individual status checking code
+        //  It gets pretty slow when multiple calls to status are made simultaneously.
+        //  the entire file status state could use some refactoring to improve such cases.
+        convertGitStatus(
+          await status({
+            fs,
+            dir: repoRoot,
+            filepath: relativePath,
+          })
+        )
+      );
     }
-  };
+    return "NOT_CHANGED";
+  })
+);
+
+/**
+ * Adds a file or directory to git index
+ */
+export const refreshFileStatusCallback = async (
+  get: Getter,
+  set: Setter,
+  fullPath: string
+) => {
+  const repoRoot = await get(vcsFootForFileAtom(fullPath));
+  if (repoRoot) {
+    const relativePath = path.relative(repoRoot, fullPath);
+    const rows = await git.statusMatrix({
+      fs,
+      dir: repoRoot,
+      filepaths: [relativePath],
+    });
+    set(repoStatusAtoms(repoRoot), (statusMap) => {
+      const newStatusMap = {
+        ...statusMap,
+      };
+      if (rows.length === 0) {
+        // if file is removed and doesn't exist in HEAD, it will not appear on the status matrix
+        delete newStatusMap[relativePath];
+      }
+      rows.forEach((row) => {
+        newStatusMap[row[0]] = convertGitStatus(row);
+      });
+      return newStatusMap;
+    });
+  }
+};
 
 export const useRefreshFileStatus = (): ((
   absoluteFilepath: string
-) => Promise<void>) => useRecoilCallback(refreshFileStatusCallback);
+) => Promise<void>) => useAtomCallback(refreshFileStatusCallback);
 
+export const refreshRepoStatusesCallback = async (get: Getter, set: Setter) => {
+  get(vcsRootsAtom)?.forEach(({ dir }) => {
+    set(isRepoStatusUpdatingAtom(dir), true);
+    fetchRepoStatusFromFs(dir)
+      .then((repoStatus) => {
+        console.log("setting repo status for git dirs:", dir, repoStatus);
+        set(repoStatusAtoms(dir), repoStatus);
+      })
+      .finally(() => {
+        set(isRepoStatusUpdatingAtom(dir), false);
+      });
+  });
+};
 export const useRefreshRepoStatuses = () =>
-  useRecoilCallback(
-    ({ snapshot, set }: CallbackInterface) =>
-      async () => {
-        set(repoStatusUpdatingState, true);
-        try {
-          const gitDirs = await snapshot.getPromise(vcsRootsState);
-          await Promise.all(
-            gitDirs?.map(({ dir, vcs }) =>
-              fetchRepoStatusFromFs(dir).then((repoStatus) => {
-                set(repoStatusState(dir), repoStatus);
-              })
-            )
-          );
-        } finally {
-          set(repoStatusUpdatingState, false);
-        }
-      },
-    []
-  );
+  useAtomCallback(refreshRepoStatusesCallback);

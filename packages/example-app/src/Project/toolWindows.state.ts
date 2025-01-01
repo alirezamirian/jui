@@ -1,10 +1,9 @@
-import { atom } from "recoil";
+import { atom } from "jotai";
 import { ToolWindowsState } from "@intellij-platform/core";
 import { toolWindows } from "./toolWindows";
 
-export const toolWindowsState = atom({
-  key: "toolWindows",
-  default: new ToolWindowsState(
+export const toolWindowsStateAtom = atom(
+  new ToolWindowsState(
     Object.fromEntries(
       toolWindows.map(({ id, initialState }) => [id, initialState])
     ),
@@ -13,5 +12,5 @@ export const toolWindowsState = atom({
         .filter(({ showStripeButton }) => showStripeButton === false)
         .map(({ id }) => id),
     }
-  ),
-});
+  )
+);

@@ -1,10 +1,10 @@
+import React from "react";
+import { useAtomValue } from "jotai";
 import { useTheme } from "styled-components";
 import { Theme } from "@intellij-platform/core";
-import { useRecoilValue } from "recoil";
-import { fileStatusState } from "./file-status.state";
-import React from "react";
+import { fileStatusAtoms } from "./file-status.state";
 import { FileStatus } from "./file-status";
-import { useLatestRecoilValue } from "../recoil-utils";
+import { unwrap } from "jotai/utils";
 
 export const useStatusColor = (status: FileStatus) => {
   const theme = useTheme() as Theme;
@@ -21,7 +21,7 @@ export const useStatusColor = (status: FileStatus) => {
   return undefined;
 };
 export const useFileStatusColor = (filepath: string): string | undefined => {
-  const [fileStatus] = useLatestRecoilValue(fileStatusState(filepath));
+  const fileStatus = useAtomValue(unwrap(fileStatusAtoms(filepath)));
   return useStatusColor(fileStatus ?? "NOT_CHANGED");
 };
 

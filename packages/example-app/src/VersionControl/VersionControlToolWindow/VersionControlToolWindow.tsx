@@ -1,11 +1,5 @@
 import React, { RefObject } from "react";
-import {
-  atom,
-  RecoilState,
-  useRecoilCallback,
-  useRecoilState,
-  useRecoilValue,
-} from "recoil";
+import { atom, useAtom, useAtomValue } from "jotai";
 import {
   ActionDefinition,
   ActionsProvider,
@@ -27,28 +21,23 @@ import { VcsBranchesView } from "./BranchesView/VcsBranchesView";
 import { VcsActionIds } from "../VcsActionIds";
 import {
   useCloseVcsTab,
-  vcsActiveTabKeyState,
+  vcsActiveTabKeyAtom,
   vcsLogFilter,
-  vcsLogTabShowBranchesState,
-  vcsLogTabShowCommitDetailsState,
-  vcsTabKeysState,
-  vcsTabTitleState,
+  vcsLogTabShowBranchesAtoms,
+  vcsLogTabShowCommitDetailsAtoms,
+  vcsTabKeysAtom,
+  vcsTabTitleAtoms,
 } from "./vcs-logs.state";
 import { useCommitsTableActions } from "./CommitsView/useCommitsTableActions";
 import { notImplemented } from "../../Project/notImplemented";
-import { vcsRootsState } from "../file-status.state";
+import { vcsRootsAtom } from "../file-status.state";
 import { VersionControlToolWindowZeroState } from "./VersionControlToolWindowZeroState";
+import { actionAtom } from "../../actionAtom";
 
 export const VERSION_CONTROL_TOOLWINDOW_ID = "Version Control";
 
-const firstViewSizeState = atom({
-  key: "vcs/toolwindow/firstViewSize",
-  default: 0.25,
-});
-const lastViewSizeState = atom({
-  key: "vcs/toolwindow/lastViewSize",
-  default: 0.35,
-});
+const firstViewSizeState = atom(0.25);
+const lastViewSizeState = atom(0.35);
 
 const StyledToolWindowHeader = styled.span`
   margin: 0 0.5rem 0 0.125rem;
@@ -62,16 +51,14 @@ const StyledContainer = styled.div`
   }
 `;
 
-export const searchInputRefState = atom<RefObject<HTMLInputElement>>({
-  key: "vcs/toolWindow/searchInputRef",
-  default: React.createRef(),
-  dangerouslyAllowMutability: true,
-});
+export const searchInputRefAtom = atom<RefObject<HTMLInputElement>>(
+  React.createRef<HTMLInputElement>()
+);
 
 export const VersionControlToolWindow = () => {
-  const tabKeys = useRecoilValue(vcsTabKeysState);
-  const [activeTabKey, setActiveTabKey] = useRecoilState(vcsActiveTabKeyState);
-  const repos = useRecoilValue(vcsRootsState);
+  const tabKeys = useAtomValue(vcsTabKeysAtom);
+  const [activeTabKey, setActiveTabKey] = useAtom(vcsActiveTabKeyAtom);
+  const repos = useAtomValue(vcsRootsAtom);
 
   return repos.length > 0 ? (
     <MultiViewToolWindow
@@ -136,12 +123,12 @@ function ShowBranchesButton({ onPress }: { onPress: () => void }) {
 }
 
 function VcsTab({ tabKey }: { tabKey: string }) {
-  const [firstViewSize, setFirstViewSize] = useRecoilState(firstViewSizeState);
-  const [lastViewSize, setLastViewSize] = useRecoilState(lastViewSizeState);
+  const [firstViewSize, setFirstViewSize] = useAtom(firstViewSizeState);
+  const [lastViewSize, setLastViewSize] = useAtom(lastViewSizeState);
 
   const actions = useVcsLogsToolWindowActions();
-  const [showBranches, setShowBranches] = useRecoilState(
-    vcsLogTabShowBranchesState(tabKey)
+  const [showBranches, setShowBranches] = useAtom(
+    vcsLogTabShowBranchesAtoms(tabKey)
   );
 
   const firstViewProps: Partial<ThreeViewSplitterProps> = showBranches
@@ -179,82 +166,73 @@ function VcsTab({ tabKey }: { tabKey: string }) {
   );
 }
 
-function useToggleCurrentTabSettings(
-  toggleState: (activeTab: string) => RecoilState<boolean>
-) {
-  return useRecoilCallback(
-    ({ set, snapshot }) =>
-      () => {
-        set(
-          toggleState(snapshot.getLoadable(vcsActiveTabKeyState).getValue()),
-          (value) => !value
-        );
-      },
-    []
-  );
-}
+const toggleMatchCaseAction = actionAtom({
+  id: VcsActionIds.MATCH_CASE,
+  title: "Match Case",
+  icon: <PlatformIcon icon="actions/matchCase.svg" />,
+  actionPerformed: ({ get, set }) => {
+    set(vcsLogFilter.matchCase(get(vcsActiveTabKeyAtom)), (value) => !value);
+  },
+});
+
+const hideBranchesAction = actionAtom({
+  id: VcsActionIds.GIT_LOG_HIDE_BRANCHES,
+  title: "Hide Git Branches",
+  icon: <PlatformIcon icon="actions/arrowCollapse" />,
+  actionPerformed: ({ get, set }) => {
+    set(
+      vcsLogTabShowBranchesAtoms(get(vcsActiveTabKeyAtom)),
+      // Would be nicer to have the action toggle, but prioritized matching the reference impl here.
+      false
+    );
+  },
+});
+
+const toggleRegExpAction = actionAtom({
+  id: VcsActionIds.REG_EXP,
+  title: "Regex",
+  icon: <PlatformIcon icon="actions/regex" />,
+  actionPerformed: ({ get, set }) => {
+    set(vcsLogFilter.regExp(get(vcsActiveTabKeyAtom)), (value) => !value);
+  },
+});
+
+const toggleDetailsAction = actionAtom({
+  id: VcsActionIds.SHOW_DETAILS,
+  title: "Show Details",
+  description: "Display details panel",
+  actionPerformed: ({ get, set }) => {
+    set(
+      vcsLogTabShowCommitDetailsAtoms(get(vcsActiveTabKeyAtom)),
+      (value) => !value
+    );
+  },
+});
+
+const focusTextFilterAction = actionAtom({
+  id: VcsActionIds.FOCUS_TEXT_FILTER,
+  title: "Focus Text Filter",
+  actionPerformed: ({ get }) => {
+    get(searchInputRefAtom).current?.focus();
+  },
+});
+
+const showDiffPreviewAction = {
+  id: VcsActionIds.SHOW_DIFF_PREVIEW,
+  title: "Show Diff Preview",
+  description: "Show Diff Preview Panel",
+  actionPerformed: () => notImplemented(),
+};
 
 function useVcsLogsToolWindowActions() {
-  const textFilterRef = useRecoilValue(searchInputRefState);
-  const hideBranches = useRecoilCallback(
-    ({ set, snapshot }) =>
-      () => {
-        set(
-          vcsLogTabShowBranchesState(
-            snapshot.getLoadable(vcsActiveTabKeyState).getValue()
-          ),
-          // Would be nicer to have the action toggle, but prioritized matching the reference impl here.
-          false
-        );
-      },
-    []
-  );
-
-  const toggleMatchCase = useToggleCurrentTabSettings(vcsLogFilter.matchCase);
-  const toggleRegExp = useToggleCurrentTabSettings(vcsLogFilter.regExp);
-  const toggleDetails = useToggleCurrentTabSettings(
-    vcsLogTabShowCommitDetailsState
-  );
-
   const actions: ActionDefinition[] = [
     ...useCommitsTableActions(),
-    {
-      id: VcsActionIds.FOCUS_TEXT_FILTER,
-      title: "Focus Text Filter",
-      actionPerformed: () => {
-        textFilterRef.current?.focus();
-      },
-    },
-    {
-      id: VcsActionIds.GIT_LOG_HIDE_BRANCHES,
-      title: "Hide Git Branches",
-      icon: <PlatformIcon icon="actions/arrowCollapse" />,
-      actionPerformed: hideBranches,
-    },
-    {
-      id: VcsActionIds.MATCH_CASE,
-      title: "Match Case",
-      icon: <PlatformIcon icon="actions/matchCase.svg" />,
-      actionPerformed: toggleMatchCase,
-    },
-    {
-      id: VcsActionIds.REG_EXP,
-      title: "Regex",
-      icon: <PlatformIcon icon="actions/regex" />,
-      actionPerformed: toggleRegExp,
-    },
-    {
-      id: VcsActionIds.SHOW_DETAILS,
-      title: "Show Details",
-      description: "Display details panel",
-      actionPerformed: toggleDetails,
-    },
-    {
-      id: VcsActionIds.SHOW_DIFF_PREVIEW,
-      title: "Show Diff Preview",
-      description: "Show Diff Preview Panel",
-      actionPerformed: () => notImplemented(),
-    },
+    useAtomValue(focusTextFilterAction),
+    useAtomValue(hideBranchesAction),
+    useAtomValue(toggleMatchCaseAction),
+    useAtomValue(toggleRegExpAction),
+    useAtomValue(toggleDetailsAction),
+    showDiffPreviewAction,
   ];
   return actions;
 }
@@ -263,7 +241,7 @@ function VcsToolWindowTabTitle({ tabKey }: { tabKey: string }) {
   const closeTab = useCloseVcsTab();
   return (
     <ToolWindowTabContent
-      title={useRecoilValue(vcsTabTitleState(tabKey))}
+      title={useAtomValue(vcsTabTitleAtoms(tabKey))}
       closeButton={
         tabKey !== "MAIN" && (
           <TooltipTrigger tooltip={<ActionTooltip actionName="Close Tab" />}>

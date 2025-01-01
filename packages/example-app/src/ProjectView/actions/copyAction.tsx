@@ -1,24 +1,18 @@
 import React from "react";
-import { selector } from "recoil";
-import {
-  ActionDefinition,
-  CommonActionId,
-  PlatformIcon,
-} from "@intellij-platform/core";
+import { atom } from "jotai";
+import { CommonActionId, PlatformIcon } from "@intellij-platform/core";
 
 import { notImplemented } from "../../Project/notImplemented";
-import { activePathExistsState } from "../../Project/project.state";
+import { activePathExistsAtom } from "../../Project/project.state";
+import { actionAtom } from "../../actionAtom";
 
-export const copyActionState = selector({
-  key: `action.${CommonActionId.COPY}`,
-  get: ({ get, getCallback }): ActionDefinition => ({
-    id: CommonActionId.COPY,
-    title: "Copy",
-    description: "Copy to clipboard",
-    icon: <PlatformIcon icon="actions/copy" />,
-    isDisabled: !get(activePathExistsState),
-    actionPerformed: getCallback(({ snapshot }) => async () => {
-      notImplemented();
-    }),
-  }),
+export const copyActionAtom = actionAtom({
+  id: CommonActionId.COPY,
+  title: "Copy",
+  description: "Copy to clipboard",
+  icon: <PlatformIcon icon="actions/copy" />,
+  isDisabled: atom((get) => !get(activePathExistsAtom)),
+  actionPerformed: async () => {
+    notImplemented();
+  },
 });

@@ -1,4 +1,5 @@
-import { selectorFamily } from "recoil";
+import { atom } from "jotai";
+import { atomFamily } from "jotai/utils";
 import git from "isomorphic-git";
 import { fs } from "../fs/fs";
 
@@ -42,9 +43,8 @@ function getFirstAndLastName(name: string) {
   }
   return null;
 }
-export const gitRepoUserState = selectorFamily<GitUser, string>({
-  key: "vcs/repo-user",
-  get: (repoRoot: string) => async () => {
+export const gitRepoUserAtoms = atomFamily((repoRoot: string) =>
+  atom<Promise<GitUser>>(async () => {
     const name = await git.getConfig({ fs, dir: repoRoot, path: "user.name" });
     const email = await git.getConfig({
       fs,
@@ -55,5 +55,5 @@ export const gitRepoUserState = selectorFamily<GitUser, string>({
       name: name ?? "",
       email: email ?? "",
     };
-  },
-});
+  })
+);

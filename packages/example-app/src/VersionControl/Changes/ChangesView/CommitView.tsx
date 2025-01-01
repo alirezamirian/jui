@@ -1,6 +1,11 @@
-import { IntlMessageFormat } from "intl-messageformat";
-import React, { useEffect, useImperativeHandle, useRef } from "react";
-import { useRecoilCallback, useRecoilState, useRecoilValue } from "recoil";
+import React, {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+} from "react";
+import { useAtom, useAtomValue } from "jotai";
+import { useAtomCallback } from "jotai/utils";
 import {
   Button,
   PlatformIcon,
@@ -11,11 +16,11 @@ import {
 
 import { notImplemented } from "../../../Project/notImplemented";
 import {
-  amendCommitState,
-  commitErrorMessageState,
-  commitMessageState,
-  commitTaskIdState,
-  includedChangesState,
+  amendCommitAtom,
+  commitErrorMessageAtom,
+  commitMessageAtom,
+  commitTaskIdAtom,
+  includedChangesAtom,
 } from "./ChangesView.state";
 import { useCommitChanges } from "./useCommitChanges";
 
@@ -64,14 +69,12 @@ export function CommitView({
   editorRef: React.RefObject<{ focus: () => void }>;
 }) {
   const commitMessageTextAreaRef = useRef<HTMLTextAreaElement>(null);
-  const [commitMessage, setCommitMessage] = useRecoilState(commitMessageState);
+  const [commitMessage, setCommitMessage] = useAtom(commitMessageAtom);
   const commit = useCommitChanges();
-  const amend = useRecoilValue(amendCommitState);
+  const amend = useAtomValue(amendCommitAtom);
   const balloonManager = useBalloonManager();
-  const [errorMessage, setErrorMessage] = useRecoilState(
-    commitErrorMessageState
-  );
-  const commitTaskId = useRecoilValue(commitTaskIdState);
+  const [errorMessage, setErrorMessage] = useAtom(commitErrorMessageAtom);
+  const commitTaskId = useAtomValue(commitTaskIdAtom);
 
   useEffect(() => {
     if (commitMessage) {
@@ -79,12 +82,10 @@ export function CommitView({
     }
   }, [commitMessage]);
 
-  const commitSelectedChanges = useRecoilCallback(({ snapshot }) => {
-    const includedChanges = snapshot
-      .getLoadable(includedChangesState)
-      .getValue();
-    const commitMessage = snapshot.getLoadable(commitMessageState).getValue();
-    return () => {
+  const commitSelectedChanges = useAtomCallback(
+    useCallback((get) => {
+      const includedChanges = get(includedChangesAtom);
+      const commitMessage = get(commitMessageAtom);
       if (includedChanges.length === 0) {
         setErrorMessage("Select files to commit");
         return;
@@ -93,7 +94,7 @@ export function CommitView({
         setErrorMessage("Specify commit message");
         return;
       }
-      if (snapshot.getLoadable(amendCommitState).getValue()) {
+      if (get(amendCommitAtom)) {
         balloonManager.show({
           icon: "Error",
           title: "Unsupported action",
@@ -103,8 +104,8 @@ export function CommitView({
       }
       commit(includedChanges, commitMessage);
       // TODO: clear message and add an entry in commit message history
-    };
-  }, []);
+    }, [])
+  );
 
   const { hasFocus } = useDefaultToolWindowContext();
 

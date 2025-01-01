@@ -20,39 +20,39 @@ import {
   useActionGroup,
   useLatest,
 } from "@intellij-platform/core";
+import { mergeProps } from "@react-aria/utils";
 import { editor, languages } from "monaco-editor";
 import React, { useRef, useState } from "react";
-import { selector, useSetRecoilState } from "recoil";
+import { atom, useAtomValue, useSetAtom } from "jotai";
+import * as path from "path";
 import { getIconForFile } from "../file-utils";
 import { LoadingGif } from "../LoadingGif";
-import { Editor } from "./Editor";
-import {
-  activeEditorTabState,
-  editorCursorPositionState,
-  editorRefState,
-  useEditorState,
-} from "./editor.state";
-import { fileContentState } from "../fs/fs.state";
+import { fileContentAtom } from "../fs/fs.state";
 import { useRefreshFileStatus } from "../VersionControl/file-status.state";
-import * as path from "path";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
-import { mergeProps } from "@react-aria/utils";
 import { useActivePathsProvider } from "../Project/project.state";
 import { notImplemented } from "../Project/notImplemented";
-import { useExistingLatestRecoilValue } from "../recoil-utils";
 import { EditorZeroState } from "./EditorZeroState";
 import { useEditorActionGroup } from "./useEditorActionGroup";
+import {
+  activeEditorTabAtom,
+  editorCursorPositionState,
+  editorRefAtom,
+  useEditorState,
+} from "./editor.state";
+import { Editor } from "./Editor";
+import { unwrapLatestWithLoading } from "../atom-utils/unwrapLatestWithLoading";
 
-const editorFullState = selector({
-  key: "editorState",
-  get: ({ get }) => {
-    const activeEditorTab = get(activeEditorTabState);
+const editorFullStateAtom = unwrapLatestWithLoading(
+  atom(async (get) => {
+    const activeEditorTab = get(activeEditorTabAtom);
     return {
       ...activeEditorTab,
-      content: get(fileContentState(activeEditorTab?.filePath)),
+      content: await get(fileContentAtom(activeEditorTab?.filePath ?? null)),
     };
-  },
-});
+  })
+);
+
 /**
  * Used as main content in the main ToolWindows. Shows currently opened files tabs and the editor.
  *
@@ -66,10 +66,12 @@ export const FileEditor = () => {
   const [contextMenu, setContextMenu] =
     useState<editor.IEditorMouseEvent | null>(null);
   const hideAllAction = useAction(HIDE_ALL_WINDOWS_ACTION_ID);
-  const setCursorPositionState = useSetRecoilState(editorCursorPositionState);
+  const setCursorPositionState = useSetAtom(editorCursorPositionState);
 
-  const [{ content, filePath }, loadingState] =
-    useExistingLatestRecoilValue(editorFullState);
+  const {
+    value: { content, filePath },
+    isLoading: isContentLoading,
+  } = useAtomValue(editorFullStateAtom);
 
   // For functions that are needed in tab action callbacks. Because items are cached and referencing anything
   // other than the collection item (tab) itself has a risk of working with stale data because of the caching
@@ -81,9 +83,9 @@ export const FileEditor = () => {
     closeOthersTabs: editorStateManager.closeOtherTabs,
   });
 
-  const setEditorRef = useSetRecoilState(editorRefState);
+  const setEditorRef = useSetAtom(editorRefAtom);
 
-  const setContent = useSetRecoilState(fileContentState(filePath));
+  const setContent = useSetAtom(fileContentAtom(filePath ?? null));
   const updateFileStatus = useRefreshFileStatus();
 
   const editorActionGroupDefinition = useEditorActionGroup(editorRef);
@@ -258,7 +260,7 @@ export const FileEditor = () => {
           ) : (
             <EditorZeroState />
           )}
-          {loadingState === "loading" && <FileEditorLoading />}
+          {isContentLoading && <FileEditorLoading />}
           {contextMenu && (
             <MenuOverlayFromOrigin
               origin={contextMenu.event.browserEvent}

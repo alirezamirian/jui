@@ -1,11 +1,5 @@
-import { atom } from "recoil";
 import { Bounds } from "@intellij-platform/core";
+import { atom } from "jotai";
 
-export const showProgressPanelState = atom({
-  key: "ide.statusbar.showProgressPanel",
-  default: false,
-});
-export const tasksPopupBoundsState = atom<Bounds | null>({
-  key: "ide.statusbar.tasksPopup",
-  default: null,
-});
+export const showProgressPanelAtom = atom(false);
+export const tasksPopupBoundsAtom = atom<Bounds | null>(null);

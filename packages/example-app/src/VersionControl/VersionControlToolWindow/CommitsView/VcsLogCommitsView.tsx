@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActionButton,
   ActionTooltip,
@@ -19,21 +19,15 @@ import {
 
 import { StyledHeader, StyledSpacer } from "../styled-components";
 import { VcsFilterDropdown } from "./VcsLogDropdown";
-import {
-  atom,
-  RecoilState,
-  useRecoilCallback,
-  useRecoilState,
-  useRecoilValue,
-  useResetRecoilState,
-} from "recoil";
-import { searchInputRefState } from "../VersionControlToolWindow";
+import { atom, useAtom, useAtomValue, WritableAtom } from "jotai";
+import { useAtomCallback, useResetAtom } from "jotai/utils";
+import { searchInputRefAtom } from "../VersionControlToolWindow";
 import { VcsActionIds } from "../../VcsActionIds";
 import {
   CURRENT_USER_FILTER_VALUE,
-  vcsActiveTabKeyState,
+  vcsActiveTabKeyAtom,
   vcsLogFilter,
-  vcsTabKeysState,
+  vcsTabKeysAtom,
 } from "../vcs-logs.state";
 import { notImplemented } from "../../../Project/notImplemented";
 import { DateRange, dateToString } from "../DateRange";
@@ -54,26 +48,24 @@ const StyledContainer = styled.div`
   flex-direction: column;
 `;
 
-const searchHistoryState = atom<string[]>({
-  key: "vcs/toolwindow/searchHistory",
-  default: [], // TODO: add an effect to persist it under application level other.xml file under
-  // PropertyService component's "Vcs.Log.Text.Filter.History" property
-});
+// TODO: add an effect to persist it under application level other.xml file under
+// PropertyService component's "Vcs.Log.Text.Filter.History" property
+const searchHistoryState = atom<string[]>([]);
 
 export function VcsLogCommitsView({ tabKey }: { tabKey: string }) {
-  const textFilterRef = useRecoilValue(searchInputRefState);
-  const [searchQuery, setSearchQuery] = useRecoilState(
+  const textFilterRef = useAtomValue(searchInputRefAtom);
+  const [searchQuery, setSearchQuery] = useAtom(
     vcsLogFilter.searchQuery(tabKey)
   );
-  const [user, setUser] = useRecoilState(vcsLogFilter.user(tabKey));
-  const resetUser = useResetRecoilState(vcsLogFilter.user(tabKey));
-  const [dateFilter, setDateFilter] = useRecoilState(vcsLogFilter.date(tabKey));
-  const resetDate = useResetRecoilState(vcsLogFilter.date(tabKey));
-  const [searchHistory, setSearchHistory] = useRecoilState(searchHistoryState);
+  const [user, setUser] = useAtom(vcsLogFilter.user(tabKey));
+  const resetUser = useResetAtom(vcsLogFilter.user(tabKey));
+  const [dateFilter, setDateFilter] = useAtom(vcsLogFilter.date(tabKey));
+  const resetDate = useResetAtom(vcsLogFilter.date(tabKey));
+  const [searchHistory, setSearchHistory] = useAtom(searchHistoryState);
   const [searchInputValue, setSearchInputValue] = useState(searchQuery);
   const getActionShortcut = useGetActionShortcut();
-  const isRegExpOn = useRecoilValue(vcsLogFilter.regExp(tabKey));
-  const isMatchCaseOn = useRecoilValue(vcsLogFilter.matchCase(tabKey));
+  const isRegExpOn = useAtomValue(vcsLogFilter.regExp(tabKey));
+  const isMatchCaseOn = useAtomValue(vcsLogFilter.matchCase(tabKey));
   const submitSearchQuery = (value = searchInputValue) => {
     setSearchQuery(value);
     if (value && !searchHistory.includes(value)) {
@@ -88,28 +80,23 @@ export function VcsLogCommitsView({ tabKey }: { tabKey: string }) {
     setSearchInputValue(searchQuery);
   }, [searchQuery]);
 
-  const createNewTab = useRecoilCallback(
-    ({ set, snapshot }) =>
-      () => {
-        const newTabId = uuid();
-        set(vcsTabKeysState, (value) => [...value, newTabId]);
-        Object.values(vcsLogFilter).forEach(
-          (filterState: (tabKey: string) => RecoilState<any>) => {
-            set(
-              filterState(newTabId),
-              snapshot
-                .getLoadable(
-                  filterState(
-                    snapshot.getLoadable(vcsActiveTabKeyState).getValue()
-                  )
-                )
-                .getValue()
-            );
-          }
-        );
-        set(vcsActiveTabKeyState, newTabId);
-      },
-    []
+  const createNewTab = useAtomCallback(
+    useCallback((get, set) => {
+      const newTabId = uuid();
+      set(vcsTabKeysAtom, (value) => [...value, newTabId]);
+      Object.values(vcsLogFilter).forEach(
+        (
+          getTabFilterAtom: (tabKey: string) => WritableAtom<any, any, void>
+        ) => {
+          // TODO(jotai): using jotai utils like [split](https://jotai.org/docs/utilities/split) might simplify vcs log tabs state management
+          set(
+            getTabFilterAtom(newTabId),
+            get(getTabFilterAtom(get(vcsActiveTabKeyAtom)))
+          );
+        }
+      );
+      set(vcsActiveTabKeyAtom, newTabId);
+    }, [])
   );
   const today = new Date();
   const sevenDaysAgo = new Date();
@@ -126,6 +113,7 @@ export function VcsLogCommitsView({ tabKey }: { tabKey: string }) {
       value: { from: sevenDaysAgo },
     },
   ];
+
   return (
     <StyledContainer>
       <StyledHeader>

@@ -1,5 +1,5 @@
 import React from "react";
-import { useRecoilValue } from "recoil";
+import { useAtomValue } from "jotai";
 import styled from "styled-components";
 import {
   ActionButton,
@@ -16,7 +16,7 @@ import { notImplemented } from "../../../Project/notImplemented";
 import { VcsActionIds } from "../../VcsActionIds";
 import { BranchesGroupByActionButton } from "./BranchesGroupByActionButton";
 import { BranchesTree } from "./BranchesTree";
-import { branchesTreeRefState } from "./BranchesTree.state";
+import { branchesTreeRefAtoms } from "./BranchesTree.state";
 
 const DELETE_BRANCH_ACTION_ID = "Git.DeleteBranch";
 const SHOW_BRANCH_DIFF_ACTION_ID = "Git.Compare.With.Current";
@@ -30,7 +30,7 @@ const StyledContainer = styled.div`
 `;
 
 export function VcsBranchesView({ tabKey }: { tabKey: string }) {
-  const treeRef = useRecoilValue(branchesTreeRefState(tabKey));
+  const treeRef = useAtomValue(branchesTreeRefAtoms(tabKey));
   const actions: ActionDefinition[] = [
     {
       id: VcsActionIds.GIT_UPDATE_SELECTED,

@@ -1,6 +1,5 @@
 import * as path from "path";
 import React, { CSSProperties } from "react";
-import { RecoilRoot } from "recoil";
 import git from "isomorphic-git";
 import http from "isomorphic-git/http/web";
 import {
@@ -37,13 +36,11 @@ export const App = ({
       <WaitForFs>
         <ProjectInitializer autoCloneSampleRepo={autoCloneSampleRepo}>
           <KeymapProvider keymap={exampleAppKeymap}>
-            <RecoilRoot>
-              <WindowManager>
-                <PopupManager>
-                  <Project height={height} />
-                </PopupManager>
-              </WindowManager>
-            </RecoilRoot>
+            <WindowManager>
+              <PopupManager>
+                <Project height={height} />
+              </PopupManager>
+            </WindowManager>
           </KeymapProvider>
         </ProjectInitializer>
       </WaitForFs>

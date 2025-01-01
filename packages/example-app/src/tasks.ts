@@ -1,7 +1,9 @@
 // @ts-expect-error caf doesn't have typing :/
 import { CAF } from "caf";
-import { atom, selector, useRecoilCallback, useSetRecoilState } from "recoil";
 import { useEventCallback } from "@intellij-platform/core/utils/useEventCallback";
+import { atom, useSetAtom } from "jotai";
+import { useAtomCallback } from "jotai/utils";
+import { useCallback } from "react";
 
 interface ProgressIndicator {
   /**
@@ -47,27 +49,18 @@ export interface Task {
   progress: Progress;
 }
 
-export const tasksState = atom<Task[]>({
-  key: "tasks.list",
-  default: [],
-});
+export const tasksAtom = atom<Task[]>([]);
 
 /**
  * Selector that gives the first task. Optimized for use cases like in the statusbar where only the first task is shown.
  * While tasks state can update as tasks progress, this only changes when the first task does.
  */
-export const firstTaskState = selector<Task | null>({
-  key: "tasks.first",
-  get: ({ get }) => get(tasksState)[0],
-});
+export const firstTaskAtom = atom<Task | null>((get) => get(tasksAtom)[0]);
 
 /**
- * Optimized recoil value to get the number of tasks, if the tasks are not needed.
+ * Optimized state of the number of tasks, if the tasks are not needed.
  */
-export const taskCountState = selector<number>({
-  key: "tasks.count",
-  get: ({ get }) => get(tasksState).length,
-});
+export const taskCountAtom = atom<number>((get) => get(tasksAtom).length);
 
 let progressSeq = 0;
 
@@ -83,7 +76,7 @@ type TaskDefinition = TaskRunFn | { run: TaskRunFn; onFinished?: () => void };
  * Tasks are shown in the toolbar or as a modal window.
  */
 export const useRunTask = () => {
-  const setTasksState = useSetRecoilState(tasksState);
+  const setTasksState = useSetAtom(tasksAtom);
   return useEventCallback(
     (
       {
@@ -150,12 +143,11 @@ export const useRunTask = () => {
  * Returns a function to cancel a task based on id.
  */
 export const useCancelTask = () =>
-  useRecoilCallback(({ snapshot }) => (id: Task["id"]) => {
-    const task = snapshot
-      .getLoadable(tasksState)
-      .getValue()
-      .find((task) => task.id === id);
-    if (task) {
-      task.abortController.abort();
-    }
-  });
+  useAtomCallback(
+    useCallback((get, _set, id: Task["id"]) => {
+      const task = get(tasksAtom).find((task) => task.id === id);
+      if (task) {
+        task.abortController.abort();
+      }
+    }, [])
+  );

@@ -1,13 +1,13 @@
 import React from "react";
-import { useRecoilValue } from "recoil";
+import { useAtomValue } from "jotai";
 import { VcsDirectoryMapping } from "./file-status";
-import { branchForPathState } from "./Branches/branches.state";
+import { branchForPathAtoms } from "./Branches/branches.state";
 
 export const RepoCurrentBranchName = ({
   repo,
 }: {
   repo: VcsDirectoryMapping;
 }) => {
-  const branch = useRecoilValue(branchForPathState(repo.dir));
+  const branch = useAtomValue(branchForPathAtoms(repo.dir));
   return <>{branch}</>;
 };

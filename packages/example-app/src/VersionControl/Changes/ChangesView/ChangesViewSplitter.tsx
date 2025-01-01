@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useAtom, useAtomValue } from "jotai";
 import {
   ActionsProvider,
   getAnchorOrientation,
@@ -10,7 +10,7 @@ import {
   useTreeActions,
 } from "@intellij-platform/core";
 
-import { repoStatusUpdatingState } from "../../file-status.state";
+import { isAnyRepoStatusUpdatingAtom } from "../../file-status.state";
 import { LoadingGif } from "../../../LoadingGif";
 import { Delayed } from "../../../Delayed";
 import { commitMessageSizeState } from "./ChangesView.state";
@@ -56,8 +56,8 @@ export const ChangesViewSplitter = () => {
   const treeRef = useRef<TreeRefValue>(null);
   const editorRef = useRef<{ focus: () => void }>(null);
   const orientation = getAnchorOrientation(anchor);
-  const updating = useRecoilValue(repoStatusUpdatingState);
-  const [commitMessageSize, setCommitMessageSize] = useRecoilState(
+  const updating = useAtomValue(isAnyRepoStatusUpdatingAtom);
+  const [commitMessageSize, setCommitMessageSize] = useAtom(
     commitMessageSizeState(orientation)
   );
   const changesViewActions = useChangesViewActions();

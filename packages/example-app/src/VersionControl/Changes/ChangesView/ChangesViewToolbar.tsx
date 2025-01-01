@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Toolbar,
   ToolbarSeparator,
@@ -9,7 +10,6 @@ import {
 import { ChangeListsActionButton } from "./ActionButtons/ChangeListsActionButton";
 import { ChangesGroupByActionButton } from "./ActionButtons/ChangesGroupByActionButton";
 import { ViewOptionsActionButton } from "./ActionButtons/ViewOptionsActionButton";
-import React from "react";
 
 import { VcsActionIds } from "../../VcsActionIds";
 

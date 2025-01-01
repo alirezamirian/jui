@@ -1,27 +1,26 @@
 import { equals, groupBy } from "ramda";
-import {
-  atom,
-  selector,
-  selectorFamily,
-  useRecoilCallback,
-  useRecoilValue,
-} from "recoil";
+import { useCallback } from "react";
+import { atomFamily, useAtomCallback } from "jotai/utils";
+import { atom, Getter, Setter, useAtomValue } from "jotai";
+import { focusAtom } from "jotai-optics";
+
 import git, {
   branch,
   checkout,
   deleteBranch,
   renameBranch,
 } from "isomorphic-git";
+import { z } from "zod";
 
 import { fs } from "../../fs/fs";
-import { vcsRootForFile, vcsRootsState } from "../file-status.state";
-import { dirContentState, reloadFileFromDiskCallback } from "../../fs/fs.state";
-import { editorTabsState } from "../../Editor/editor.state";
+import { atomWithRefresh } from "../../atom-utils/atomWithRefresh";
+import { vcsFootForFileAtom, vcsRootsAtom } from "../file-status.state";
+import { dirContentAtom, reloadFileFromDiskCallback } from "../../fs/fs.state";
+import { editorTabsAtom } from "../../Editor/editor.state";
 import { asyncFilter } from "../../async-utils";
 import { getTrackingBranch } from "./branch-utils";
-import { array, literal, object, string, union } from "@recoiljs/refine";
-import { persistentAtomEffect } from "../../Project/persistence/persistentAtomEffect";
-import { ensureArray, MaybeArray } from "../../ensureArray";
+import { atomWithPersistence } from "../../persistence/atomWithPersistence";
+import { list, map } from "../../persistence/schema-utils";
 
 export type LocalBranch = {
   name: string;
@@ -51,31 +50,27 @@ export type BranchInfo = {
 /**
  * List of local branches of a given repository.
  */
-const repoLocalBranchesState = selectorFamily<LocalBranch[], string>({
-  key: "vcs/repoLocalBranches",
-  get:
-    (repoRoot: string) =>
-    async ({}) => {
-      const branches = await git.listBranches({ fs, dir: repoRoot });
-      return Promise.all(
-        branches.map(async (branch) => ({
-          name: branch,
-          trackingBranch: await getTrackingBranch({
-            fs,
-            dir: repoRoot,
-            localBranchName: branch,
-          }),
-        }))
-      );
-    },
-});
+const repoLocalBranchesAtom = atomFamily((repoRoot: string) =>
+  atomWithRefresh(async ({}): Promise<LocalBranch[]> => {
+    const branches = await git.listBranches({ fs, dir: repoRoot });
+    return Promise.all(
+      branches.map(async (branch) => ({
+        name: branch,
+        trackingBranch: await getTrackingBranch({
+          fs,
+          dir: repoRoot,
+          localBranchName: branch,
+        }),
+      }))
+    );
+  })
+);
 
 /**
  * List of remote branches of a given repository
  */
-const repoRemoteBranchesState = selectorFamily({
-  key: "vcs/repoRemoteBranches",
-  get: (repoRoot: string) => async (): Promise<RemoteBranch[]> => {
+const repoRemoteBranchesAtoms = atomFamily((repoRoot: string) =>
+  atomWithRefresh(async (): Promise<RemoteBranch[]> => {
     const remotes = await git.listRemotes({ fs, dir: repoRoot });
     return (
       await Promise.all(
@@ -90,126 +85,81 @@ const repoRemoteBranchesState = selectorFamily({
         )
       )
     ).flat();
-  },
-});
+  })
+);
 
 /**
  * List of local and remote branches of a given repository
  */
-export const repoBranchesState = selectorFamily<RepoBranches, string>({
-  key: "vcs/repoBranches",
-  get:
-    (repoRoot: string) =>
-    async ({ get }) => {
-      const currentBranchName = get(repoCurrentBranchNameState(repoRoot));
-      let localBranches = get(repoLocalBranchesState(repoRoot));
-      if (localBranches.length === 0 && currentBranchName) {
-        // When a repo is initialized and before the first commit, no branch is returned when listing branches.
-        // See more: https://github.com/isomorphic-git/isomorphic-git/issues/1650
-        localBranches = localBranches.concat({
-          name: currentBranchName,
-          trackingBranch: null,
-        });
-      }
-      return {
-        repoRoot,
-        currentBranch:
-          localBranches.find((branch) => branch.name === currentBranchName) ||
-          null,
-        localBranches: localBranches,
-        remoteBranches: get(repoRemoteBranchesState(repoRoot)),
-      };
-    },
-});
+export const repoBranchesAtom = atomFamily((repoRoot: string) =>
+  atomWithRefresh(async (get) => {
+    const currentBranchName = await get(repoCurrentBranchNameAtom(repoRoot));
+    let localBranches = await get(repoLocalBranchesAtom(repoRoot));
+    if (localBranches.length === 0 && currentBranchName) {
+      // When a repo is initialized and before the first commit, no branch is returned when listing branches.
+      // See more: https://github.com/isomorphic-git/isomorphic-git/issues/1650
+      localBranches = localBranches.concat({
+        name: currentBranchName,
+        trackingBranch: null,
+      });
+    }
+    return {
+      repoRoot,
+      currentBranch:
+        localBranches.find((branch) => branch.name === currentBranchName) ||
+        null,
+      localBranches: localBranches,
+      remoteBranches: await get(repoRemoteBranchesAtoms(repoRoot)),
+    };
+  })
+);
 
 /**
  * Current branch name of the given repository. Can be null, if head is detached.
  */
-export const repoCurrentBranchNameState = selectorFamily({
-  key: "vcs/repoCurrentBranch",
-  get: (repoRoot: string) => () => {
+export const repoCurrentBranchNameAtom = atomFamily((repoRoot: string) =>
+  atomWithRefresh(() => {
     return git.currentBranch({
       fs,
       dir: repoRoot,
       fullname: false,
     });
-  },
-});
+  })
+);
 
 /**
  * List of all (remote and local) branches of all repositories
  */
-export const allBranchesState = selector<RepoBranches[]>({
-  key: "vcs/allBranches",
-  get: ({ get }) => {
-    const repoRoots = get(vcsRootsState);
-    return repoRoots.map(({ dir: repoRoot }) =>
-      get(repoBranchesState(repoRoot))
-    );
-  },
+export const allBranchesAtom = atom(async (get): Promise<RepoBranches[]> => {
+  const repoRoots = get(vcsRootsAtom);
+  return Promise.all(
+    repoRoots.map(({ dir: repoRoot }) => get(repoBranchesAtom(repoRoot)))
+  );
 });
 
 /**
  * Given the absolute path of a file, returns the current branch on the repository this file belongs to.
  */
-export const branchForPathState = selectorFamily<string | null, string>({
-  key: "gitBranchForFile",
-  get:
-    (filepath: string) =>
-    ({ get }) => {
-      const root = get(vcsRootForFile(filepath));
-      console.log(
-        `repo root for ${filepath}`,
-        root,
-        root && get(repoBranchesState(root))
-      );
-      return root
-        ? get(repoBranchesState(root)).currentBranch?.name || null
-        : null;
-    },
-});
+export const branchForPathAtoms = atomFamily((filepath: string) =>
+  atom(async (get): Promise<string | null> => {
+    const root = await get(vcsFootForFileAtom(filepath));
+    const repoRoot = root ? await get(repoBranchesAtom(root)) : null;
+    console.log(`repo root for ${filepath}`, root, root && repoRoot);
+    return root ? repoRoot?.currentBranch?.name || null : null;
+  })
+);
 
 const PREDEFINED_FAVORITE_BRANCH_NAMES = [
   { branchType: "LOCAL", branchName: "master" },
   { branchType: "REMOTE", branchName: "origin/master" },
 ];
 
-interface BranchStorage {
-  map: MaybeArray<{
-    entry: {
-      "@type": "LOCAL" | "REMOTE";
-      value: {
-        list: MaybeArray<{
-          "branch-info": {
-            "@repo": string;
-            "@source": string;
-          };
-        }>;
-      };
-    };
-  }>;
-}
-
-/**
- * Implements the intellij's data structure for persisting branch storage objects, used in persisting favorite branches
- * state. The reason for following the same data structure is to be able to open existing intellij projects with this
- * app and have it read/write the persistent state the same way an intellij does.
- */
-interface GitSettingsStorage {
-  "favorite-branches"?: {
-    "branch-storage": BranchStorage;
-  };
-  "exclude-from-favorite"?: {
-    "branch-storage": BranchStorage;
-  };
-}
-
 function readBranchStorage(branchStorage: BranchStorage | undefined) {
   return (
-    ensureArray(branchStorage?.map).flatMap<BranchInfo>((entry) =>
-      ensureArray(entry?.entry.value.list).map(
-        ({ "branch-info": { "@source": branchName, "@repo": repoRoot } }) => ({
-          branchType: entry?.entry["@type"],
+    branchStorage?.map.entry.flatMap<BranchInfo>((entry) =>
+      entry?.value.list["branch-info"].map(
+        ({ "@source": branchName, "@repo": repoRoot }) => ({
+          branchType: entry["@type"],
           branchName,
           repoRoot,
         })
@@ -218,96 +168,128 @@ function readBranchStorage(branchStorage: BranchStorage | undefined) {
   );
 }
 
-function toBranchStorage(value: readonly BranchInfo[]): BranchStorage {
+function writeBranchStorage(value: readonly BranchInfo[]): BranchStorage {
   const branchesByType = groupBy(({ branchType }) => branchType, value);
   const entries = Object.entries(branchesByType).map(
     ([branchType, branches]) => ({
-      entry: {
-        "@type": branchType as BranchType,
-        value: {
-          list: branches.map((branch) => ({
-            "branch-info": {
-              "@repo": branch.repoRoot,
-              "@source": branch.branchName,
-            },
+      "@type": branchType as BranchType,
+      value: {
+        list: {
+          "branch-info": branches.map((branch) => ({
+            "@repo": branch.repoRoot,
+            "@source": branch.branchName,
           })),
         },
       },
     })
   );
   return {
-    map: entries,
+    map: {
+      entry: entries,
+    },
   };
 }
 
-const branchInfoArrayChecker = array(
-  object({
-    branchType: union(literal("LOCAL"), literal("REMOTE")),
-    branchName: string(),
-    repoRoot: string(),
+const branchStorage = z.object({
+  "branch-storage": z.object({
+    map: map(
+      z.enum(["LOCAL", "REMOTE"]),
+      z.object({
+        list: list(
+          z.object({
+            "@repo": z.string(),
+            "@source": z.string(),
+          }),
+          "branch-info"
+        ),
+      })
+    ),
+  }),
+});
+
+type BranchStorage = (typeof branchStorage)["_output"]["branch-storage"];
+
+/**
+ * Implements the intellij's data structure for persisting branch storage objects, used in persisting favorite branches
+ * state. The reason for following the same data structure is to be able to open existing intellij projects with this
+ * app and have it read/write the persistent state the same way an intellij does.
+ */
+export const gitSettingsSchema = z
+  .object({
+    "favorite-branches": branchStorage.optional(),
+    "exclude-from-favorite": branchStorage.optional(),
   })
+  .optional();
+
+type GitSettings = {
+  branches: ReadonlyArray<BranchInfo>;
+  excludedBranches: ReadonlyArray<BranchInfo>;
+};
+
+const gitSettingsAtom = atomWithPersistence(
+  { branches: [], excludedBranches: [] },
+  {
+    schema: gitSettingsSchema,
+    componentName: "Git.Settings",
+    read: (componentState): GitSettings => {
+      return {
+        branches: readBranchStorage(
+          componentState?.["favorite-branches"]?.["branch-storage"]
+        ),
+        excludedBranches: readBranchStorage(
+          componentState?.["exclude-from-favorite"]?.["branch-storage"]
+        ),
+      };
+    },
+    write: (value, state) => {
+      const newState = {
+        ...state,
+      };
+      // empty objects or arrays convert into empty tag, which then gets deserialized as string
+      // it's not convenient to make sure empty objects are not included, and it's not even type safe
+      // so maybe a better solution would be to handle deserialization from empty string too, with a custom
+      // object() (similar to maybeArray utility), that would be able to deserialize from empty string,
+      // and would used instead of z.object().
+      // Type safety could also be implemented the same way it's done for maybeArray, to make sure everywhere that
+      // an object with all-optional properties exist, empty string is also allowed in the input type.
+      if (value.branches.length > 0) {
+        newState["favorite-branches"] = {
+          "branch-storage": writeBranchStorage(value.branches),
+        };
+      } else {
+        delete newState["favorite-branches"];
+      }
+      if (value.excludedBranches.length > 0) {
+        newState["exclude-from-favorite"] = {
+          "branch-storage": writeBranchStorage(value.excludedBranches),
+        };
+      } else {
+        delete newState["exclude-from-favorite"];
+      }
+      return newState;
+    },
+  }
 );
 
-const favoriteBranchesState = atom<ReadonlyArray<BranchInfo>>({
-  key: "vcs/branches/favorite",
-  default: [],
-  effects: [
-    persistentAtomEffect<ReadonlyArray<BranchInfo>, GitSettingsStorage>({
-      refine: branchInfoArrayChecker,
-      componentName: "Git.Settings",
-      read: (gitSettings) => {
-        return readBranchStorage(
-          gitSettings?.["favorite-branches"]?.["branch-storage"]
-        );
-      },
-      update: (value) => {
-        return (currentValue): GitSettingsStorage => ({
-          ...(currentValue || {}),
-          "favorite-branches": {
-            "branch-storage": toBranchStorage(value),
-          },
-        });
-      },
-    }),
-  ],
-});
+const favoriteBranchesAtom = focusAtom(gitSettingsAtom, (optic) =>
+  optic.prop("branches")
+);
 
-export const isFavoriteBranchState = selectorFamily({
-  key: "vcs/branches/isFavorite",
-  get:
-    (branchInfo: BranchInfo) =>
-    ({ get }) => {
+const excludedFromFavoriteBranchesAtom = focusAtom(gitSettingsAtom, (optic) =>
+  optic.prop("excludedBranches")
+);
+
+export const isFavoriteBranchAtoms = atomFamily(
+  (branchInfo: BranchInfo) =>
+    atom((get) => {
       return isFavorite(
-        get(favoriteBranchesState),
-        get(excludedFromFavoriteBranchesState),
+        get(favoriteBranchesAtom),
+        get(excludedFromFavoriteBranchesAtom),
         branchInfo
       );
-    },
-});
-
-const excludedFromFavoriteBranchesState = atom<ReadonlyArray<BranchInfo>>({
-  key: "vcs/branches/favorite-excluded",
-  default: [],
-  effects: [
-    persistentAtomEffect<ReadonlyArray<BranchInfo>, GitSettingsStorage>({
-      refine: branchInfoArrayChecker,
-      componentName: "Git.Settings",
-      read: (gitSettings) => {
-        return readBranchStorage(
-          gitSettings?.["exclude-from-favorite"]?.["branch-storage"]
-        );
-      },
-      update: (value) => {
-        return (currentValue): GitSettingsStorage => ({
-          ...(currentValue || {}),
-          "exclude-from-favorite": {
-            "branch-storage": toBranchStorage(value),
-          },
-        });
-      },
     }),
-  ],
-});
+  equals
+);
 
 function isPredefinedAsFavorite(params: {
   repoRoot: string;
@@ -335,13 +317,15 @@ const isFavorite = (
 };
 
 function useToggleFavoriteBranch() {
-  return useRecoilCallback(
-    ({ set, snapshot }) =>
+  return useAtomCallback(
+    useCallback(
       (
+        get,
+        set,
         params: BranchInfo,
         favorite: boolean = !isFavorite(
-          snapshot.getLoadable(favoriteBranchesState).getValue(),
-          snapshot.getLoadable(excludedFromFavoriteBranchesState).getValue(),
+          get(favoriteBranchesAtom),
+          get(excludedFromFavoriteBranchesAtom),
           params
         )
       ) => {
@@ -361,24 +345,25 @@ function useToggleFavoriteBranch() {
         };
 
         if (favorite) {
-          set(excludedFromFavoriteBranchesState, remove);
+          set(excludedFromFavoriteBranchesAtom, remove);
           if (!isPredefinedAsFavorite(params)) {
-            set(favoriteBranchesState, add);
+            set(favoriteBranchesAtom, add);
           }
         } else {
-          set(favoriteBranchesState, remove);
+          set(favoriteBranchesAtom, remove);
           if (isPredefinedAsFavorite(params)) {
-            set(excludedFromFavoriteBranchesState, add);
+            set(excludedFromFavoriteBranchesAtom, add);
           }
         }
       },
-    []
+      []
+    )
   );
 }
 export function useFavoriteBranches() {
-  const favoriteBranches = useRecoilValue(favoriteBranchesState);
-  const excludedFromFavoriteBranches = useRecoilValue(
-    excludedFromFavoriteBranchesState
+  const favoriteBranches = useAtomValue(favoriteBranchesAtom);
+  const excludedFromFavoriteBranches = useAtomValue(
+    excludedFromFavoriteBranchesAtom
   );
 
   return {
@@ -389,16 +374,23 @@ export function useFavoriteBranches() {
 }
 
 export function useCreateBranch() {
-  return useRecoilCallback(
-    ({ refresh }) =>
-      (repoRoot: string, branchName: string, checkout: boolean = true) => {
+  return useAtomCallback(
+    useCallback(
+      (
+        _get,
+        set,
+        repoRoot: string,
+        branchName: string,
+        checkout: boolean = true
+      ) => {
         return branch({ fs, dir: repoRoot, checkout, ref: branchName }).then(
           () => {
-            refresh(repoBranchesState(repoRoot));
+            set(repoBranchesAtom(repoRoot));
           }
         );
       },
-    []
+      []
+    )
   );
 }
 
@@ -407,16 +399,22 @@ export function useCreateBranch() {
  */
 export function useRenameBranch() {
   const toggleFavoriteBranch = useToggleFavoriteBranch();
-  return useRecoilCallback(
-    ({ refresh, snapshot }) =>
-      async (repoRoot: string, branchName: string, newBranchName: string) => {
+  return useAtomCallback(
+    useCallback(
+      async (
+        get,
+        set,
+        repoRoot: string,
+        branchName: string,
+        newBranchName: string
+      ) => {
         await renameBranch({
           fs,
           dir: repoRoot,
           oldref: branchName,
           ref: newBranchName,
         });
-        refresh(repoBranchesState(repoRoot));
+        set(repoBranchesAtom(repoRoot));
         const favoriteBranch = {
           branchType: "LOCAL",
           branchName,
@@ -424,8 +422,8 @@ export function useRenameBranch() {
         } as const;
         if (
           isFavorite(
-            snapshot.getLoadable(favoriteBranchesState).getValue(),
-            snapshot.getLoadable(excludedFromFavoriteBranchesState).getValue(),
+            get(favoriteBranchesAtom),
+            get(excludedFromFavoriteBranchesAtom),
             favoriteBranch
           )
         ) {
@@ -439,49 +437,55 @@ export function useRenameBranch() {
           ); // add new branch as favorite
         }
       },
-    []
+      []
+    )
   );
 }
 
 export function useCheckoutBranch() {
-  return useRecoilCallback(
-    (callbackInterface) =>
-      async (repoRoot: string, branchName: string, remote?: string) => {
-        const { refresh, snapshot, set } = callbackInterface;
-        const reloadFileFromDisk =
-          reloadFileFromDiskCallback(callbackInterface);
+  return useAtomCallback(
+    useCallback(
+      async (
+        get: Getter,
+        set: Setter,
+        repoRoot: string,
+        branchName: string,
+        remote?: string
+      ) => {
+        const reloadFileFromDisk = reloadFileFromDiskCallback(get, set);
         await checkout({
           fs,
           dir: repoRoot,
           remote,
           ref: branchName,
         });
-        refresh(repoBranchesState(repoRoot));
-        refresh(dirContentState(repoRoot));
-        const openedFiles = snapshot.getLoadable(editorTabsState).getValue();
+        console.log(`checked out branch ${branchName}`);
+        set(repoBranchesAtom(repoRoot));
+        set(dirContentAtom(repoRoot));
+        const openedFiles = get(editorTabsAtom);
         const existingOpenedFile = await asyncFilter(async ({ filePath }) => {
           const exists = await fs.promises.exists(filePath); // should it be fs directly?
           // the file content for files not open in the editor also need to be updated. TODO(fs.watch)
+          console.log(`updating the content of the file ${filePath}`, exists);
           if (exists) {
             await reloadFileFromDisk(filePath);
           }
           return exists;
         }, openedFiles);
-        set(editorTabsState, existingOpenedFile);
+        set(editorTabsAtom, existingOpenedFile);
         // TODO: update file status (fileStatusState) for the repo.
       },
-    []
+      []
+    )
   );
 }
 
 export function useDeleteBranch() {
-  return useRecoilCallback(
-    ({ refresh }) =>
-      (repoRoot: string, branchName: string) => {
-        return deleteBranch({ fs, dir: repoRoot, ref: branchName }).then(() => {
-          refresh(repoBranchesState(repoRoot));
-        });
-      },
-    []
+  return useAtomCallback(
+    useCallback((_get, set, repoRoot: string, branchName: string) => {
+      return deleteBranch({ fs, dir: repoRoot, ref: branchName }).then(() => {
+        set(repoBranchesAtom(repoRoot));
+      });
+    }, [])
   );
 }

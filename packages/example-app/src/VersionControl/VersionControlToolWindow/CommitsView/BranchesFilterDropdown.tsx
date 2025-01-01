@@ -1,6 +1,7 @@
 import { groupBy } from "ramda";
 import React, { HTMLAttributes, useEffect, useState } from "react";
-import { selector, useRecoilState, useResetRecoilState } from "recoil";
+import { atom, useAtom, useAtomValue } from "jotai";
+import { useResetAtom } from "jotai/utils";
 import {
   Divider,
   Item,
@@ -10,20 +11,21 @@ import {
 
 import { notImplemented } from "../../../Project/notImplemented";
 import {
-  allBranchesState,
+  allBranchesAtom,
   BranchType,
   useFavoriteBranches,
 } from "../../Branches/branches.state";
 import { BranchFavoriteButton } from "../../Branches/BranchFavoriteButton";
 import { vcsLogFilter } from "../vcs-logs.state";
 import { VcsFilterDropdown } from "./VcsLogDropdown";
-import { useLatestRecoilValue } from "../../../recoil-utils";
+
+import { unwrapLatestOrNull } from "../../../atom-utils/unwrapLatest";
 
 export function BranchesFilterDropdown({ tabKey }: { tabKey: string }) {
-  const [selectedBranches, setSelectedBranches] = useRecoilState(
+  const [selectedBranches, setSelectedBranches] = useAtom(
     vcsLogFilter.branch(tabKey)
   );
-  const resetBranches = useResetRecoilState(vcsLogFilter.branch(tabKey));
+  const resetBranches = useResetAtom(vcsLogFilter.branch(tabKey));
 
   return (
     <VcsFilterDropdown
@@ -53,29 +55,25 @@ const groupRepoRoots = (
  * Unique list of all local and remote branches of all repositories.
  * Each branch has a list of repos which indicates the list of repository roots the branch appears in.
  */
-const repoGroupedAllBranchesState = selector({
-  key: "vcs/allBranchesRepoConsolidated",
-  get: ({ get }) => {
-    const allBranches = get(allBranchesState);
-    const allRemoteBranches = allBranches.flatMap(
-      ({ remoteBranches, repoRoot }) =>
-        remoteBranches.map((branch) => ({
-          repoRoot,
-          branchName: `${branch.remote}/${branch.name}`,
-        }))
-    );
-    const allLocalBranches = allBranches.flatMap(
-      ({ localBranches, repoRoot }) =>
-        localBranches.map((branch) => ({
-          repoRoot,
-          branchName: branch.name,
-        }))
-    );
-    return {
-      localBranches: groupRepoRoots(allLocalBranches),
-      remoteBranches: groupRepoRoots(allRemoteBranches),
-    };
-  },
+const repoGroupedAllBranchesState = atom(async (get) => {
+  const allBranches = await get(allBranchesAtom);
+  const allRemoteBranches = allBranches.flatMap(
+    ({ remoteBranches, repoRoot }) =>
+      remoteBranches.map((branch) => ({
+        repoRoot,
+        branchName: `${branch.remote}/${branch.name}`,
+      }))
+  );
+  const allLocalBranches = allBranches.flatMap(({ localBranches, repoRoot }) =>
+    localBranches.map((branch) => ({
+      repoRoot,
+      branchName: branch.name,
+    }))
+  );
+  return {
+    localBranches: groupRepoRoots(allLocalBranches),
+    remoteBranches: groupRepoRoots(allRemoteBranches),
+  };
 });
 
 type BranchMenuItem = {
@@ -95,8 +93,8 @@ function BranchesFilterMenu({
     []
   );
   const { toggleFavorite, isFavorite } = useFavoriteBranches();
-  const [repoGroupedAllBranches] = useLatestRecoilValue(
-    repoGroupedAllBranchesState
+  const repoGroupedAllBranches = useAtomValue(
+    unwrapLatestOrNull(repoGroupedAllBranchesState)
   );
   const { localBranches = [], remoteBranches = [] } =
     repoGroupedAllBranches || {};

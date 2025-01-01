@@ -4,18 +4,18 @@ import { RepoBranches } from "./branches.state";
 export type BranchNameError = "EXISTING" | "CLASHING_WITH_REMOTE";
 
 export function validateBranchName(
-  branches: RepoBranches,
+  branches: RepoBranches | null,
   newBranchName: string
 ): BranchNameError | null {
   if (
-    branches.remoteBranches.some(
+    branches?.remoteBranches.some(
       (remoteBranch) =>
         `${remoteBranch.remote}/${remoteBranch.name}` === newBranchName
     )
   ) {
     return "CLASHING_WITH_REMOTE";
   }
-  if (branches.localBranches.some(({ name }) => name === newBranchName)) {
+  if (branches?.localBranches.some(({ name }) => name === newBranchName)) {
     return "EXISTING";
   }
   return null;

@@ -8,9 +8,9 @@ import {
   Tooltip,
   TooltipTrigger,
 } from "@intellij-platform/core";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { firstTaskState, taskCountState, useCancelTask } from "../tasks";
-import { showProgressPanelState } from "./IdeStatusBar.state";
+import { useAtom, useAtomValue } from "jotai";
+import { firstTaskAtom, taskCountAtom, useCancelTask } from "../tasks";
+import { showProgressPanelAtom } from "./IdeStatusBar.state";
 import React, { useEffect } from "react";
 import { TasksPopup } from "./TasksPopup";
 
@@ -35,11 +35,11 @@ const StyledProgressBarButton = styled.span`
  * here is not to create an IDE, but to demo UI components.
  */
 export const StatusBarTaskProgressBar = () => {
-  const firstTask = useRecoilValue(firstTaskState);
-  const tasksCount = useRecoilValue(taskCountState);
+  const firstTask = useAtomValue(firstTaskAtom);
+  const tasksCount = useAtomValue(taskCountAtom);
   const cancel = useCancelTask();
-  const [showProgressPanel, setShowProgressPanel] = useRecoilState(
-    showProgressPanelState
+  const [showProgressPanel, setShowProgressPanel] = useAtom(
+    showProgressPanelAtom
   );
 
   // When there is no tasks, switch back to not showing the panel.

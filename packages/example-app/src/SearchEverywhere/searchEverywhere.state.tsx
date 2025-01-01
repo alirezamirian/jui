@@ -1,5 +1,6 @@
 import { Bounds } from "@intellij-platform/core";
-import { atom, atomFamily } from "recoil";
+import { atom } from "jotai";
+import { atomFamily } from "jotai/utils";
 
 export type SearchEveryWhereTab =
   | "All"
@@ -13,36 +14,21 @@ export const searchEverywhereState = {
   /**
    * Whether the popup is open
    */
-  isOpen: atom({
-    key: "search.everywhere.isOpen",
-    default: false,
-  }),
+  isOpen: atom(false),
   /**
    * Currently selected tab, e.g. "Actions", "Files", etc.
    */
-  tab: atom<string>({
-    key: "search.everywhere.tab",
-    default: "All",
-  }),
+  tab: atom<string>("All"),
   /**
    * The Element of the context of the action that triggered the popup. Used to provide context to search, if needed.
    */
-  contextElement: atom<Element>({
-    key: "search.everywhere.contextElement",
-    default: undefined,
-  }),
+  contextElement: atom<Element | null>(null),
   /**
    * Initial search query.
    */
-  initialSearchQuery: atomFamily<string, string>({
-    key: "search.everywhere.initialQuery",
-    default: "",
-  }),
+  initialSearchQuery: atomFamily((tab: string) => atom("")),
   /**
    * Popup bounds
    */
-  bounds: atom<Partial<Bounds> | null>({
-    key: "search.everywhere.bounds",
-    default: null,
-  }),
+  bounds: atom<Partial<Bounds> | null>(null),
 };

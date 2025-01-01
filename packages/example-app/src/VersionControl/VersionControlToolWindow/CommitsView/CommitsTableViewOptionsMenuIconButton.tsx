@@ -1,5 +1,5 @@
 import React from "react";
-import { RecoilState, useRecoilState } from "recoil";
+import { PrimitiveAtom, useAtom } from "jotai";
 import {
   ActionTooltip,
   IconButtonWithMenu,
@@ -15,32 +15,47 @@ import {
   authorColumn,
   dateColumn,
   hashColumn,
-  vcsTableColumnsVisibilityState,
-  vcsTableHighlightMyCommitsState,
-  vcsTableReferencesOnTheLeftState,
-  vcsTableShowCommitTimestampState,
+  vcsTableColumnsVisibilityAtoms,
+  vcsTableHighlightMyCommitsAtom,
+  vcsTableReferencesOnTheLeftAtom,
+  vcsTableShowCommitTimestampAtom,
 } from "./CommitsTable.state";
 
 type ToggleDef = {
   name: string;
-  state: RecoilState<boolean>;
+  key: string;
+  atom: PrimitiveAtom<boolean>;
 };
 const showToggleDefs = [
-  { name: "Commit Timestamp", state: vcsTableShowCommitTimestampState },
-  { name: "References on the Left", state: vcsTableReferencesOnTheLeftState },
+  {
+    key: "commitTimestamp",
+    name: "Commit Timestamp",
+    atom: vcsTableShowCommitTimestampAtom,
+  },
+  {
+    key: "referencesOnLeft",
+    name: "References on the Left",
+    atom: vcsTableReferencesOnTheLeftAtom,
+  },
 ];
+
 const highlightToggleDefs = [
-  { name: "My Commits", state: vcsTableHighlightMyCommitsState },
+  {
+    key: "myCommits",
+    name: "My Commits",
+    atom: vcsTableHighlightMyCommitsAtom,
+  },
 ];
 const columnToggleDefs = [authorColumn, hashColumn, dateColumn].map(
   ({ name, id }) => ({
     name,
-    state: vcsTableColumnsVisibilityState(id),
+    key: id,
+    atom: vcsTableColumnsVisibilityAtoms(id),
   })
 );
 const useToggleDef = (item: ToggleDef) => {
-  const [value, set] = useRecoilState(item.state);
-  return { ...item, key: item.state.key.replace(/"/g, "_"), value, set };
+  const [value, set] = useAtom(item.atom);
+  return { ...item, value, set };
 };
 
 export function CommitsTableViewOptionsMenuIconButton() {
@@ -59,10 +74,10 @@ export function CommitsTableViewOptionsMenuIconButton() {
               {...menuProps}
               selectedKeys={allToggles
                 .filter(({ value }) => value)
-                .map(({ key }) => key)}
+                .map(({ name }) => name)}
               onAction={(key) => {
                 const toggle = allToggles.find(
-                  ({ key: toggleKey }) => toggleKey === key
+                  ({ name: toggleKey }) => toggleKey === key
                 );
                 if (toggle) {
                   toggle.set((value) => !value);

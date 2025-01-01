@@ -1,6 +1,6 @@
-import { atom, selector } from "recoil";
+import { atom } from "jotai";
 import {
-  changesTreeNodesState,
+  changesTreeNodesAtom,
   ChangesViewTreeNode,
 } from "../ChangesView/ChangesView.state";
 import {
@@ -14,65 +14,49 @@ import {
 } from "../ChangesTree/ChangeTreeNode";
 import { AnyChange } from "../Change";
 
-const isOpen = atom<boolean>({
-  key: "rollbackView.isOpen",
-  default: false,
+const isOpenAtom = atom<boolean>(false);
+const windowBoundsAtom = atom<Partial<Bounds>>({ height: 500 });
+const initiallyIncludedChangesAtom = atom<ReadonlyArray<AnyChange>>([]);
+const rootNodesAtom = atom((get) => {
+  const selectedChanges = get(initiallyIncludedChangesAtom);
+  const { rootNodes } = get(changesTreeNodesAtom);
+  const includedRootNodes = rootNodes.filter(
+    (node) =>
+      node.type === "changelist" &&
+      selectedChanges.some((change) => node.changeList.changes.includes(change))
+  );
+  if (includedRootNodes.length === 0) {
+    return rootNodes.filter(
+      (node) => node.type === "changelist" && node.changeList.active
+    );
+  }
+  return includedRootNodes;
 });
-const windowBounds = atom<Partial<Bounds>>({
-  key: "rollbackView.windowBounds",
-  default: { height: 500 },
-});
-const initiallyIncludedChanges = atom<ReadonlyArray<AnyChange>>({
-  key: "rollbackView.initiallySelectedChanges",
-  default: [],
-});
-const rootNodes = selector({
-  key: "rollbackView.includedRootNodes",
-  get: ({ get }) => {
-    const selectedChanges = get(initiallyIncludedChanges);
-    const { rootNodes } = get(changesTreeNodesState);
-    const includedRootNodes = rootNodes.filter(
-      (node) =>
-        node.type === "changelist" &&
-        selectedChanges.some((change) =>
-          node.changeList.changes.includes(change)
+
+const initiallyExpandedKeysAtom = atom((get) => {
+  const includedChanges = get(initiallyIncludedChangesAtom);
+  const nodes = get(rootNodesAtom);
+  const expandedKeys = getExpandedToNodesKeys<ChangesViewTreeNode>(
+    (node) => (isGroupNode(node) ? node.children : null),
+    (node) => node.key,
+    nodes,
+    includedChanges.map(getNodeKeyForChange)
+  );
+  return new Set(
+    expandedKeys.length
+      ? expandedKeys
+      : getExpandAllKeys<ChangesViewTreeNode>(
+          (node) => (isGroupNode(node) ? node.children : null),
+          (node) => node.key,
+          nodes
         )
-    );
-    if (includedRootNodes.length === 0) {
-      return rootNodes.filter(
-        (node) => node.type === "changelist" && node.changeList.active
-      );
-    }
-    return includedRootNodes;
-  },
-});
-const initiallyExpandedKeys = selector({
-  key: "rollbackView.initiallyExpandedKeys",
-  get: ({ get }) => {
-    const includedChanges = get(initiallyIncludedChanges);
-    const nodes = get(rootNodes);
-    const expandedKeys = getExpandedToNodesKeys<ChangesViewTreeNode>(
-      (node) => (isGroupNode(node) ? node.children : null),
-      (node) => node.key,
-      nodes,
-      includedChanges.map(getNodeKeyForChange)
-    );
-    return new Set(
-      expandedKeys.length
-        ? expandedKeys
-        : getExpandAllKeys<ChangesViewTreeNode>(
-            (node) => (isGroupNode(node) ? node.children : null),
-            (node) => node.key,
-            nodes
-          )
-    );
-  },
+  );
 });
 
 export const rollbackViewState = {
-  isOpen,
-  windowBounds,
-  initiallyExpandedKeys,
-  initiallyIncludedChanges,
-  rootNodes,
+  isOpenAtom,
+  windowBoundsAtom,
+  initiallyExpandedKeysAtom,
+  initiallyIncludedChangesAtom,
+  rootNodesAtom,
 };

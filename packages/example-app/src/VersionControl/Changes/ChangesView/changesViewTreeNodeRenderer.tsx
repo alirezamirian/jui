@@ -1,5 +1,5 @@
 import React from "react";
-import { useRecoilValue } from "recoil";
+import { useAtomValue } from "jotai";
 import { HighlightedTextValue, ItemLayout } from "@intellij-platform/core";
 
 import {
@@ -7,7 +7,7 @@ import {
   formatFileCount,
   NodeRenderer,
 } from "../ChangesTree/changesTreeNodeRenderers";
-import { repoStatusUpdatingState } from "../../file-status.state";
+import { isAnyRepoStatusUpdatingAtom } from "../../file-status.state";
 import { Delayed } from "../../../Delayed";
 import {
   ChangeListNode,
@@ -51,7 +51,7 @@ const unversionedChangesNodeRenderer: NodeRenderer<UnversionedChangesNode> = (
 });
 
 function LoadingText() {
-  const loading = useRecoilValue(repoStatusUpdatingState);
+  const loading = useAtomValue(isAnyRepoStatusUpdatingAtom);
   return <>{loading && <Delayed>, updating...</Delayed>}</>;
 }
 

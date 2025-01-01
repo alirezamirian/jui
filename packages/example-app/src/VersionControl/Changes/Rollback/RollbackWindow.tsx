@@ -1,15 +1,15 @@
 import React, { Key, useRef, useState } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Selection } from "@react-types/shared";
 import {
-  IconButton,
-  IconButtonWithMenu,
+  ActionButton,
   ActionsProvider,
-  Toolbar,
   Button,
   Checkbox,
   CommonActionId,
   ContextMenuContainer,
+  IconButton,
+  IconButtonWithMenu,
   Item,
   Menu,
   ModalWindow,
@@ -17,17 +17,17 @@ import {
   Section,
   SpeedSearchTreeWithCheckboxes,
   styled,
+  Toolbar,
   TreeNodeCheckbox,
   TreeRefValue,
   useBalloonManager,
   useNestedSelectionState,
   useTreeActions,
   WindowLayout,
-  ActionButton,
 } from "@intellij-platform/core";
 
 import {
-  changesTreeNodesState,
+  changesTreeNodesAtom,
   ChangesViewTreeNode,
 } from "../ChangesView/ChangesView.state";
 import { rollbackViewState } from "./rollbackView.state";
@@ -40,8 +40,7 @@ import {
   isGroupNode,
 } from "../ChangesTree/ChangeTreeNode";
 import { changesViewTreeNodeRenderer } from "../ChangesView/changesViewTreeNodeRenderer";
-import { Change } from "../Change";
-import { allChangesState, useRollbackChanges } from "../changes.state";
+import { allChangesAtom, useRollbackChanges } from "../changes.state";
 
 const StyledContainer = styled.div`
   box-sizing: border-box;
@@ -65,17 +64,17 @@ const StyledLine = styled.div`
 `;
 
 export function RollbackWindow() {
-  const defaultExpandedKeys = useRecoilValue(
-    rollbackViewState.initiallyExpandedKeys
+  const defaultExpandedKeys = useAtomValue(
+    rollbackViewState.initiallyExpandedKeysAtom
   );
-  const initiallyIncludedChangeKeys = useRecoilValue(
-    rollbackViewState.initiallyIncludedChanges
+  const initiallyIncludedChangeKeys = useAtomValue(
+    rollbackViewState.initiallyIncludedChangesAtom
   ).map(getNodeKeyForChange);
-  const { fileCountsMap } = useRecoilValue(changesTreeNodesState);
-  const [windowBounds, setWindowBounds] = useRecoilState(
-    rollbackViewState.windowBounds
+  const { fileCountsMap } = useAtomValue(changesTreeNodesAtom);
+  const [windowBounds, setWindowBounds] = useAtom(
+    rollbackViewState.windowBoundsAtom
   );
-  const rootNodes = useRecoilValue(rollbackViewState.rootNodes);
+  const rootNodes = useAtomValue(rollbackViewState.rootNodesAtom);
   const [selectedKeys, setSelectedKeys] = useState<Selection>(
     new Set<Key>(initiallyIncludedChangeKeys.slice(0, 1))
   );
@@ -95,13 +94,13 @@ export function RollbackWindow() {
       onSelectedKeysChange: setIncludedChangeKeys,
     }
   );
-  const allChanges = useRecoilValue(allChangesState);
+  const allChanges = useAtomValue(allChangesAtom);
   const includedChanges = allChanges.filter((change) =>
     includedChangeKeys.has(getNodeKeyForChange(change))
   );
   const rollbackChanges = useRollbackChanges();
   const balloons = useBalloonManager();
-  const setOpen = useSetRecoilState(rollbackViewState.isOpen);
+  const setOpen = useSetAtom(rollbackViewState.isOpenAtom);
   const close = () => setOpen(false);
 
   const treeRef = useRef<TreeRefValue>(null);

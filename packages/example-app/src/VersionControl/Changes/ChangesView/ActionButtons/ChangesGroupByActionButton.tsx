@@ -1,24 +1,23 @@
-import React from "react";
-import { useRecoilCallback, useRecoilValue } from "recoil";
+import { useAtomValue } from "jotai";
+import { useAtomCallback } from "jotai/utils";
+import React, { useCallback } from "react";
 
 import { GroupByActionButton } from "../../../../GroupByActionButton";
 import {
-  changesViewGroupingsState,
   changesGroupingActiveState,
+  changesViewGroupingsState,
   GroupingIds,
 } from "../ChangesView.state";
 
 export const ChangesGroupByActionButton = (): React.ReactElement => {
   // Grouping is extensible in Intellij platform, but we only support grouping by directory here.
 
-  const groupings = useRecoilValue(changesViewGroupingsState);
+  const groupings = useAtomValue(changesViewGroupingsState);
 
-  const toggleGroup = useRecoilCallback(
-    ({ set }) =>
-      (id: GroupingIds) => {
-        set(changesGroupingActiveState(id), (value) => !value);
-      },
-    []
+  const toggleGroup = useAtomCallback(
+    useCallback((_get, set, id: GroupingIds) => {
+      set(changesGroupingActiveState(id), (value) => !value);
+    }, [])
   );
 
   return <GroupByActionButton groupings={groupings} onToggle={toggleGroup} />;

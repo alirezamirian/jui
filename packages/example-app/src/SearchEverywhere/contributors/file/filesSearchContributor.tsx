@@ -4,15 +4,16 @@ import {
   minusculeMatch,
   TextRange,
 } from "@intellij-platform/core";
-import React from "react";
-import { useRecoilCallback } from "recoil";
+import React, { useEffect, useRef } from "react";
+import { Atom, useAtomValue, useStore } from "jotai";
 import {
-  currentProjectFilesState,
+  currentProjectFilesAtom,
   ProjectFsItem,
 } from "../../../Project/project.state";
 import { useEditorStateManager } from "../../../Editor/editor.state";
 import { useSelectPathInProjectView } from "../../../ProjectView/ProjectView.state";
 import { FileItem } from "./FileItem";
+import { unwrapLatestOrNull } from "../../../atom-utils/unwrapLatest";
 
 export const filesSearchContributor: SearchEverywhereContributor<{
   file: ProjectFsItem;
@@ -22,17 +23,13 @@ export const filesSearchContributor: SearchEverywhereContributor<{
   title: "Files",
   actionId: CommonActionId.GO_TO_FILE,
   use: () => {
-    const getProjectFiles = useRecoilCallback(
-      ({ snapshot }) =>
-        () =>
-          snapshot.getLoadable(currentProjectFilesState).getValue(),
-      []
-    );
+    const projectFiles =
+      useAtomValue(unwrapLatestOrNull(currentProjectFilesAtom)) ?? [];
     const { openPath } = useEditorStateManager();
     const selectPathInProjectView = useSelectPathInProjectView();
     return {
       search: (query: string) =>
-        getProjectFiles()
+        projectFiles
           .map((file) => ({
             matches: minusculeMatch(file.relativePath, query),
             file,

@@ -11,7 +11,7 @@ import {
 } from "@intellij-platform/core";
 import { searchEverywhereState } from "../../searchEverywhere.state";
 import React, { useMemo, useState } from "react";
-import { useRecoilValue } from "recoil";
+import { useAtomValue } from "jotai";
 import { ActionItem } from "./ActionItem";
 import { notImplemented } from "../../../Project/notImplemented";
 
@@ -23,7 +23,7 @@ export const actionsSearchContributor: SearchEverywhereContributor<{
   title: "Actions",
   actionId: CommonActionId.GO_TO_ACTION,
   use: ({ everyWhereAutoSet }: { everyWhereAutoSet: boolean }) => {
-    const contextElement = useRecoilValue(searchEverywhereState.contextElement);
+    const contextElement = useAtomValue(searchEverywhereState.contextElement);
     const [showDisabledActions, setShowDisabledActions] = useState<
       null | boolean
     >(null);

@@ -1,22 +1,19 @@
-import { selector } from "recoil";
-import { ActionDefinition } from "@intellij-platform/core";
+import { atom } from "jotai";
 
-import { activePathExistsState, activePathsState } from "../project.state";
+import { activePathExistsAtom, activePathsAtom } from "../project.state";
 import { projectActionIds } from "../projectActionIds";
 import { notImplemented } from "../notImplemented";
+import { actionAtom } from "../../actionAtom";
 
-export const copyFilenameActionState = selector({
-  key: `action.${projectActionIds.CopyFileName}`,
-  get: ({ get, getCallback }): ActionDefinition => ({
-    id: projectActionIds.CopyFileName,
-    title: "File Name",
-    isDisabled: !get(activePathExistsState),
-    actionPerformed: getCallback(({ snapshot }) => async () => {
-      notImplemented();
-      const activePaths = snapshot.getLoadable(activePathsState).getValue();
-      if (activePaths.length === 0) {
-        return;
-      }
-    }),
-  }),
+export const copyFilenameActionAtom = actionAtom({
+  id: projectActionIds.CopyFileName,
+  title: "File Name",
+  isDisabled: atom((get) => !get(activePathExistsAtom)),
+  actionPerformed: async ({ get }) => {
+    notImplemented();
+    const activePaths = get(activePathsAtom);
+    if (activePaths.length === 0) {
+      return;
+    }
+  },
 });

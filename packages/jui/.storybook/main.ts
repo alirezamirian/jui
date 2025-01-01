@@ -18,6 +18,13 @@ module.exports = {
   ],
   swc: () => ({
     jsc: {
+      experimental: {
+        plugins: [
+          // FIXME: retry adding these plugins after upgrading react and/or storybook
+          // ["@swc-jotai/react-refresh", {}],
+          // ["@swc-jotai/debug-label", {}],
+        ],
+      },
       parser: {
         syntax: "typescript",
         tsx: true,
