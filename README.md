@@ -1,10 +1,11 @@
-## :warning: Work in progress
+> [!IMPORTANT]
+> This library is a work in progress. 
+> The API of components needs to be revisited and made consistent.
+> The documentation is incomplete and may contain unreleased features.
 
-This library is a work in progress. It's not published on npm just yet, and documentation is incomplete. But you can checkout these:
-
-- [A WIP demo](https://alirezamirian.github.io/jui/example-app)
-- [storybook](https://alirezamirian.github.io/jui/storybook/)
-- The current state of the [documentation](https://alirezamirian.github.io/jui/).
+- [Demo](https://alirezamirian.github.io/jui/example-app)
+- [Storybook](https://alirezamirian.github.io/jui/storybook/)
+- [Documentation website](https://alirezamirian.github.io/jui/).
 
 # JUI
 
