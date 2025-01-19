@@ -1,5 +1,5 @@
 import React from "react";
-import { useRecoilValue } from "recoil";
+import { useAtomValue } from "jotai";
 import styled from "styled-components";
 import {
   Divider,
@@ -22,7 +22,7 @@ const StyledLastMessage = styled.div`
   cursor: pointer;
 `;
 export const IdeStatusBar = () => {
-  const cursorPosition = useRecoilValue(editorCursorPositionState);
+  const cursorPosition = useAtomValue(editorCursorPositionState);
 
   return (
     <StatusBar

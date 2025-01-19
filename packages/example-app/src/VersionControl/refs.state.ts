@@ -1,15 +1,13 @@
-import { selectorFamily } from "recoil";
+import { atomFamily } from "jotai/utils";
 import git from "isomorphic-git";
+import { equals } from "ramda";
+import { atomWithRefresh } from "../atom-utils/atomWithRefresh";
 import { fs } from "../fs/fs";
 
-export const resolvedRefState = selectorFamily<
-  string,
-  { repoRoot: string; ref: string }
->({
-  key: "vcs/resolved-branche-ref",
-  get:
-    ({ repoRoot, ref }: { repoRoot: string; ref: string }) =>
-    () => {
+export const resolvedRefAtoms = atomFamily(
+  ({ repoRoot, ref }: { repoRoot: string; ref: string }) =>
+    atomWithRefresh(() => {
       return git.resolveRef({ fs, dir: repoRoot, ref, depth: 3 });
-    },
-});
+    }),
+  equals
+);

@@ -1,17 +1,18 @@
 import React from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useAtom, useAtomValue } from "jotai";
 import { Item, Link, List, ProgressBar, styled } from "@intellij-platform/core";
-import { StyledPlaceholderContainer } from "../styled-components";
-import { useResetFilters, vcsActiveTabKeyState } from "../vcs-logs.state";
-import { useLatestRecoilValue } from "../../../recoil-utils";
-import { CommitsTableRow } from "./CommitsTableRow";
-import { GitRef } from "../GitRef";
-import {
-  allResolvedRefsState,
-  commitsSelectionState,
-  commitsTableRowsState,
-} from "./CommitsTable.state";
 import { StyledListItem } from "@intellij-platform/core/List/StyledListItem";
+import { unwrapLatestOrNull } from "../../../atom-utils/unwrapLatest";
+import { StyledPlaceholderContainer } from "../styled-components";
+import { useResetFilters, vcsActiveTabKeyAtom } from "../vcs-logs.state";
+import { GitRef } from "../GitRef";
+import { CommitsTableRow } from "./CommitsTableRow";
+import {
+  allResolvedRefsAtom,
+  commitsSelectionAtom,
+  commitsTableRowsAtom,
+} from "./CommitsTable.state";
+import { unwrapLatestWithLoading } from "../../../atom-utils/unwrapLatestWithLoading";
 
 // const StyledList = styled(List)`
 //   display: grid;
@@ -37,23 +38,23 @@ const StyledContainer = styled.div`
     min-width: unset;
   }
 `;
-
 const ResolvedRefsContext = React.createContext<Record<string, GitRef[]>>({});
 export function CommitsTable() {
-  const currentTabKey = useRecoilValue(vcsActiveTabKeyState);
+  const currentTabKey = useAtomValue(vcsActiveTabKeyAtom);
   const resetFilters = useResetFilters();
 
-  const [result, commitRowsState] = useLatestRecoilValue(commitsTableRowsState);
-  const rows = result?.rows;
-  const [allResolvedRefs] = useLatestRecoilValue(allResolvedRefsState);
-  const [selectedCommits, setSelectedCommits] = useRecoilState(
-    commitsSelectionState
+  const { value: result, isLoading } = useAtomValue(
+    unwrapLatestWithLoading(commitsTableRowsAtom, null)
   );
+
+  const rows = result?.rows;
+  const allResolvedRefs = useAtomValue(unwrapLatestOrNull(allResolvedRefsAtom));
+  const [selectedCommits, setSelectedCommits] = useAtom(commitsSelectionAtom);
 
   return (
     <ResolvedRefsContext.Provider value={allResolvedRefs ?? {}}>
       <StyledContainer>
-        {commitRowsState === "loading" && (
+        {isLoading && (
           <StyledProgressBar aria-label="Loading commits" isIndeterminate />
         )}
         {rows && rows.length > 0 && (
@@ -85,7 +86,7 @@ export function CommitsTable() {
             )}
           </List>
         )}
-        {commitRowsState === "hasValue" && rows && rows.length === 0 && (
+        {rows && rows.length === 0 && (
           <StyledPlaceholderContainer>
             No commits matching filters
             <Link onPress={() => resetFilters(currentTabKey)}>

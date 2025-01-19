@@ -1,3 +1,6 @@
+import { useAtomValue } from "jotai";
+import React from "react";
+
 import {
   ActionTooltip,
   PlatformIcon,
@@ -5,15 +8,14 @@ import {
   StatusBarWidget,
   TooltipTrigger,
 } from "@intellij-platform/core";
-import React from "react";
-
-import { activeFileRepoHeadState } from "../VersionControl/active-file.state";
-import { useLatestRecoilValue } from "../recoil-utils";
+import { activeFileRepoHeadAtom } from "../VersionControl/active-file.state";
 import { BranchesPopup } from "../VersionControl/Branches/BranchesPopup";
 import { useShowGitTipIfNeeded } from "../VersionControl/useShowGitTipIfNeeded";
 
+import { unwrapLatestOrNull } from "../atom-utils/unwrapLatest";
+
 export function BranchPopupTrigger() {
-  const [gitRepoHead] = useLatestRecoilValue(activeFileRepoHeadState);
+  const gitRepoHead = useAtomValue(unwrapLatestOrNull(activeFileRepoHeadAtom));
   const maybeShowGitCloneTip = useShowGitTipIfNeeded();
 
   return (

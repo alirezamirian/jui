@@ -30,27 +30,27 @@ env:
   IS_MANUAL_WITH_PERCY: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.with_percy == 'true' }}
 
 jobs:
-  define_environment:
+  define_env:
     if: "!contains(github.event.head_commit.message, 'SKIP_CI')"
     runs-on: ubuntu-latest
     outputs:
       should_run_percy: ${{ steps.set-output.outputs.should_run_percy }}
     steps:
-      - name: Set SHOULD_RUN_PERCY
+      - name: Set should_run_percy
         id: set-output
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.with_percy }}" == "true" ]]; then
-            echo "should_run_percy=true" >> $GITHUB_ENV
+            echo "should_run_percy=true" >> $GITHUB_OUTPUT
           elif [[ "${{ env.IS_PR_WITH_PERCY }}" == "true" || "${{ env.IS_PR_JUST_MERGED }}" == "true" ]]; then
-            echo "should_run_percy=true" >> $GITHUB_ENV
+            echo "should_run_percy=true" >> $GITHUB_OUTPUT
           else
-            echo "should_run_percy=false" >> $GITHUB_ENV
+            echo "should_run_percy=false" >> $GITHUB_OUTPUT
           fi
-          echo "should_run_percy=${{ steps.set-output.outputs.should_run_percy }}"
+          echo "Outputs:"
+          cat $GITHUB_OUTPUT
 
   install_and_cache_dependencies:
     runs-on: ubuntu-latest
-    needs: define_environment
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
@@ -105,7 +105,9 @@ jobs:
 
   cypress_tests:
     if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.run_component_tests == 'true' }}
-    needs: install_and_cache_dependencies
+    needs:
+      - define_env
+      - install_and_cache_dependencies
     strategy:
       fail-fast: true
       matrix:
@@ -135,7 +137,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Run Cypress Tests ✅
-        if: ${{ env.SHOULD_RUN_PERCY == 'true' }}
+        if: ${{ needs.define_env.outputs.should_run_percy == 'true' }}
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
           # Without this, we would need to "finalize" percy build explicitly. More info: https://docs.percy.io/docs/parallel-test-suites
@@ -146,14 +148,16 @@ jobs:
         run: yarn run cypress:component --record --parallel --group component
 
       - name: Run Cypress Tests (without percy) ✅
-        if: ${{ env.SHOULD_RUN_PERCY != 'true' }}
+        if: ${{ needs.define_env.outputs.should_run_percy != 'true' }}
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         run: yarn run cypress:component --record --parallel --group component
 
   cypress_tests_e2e:
     if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.run_e2e_tests == 'true' }}
-    needs: install_and_cache_dependencies
+    needs:
+      - define_env
+      - install_and_cache_dependencies
     strategy:
       fail-fast: true
       matrix:
@@ -181,7 +185,7 @@ jobs:
         run: yarn workspace jui-example-app run build
 
       - name: Run Cypress Tests ✅
-        if: ${{ env.SHOULD_RUN_PERCY == 'true' }}
+        if: ${{ needs.define_env.outputs.should_run_percy == 'true' }}
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
           # Without this, we would need to "finalize" percy build explicitly. More info: https://docs.percy.io/docs/parallel-test-suites
@@ -194,7 +198,7 @@ jobs:
           yarn run cypress:e2e --record --parallel --group e2e
 
       - name: Run Cypress Tests (without percy) ✅
-        if: ${{ env.SHOULD_RUN_PERCY != 'true' }}
+        if: ${{ needs.define_env.outputs.should_run_percy != 'true' }}
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         run: |

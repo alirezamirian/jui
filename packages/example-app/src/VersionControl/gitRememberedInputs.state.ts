@@ -1,90 +1,116 @@
-import { atom } from "recoil";
-import { persistentAtomEffect } from "../Project/persistence/persistentAtomEffect";
-import { array, object, string } from "@recoiljs/refine";
-import { ensureArray, MaybeArray } from "../ensureArray";
-
-/**
- * The shape of the <option> tag in the persistence xml file.
- */
-type VisitedUrlsOption = {
-  list: {
-    UrlAndUserName: MaybeArray<{
-      option: [
-        { "@name": "url"; "@value": string },
-        { "@name": "userName"; "@value": string }
-      ];
-    }>;
-  };
-};
+import { z } from "zod";
+import { atomWithPersistence } from "../persistence/atomWithPersistence";
+import { list, maybeArray } from "../persistence/schema-utils";
+import { focusAtom } from "jotai-optics";
 
 interface VisitedUrl {
   url: string;
   username?: string;
 }
 
-const visitedUrlsChecker = array(
-  object({
-    url: string(),
-    username: string(),
-  })
+const visitedUrlsSchema = z.object({
+  "@name": z.enum(["visitedUrls"]),
+  list: list(
+    z.object({
+      option: maybeArray(
+        z.union([
+          z.object({
+            "@name": z.enum(["url"]),
+            "@value": z.string(),
+          }),
+          z.object({
+            "@name": z.enum(["userName"]),
+            "@value": z.string(),
+          }),
+        ])
+      ),
+    }),
+    "UrlAndUserName"
+  ),
+});
+const cloneParentDirSchema = z.object({
+  "@name": z.enum(["cloneParentDir"]),
+  "@value": z.string(),
+});
+const gitRememberedInputsSchema = z.object({
+  option: maybeArray(z.union([visitedUrlsSchema, cloneParentDirSchema])),
+});
+
+type VisitedUrlsOption = (typeof visitedUrlsSchema)["_output"];
+type CloneParentDirOption = (typeof cloneParentDirSchema)["_output"];
+
+const gitRememberedInputsAtom = atomWithPersistence(
+  {
+    visitedUrls: [],
+    cloneParentDir: "",
+  },
+  {
+    storageFile: "vcs.xml", // GitRememberedInputs is user-level configuration, kept here temporarily
+    componentName: "GitRememberedInputs",
+    schema: gitRememberedInputsSchema,
+    read: ({ option: options } = { option: [] }) => {
+      return {
+        visitedUrls:
+          options
+            ?.find(
+              (option): option is VisitedUrlsOption =>
+                option["@name"] === "visitedUrls"
+            )
+            ?.list.UrlAndUserName.map(
+              ({ option }): { url: string; username?: string | undefined } => ({
+                url: option.find((option) => option["@name"] === "url")?.[
+                  "@value"
+                ]!,
+                username: option.find(
+                  (option) => option["@name"] === "userName"
+                )?.["@value"],
+              })
+            )
+            .filter((i) => i.url) ?? [],
+        cloneParentDir:
+          options?.find(
+            (option): option is CloneParentDirOption =>
+              option["@name"] === "cloneParentDir"
+          )?.["@value"] ?? "",
+      };
+    },
+    write: (value, state): (typeof gitRememberedInputsSchema)["_output"] => {
+      return {
+        ...state,
+        option:
+          state.option?.map((option) => {
+            if (option["@name"] === "cloneParentDir" && value.cloneParentDir) {
+              return {
+                "@name": "cloneParentDir",
+                "@value": value.cloneParentDir,
+              };
+            }
+            if (option["@name"] === "visitedUrls" && value.visitedUrls) {
+              return {
+                "@name": "visitedUrls",
+                list: {
+                  UrlAndUserName: value.visitedUrls.map(
+                    ({ url, username }) => ({
+                      option: [
+                        { "@name": "url", "@value": url },
+                        { "@name": "userName", "@value": username ?? "" },
+                      ],
+                    })
+                  ),
+                },
+              };
+            }
+            return option;
+          }) ?? [],
+      };
+    },
+  }
 );
 
-export const gitVisitedUrlsState = atom<ReadonlyArray<VisitedUrl>>({
-  key: "git.rememberedInputs.visitedUrls",
-  default: [],
-  effects: [
-    persistentAtomEffect.option<ReadonlyArray<VisitedUrl>, VisitedUrlsOption>({
-      storageFile: "vcs.xml", // GitRememberedInputs is user-level configuration, kept here temporarily
-      componentName: "GitRememberedInputs",
-      optionName: "visitedUrls",
-      refine: visitedUrlsChecker,
-      read: (option) => {
-        return ensureArray(option?.list?.UrlAndUserName)
-          .map(({ option }) => ({
-            url: ensureArray(option).find(
-              (option) => option["@name"] === "url"
-            )?.["@value"]!,
-            username: ensureArray(option).find(
-              (option) => option["@name"] === "userName"
-            )?.["@value"],
-          }))
-          .filter((i) => i.url);
-      },
-      update: (value) => (option) => {
-        return {
-          ...option,
-          list: {
-            UrlAndUserName: value.map(({ url, username }) => ({
-              option: [
-                { "@name": "url", "@value": url },
-                { "@name": "userName", "@value": username ?? "" },
-              ],
-            })),
-          },
-        };
-      },
-    }),
-  ],
-});
+export const gitVisitedUrlsAtom = focusAtom(gitRememberedInputsAtom, (optic) =>
+  optic.path("visitedUrls")
+);
 
-export const cloneParentDirState = atom<string>({
-  key: "git.rememberedInputs.cloneParentDir",
-  default: "",
-  effects: [
-    persistentAtomEffect.option<string, { "@value": string }>({
-      storageFile: "vcs.xml", // GitRememberedInputs is user-level configuration, kept here temporarily
-      componentName: "GitRememberedInputs",
-      optionName: "cloneParentDir",
-      refine: string(),
-      read: (option) => {
-        return option?.["@value"] ?? "";
-      },
-      update: (value) => (option) => {
-        return {
-          ...option,
-          "@value": value,
-        };
-      },
-    }),
-  ],
-});
+export const cloneParentDirAtom = focusAtom(gitRememberedInputsAtom, (optic) =>
+  optic.path("cloneParentDir")
+);

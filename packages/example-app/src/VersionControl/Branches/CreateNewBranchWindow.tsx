@@ -8,10 +8,10 @@ import {
   WindowLayout,
 } from "@intellij-platform/core";
 import React, { FormEvent, ReactNode, useState } from "react";
-import { useRecoilValue } from "recoil";
-import { activeFileRepoBranchesState } from "../active-file.state";
-import { useCreateBranch } from "./branches.state";
+import { useAtomValue } from "jotai";
 import { Errors } from "isomorphic-git";
+import { activeFileRepoBranchesAtom } from "../active-file.state";
+import { useCreateBranch } from "./branches.state";
 import {
   BranchNameError,
   cleanUpBranchName,
@@ -52,11 +52,11 @@ const ErrorMessages: Record<
 export function CreateNewBranchWindow({ close }: { close: () => void }) {
   const [checkout, setCheckout] = useState(true);
   const [overwrite, setOverwrite] = useState(false);
-  const branches = useRecoilValue(activeFileRepoBranchesState);
+  const branches = useAtomValue(activeFileRepoBranchesAtom);
   const [isErrorVisible, setIsErrorVisible] = useState(false);
   const balloonManager = useBalloonManager();
   const createBranch = useCreateBranch();
-  const currentBranchName = branches.currentBranch?.name;
+  const currentBranchName = branches?.currentBranch?.name;
   const [branchName, setBranchName] = useState(currentBranchName || "");
 
   const error = validateBranchName(branches, branchName);
@@ -64,7 +64,7 @@ export function CreateNewBranchWindow({ close }: { close: () => void }) {
   const validationState = !isValid && isErrorVisible ? "error" : "valid";
 
   const create = () => {
-    if (isValid) {
+    if (isValid && branches?.repoRoot) {
       createBranch(branches.repoRoot, branchName, checkout)
         .catch((e) => {
           if (e instanceof Errors.AlreadyExistsError) {

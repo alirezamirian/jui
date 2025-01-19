@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useAtom, useSetAtom, useAtomValue } from "jotai";
 import {
   IconButton,
   ActionDefinition,
@@ -33,7 +33,6 @@ import {
 import { actionsSearchContributor } from "./contributors/action/actionsSearchContributor";
 import { filesSearchContributor } from "./contributors/file/filesSearchContributor";
 import { SearchEverywhereActionIds } from "./SearchEverywhereActionIds";
-import { useRecoilInitialValue } from "../recoil-utils";
 
 const StyledHeader = styled.div`
   display: flex;
@@ -125,13 +124,13 @@ const LOAD_MORE_ITEM_KEY = "LOAD_MORE_ITEM_KEY";
  * TODO: implement history navigation
  */
 export function SearchEverywherePopup() {
-  const setOpen = useSetRecoilState(searchEverywhereState.isOpen);
-  const [tab, setTab] = useRecoilState(searchEverywhereState.tab);
+  const setOpen = useSetAtom(searchEverywhereState.isOpen);
+  const [tab, setTab] = useAtom(searchEverywhereState.tab);
   const [everyWhereAutoSet, setEveryWhereAutoSet] = useState(false);
   const [pattern, setPattern] = useState(
-    useRecoilInitialValue(searchEverywhereState.initialSearchQuery(tab))
+    useAtomValue(searchEverywhereState.initialSearchQuery(tab))
   );
-  const persistInitialSearchQuery = useSetRecoilState(
+  const persistInitialSearchQuery = useSetAtom(
     searchEverywhereState.initialSearchQuery(tab)
   );
 
@@ -319,7 +318,7 @@ export function SearchEverywherePopup() {
   const tips = useTips();
   return (
     <ContentAwarePopup
-      persistedBoundsState={searchEverywhereState.bounds}
+      persistedBoundsAtom={searchEverywhereState.bounds}
       hasContent={Boolean(pattern)}
       noContentHeight={59}
       minWidth={670}

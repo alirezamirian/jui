@@ -1,13 +1,7 @@
-import React, { HTMLAttributes } from "react";
-import {
-  atom,
-  isRecoilValue,
-  RecoilValue,
-  selector,
-  useRecoilCallback,
-  useRecoilState,
-  useRecoilValue,
-} from "recoil";
+import React, { HTMLAttributes, useCallback } from "react";
+import { Atom, atom, useAtom, useAtomValue } from "jotai";
+import { useAtomCallback } from "jotai/utils";
+
 import {
   ActionButton,
   ActionGroupMenu,
@@ -31,21 +25,20 @@ import { CommitChangedFiles } from "../CommitChanges/CommitsChangedFiles";
 import { CommitDetails } from "./CommitDetails";
 import { defaultChangeGroupings } from "../../Changes/ChangesTree/changesGroupings";
 import {
-  changesGroupingActiveState,
-  commitChangesTreeRefState,
+  changesGroupingActiveAtoms,
+  commitChangesTreeRefAtom,
 } from "../CommitChanges/CommitsChangedFiles.state";
 import {
-  vcsLogTabShowCommitDetailsInCurrentTabState,
-  vcsLogTabShowCommitDetailsState,
+  vcsLogTabShowCommitDetailsInCurrentTabAtom,
+  vcsLogTabShowCommitDetailsAtoms,
 } from "../vcs-logs.state";
 import { VcsActionIds } from "../../VcsActionIds";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
 import { useRedefineAction } from "../../../useRedefineAction";
 
-const splitViewSizeState = atom({
-  key: "vcs/toolwindow/splitViewSize",
-  default: 0.5,
-});
+import { isAtom } from "../../../atom-utils/isAtom";
+
+const splitViewSizeState = atom(0.5);
 
 const StyledContainer = styled.div`
   display: flex;
@@ -53,20 +46,17 @@ const StyledContainer = styled.div`
   height: 100%;
 `;
 
-const groupingState = selector({
-  key: "vcs/log/commits/changes/groupingState",
-  get: ({ get }) => {
-    const groupings = defaultChangeGroupings.filter((grouping) =>
-      isRecoilValue(grouping.isAvailable)
-        ? get(grouping.isAvailable)
-        : grouping.isAvailable
-    );
-    return groupings.map((grouping) => ({
-      ...grouping,
-      key: `groupBy:${grouping.id}`,
-      isActive: get(changesGroupingActiveState(grouping.id)),
-    }));
-  },
+const groupingAtom = atom((get) => {
+  const groupings = defaultChangeGroupings.filter((grouping) =>
+    isAtom(grouping.isAvailable)
+      ? get(grouping.isAvailable)
+      : grouping.isAvailable
+  );
+  return groupings.map((grouping) => ({
+    ...grouping,
+    key: `groupBy:${grouping.id}`,
+    isActive: get(changesGroupingActiveAtoms(grouping.id)),
+  }));
 });
 
 const GROUP_BY_ACTION_GROUP_ID = "Vcs.log.detailsView.groupBy";
@@ -80,17 +70,19 @@ const groupingActionId = (grouping: { id: string }) => {
 };
 
 export function VcsLogDetailsView({ tabKey }: { tabKey: string }) {
-  const [splitViewSize, setSplitViewSize] = useRecoilState(splitViewSizeState);
-  const isDetailsVisible = useRecoilValue(
-    vcsLogTabShowCommitDetailsState(tabKey)
+  const [splitViewSize, setSplitViewSize] = useAtom(splitViewSizeState);
+  const isDetailsVisible = useAtomValue(
+    vcsLogTabShowCommitDetailsAtoms(tabKey)
   );
-  const toggleGroupBy = useRecoilCallback(({ set }) => (id: string) => {
-    set(changesGroupingActiveState(id), (currentValue) => !currentValue);
-  });
+  const toggleGroupBy = useAtomCallback(
+    useCallback((get, set, id: string) => {
+      set(changesGroupingActiveAtoms(id), (currentValue) => !currentValue);
+    }, [])
+  );
   const createActionGroup = useCreateDefaultActionGroup();
-  const availableGroupings = useRecoilValue(groupingState);
+  const availableGroupings = useAtomValue(groupingAtom);
 
-  const treeRef = useRecoilValue(commitChangesTreeRefState);
+  const treeRef = useAtomValue(commitChangesTreeRefAtom);
   const actions = [
     createActionGroup({
       id: VIEW_OPTIONS_ACTION_GROUP_ID,
@@ -102,6 +94,7 @@ export function VcsLogDetailsView({ tabKey }: { tabKey: string }) {
           title: "Group By",
           menuPresentation: "titledSection",
           icon: <PlatformIcon icon="actions/groupBy.svg" />,
+
           children: availableGroupings.map((grouping) => ({
             id: groupingActionId(grouping),
             useShortcutsOf: grouping.useShortcutOf,
@@ -193,22 +186,21 @@ export function VcsLogDetailsView({ tabKey }: { tabKey: string }) {
   );
 }
 
-const toggleActionsState: { [actionId: string]: RecoilValue<boolean> } = {
-  [SHOW_DETAILS_ACTION_ID]: vcsLogTabShowCommitDetailsInCurrentTabState,
+const toggleActionAtoms: { [actionId: string]: Atom<boolean> } = {
+  [SHOW_DETAILS_ACTION_ID]: vcsLogTabShowCommitDetailsInCurrentTabAtom,
   ...Object.fromEntries(
     defaultChangeGroupings.map((grouping) => [
       groupingActionId(grouping),
-      changesGroupingActiveState(grouping.id),
+      changesGroupingActiveAtoms(grouping.id),
     ])
   ),
 };
-const selectedKeysState = selector({
-  key: "vcs/log/commits/detailsView/viewOptionsSelectedKeys",
-  get: ({ get }) =>
-    Object.entries(toggleActionsState)
-      .filter(([, state]) => get(state))
-      .map(([actionId]) => actionId),
-});
+
+const selectedKeysAtom = atom((get) =>
+  Object.entries(toggleActionAtoms)
+    .filter(([, state]) => get(state))
+    .map(([actionId]) => actionId)
+);
 
 function VcsLogsDetailsViewOptionsMenu({
   menuProps,
@@ -216,7 +208,7 @@ function VcsLogsDetailsViewOptionsMenu({
   menuProps: Omit<HTMLAttributes<HTMLDivElement>, "autoFocus">;
 }) {
   const group = useActionGroup(VIEW_OPTIONS_ACTION_GROUP_ID);
-  const selectedKeys = useRecoilValue(selectedKeysState);
+  const selectedKeys = useAtomValue(selectedKeysAtom);
   return (
     group && (
       <ActionGroupMenu actionGroup={group}>

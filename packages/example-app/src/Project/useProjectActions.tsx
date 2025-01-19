@@ -1,4 +1,5 @@
-import { useRecoilCallback, useRecoilValue } from "recoil";
+import { Getter, Setter, useAtomValue } from "jotai";
+import { useAtomCallback } from "jotai/utils";
 import {
   ActionContext,
   ActionDefinition,
@@ -6,29 +7,32 @@ import {
   useCreateDefaultActionGroup,
 } from "@intellij-platform/core";
 
-import { createFileActionState } from "./actions/createFileAction";
+import { createFileActionAtom } from "./actions/createFileAction";
 import { searchEverywhereState } from "../SearchEverywhere/searchEverywhere.state";
-import { createDirectoryActionState } from "./actions/createDirectoryAction";
+import { createDirectoryActionAtom } from "./actions/createDirectoryAction";
 import { projectActionIds } from "./projectActionIds";
-import { copyFilenameActionState } from "./actions/copyFilename";
-import { copyAbsolutePathActionState } from "./actions/copyAbsolutePath";
-import { copyPathFromRepositoryRootActionState } from "../VersionControl/actions/copyPathFromRepositoryRoot";
+import { copyFilenameActionAtom } from "./actions/copyFilename";
+import { copyAbsolutePathActionAtom } from "./actions/copyAbsolutePath";
+import { copyPathFromRepositoryRootActionAtom } from "../VersionControl/actions/copyPathFromRepositoryRoot";
+
+const openSearchEverywhereCallback = (
+  _get: Getter,
+  set: Setter,
+  { element }: ActionContext,
+  tab: string
+) => {
+  if (element) {
+    set(searchEverywhereState.isOpen, true);
+    set(searchEverywhereState.tab, tab);
+    set(searchEverywhereState.contextElement, element);
+  }
+};
 
 export function useProjectActions(): ActionDefinition[] {
-  const openSearchEverywhere = useRecoilCallback(
-    ({ set }) =>
-      ({ element }: ActionContext, tab: string) => {
-        if (element) {
-          set(searchEverywhereState.isOpen, true);
-          set(searchEverywhereState.tab, tab);
-          set(searchEverywhereState.contextElement, element);
-        }
-      },
-    []
-  );
+  const openSearchEverywhere = useAtomCallback(openSearchEverywhereCallback);
   const createDefaultActionGroup = useCreateDefaultActionGroup();
-  const newFileAction = useRecoilValue(createFileActionState);
-  const newDirectoryAction = useRecoilValue(createDirectoryActionState);
+  const newFileAction = useAtomValue(createFileActionAtom);
+  const newDirectoryAction = useAtomValue(createDirectoryActionAtom);
   const newElementActionGroup = createDefaultActionGroup({
     id: projectActionIds.NewElement,
     title: "New...",
@@ -51,11 +55,11 @@ export function useProjectActions(): ActionDefinition[] {
         menuPresentation: "section",
         children: [
           // FIXME: actions are not triggered via UI
-          useRecoilValue(copyAbsolutePathActionState),
-          useRecoilValue(copyFilenameActionState),
+          useAtomValue(copyAbsolutePathActionAtom),
+          useAtomValue(copyFilenameActionAtom),
           // FIXME: should be able to define divider here
           // new Divider(),
-          useRecoilValue(copyPathFromRepositoryRootActionState),
+          useAtomValue(copyPathFromRepositoryRootActionAtom),
         ],
       }),
     ],

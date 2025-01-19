@@ -1,22 +1,22 @@
 import React, { CSSProperties, RefObject, useMemo } from "react";
+import { useAtomValue } from "jotai";
 import { css, styled, Tooltip, TooltipTrigger } from "@intellij-platform/core";
-import { ReadCommitResult } from "isomorphic-git";
 
+import { ReadCommitResult } from "isomorphic-git";
 import { GitRef } from "../GitRef";
-import { RefLabel, RefIcon } from "../RefLabel";
-import { useRecoilValue } from "recoil";
+import { RefIcon, RefLabel } from "../RefLabel";
 import {
   authorColumn,
   dateColumn,
   hashColumn,
-  vcsTableColumnsVisibilityState,
-  vcsTableHighlightMyCommitsState,
-  vcsTableReferencesOnTheLeftState,
-  vcsTableShowCommitTimestampState,
+  vcsTableColumnsVisibilityAtoms,
+  vcsTableHighlightMyCommitsAtom,
+  vcsTableReferencesOnTheLeftAtom,
+  vcsTableShowCommitTimestampAtom,
 } from "./CommitsTable.state";
 import {
   areSamePerson,
-  gitRepoUserState,
+  gitRepoUserAtoms,
   GitUser,
 } from "../../git-users.state";
 import {
@@ -81,12 +81,12 @@ const useCurrentUserHighlightStyle = ({
   repoRoot: string;
   author: GitUser;
 }): CSSProperties => {
-  const currentUser = useRecoilValue(gitRepoUserState(repoRoot));
-  const shouldHighlightCurrentUserCommits = useRecoilValue(
-    vcsTableHighlightMyCommitsState
+  const currentUser = useAtomValue(gitRepoUserAtoms(repoRoot));
+  const shouldHighlightCurrentUserCommits = useAtomValue(
+    vcsTableHighlightMyCommitsAtom
   );
   // for now assuming only a single table can be visible, and that's current tab's.
-  const userFilter = useRecoilValue(vcsLogFilterCurrentTab.user);
+  const userFilter = useAtomValue(vcsLogFilterCurrentTab.user);
   // single user case is not considered a special case, like it is in the original impl
   const shouldHighlight =
     shouldHighlightCurrentUserCommits &&
@@ -108,16 +108,16 @@ export function CommitsTableRow({
   readCommitResult: ReadCommitResult;
   refs: GitRef[] | undefined;
 }) {
-  const showCommitTimestamp = useRecoilValue(vcsTableShowCommitTimestampState);
-  const referencesOnTheLeft = useRecoilValue(vcsTableReferencesOnTheLeftState);
-  const isAuthorVisible = useRecoilValue(
-    vcsTableColumnsVisibilityState(authorColumn.id)
+  const showCommitTimestamp = useAtomValue(vcsTableShowCommitTimestampAtom);
+  const referencesOnTheLeft = useAtomValue(vcsTableReferencesOnTheLeftAtom);
+  const isAuthorVisible = useAtomValue(
+    vcsTableColumnsVisibilityAtoms(authorColumn.id)
   );
-  const isDateVisible = useRecoilValue(
-    vcsTableColumnsVisibilityState(dateColumn.id)
+  const isDateVisible = useAtomValue(
+    vcsTableColumnsVisibilityAtoms(dateColumn.id)
   );
-  const isHashVisible = useRecoilValue(
-    vcsTableColumnsVisibilityState(hashColumn.id)
+  const isHashVisible = useAtomValue(
+    vcsTableColumnsVisibilityAtoms(hashColumn.id)
   );
 
   const highlightStyles = useCurrentUserHighlightStyle({ author, repoRoot });

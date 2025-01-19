@@ -1,20 +1,21 @@
-import React from "react";
-import { useRecoilCallback, useRecoilValue } from "recoil";
+import React, { useCallback } from "react";
+import { useAtomValue } from "jotai";
+import { useAtomCallback } from "jotai/utils";
 import path from "path";
 import { ActionDefinition, PlatformIcon } from "@intellij-platform/core";
 
 import { notImplemented } from "../../Project/notImplemented";
 import {
-  changesTreeNodesState,
-  changesUnderSelectedKeys,
+  changesTreeNodesAtom,
+  changesUnderSelectedKeysAtom,
   ChangesViewTreeNode,
-  expandedKeysState,
-  includedChangeKeysState,
+  expandedKeysAtom,
+  includedChangeKeysAtom,
   openRollbackWindowForSelectionCallback,
   queueCheckInCallback,
-  selectedKeysState,
+  selectedKeysAtom,
 } from "./ChangesView/ChangesView.state";
-import { allChangesState } from "./changes.state";
+import { allChangesAtom } from "./changes.state";
 import { IntlMessageFormat } from "intl-messageformat";
 import { getExpandedToNodesKeys } from "@intellij-platform/core/utils/tree-utils";
 
@@ -23,21 +24,21 @@ import { VcsActionIds } from "../VcsActionIds";
 import { useToolWindowManager } from "../../Project/useToolWindowManager";
 import { focusCommitMessage } from "./ChangesView/ChangesViewSplitter";
 import {
-  activePathsState,
-  currentProjectFilesState,
+  activePathsAtom,
+  currentProjectFilesAtom,
 } from "../../Project/project.state";
 import { useEditorStateManager } from "../../Editor/editor.state";
 import { getNodeKeyForChange, isGroupNode } from "./ChangesTree/ChangeTreeNode";
 import { Change } from "./Change";
-import { useLatestRecoilValue } from "../../recoil-utils";
 import { findRootPaths } from "../../path-utils";
 import { useRefreshRepoStatuses } from "../file-status.state";
 import { activeChangeListState } from "./change-lists.state";
 
+import { unwrapLatestOrNull } from "../../atom-utils/unwrapLatest";
+
 export const useChangesViewActionDefinitions = (): ActionDefinition[] => {
-  const openRollbackWindow = useRecoilCallback(
-    openRollbackWindowForSelectionCallback,
-    []
+  const openRollbackWindow = useAtomCallback(
+    openRollbackWindowForSelectionCallback
   );
   const refresh = useRefreshRepoStatuses();
 
@@ -94,13 +95,15 @@ const commitDirMsg = new IntlMessageFormat(
 );
 
 function useCheckInActionDefinition(): ActionDefinition {
-  const queueCheckIn = useRecoilCallback(queueCheckInCallback, []);
+  const queueCheckIn = useAtomCallback(queueCheckInCallback);
   const toolWindowManager = useToolWindowManager();
-  const activePaths = useRecoilValue(activePathsState);
-  const [projectFiles] = useLatestRecoilValue(currentProjectFilesState);
+  const activePaths = useAtomValue(activePathsAtom);
+  const projectFiles = useAtomValue(
+    unwrapLatestOrNull(currentProjectFilesAtom)
+  );
   const roots = findRootPaths(activePaths);
 
-  const allChanges = useRecoilValue(allChangesState);
+  const allChanges = useAtomValue(allChangesAtom);
   const containsChange = roots.some((root) =>
     allChanges.find((change) => isPathInside(root, Change.path(change)))
   );
@@ -126,41 +129,34 @@ function useCheckInActionDefinition(): ActionDefinition {
 function useCheckInProjectAction(): ActionDefinition {
   const toolWindowManager = useToolWindowManager();
 
-  const queueChanges = useRecoilCallback(
-    ({ snapshot, set }) =>
-      () => {
-        const includedChangesKeys = snapshot
-          .getLoadable(includedChangeKeysState)
-          .getValue();
-        let keyToSelect = includedChangesKeys.values().next().value;
-        if (includedChangesKeys.size === 0) {
-          const allKeys = snapshot
-            .getLoadable(activeChangeListState)
-            .getValue()
-            ?.changes.map(getNodeKeyForChange);
-          set(includedChangeKeysState, new Set(allKeys));
-          keyToSelect = allKeys?.[0];
-        }
-        if (keyToSelect) {
-          const { rootNodes } = snapshot
-            .getLoadable(changesTreeNodesState)
-            .getValue();
-          set(
-            expandedKeysState,
-            new Set([
-              ...snapshot.getLoadable(expandedKeysState).getValue(),
-              ...getExpandedToNodesKeys(
-                (node) => (isGroupNode(node) ? node.children : null),
-                (node) => node.key,
-                rootNodes as ChangesViewTreeNode[],
-                [keyToSelect]
-              ),
-            ])
-          );
-          set(selectedKeysState, new Set([keyToSelect]));
-        }
-      },
-    []
+  const queueChanges = useAtomCallback(
+    useCallback((get, set) => {
+      const includedChangesKeys = get(includedChangeKeysAtom);
+      let keyToSelect = includedChangesKeys.values().next().value;
+      if (includedChangesKeys.size === 0) {
+        const allKeys = get(activeChangeListState)?.changes.map(
+          getNodeKeyForChange
+        );
+        set(includedChangeKeysAtom, new Set(allKeys));
+        keyToSelect = allKeys?.[0];
+      }
+      if (keyToSelect) {
+        const { rootNodes } = get(changesTreeNodesAtom);
+        set(
+          expandedKeysAtom,
+          new Set([
+            ...get(expandedKeysAtom),
+            ...getExpandedToNodesKeys(
+              (node) => (isGroupNode(node) ? node.children : null),
+              (node) => node.key,
+              rootNodes as ChangesViewTreeNode[],
+              [keyToSelect]
+            ),
+          ])
+        );
+        set(selectedKeysAtom, new Set([keyToSelect]));
+      }
+    }, [])
   );
 
   return {
@@ -176,7 +172,7 @@ function useCheckInProjectAction(): ActionDefinition {
 
 function useJumpToSourceAction(): ActionDefinition {
   const editorStateManager = useEditorStateManager();
-  const selectedChanges = useRecoilValue(changesUnderSelectedKeys);
+  const selectedChanges = useAtomValue(changesUnderSelectedKeysAtom);
 
   return {
     id: VcsActionIds.JUMP_TO_SOURCE,
@@ -194,7 +190,7 @@ function useJumpToSourceAction(): ActionDefinition {
 }
 
 function useChangeListActionDefinitions(): ActionDefinition[] {
-  const selectedChanges = useRecoilValue(changesUnderSelectedKeys);
+  const selectedChanges = useAtomValue(changesUnderSelectedKeysAtom);
 
   const actions: ActionDefinition[] = [
     {

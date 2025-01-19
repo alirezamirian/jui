@@ -1,12 +1,11 @@
 import { groupBy } from "ramda";
-import { useRecoilValue } from "recoil";
+import { useAtomValue } from "jotai";
 import React, { ReactNode } from "react";
 
 import { Link, styled, Tooltip, TooltipTrigger } from "@intellij-platform/core";
 import { StyledPlaceholderContainer } from "../styled-components";
 import { RepoColorIcon } from "../../Changes/StyledRepoColorSquare";
-import { vcsRootsState } from "../../file-status.state";
-import { useLatestRecoilValue } from "../../../recoil-utils";
+import { vcsRootsAtom } from "../../file-status.state";
 import {
   formatCommitDate,
   formatCommitTime,
@@ -14,11 +13,13 @@ import {
   shortenOid,
 } from "../commit-utils";
 import {
-  allResolvedRefsState,
-  selectedCommitState,
+  allResolvedRefsAtom,
+  selectedCommitAtom,
 } from "../CommitsView/CommitsTable.state";
 import { RefIconGroup } from "../RefLabel";
 import { GitRef } from "../GitRef";
+
+import { unwrapLatestOrNull } from "../../../atom-utils/unwrapLatest";
 
 const StyledContainer = styled.div`
   padding: 0.875rem;
@@ -57,9 +58,11 @@ const StyledRefsContainer = styled.span`
 `;
 
 export function CommitDetails() {
-  const [firstSelectedCommit] = useLatestRecoilValue(selectedCommitState);
-  const [allResolvedRefs] = useLatestRecoilValue(allResolvedRefsState);
-  const isMultiRepo = useRecoilValue(vcsRootsState).length > 0;
+  const firstSelectedCommit = useAtomValue(
+    unwrapLatestOrNull(selectedCommitAtom)
+  );
+  const allResolvedRefs = useAtomValue(unwrapLatestOrNull(allResolvedRefsAtom));
+  const isMultiRepo = useAtomValue(vcsRootsAtom).length > 0;
   if (!firstSelectedCommit) {
     return (
       <StyledPlaceholderContainer>

@@ -1,5 +1,5 @@
-import { useRecoilValue } from "recoil";
-import { selectedKeysState } from "./ChangesView.state";
+import { useAtomValue } from "jotai";
+import { selectedKeysAtom } from "./ChangesView.state";
 import {
   CommonActionId,
   DividerItem,
@@ -11,7 +11,7 @@ import { ActionsMenu } from "@intellij-platform/core";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 export const ChangesViewTreeContextMenu = () => {
-  const selectedKeys = useRecoilValue(selectedKeysState);
+  const selectedKeys = useAtomValue(selectedKeysAtom);
   if ([...selectedKeys].length === 0) {
     return null;
   }

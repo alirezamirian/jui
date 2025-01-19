@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { RecoilState, useSetRecoilState } from "recoil";
+import { useAtomValue, useSetAtom, WritableAtom } from "jotai";
 import { Bounds, Popup, PopupProps } from "@intellij-platform/core";
-import { useRecoilInitialValue } from "../recoil-utils";
 
 /**
  * A special type of popup, where the content can be toggled on and off. Needed only for SearchEveryWhere at the moment,
@@ -15,7 +14,7 @@ import { useRecoilInitialValue } from "../recoil-utils";
  */
 export function ContentAwarePopup({
   hasContent,
-  persistedBoundsState,
+  persistedBoundsAtom,
   noContentHeight,
   minHeight,
   ...otherProps
@@ -29,17 +28,22 @@ export function ContentAwarePopup({
    */
   noContentHeight: number;
   /**
-   * Persisted state of the popup bounds, in form of a recoil state.
+   * Persisted state of the popup bounds, in form of an atom.
    */
-  persistedBoundsState: RecoilState<Partial<Bounds> | null>;
+  persistedBoundsAtom: WritableAtom<
+    Partial<Bounds> | null,
+    [Partial<Bounds> | null],
+    void
+  >;
 } & Omit<PopupProps, "bounds" | "onBoundsChange">) {
-  const persistBounds = useSetRecoilState(persistedBoundsState);
-  const getInitBounds = useRecoilInitialValue(persistedBoundsState, {
-    top: 150,
-    height: Math.max(200, window.innerHeight - 300),
-  });
+  const persistBounds = useSetAtom(persistedBoundsAtom);
 
-  const [bounds, setBounds] = useState<Partial<Bounds>>(getInitBounds);
+  const [bounds, setBounds] = useState<Partial<Bounds>>(
+    useAtomValue(persistedBoundsAtom) ?? {
+      top: 150,
+      height: Math.max(200, window.innerHeight - 300),
+    }
+  );
   const heightToRestoreRef = useRef(bounds.height);
   const onBoundsChange = (bounds: Bounds) => {
     if (hasContent) {

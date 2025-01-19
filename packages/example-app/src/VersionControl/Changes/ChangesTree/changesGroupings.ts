@@ -1,7 +1,9 @@
-import { GetRecoilValue, isRecoilValue, selector } from "recoil";
+import { atom, Atom, Getter } from "jotai";
 
-import { vcsRootsState } from "../../file-status.state";
+import { vcsRootsAtom } from "../../file-status.state";
 import { createGroupByDirectory } from "../../../tree-utils/groupByDirectory";
+import { isAtom, MaybeAtom } from "../../../atom-utils/isAtom";
+import { VcsActionIds } from "../../VcsActionIds";
 import { Change } from "../Change";
 import {
   changeNode,
@@ -15,8 +17,6 @@ import {
   RepositoryNode,
   repositoryNode,
 } from "./ChangeTreeNode";
-import { VcsActionIds } from "../../VcsActionIds";
-import { MaybeRecoilValue } from "../../../recoil-utils";
 
 export type GroupFn<T extends ChangesTreeGroupNode<any>> = (
   nodes: ReadonlyArray<ChangeNode>
@@ -28,34 +28,26 @@ export interface ChangeGrouping<
 > {
   id: I;
   title: string;
-  isAvailable: MaybeRecoilValue<boolean>;
+  isAvailable: MaybeAtom<boolean>;
   useShortcutOf?: string;
-  groupFn: MaybeRecoilValue<GroupFn<T>>;
+  groupFn: MaybeAtom<GroupFn<T>>;
 }
 
 const repositoryGrouping: ChangeGrouping<RepositoryNode, "repository"> = {
   id: "repository",
   title: "Repository",
-  isAvailable: selector({
-    key: "repositoryGrouping/isAvailable",
-    get: ({ get }) => get(vcsRootsState).length > 1,
-  }),
-  groupFn: selector({
-    key: "repositoryGrouping/groupFn",
-    get:
-      ({ get }: { get: GetRecoilValue }) =>
-      (nodes: ReadonlyArray<ChangeNode>) => {
-        const repos = get(vcsRootsState);
-        return repos.map(
-          (repository): RepositoryNode =>
-            repositoryNode(
-              repository,
-              nodes.filter((node) =>
-                Change.path(node.change)?.startsWith(repository.dir)
-              )
-            )
-        );
-      },
+  isAvailable: atom((get) => get(vcsRootsAtom).length > 1),
+  groupFn: atom((get) => (nodes: ReadonlyArray<ChangeNode>) => {
+    const repos = get(vcsRootsAtom);
+    return repos.map(
+      (repository): RepositoryNode =>
+        repositoryNode(
+          repository,
+          nodes.filter((node) =>
+            Change.path(node.change)?.startsWith(repository.dir)
+          )
+        )
+    );
   }),
 };
 
@@ -77,17 +69,15 @@ export const defaultChangeGroupings: ReadonlyArray<
   ChangeGrouping<DirectoryNode | RepositoryNode, "directory" | "repository">
 > = [repositoryGrouping, directoryGrouping];
 
-export const defaultChangeGroupingsState = selector<
-  ReadonlyArray<Omit<typeof defaultChangeGroupings[number], "isAvailable">>
->({
-  key: "changes.availableGroupings",
-  get: ({ get }) =>
-    defaultChangeGroupings.filter((grouping) =>
-      isRecoilValue(grouping.isAvailable)
-        ? get(grouping.isAvailable)
-        : grouping.isAvailable
-    ),
-});
+export const defaultChangeGroupingsAtom = atom<
+  ReadonlyArray<Omit<(typeof defaultChangeGroupings)[number], "isAvailable">>
+>((get) =>
+  defaultChangeGroupings.filter((grouping) =>
+    isAtom(grouping.isAvailable)
+      ? get(grouping.isAvailable)
+      : grouping.isAvailable
+  )
+);
 
 export const recursiveGrouping = <T extends ChangesTreeNode<any>>(
   groupingFns: Array<GroupFn<any>> /* Typing could be improved? */,
@@ -124,13 +114,13 @@ export const getPrefixedChangesGroupFn =
     isActive,
     groupings,
   }: {
-    get: GetRecoilValue;
-    isActive: (groupingId: string) => MaybeRecoilValue<boolean>;
+    get: Getter;
+    isActive: (groupingId: string) => MaybeAtom<boolean>;
     groupings: ReadonlyArray<ChangeGrouping<G, any>>;
   }) =>
   (keyPrefix: string) => {
-    const resolve = <T>(value: MaybeRecoilValue<T>): T =>
-      isRecoilValue(value) ? get(value) : value;
+    const resolve = <T>(value: Atom<T> | T): T =>
+      isAtom(value) ? get(value) : value;
     const groupFns = groupings
       .filter(
         ({ id, isAvailable }) => resolve(isAvailable) && resolve(isActive(id))

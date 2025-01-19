@@ -1,5 +1,6 @@
-import React, { Key, RefObject } from "react";
-import { useRecoilCallback, useRecoilState, useRecoilValue } from "recoil";
+import React, { Key, RefObject, useCallback } from "react";
+import { useAtom, useAtomValue } from "jotai";
+import { useAtomCallback } from "jotai/utils";
 import {
   ContextMenuContainer,
   Item,
@@ -8,11 +9,11 @@ import {
   TreeRefValue,
 } from "@intellij-platform/core";
 import {
-  changesTreeNodesState,
+  changesTreeNodesAtom,
   ChangesViewTreeNode,
-  expandedKeysState,
-  includedChangesNestedSelection,
-  selectedKeysState,
+  expandedKeysAtom,
+  includedChangesNestedSelectionAtom,
+  selectedKeysAtom,
 } from "./ChangesView.state";
 import { ChangesViewTreeContextMenu } from "./ChangesViewTreeContextMenu";
 import { useActivePathsProvider } from "../../../Project/project.state";
@@ -43,26 +44,20 @@ export const ChangeViewTree = ({
 }: {
   treeRef: RefObject<TreeRefValue>;
 }): JSX.Element => {
-  const { rootNodes, fileCountsMap, byKey } = useRecoilValue(
-    changesTreeNodesState
-  );
-  const [selectedKeys, setSelectedKeys] = useRecoilState(selectedKeysState);
-  const [expandedKeys, setExpandedKeys] = useRecoilState(expandedKeysState);
-  const nestedSelection = useRecoilValue(includedChangesNestedSelection);
+  const { rootNodes, fileCountsMap, byKey } =
+    useAtomValue(changesTreeNodesAtom);
+  const [selectedKeys, setSelectedKeys] = useAtom(selectedKeysAtom);
+  const [expandedKeys, setExpandedKeys] = useAtom(expandedKeysAtom);
+  const nestedSelection = useAtomValue(includedChangesNestedSelectionAtom);
   const { openPath } = useEditorStateManager();
-  const openChangeInEditor = useRecoilCallback(
-    ({ snapshot }) =>
-      (key: Key) => {
-        const changeNode = snapshot
-          .getLoadable(changesTreeNodesState)
-          .getValue()
-          .byKey.get(key);
-        if (changeNode?.type === "change") {
-          openPath(Change.path(changeNode.change));
-        }
-        return changeNode;
-      },
-    []
+  const openChangeInEditor = useAtomCallback(
+    useCallback((get, _set, key: Key) => {
+      const changeNode = get(changesTreeNodesAtom).byKey.get(key);
+      if (changeNode?.type === "change") {
+        openPath(Change.path(changeNode.change));
+      }
+      return changeNode;
+    }, [])
   );
 
   const activePathsProviderProps = useActivePathsProvider(

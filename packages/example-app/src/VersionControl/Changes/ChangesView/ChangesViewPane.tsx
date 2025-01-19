@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
+import { useAtomValue } from "jotai";
+import { vcsRootsAtom } from "../../file-status.state";
 import { ChangesViewSplitter } from "./ChangesViewSplitter";
-import { vcsRootsState } from "../../file-status.state";
-import { useRecoilValue } from "recoil";
 import { ChangesViewZeroState } from "./ChangesViewZeroState";
 
 const StyledContainer = styled.div`
@@ -12,7 +12,7 @@ const StyledContainer = styled.div`
 `;
 
 export const ChangesViewPane = () => {
-  const vcsRoots = useRecoilValue(vcsRootsState);
+  const vcsRoots = useAtomValue(vcsRootsAtom);
   return (
     <StyledContainer>
       {vcsRoots.length > 0 ? <ChangesViewSplitter /> : <ChangesViewZeroState />}

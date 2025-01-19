@@ -1,12 +1,11 @@
 import path from "path";
 import React, { useState } from "react";
 import {
-  IconButton,
-  Toolbar,
   ActionTooltip,
   BalloonActionLink,
   Bounds,
   Divider,
+  IconButton,
   Item,
   ItemLayout,
   MenuItemLayout,
@@ -16,25 +15,27 @@ import {
   Section,
   SpeedSearchMenu,
   styled,
+  Toolbar,
   TooltipTrigger,
   useAction,
   useBalloonManager,
   useWindowManager,
 } from "@intellij-platform/core";
 
-import { useLatestRecoilValue } from "../../recoil-utils";
 import {
-  allBranchesState,
+  allBranchesAtom,
   useCheckoutBranch,
   useDeleteBranch,
   useFavoriteBranches,
 } from "./branches.state";
 import { notImplemented } from "../../Project/notImplemented";
 import { VcsActionIds } from "../VcsActionIds";
-import { atom, useRecoilState } from "recoil";
+import { atom, useAtom, useAtomValue } from "jotai";
 import { RenameBranchWindow } from "./RenameBranchWindow";
 import { Errors } from "isomorphic-git";
 import { BranchFavoriteButton } from "./BranchFavoriteButton";
+
+import { unwrapLatestOrNull } from "../../atom-utils/unwrapLatest";
 
 const StyledHeader = styled.div`
   box-sizing: border-box;
@@ -57,15 +58,13 @@ export const branchesPopupSizeState = atom<
       height: number;
     }
   | undefined
->({
-  key: "branchesPopup.bounds",
-  default: undefined,
-});
+>(undefined);
 
 export function BranchesPopup({ close }: { close: () => void }) {
-  const [repoBranches] = useLatestRecoilValue(allBranchesState);
-  const [branchesPopupPersistedSize, setBranchesPopupPersistedSize] =
-    useRecoilState(branchesPopupSizeState);
+  const repoBranches = useAtomValue(unwrapLatestOrNull(allBranchesAtom));
+  const [branchesPopupPersistedSize, setBranchesPopupPersistedSize] = useAtom(
+    branchesPopupSizeState
+  );
   const [branchesPopupBounds, setBranchesPopupBounds] = useState<
     Partial<Bounds>
   >(branchesPopupPersistedSize ?? {});
@@ -75,8 +74,6 @@ export function BranchesPopup({ close }: { close: () => void }) {
   const balloonManager = useBalloonManager();
   const windowManager = useWindowManager();
   const checkoutBranch = useCheckoutBranch();
-
-  // useRefreshRecoilValueOnMount(allBranchesState);
 
   const { isFavorite, toggleFavorite } = useFavoriteBranches();
 

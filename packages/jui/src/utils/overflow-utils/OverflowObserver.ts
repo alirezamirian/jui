@@ -1,3 +1,4 @@
+import { sortBy, uniqBy } from "ramda";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 export interface OverflowObserverRecord {
@@ -60,14 +61,17 @@ export class OverflowObserver {
     const intersectionObserver = new IntersectionObserver(
       (entries) => {
         const data = this.data.get(target);
-        const newHiddenElements = entries
+        const sortedEntries = sortBy((entry) => -entry.time, entries);
+        const validEntries = uniqBy((entry) => entry.target, sortedEntries);
+
+        const newHiddenElements = validEntries
           .map((entry) =>
             !entry.isIntersecting && entry.target instanceof Element
               ? entry.target
               : undefined
           )
           .filter(notNull);
-        const newVisibleElements = entries
+        const newVisibleElements = validEntries
           .map((entry) =>
             entry.isIntersecting && entry.target instanceof Element
               ? entry.target

@@ -1,10 +1,6 @@
 import path from "path";
-import {
-  atom,
-  selector,
-  selectorFamily,
-  useRecoilRefresher_UNSTABLE,
-} from "recoil";
+import { atom } from "jotai";
+import { atomFamily } from "jotai/utils";
 import { createRef, MutableRefObject } from "react";
 import {
   AlertDialogApi,
@@ -12,8 +8,8 @@ import {
   WindowManagerAPI,
 } from "@intellij-platform/core";
 
-import { dirContentState, FsItem } from "../fs/fs.state";
-import { createFocusBasedSetterHook } from "../recoil-utils";
+import { dirContentAtom, FsItem } from "../fs/fs.state";
+import { createFocusBasedSetterHook } from "../atom-utils/focus-based-atom-utils";
 import { filterPath } from "./project-utils";
 
 export interface Project {
@@ -33,40 +29,30 @@ export const defaultProject = {
   name: "Workspace",
   path: "/workspace",
 };
-export const currentProjectState = atom<Project>({
-  key: "project",
-  default: defaultProject,
-});
+export const currentProjectAtom = atom<Project>(defaultProject);
 
-export const projectFilePath = selectorFamily({
-  key: "projectFilePath",
-  get:
-    (projectRelativePath: string) =>
-    ({ get }) =>
-      path.join(get(currentProjectState).path, projectRelativePath),
-});
+export const projectFilePath = atomFamily((projectRelativePath: string) =>
+  atom((get) => path.join(get(currentProjectAtom).path, projectRelativePath))
+);
 
-export const currentProjectFilesState = selector({
-  key: "project.current.files",
-  get: async ({ get }): Promise<ProjectFsItem[]> => {
-    const project = get(currentProjectState);
-    return get(projectFilesState(project.path));
-  },
-});
+export const currentProjectFilesAtom = atom(
+  async (get): Promise<ProjectFsItem[]> => {
+    const project = get(currentProjectAtom);
+    return get(projectFilesAtom(project.path));
+  }
+);
 
-export const projectFilesState = selectorFamily({
-  key: "project.files",
-  get:
-    (
-      projectPath: string /* could be changed to project id, when project entity is more mature */
-    ) =>
-    async ({ get }): Promise<ProjectFsItem[]> => {
-      const items = get(dirContentState(projectPath));
+const projectFilesAtom = atomFamily(
+  (
+    projectPath: string /* could be changed to project id, when project entity is more mature */
+  ) =>
+    atom(async (get): Promise<ProjectFsItem[]> => {
+      const items = await get(dirContentAtom(projectPath));
       const files: ProjectFsItem[] = [];
-      const addItem = (item: FsItem) => {
+      const addItem = async (item: FsItem) => {
         if (item.type === "dir") {
           if (filterPath(item)) {
-            const childItems = get(dirContentState(item.path));
+            const childItems = await get(dirContentAtom(item.path));
             if (childItems) {
               childItems.forEach(addItem);
             }
@@ -78,14 +64,10 @@ export const projectFilesState = selectorFamily({
           });
         }
       };
-      (items || []).forEach((item) => addItem(item));
+      await Promise.all((items || []).map((item) => addItem(item)));
       return files;
-    },
-});
-
-export const useRefreshCurrentProjectFiles = () =>
-  useRecoilRefresher_UNSTABLE(currentProjectFilesState);
-
+    })
+);
 /**
  * file/dir paths relevant to the currently active (focused) UI part. Different UI components such as Editor,
  * ProjectView or ChangesView set this context when they get focused. The context can then be used in different actions
@@ -110,55 +92,37 @@ export const useRefreshCurrentProjectFiles = () =>
  *
  *  @see useActivePathsProvider
  */
-export const activePathsState = atom<string[]>({
-  key: "project.activePaths",
-  default: [],
-});
+export const activePathsAtom = atom<string[]>([]);
 
-export const activePathExistsState = selector({
-  key: "project.activePaths.hasValue",
-  get: ({ get }) => get(activePathsState).length > 0,
-});
+export const activePathExistsAtom = atom(
+  (get) => get(activePathsAtom).length > 0
+);
 
 /**
- * Sets the value of {@link activePathsState} when focused.
+ * Sets the value of {@link activePathsAtom} when focused.
  * @returns focus/blur handling props, to be applied on the container which should set the active path state
  */
 export const useActivePathsProvider = createFocusBasedSetterHook(
-  activePathsState,
+  activePathsAtom,
   []
 );
 
 /**
- * Ref to the popup manager of the current project. Used in actions that are created by a recoil selector.
+ * Ref to the popup manager of the current project.
  * TODO(multi-project): either:
- *  - introduce project-level recoil root, to keep such states per project. Downside is there are atoms that are
- *    not per-project, and recoil doesn't currently support multiple nested scopes of atoms, even though it does
- *    support nested RecoilRoots.
- *  - (better) add a feature to the action system, where ActionProvider can define additional contextual properties
+ *  - introduce project-level store provider, to keep such states per project.
+ *  - maybe better, add a feature to the action system, where ActionProvider can define additional contextual properties
  *    to be made available in `context` when calling `actionPerformed` method. The biggest challenge for a nice
  *    implementation of such feature is static type safety.
  */
-export const projectPopupManagerRefState = atom<
+export const projectPopupManagerRefAtom = atom<
   MutableRefObject<PopupManagerAPI | null>
->({
-  key: "project.popupManager",
-  default: createRef(),
-  dangerouslyAllowMutability: true,
-});
+>(createRef<PopupManagerAPI | null>());
 
-export const windowManagerRefState = atom<
+export const windowManagerRefAtom = atom<
   MutableRefObject<WindowManagerAPI | null>
->({
-  key: "project.windowManager",
-  default: createRef(),
-  dangerouslyAllowMutability: true,
-});
+>(createRef<WindowManagerAPI | null>());
 
-export const alertDialogRefState = atom<
-  MutableRefObject<AlertDialogApi | null>
->({
-  key: "project.alertDialog",
-  default: createRef(),
-  dangerouslyAllowMutability: true,
-});
+export const alertDialogRefAtom = atom<MutableRefObject<AlertDialogApi | null>>(
+  createRef<AlertDialogApi | null>()
+);

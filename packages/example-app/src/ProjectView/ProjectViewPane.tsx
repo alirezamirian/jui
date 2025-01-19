@@ -11,42 +11,43 @@ import {
 } from "@intellij-platform/core";
 import { identity, sortBy } from "ramda";
 import React, { useContext, useLayoutEffect, useRef } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { DefaultSuspense } from "../DefaultSuspense";
 import { useEditorStateManager } from "../Editor/editor.state";
 import { DIR_ICON, FILE_ICON, getIconForFile } from "../file-utils";
 import {
-  currentProjectState,
+  currentProjectAtom,
   useActivePathsProvider,
 } from "../Project/project.state";
 import {
-  currentProjectTreeState,
-  expandedKeysState,
+  currentProjectTreeAtom,
+  expandedKeysAtom,
   FileTreeDirNode,
   FileTreeFileNode,
   FileTreeNode,
   foldersOnTopState,
   ProjectTreeNode,
-  projectViewTreeRefState,
-  selectionState,
+  projectViewTreeRefAtom,
+  selectionAtom,
 } from "./ProjectView.state";
 import { FileStatusColor } from "../VersionControl/FileStatusColor";
-import { useLatestRecoilValue } from "../recoil-utils";
 import { ProjectViewContextMenu } from "./ProjectViewContextMenu";
 
+import { unwrapLatest } from "../atom-utils/unwrapLatest";
+
 export const ProjectViewPane = (): React.ReactElement => {
-  const project = useRecoilValue(currentProjectState);
+  const project = useAtomValue(currentProjectAtom);
   const editor = useEditorStateManager();
   const treeRef = useRef<TreeRefValue>(null);
-  const setProjectViewTreeRef = useSetRecoilState(projectViewTreeRefState);
+  const setProjectViewTreeRef = useSetAtom(projectViewTreeRefAtom);
   useLayoutEffect(() => {
     setProjectViewTreeRef(treeRef);
   }, [treeRef]);
 
-  const [treeState] = useLatestRecoilValue(currentProjectTreeState);
-  const [expandedKeys, setExpandedKeys] = useRecoilState(expandedKeysState);
-  const [selectedKeys, setSelectedKeys] = useRecoilState(selectionState);
-  const foldersOnTop = useRecoilValue(foldersOnTopState);
+  const treeState = useAtomValue(unwrapLatest(currentProjectTreeAtom));
+  const [expandedKeys, setExpandedKeys] = useAtom(expandedKeysAtom);
+  const [selectedKeys, setSelectedKeys] = useAtom(selectionAtom);
+  const foldersOnTop = useAtom(foldersOnTopState);
 
   const sortItems = foldersOnTop
     ? sortBy<ProjectTreeNode>((a) => (a.type === "dir" ? 1 : 2))
@@ -79,7 +80,7 @@ export const ProjectViewPane = (): React.ReactElement => {
 
   return (
     <DefaultSuspense>
-      {treeState?.root && (
+      {treeState.root && (
         <ContextMenuContainer
           ref={containerRef}
           style={{ height: "100%" }}

@@ -1,5 +1,5 @@
 import React from "react";
-import { selector, useRecoilValue } from "recoil";
+import { atom, useAtomValue } from "jotai";
 import {
   ActionTooltip,
   MultiViewToolWindow,
@@ -8,41 +8,46 @@ import {
 import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 import { ChangesViewPane } from "./Changes/ChangesView/ChangesViewPane";
-import { vcsRootForFile } from "./file-status.state";
-import { LocalBranch, repoBranchesState } from "./Branches/branches.state";
+import { vcsFootForFileAtom } from "./file-status.state";
+import { LocalBranch, repoBranchesAtom } from "./Branches/branches.state";
 import { changesGroupingActiveState } from "./Changes/ChangesView/ChangesView.state";
 import { TrackingBranchInfo } from "./TrackingBranchInfo";
 import { Change } from "./Changes/Change";
-import { allChangesState } from "./Changes/changes.state";
+import { allChangesAtom } from "./Changes/changes.state";
 
 export const COMMIT_TOOLWINDOW_ID = "Commit";
 
-const changesBranchesState = selector({
-  key: "vcs/commitToolWindow/changedRepos",
-  get: ({ get }): Array<{ repoRoot: string; branch: LocalBranch }> => {
-    const changesRepoRoots = get(allChangesState)
-      .map((change) => get(vcsRootForFile(Change.path(change))))
-      .filter(notNull);
+const changesBranchesAtom = atom(
+  async (get): Promise<Array<{ repoRoot: string; branch: LocalBranch }>> => {
+    const changesRepoRoots = (
+      await Promise.all(
+        get(allChangesAtom).map((change) =>
+          get(vcsFootForFileAtom(Change.path(change)))
+        )
+      )
+    ).filter(notNull);
 
-    return changesRepoRoots
-      .map((repoRoot) => {
-        const branch = get(repoBranchesState(repoRoot)).currentBranch;
-        return branch
-          ? {
-              repoRoot,
-              branch,
-            }
-          : null;
-      })
-      .filter(notNull);
-  },
-});
+    return (
+      await Promise.all(
+        changesRepoRoots.map(async (repoRoot) => {
+          const branch = (await get(repoBranchesAtom(repoRoot))).currentBranch;
+          return branch
+            ? {
+                repoRoot,
+                branch,
+              }
+            : null;
+        })
+      )
+    ).filter(notNull);
+  }
+);
 
 export const CommitToolWindow = () => {
-  const areChangesGroupedByRepo = useRecoilValue(
+  const areChangesGroupedByRepo = useAtomValue(
     changesGroupingActiveState("repository")
   );
-  const changesBranches = useRecoilValue(changesBranchesState);
+  const changesBranches = useAtomValue(changesBranchesAtom);
   const title =
     !areChangesGroupedByRepo && changesBranches[0]
       ? `Commit to ${changesBranches[0]?.branch?.name || "!"}`

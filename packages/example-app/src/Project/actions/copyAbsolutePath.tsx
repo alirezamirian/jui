@@ -1,23 +1,19 @@
-import { selector } from "recoil";
-import { ActionDefinition } from "@intellij-platform/core";
-
-import { activePathExistsState, activePathsState } from "../project.state";
+import { atom } from "jotai";
+import { activePathExistsAtom, activePathsAtom } from "../project.state";
 import { projectActionIds } from "../projectActionIds";
 import { notImplemented } from "../notImplemented";
+import { actionAtom } from "../../actionAtom";
 
-export const copyAbsolutePathActionState = selector({
-  key: `action.${projectActionIds.CopyAbsolutePath}`,
-  get: ({ get, getCallback }): ActionDefinition => ({
-    id: projectActionIds.CopyAbsolutePath,
-    title: "Absolute Path",
-    isDisabled: !get(activePathExistsState),
-    useShortcutsOf: "CopyPaths",
-    actionPerformed: getCallback(({ snapshot }) => async () => {
-      notImplemented();
-      const activePaths = snapshot.getLoadable(activePathsState).getValue();
-      if (activePaths.length === 0) {
-        return;
-      }
-    }),
-  }),
+export const copyAbsolutePathActionAtom = actionAtom({
+  id: projectActionIds.CopyAbsolutePath,
+  title: "Absolute Path",
+  isDisabled: atom((get) => !get(activePathExistsAtom)),
+  useShortcutsOf: "CopyPaths",
+  actionPerformed: async ({ get }) => {
+    notImplemented();
+    const activePaths = get(activePathsAtom);
+    if (activePaths.length === 0) {
+      return;
+    }
+  },
 });

@@ -1,5 +1,6 @@
 import React from "react";
-import { useRecoilValue } from "recoil";
+import { useAtomValue } from "jotai";
+
 import {
   ActionButton,
   ActionDefinition,
@@ -8,24 +9,23 @@ import {
   PlatformIcon,
   useTreeActions,
 } from "@intellij-platform/core";
-
 import {
-  projectViewTreeRefState,
+  projectViewTreeRefAtom,
   useSelectPathInProjectView,
 } from "./ProjectView.state";
 import { ProjectViewPane } from "./ProjectViewPane";
-import { activeEditorTabState } from "../Editor/editor.state";
+import { activeEditorTabAtom } from "../Editor/editor.state";
 import { ProjectViewActionIds } from "./ProjectViewActionIds";
-import { deleteActionState } from "./actions/deleteAction";
-import { copyActionState } from "./actions/copyAction";
-import { cutActionState } from "./actions/cutAction";
-import { pasteActionState } from "./actions/pasteAction";
+import { deleteActionAtom } from "./actions/deleteAction";
+import { copyActionAtom } from "./actions/copyAction";
+import { cutActionAtom } from "./actions/cutAction";
+import { pasteActionAtom } from "./actions/pasteAction";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 const { SELECT_IN_PROJECT_VIEW } = ProjectViewActionIds;
 
 export function ProjectToolWindow() {
-  const treeRef = useRecoilValue(projectViewTreeRefState);
+  const treeRef = useAtomValue(projectViewTreeRefAtom);
   const actions = useTreeActions({ treeRef });
   // TODO: SelectInProjectView should be provided at project level, allowing potential shortcut to be globally
   //  accessible, and allowing other UI parts than editor's active tab, to set the context of "file" which needs to be
@@ -51,7 +51,7 @@ export function ProjectToolWindow() {
 function useProjectViewActions(): Array<ActionDefinition> {
   // improvement: for rendering, we only depend on whether activeTab is null or not. A selector can be defined for that
   // to prevent unnecessary re-rendering. The active tab, could be read from the state snapshot, in the handler callback.
-  const activeTab = useRecoilValue(activeEditorTabState);
+  const activeTab = useAtomValue(activeEditorTabAtom);
 
   const selectPathInProjectView = useSelectPathInProjectView();
   const selectOpenedFile = () => {
@@ -69,9 +69,9 @@ function useProjectViewActions(): Array<ActionDefinition> {
       isDisabled: !activeTab,
       description: "Selects a context file in the Project View",
     },
-    useRecoilValue(deleteActionState), // could have been on project level, if it could handle delete in editor as well
-    useRecoilValue(cutActionState),
-    useRecoilValue(copyActionState),
-    useRecoilValue(pasteActionState),
+    useAtomValue(deleteActionAtom), // could have been on project level, if it could handle delete in editor as well
+    useAtomValue(cutActionAtom),
+    useAtomValue(copyActionAtom),
+    useAtomValue(pasteActionAtom),
   ].filter(notNull);
 }

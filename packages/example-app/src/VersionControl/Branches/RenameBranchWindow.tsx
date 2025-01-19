@@ -7,13 +7,13 @@ import {
   WindowLayout,
 } from "@intellij-platform/core";
 import React, { FormEvent, ReactNode, useState } from "react";
+import { useAtomValue } from "jotai";
 import {
   BranchNameError,
   cleanUpBranchName,
   validateBranchName,
 } from "./branch-name-utils";
-import { useRecoilValue } from "recoil";
-import { repoBranchesState, useRenameBranch } from "./branches.state";
+import { repoBranchesAtom, useRenameBranch } from "./branches.state";
 
 const StyledContainer = styled.div`
   padding: 0.5rem 1rem;
@@ -51,7 +51,7 @@ export function RenameBranchWindow({
   const [newBranchName, setNewBranchName] = useState(branchName);
   const [touched, setTouched] = useState(false);
   const balloonManager = useBalloonManager();
-  const branches = useRecoilValue(repoBranchesState(repoRoot));
+  const branches = useAtomValue(repoBranchesAtom(repoRoot));
   const renameBranch = useRenameBranch();
 
   const error = validateBranchName(branches, newBranchName);

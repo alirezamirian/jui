@@ -19,6 +19,10 @@ export default {
     extensions: [".ts", ".tsx", ".js"],
     alias: {
       ...libSrcAlias,
+      // FIXME(react-18): remove when upgraded to react 18
+      //  https://github.com/xyflow/xyflow/issues/4683#issuecomment-2388049017
+      "react/jsx-dev-runtime": "react/jsx-dev-runtime.js",
+      "react/jsx-runtime": "react/jsx-runtime.js",
     },
     fallback: {
       crypto: require.resolve("crypto-browserify"),

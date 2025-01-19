@@ -21,15 +21,14 @@ const themes = (requireTheme.keys() as Array<string>).map(
 
 export default {
   decorators: [withThemeProvider(StoryThemeProvider)],
-  globals: {
-    selectedTheme: DEFAULT_THEME_NAME,
-    themes,
-  },
   parameters: {
-    actions: { argTypesRegex: "^on[A-Z].*" },
     backgrounds: {
       disable: true,
     },
+  },
+  initialGlobals: {
+    selectedTheme: DEFAULT_THEME_NAME,
+    themes,
   },
 };
 

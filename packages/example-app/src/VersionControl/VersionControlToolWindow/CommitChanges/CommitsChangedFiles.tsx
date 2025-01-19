@@ -1,10 +1,6 @@
 import React, { HTMLAttributes, useEffect } from "react";
-import {
-  RecoilValue,
-  useRecoilState,
-  useRecoilValue,
-  useRecoilValueLoadable,
-} from "recoil";
+import { atom, Atom, useAtom, useAtomValue } from "jotai";
+import { loadable } from "jotai/utils";
 
 import {
   HelpTooltip,
@@ -14,19 +10,20 @@ import {
   styled,
 } from "@intellij-platform/core";
 
-import { useLatestRecoilValue } from "../../../recoil-utils";
 import { LoadingGif } from "../../../LoadingGif";
 import { Delayed } from "../../../Delayed";
 import { StyledPlaceholderContainer } from "../styled-components";
-import { selectedCommitsState } from "../CommitsView/CommitsTable.state";
+import { selectedCommitsAtom } from "../CommitsView/CommitsTable.state";
 import {
-  changedFilesState,
-  changedFilesWithoutRenamesState,
-  commitChangesTreeRefState,
-  expandedKeysState,
-  selectionState,
+  changedFilesAtom,
+  changedFilesWithoutRenamesAtom,
+  commitChangesTreeRefAtom,
+  expandedKeysAtom,
+  selectionAtom,
 } from "./CommitsChangedFiles.state";
 import { commitChangesTreeNodeRenderer } from "./commitChangesTreeNodeRenderer";
+
+import { unwrapLatestOrNull } from "../../../atom-utils/unwrapLatest";
 
 const StyledLoadingWrapper = styled.div`
   position: absolute;
@@ -38,13 +35,18 @@ const StyledLoadingWrapper = styled.div`
   justify-content: center;
 `;
 
-function useFastestValueLoadable<T>(states: RecoilValue<T>[]) {
-  const loadables = states.map((state) => useRecoilValueLoadable(state));
-  return (
-    loadables.find(({ state }) => state === "hasValue") ||
-    loadables.slice(-1)[0]
+const loadableChangedFilesAtom = [
+  changedFilesAtom,
+  changedFilesWithoutRenamesAtom,
+].map(loadable);
+
+const changedFilesLoadableAtom = atom((get) => {
+  return get(
+    loadableChangedFilesAtom.find((atom) => get(atom).state === "hasData") ??
+      loadableChangedFilesAtom.slice(-1)[0]
   );
-}
+});
+
 /**
  * TODO: handle multiple selected commits (check Changes.ShowChangesFromParents https://github.com/JetBrains/intellij-community/blob/ac57611a0612bd65ba2a19c841a4f95b40591134/platform/vcs-log/impl/src/com/intellij/vcs/log/ui/frame/VcsLogChangesBrowser.java#L255-L254)
  */
@@ -53,17 +55,14 @@ export function CommitChangedFiles({
 }: {
   treeShortcutHandlerProps: HTMLAttributes<HTMLElement>;
 }) {
-  const [selectedCommits] = useLatestRecoilValue(selectedCommitsState);
-  const treeRef = useRecoilValue(commitChangesTreeRefState);
+  const selectedCommits = useAtomValue(unwrapLatestOrNull(selectedCommitsAtom));
+  const treeRef = useAtomValue(commitChangesTreeRefAtom);
   const nothingSelected = !selectedCommits?.length;
 
-  const stateLoadable = useFastestValueLoadable([
-    changedFilesState,
-    changedFilesWithoutRenamesState,
-  ]);
-  const state = stateLoadable.valueMaybe();
-  const [expandedKeys, setExpandedKeys] = useRecoilState(expandedKeysState);
-  const [selection, setSelection] = useRecoilState(selectionState);
+  const stateLoadable = useAtomValue(changedFilesLoadableAtom);
+  const state = stateLoadable.state === "hasData" ? stateLoadable.data : null;
+  const [expandedKeys, setExpandedKeys] = useAtom(expandedKeysAtom);
+  const [selection, setSelection] = useAtom(selectionAtom);
 
   useEffect(() => {
     // TODO: expanded keys are supposed to be set based on selected keys

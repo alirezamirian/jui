@@ -1,18 +1,13 @@
 import { Selection } from "@react-types/shared";
 import { TreeRefValue } from "@intellij-platform/core";
 import React, { Key, RefObject } from "react";
-import {
-  atom,
-  CallbackInterface,
-  GetRecoilValue,
-  selector,
-  useRecoilCallback,
-} from "recoil";
-import { currentProjectState, Project } from "../Project/project.state";
-import { dirContentState, FsItem } from "../fs/fs.state";
+import { atom, Getter, Setter } from "jotai";
+import { atomWithDefault, useAtomCallback } from "jotai/utils";
+import { currentProjectAtom, Project } from "../Project/project.state";
+import { dirContentAtom, FsItem } from "../fs/fs.state";
 import { filterPath } from "../Project/project-utils";
 import { getParentPaths } from "../file-utils";
-import { vcsRootsState } from "../VersionControl/file-status.state";
+import { vcsRootsAtom } from "../VersionControl/file-status.state";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 interface FileTreeNodeBase {
@@ -37,62 +32,43 @@ export type ProjectTreeNode =
   | ProjectTreeRoot
   | ProjectTreeRoot["children"][number]; // type def can be improved
 
-export const foldersOnTopState = atom({
-  key: "projectView.foldersOnTop",
-  default: true,
-});
+export const foldersOnTopState = atom(true);
 
-export const expandedKeysState = atom({
-  key: "projectView.expandedKeys",
-  default: selector({
-    key: "projectView.expandedKeys/default",
-    get: ({ get }) =>
-      new Set<Key>(
-        get(vcsRootsState)
-          .flatMap(({ dir }) => getParentPaths(dir).concat(dir))
-          .concat(get(currentProjectState).path)
-      ),
-  }),
-});
+export const expandedKeysAtom = atomWithDefault(
+  (get) =>
+    new Set<Key>(
+      get(vcsRootsAtom)
+        .flatMap(({ dir }) => getParentPaths(dir).concat(dir))
+        .concat(get(currentProjectAtom).path)
+    )
+);
 
-export const selectionState = atom<Selection>({
-  key: "projectView.selection",
-  default: new Set<Key>([]),
-});
+export const selectionAtom = atom<Selection>(new Set<Key>([]));
 
-export const selectedNodesState = selector<ReadonlyArray<ProjectTreeNode>>({
-  key: "projectView.selectedKeys",
-  get: ({ get }) => {
-    const selection = get(selectionState);
-    const nodesByKey = get(currentProjectTreeState).byKey;
+export const selectedNodesAtom = atom(
+  async (get): Promise<ReadonlyArray<ProjectTreeNode>> => {
+    const selection = get(selectionAtom);
+    const nodesByKey = (await get(currentProjectTreeAtom)).byKey;
     const selectedKeys = selection === "all" ? nodesByKey.keys() : selection;
     return [...selectedKeys]
       .map((key) => nodesByKey.get(`${key}`))
       .filter(notNull);
-  },
-});
+  }
+);
 
-export const projectViewTreeRefState = atom<RefObject<TreeRefValue>>({
-  key: "projectView.focusHandle",
-  default: React.createRef(),
-  dangerouslyAllowMutability: true,
-});
+export const projectViewTreeRefAtom = atom<RefObject<TreeRefValue>>(
+  React.createRef<TreeRefValue>()
+);
 
-export const currentProjectTreeState = selector({
-  key: "projectTree",
-  get: ({ get }) => {
-    const project = get(currentProjectState);
-    return createProjectTree(project, get);
-  },
+export const currentProjectTreeAtom = atom((get) => {
+  const project = get(currentProjectAtom);
+  return createProjectTree(project, get);
 });
 
 type FilesTreeSort = "name"; // more to be added
 
 // TODO: add more sort options and add "Tree Appearance" option in Project tool window settings menu.
-export const projectTreeSortState = atom<FilesTreeSort>({
-  key: "project.tree.sort",
-  default: "name",
-});
+export const projectTreeSortAtom = atom<FilesTreeSort>("name");
 
 /**
  * NOTE: using in-place native sort for performance.
@@ -117,9 +93,9 @@ function sortProjectTreeNodes(items: FileTreeNode[]): void {
 // performance drastically drops for some reason. That needs to be investigated.
 async function createProjectTree(
   project: Project,
-  get: GetRecoilValue
+  get: Getter
 ): Promise<{ root: ProjectTreeRoot; byKey: Map<string, ProjectTreeNode> }> {
-  const rootItems = get(dirContentState(project.path));
+  const rootItems = await get(dirContentAtom(project.path));
   const byKey = new Map<string, ProjectTreeNode>();
   const mapItem =
     (parent: FileTreeDirNode | null) =>
@@ -133,7 +109,7 @@ async function createProjectTree(
           const dirNode: FileTreeDirNode = { ...node, children: [] };
           dirNode.children = (
             await Promise.all(
-              (get(dirContentState(item.path)) ?? ([] as FsItem[])).map(
+              ((await get(dirContentAtom(item.path))) ?? ([] as FsItem[])).map(
                 mapItem(dirNode)
               )
             )
@@ -164,40 +140,39 @@ async function createProjectTree(
 }
 
 /**
- * a function to be passed to useRecoilCallback to get back a callback for expanding to a certain path in project view.
- * @param snapshot
- * @param set
+ * atom callback for expanding to a certain path in project view.
  */
-export const expandToPathCallback =
-  ({ snapshot, set }: CallbackInterface) =>
-  (path: string) => {
-    const expandedKeys = snapshot.getLoadable(expandedKeysState).valueOrThrow();
-    const keysToExpand = [
-      snapshot.getLoadable(currentProjectState).valueOrThrow().path,
-    ].concat(getParentPaths(path));
-    set(expandedKeysState, new Set([...expandedKeys, ...keysToExpand]));
-  };
+export const expandToPathCallback = (
+  get: Getter,
+  set: Setter,
+  path: string
+) => {
+  const expandedKeys = get(expandedKeysAtom);
+  const keysToExpand = [get(currentProjectAtom).path].concat(
+    getParentPaths(path)
+  );
+  set(expandedKeysAtom, new Set([...expandedKeys, ...keysToExpand]));
+};
 
 /**
- * a function to be passed to useRecoilCallback to get back a callback for selecting a file in project view and focusing
+ * a function to be passed to useAtomCallback to get back a callback for selecting a file in project view and focusing
  * the project view.
- * // TODO: open project view tool window if needed, when tool window state is also moved to recoil instead of local
- * //  state.
  */
-export const selectKeyAndFocusCallback =
-  ({ snapshot }: CallbackInterface) =>
-  (key: Key) => {
-    const treeRef = snapshot
-      .getLoadable(projectViewTreeRefState)
-      .valueOrThrow()?.current;
-    treeRef?.replaceSelection(key);
-    treeRef?.focus(key);
-  };
+export const selectKeyAndFocusCallback = (
+  get: Getter,
+  set: Setter,
+  key: Key
+) => {
+  const treeRef = get(projectViewTreeRefAtom)?.current;
+  treeRef?.replaceSelection(key);
+  treeRef?.focus(key);
+};
 
 export const useSelectPathInProjectView = () => {
-  const expandToOpenedFile = useRecoilCallback(expandToPathCallback, []);
-  const selectKeyAndFocus = useRecoilCallback(selectKeyAndFocusCallback, []);
+  const expandToOpenedFile = useAtomCallback(expandToPathCallback);
+  const selectKeyAndFocus = useAtomCallback(selectKeyAndFocusCallback);
   return (path: string) => {
+    // TODO: open project view tool window if needed
     expandToOpenedFile(path);
     selectKeyAndFocus(path);
   };

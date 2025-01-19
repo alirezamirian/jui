@@ -1,8 +1,8 @@
 import React from "react";
-import { useRecoilState } from "recoil";
+import { useAtom } from "jotai";
 import {
-  showIgnoredFilesState,
-  showRelatedFilesState,
+  showIgnoredFilesAtom,
+  showRelatedFilesAtom,
 } from "../ChangesView.state";
 import {
   IconButtonWithMenu,
@@ -12,12 +12,8 @@ import {
 } from "@intellij-platform/core";
 
 export const ViewOptionsActionButton = (): React.ReactElement => {
-  const [showRelatedFiles, setShowRelatedFiles] = useRecoilState(
-    showRelatedFilesState
-  );
-  const [showIgnoredFiles, setShowIgnoredFiles] = useRecoilState(
-    showIgnoredFilesState
-  );
+  const [showRelatedFiles, setShowRelatedFiles] = useAtom(showRelatedFilesAtom);
+  const [showIgnoredFiles, setShowIgnoredFiles] = useAtom(showIgnoredFilesAtom);
   const viewOptions = { showRelatedFiles, showIgnoredFiles };
 
   return (

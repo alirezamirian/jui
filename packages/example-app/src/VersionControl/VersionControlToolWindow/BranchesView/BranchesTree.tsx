@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { PlatformIcon, SpeedSearchTree, styled } from "@intellij-platform/core";
 
 import {
@@ -7,15 +7,16 @@ import {
   keyToBranch,
 } from "./branchTreeNodeRenderers";
 import {
-  branchesTreeNodeState,
-  branchesTreeRefState,
-  expandedKeysState,
-  searchInputState,
-  selectedKeysState,
+  branchesTreeNodeAtom,
+  branchesTreeRefAtoms,
+  expandedKeysAtoms,
+  searchInputAtoms,
+  selectedKeysAtoms,
 } from "./BranchesTree.state";
 import { StyledHeader } from "../styled-components";
 import { vcsLogFilterCurrentTab } from "../vcs-logs.state";
-import { useLatestRecoilValue } from "../../../recoil-utils";
+
+import { unwrapLatestOrNull } from "../../../atom-utils/unwrapLatest";
 
 const StyledSearchInput = styled.input`
   all: unset;
@@ -37,19 +38,17 @@ const StyledSearchIconContainer = styled.span`
 `;
 
 export function BranchesTree({ tabKey }: { tabKey: string }) {
-  const [branchesTreeNodes] = useLatestRecoilValue(branchesTreeNodeState);
-  const [selectedKeys, setSelectedKeys] = useRecoilState(
-    selectedKeysState(tabKey)
+  const branchesTreeNodes = useAtomValue(
+    unwrapLatestOrNull(branchesTreeNodeAtom)
   );
-  const [expandedKeys, setExpandedKeys] = useRecoilState(
-    expandedKeysState(tabKey)
-  );
-  const [searchTerm, setSearchTerm] = useRecoilState(searchInputState(tabKey));
-  const treeRef = useRecoilValue(branchesTreeRefState(tabKey));
+  const [selectedKeys, setSelectedKeys] = useAtom(selectedKeysAtoms(tabKey));
+  const [expandedKeys, setExpandedKeys] = useAtom(expandedKeysAtoms(tabKey));
+  const [searchTerm, setSearchTerm] = useAtom(searchInputAtoms(tabKey));
+  const treeRef = useAtomValue(branchesTreeRefAtoms(tabKey));
   const ref = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [isInputFocused, setInputFocused] = useState(false);
-  const setBranchFilter = useSetRecoilState(vcsLogFilterCurrentTab.branch);
+  const setBranchFilter = useSetAtom(vcsLogFilterCurrentTab.branch);
   const onAction = (key: React.Key) => {
     const branch = keyToBranch(`${key}`);
     if (branch) {

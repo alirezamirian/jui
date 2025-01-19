@@ -1,14 +1,9 @@
-import {
-  atom,
-  selector,
-  useRecoilCallback,
-  useRecoilValue,
-  useSetRecoilState,
-} from "recoil";
-import { useEffect } from "react";
+import { atom as jotaiAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomCallback } from "jotai/utils";
+import { useCallback, useEffect } from "react";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
 
-import { allChangesState } from "./changes.state";
+import { allChangesAtom } from "./changes.state";
 import { AnyChange, Change, UnversionedChange } from "./Change";
 
 export interface ChangeListObj {
@@ -19,57 +14,49 @@ export interface ChangeListObj {
   changes: ReadonlyArray<AnyChange>;
 }
 
-export const changeListsState = atom<ChangeListObj[]>({
-  key: "changelists.lists",
-  default: [
-    {
-      id: "some-UUID",
-      name: "Changes",
-      comment: "last modified commit message",
-      changes: [],
-      active: true,
-    },
-    {
-      id: "some-other-UUID",
-      name: "Some other changelist",
-      comment: "Some empty changelist for testing",
-      changes: [],
-      active: false,
-    },
-  ],
-});
+export const changeListsAtom = jotaiAtom<ChangeListObj[]>([
+  {
+    id: "some-UUID",
+    name: "Changes",
+    comment: "last modified commit message",
+    changes: [],
+    active: true,
+  },
+  {
+    id: "some-other-UUID",
+    name: "Some other changelist",
+    comment: "Some empty changelist for testing",
+    changes: [],
+    active: false,
+  },
+]);
 
-export const activeChangeListState = selector<ChangeListObj | null>({
-  key: "changelists.lists/default",
-  get: ({ get }) =>
-    get(changeListsState).find((changeList) => changeList.active) ?? null,
-});
+export const activeChangeListState = jotaiAtom<ChangeListObj | null>(
+  (get) => get(changeListsAtom).find((changeList) => changeList.active) ?? null
+);
 
-export const unversionedChangesState = selector<UnversionedChange[]>({
-  key: "changelists.lists/unversioned",
-  get: ({ get }) => get(allChangesState).filter(Change.isUnversioned),
-});
+export const unversionedChangesAtom = jotaiAtom<UnversionedChange[]>((get) =>
+  get(allChangesAtom).filter(Change.isUnversioned)
+);
 
 export const useSetActiveChangeList = () =>
-  useRecoilCallback(
-    ({ set, snapshot }) =>
-      (changeListId) => {
-        const changeLists = snapshot.getLoadable(changeListsState).getValue();
-        const targetChangeList = changeLists.find(
-          ({ id }) => id === changeListId
+  useAtomCallback(
+    useCallback((get, set, changeListId: string) => {
+      const changeLists = get(changeListsAtom);
+      const targetChangeList = changeLists.find(
+        ({ id }) => id === changeListId
+      );
+      if (targetChangeList) {
+        set(
+          changeListsAtom,
+          changeLists.map((changeList) => ({
+            ...changeList,
+            active: changeList === targetChangeList,
+          }))
         );
-        if (targetChangeList) {
-          set(
-            changeListsState,
-            changeLists.map((changeList) => ({
-              ...changeList,
-              active: changeList === targetChangeList,
-            }))
-          );
-        }
-        // TODO: check if deactivated changelist is empty, and open a confirmation modal window to remove it if confirmed.
-      },
-    []
+      }
+      // TODO: check if deactivated changelist is empty, and open a confirmation modal window to remove it if confirmed.
+    }, [])
   );
 
 /**
@@ -82,10 +69,11 @@ export const useSetActiveChangeList = () =>
  * - The state of change lists is **not** just a 1:1 function of changes. So it can't be a selector. How changes are
  *   grouped in different lists is something that must have its own source of truth, but it needs validation,
  *   every time changes are added/removed.
+ *   TODO(jotai): The limitation mentioned above doesn't exist in Jotai. Refactor.
  */
 export function SyncChangeListsState() {
-  const changes = useRecoilValue(allChangesState);
-  const setChangeLists = useSetRecoilState(changeListsState);
+  const changes = useAtomValue(allChangesAtom);
+  const setChangeLists = useSetAtom(changeListsAtom);
   useEffect(() => {
     setChangeLists((changeLists) => {
       const trackedChanges = changes.filter(

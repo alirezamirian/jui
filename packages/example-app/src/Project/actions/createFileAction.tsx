@@ -1,6 +1,7 @@
 import path from "path";
-import { selector, useRecoilCallback } from "recoil";
-import React, { useState } from "react";
+import { atom } from "jotai";
+import { useAtomCallback } from "jotai/utils";
+import React, { useCallback, useState } from "react";
 import {
   ActionDefinition,
   Button,
@@ -11,54 +12,50 @@ import {
 } from "@intellij-platform/core";
 
 import { fs } from "../../fs/fs";
-import { editorManagerState } from "../../Editor/editor.state";
+import { editorManagerAtom } from "../../Editor/editor.state";
 import {
-  activePathExistsState,
-  activePathsState,
-  projectPopupManagerRefState,
-  windowManagerRefState,
+  activePathExistsAtom,
+  activePathsAtom,
+  projectPopupManagerRefAtom,
+  windowManagerRefAtom,
 } from "../project.state";
-import { vcsRootForFile } from "../../VersionControl/file-status.state";
+import { vcsFootForFileAtom } from "../../VersionControl/file-status.state";
 import { stat } from "../../fs/fs-utils";
 import { createFileCallback } from "../fs-operations";
 import { gitAddCallback } from "../../VersionControl/gitAddCallback";
 import { NewItemPopup } from "./NewItemPopup";
 import { projectActionIds } from "../projectActionIds";
+import { actionAtom } from "../../actionAtom";
 
 // TODO: expand to and select the new file in the project tree, if the action is initiated from projects view.
-export const createFileActionState = selector({
-  key: `action.${projectActionIds.NewFile}`,
-  get: ({ get, getCallback }): ActionDefinition => ({
-    id: projectActionIds.NewFile,
-    icon: <PlatformIcon icon="fileTypes/text" />,
-    title: "File",
-    description: "Create new file",
-    isDisabled: !get(activePathExistsState),
-    actionPerformed: getCallback(({ snapshot, refresh }) => async () => {
-      const activePaths = snapshot.getLoadable(activePathsState).getValue();
-      if (activePaths.length === 0) {
-        return;
-      }
-      const popupManager = snapshot
-        .getLoadable(projectPopupManagerRefState)
-        .getValue().current;
+export const createFileActionAtom = actionAtom({
+  id: projectActionIds.NewFile,
+  icon: <PlatformIcon icon="fileTypes/text" />,
+  title: "File",
+  description: "Create new file",
+  isDisabled: atom((get) => !get(activePathExistsAtom)),
+  actionPerformed: async ({ get }) => {
+    const activePaths = get(activePathsAtom);
+    if (activePaths.length === 0) {
+      return;
+    }
+    const popupManager = get(projectPopupManagerRefAtom).current;
 
-      // TODO: open a dialog and let the user choose the destination if, multiple paths are active
-      const destinationDir = (
-        await fs.promises.stat(activePaths[0])
-      ).isDirectory()
-        ? activePaths[0]
-        : path.dirname(activePaths[0]);
+    // TODO: open a dialog and let the user choose the destination if, multiple paths are active
+    const destinationDir = (
+      await fs.promises.stat(activePaths[0])
+    ).isDirectory()
+      ? activePaths[0]
+      : path.dirname(activePaths[0]);
 
-      if (!popupManager) {
-        throw new Error("Could not find popup manager");
-      }
+    if (!popupManager) {
+      throw new Error("Could not find popup manager");
+    }
 
-      popupManager.show(({ close }) => (
-        <NewFilePopup close={close} destinationDir={destinationDir} />
-      ));
-    }),
-  }),
+    popupManager.show(({ close }) => (
+      <NewFilePopup close={close} destinationDir={destinationDir} />
+    ));
+  },
 });
 
 function NewFilePopup({
@@ -68,20 +65,14 @@ function NewFilePopup({
   close: () => void;
   destinationDir: string;
 }) {
-  const createFile = useRecoilCallback(
-    (callbackInterface) => {
-      const createFile = createFileCallback(callbackInterface);
-      return async (destination: string, filename: string) => {
-        const fullpath = path.join(destinationDir, filename);
-        const { snapshot } = callbackInterface;
-        const editorManager = snapshot
-          .getLoadable(editorManagerState)
-          .getValue();
-        const windowManager = snapshot
-          .getLoadable(windowManagerRefState)
-          .getValue().current;
-        const repoDir = await snapshot.getPromise(vcsRootForFile(fullpath));
-        await createFile(destinationDir, filename);
+  const createFile = useAtomCallback(
+    useCallback(
+      async (get, set, destination: string, filename: string) => {
+        const fullpath = path.join(destination, filename);
+        const editorManager = get(editorManagerAtom);
+        const windowManager = get(windowManagerRefAtom).current;
+        const repoDir = await get(vcsFootForFileAtom(fullpath));
+        await createFileCallback(get, set, destination, filename);
         // TODO: select it in the Project tool window, if it was created from the Project tool window
         close();
         editorManager.focus();
@@ -97,9 +88,9 @@ function NewFilePopup({
             <AddFileToGitWindow filepath={fullpath} close={close} />
           ));
         }
-      };
-    },
-    [close]
+      },
+      [close]
+    )
   );
   const [filename, setFilename] = useState("");
   const [validationMessage, setValidationMessage] = useState("");
@@ -136,10 +127,6 @@ function NewFilePopup({
   );
 }
 
-function useAddToGit() {
-  return useRecoilCallback(gitAddCallback, []);
-}
-
 function AddFileToGitWindow({
   close,
   filepath,
@@ -147,7 +134,7 @@ function AddFileToGitWindow({
   close: () => void;
   filepath: string;
 }) {
-  const addToGit = useAddToGit();
+  const addToGit = useAtomCallback(gitAddCallback);
   return (
     <ModalWindow minWidth="content" minHeight="content">
       <WindowLayout

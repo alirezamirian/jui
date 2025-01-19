@@ -1,6 +1,6 @@
 import { Legend, legends } from "../../test-data";
 import React, { ReactNode, useRef } from "react";
-import { Story } from "@storybook/react";
+import { StoryFn } from "@storybook/react";
 import {
   Divider,
   DividerItem,
@@ -52,7 +52,7 @@ export const renderItemTextWithHighlights = (item: Legend) => (
 
 export const commonListStories = {
   withConnectedInput: (ListCmp: typeof List) => {
-    const WithConnectedInput: Story<ListProps<any>> = (props) => {
+    const WithConnectedInput: StoryFn<ListProps<any>> = (props) => {
       const inputRef = useRef<HTMLInputElement>(null);
       const [isFocused, setIsFocused] = React.useState(false);
       const listRef = React.useRef<HTMLDivElement>(null);

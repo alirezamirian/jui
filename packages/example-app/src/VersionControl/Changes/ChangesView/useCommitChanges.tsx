@@ -1,8 +1,8 @@
 import path from "path";
 import { groupBy } from "ramda";
-import { useRecoilCallback } from "recoil";
+import { useAtomCallback } from "jotai/utils";
 import { IntlMessageFormat } from "intl-messageformat";
-import React from "react";
+import React, { useCallback } from "react";
 import { useBalloonManager } from "@intellij-platform/core";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
 
@@ -10,14 +10,14 @@ import { fs } from "../../../fs/fs";
 import { commitFiles } from "../../commit-utils";
 import {
   useRefreshRepoStatuses,
-  vcsRootForFile,
+  vcsFootForFileAtom,
 } from "../../file-status.state";
 import { useRunTask } from "../../../tasks";
-import { commitTaskIdState } from "./ChangesView.state";
+import { commitTaskIdAtom } from "./ChangesView.state";
 import { AnyChange, Change } from "../Change";
-import { resolvedRefState } from "../../refs.state";
-import { repoCurrentBranchNameState } from "../../Branches/branches.state";
-import { allCommitsState } from "../../VersionControlToolWindow/CommitsView/CommitsTable.state";
+import { resolvedRefAtoms } from "../../refs.state";
+import { repoCurrentBranchNameAtom } from "../../Branches/branches.state";
+import { allCommitsAtom } from "../../VersionControlToolWindow/CommitsView/CommitsTable.state";
 
 const commitSuccessfulMessage = new IntlMessageFormat(
   `{count, plural,
@@ -36,9 +36,9 @@ export function useCommitChanges() {
   const balloonManager = useBalloonManager();
   const runTask = useRunTask();
 
-  return useRecoilCallback(
-    ({ snapshot, set, refresh }) =>
-      (changes: readonly AnyChange[], commitMessage: string) => {
+  return useAtomCallback(
+    useCallback(
+      (get, set, changes: readonly AnyChange[], commitMessage: string) => {
         const taskId = runTask(
           { title: "Committing...", isCancelable: false },
           {
@@ -50,9 +50,7 @@ export function useCommitChanges() {
                   await Promise.all(
                     changes.map(async (change) => {
                       const filePath = Change.path(change);
-                      const repoRoot = snapshot
-                        .getLoadable(vcsRootForFile(filePath))
-                        .getValue();
+                      const repoRoot = await get(vcsFootForFileAtom(filePath));
                       const content = (await fs.promises.exists(filePath))
                         ? await fs.promises.readFile(filePath)
                         : null;
@@ -93,23 +91,23 @@ export function useCommitChanges() {
                         email: "alireza.mirian@gmail.com",
                       },
                     });
-                    const currentBranch = await snapshot.getPromise(
-                      repoCurrentBranchNameState(repoRoot)
+                    const currentBranch = await get(
+                      repoCurrentBranchNameAtom(repoRoot)
                     );
                     if (currentBranch) {
-                      refresh(
-                        resolvedRefState({
+                      set(
+                        resolvedRefAtoms({
                           repoRoot,
                           ref: currentBranch,
                         })
                       );
                     }
-                    refresh(resolvedRefState({ repoRoot, ref: "HEAD" }));
+                    set(resolvedRefAtoms({ repoRoot, ref: "HEAD" }));
                   }
                 )
               ).then(
                 () => {
-                  refresh(allCommitsState); // maybe a more efficient way to update only the newly added commit, when
+                  set(allCommitsAtom); // maybe a more efficient way to update only the newly added commit, when
                   // allCommitsState is refactored to allow that
                   refreshFileStatus().catch(console.error);
 
@@ -139,12 +137,13 @@ export function useCommitChanges() {
               );
             },
             onFinished: () => {
-              set(commitTaskIdState, null);
+              set(commitTaskIdAtom, null);
             },
           }
         );
-        set(commitTaskIdState, taskId);
+        set(commitTaskIdAtom, taskId);
       },
-    []
+      []
+    )
   );
 }

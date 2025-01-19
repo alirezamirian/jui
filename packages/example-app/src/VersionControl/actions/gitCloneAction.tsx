@@ -1,6 +1,6 @@
 import path from "path";
-import React, { useRef, useState } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import React, { useEffect, useRef, useState } from "react";
+import { useAtom } from "jotai";
 import {
   Button,
   ComboBox,
@@ -10,46 +10,42 @@ import {
   styled,
   WindowLayout,
 } from "@intellij-platform/core";
-import { windowManagerRefState } from "../../Project/project.state";
+import { windowManagerRefAtom } from "../../Project/project.state";
 import { fs } from "../../fs/fs";
 import { stat } from "../../fs/fs-utils";
-import { createAction } from "../../createAction";
 import { VcsActionIds } from "../VcsActionIds";
 import {
-  cloneParentDirState,
-  gitVisitedUrlsState,
+  cloneParentDirAtom,
+  gitVisitedUrlsAtom,
 } from "../gitRememberedInputs.state";
 import { useClone } from "../useClone";
 import { PathInputField } from "./PathInputField";
+import { actionAtom } from "../../actionAtom";
 
-export const gitCloneActionSelector = createAction({
+export const gitCloneActionAtom = actionAtom({
   id: VcsActionIds.GIT_CLONE,
   title: "Clone...",
-  actionPerformed:
-    ({ snapshot }) =>
-    async () => {
-      const windowManager = await snapshot.getPromise(windowManagerRefState);
-      windowManager.current?.open(({ close }) => (
-        <GitCloneWindow close={close} />
-      ));
-    },
+  actionPerformed: async ({ get }) => {
+    const windowManager = get(windowManagerRefAtom);
+    windowManager.current?.open(({ close }) => (
+      <GitCloneWindow close={close} />
+    ));
+  },
 });
 
-export const cloneAnotherRepoActionSelector = createAction({
+export const cloneAnotherRepoActionAtom = actionAtom({
   id: "ExampleApp.cloneExampleRepo",
   title: "Clone another repository...",
   isSearchable: false,
-  actionPerformed:
-    ({ snapshot }) =>
-    async () => {
-      const windowManager = await snapshot.getPromise(windowManagerRefState);
-      windowManager.current?.open(({ close }) => (
-        <GitCloneWindow
-          close={close}
-          url="https://github.com/thurwitz/example-branches.git"
-        />
-      ));
-    },
+  actionPerformed: ({ get }) => {
+    const windowManager = get(windowManagerRefAtom);
+    windowManager.current?.open(({ close }) => (
+      <GitCloneWindow
+        close={close}
+        url="https://github.com/thurwitz/example-branches.git"
+      />
+    ));
+  },
 });
 
 const StyledContainer = styled.div`
@@ -68,18 +64,28 @@ function GitCloneWindow({
   url?: string;
 }) {
   const [url, setUrl] = useState(urlProp ?? "");
-  const parentDir = useRecoilValue(cloneParentDirState);
-  const [directory, setDirectory] = useState(getAutoFillDir(url));
+  const [parentDir, setCloneParentDirState] = useAtom(cloneParentDirAtom);
+  const [visitedUrls, setVisitedUrls] = useAtom(gitVisitedUrlsAtom);
+  const [directory, setDirectory] = useState("");
   const [autoFillDirectory, setAutoFillDirectory] = useState(true);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
-  const setCloneParentDirState = useSetRecoilState(cloneParentDirState);
-  const [visitedUrls, setVisitedUrls] = useRecoilState(gitVisitedUrlsState);
   const urlInputRef = useRef<HTMLInputElement>(null);
   const dirInputRef = useRef<HTMLInputElement>(null);
   const urlError = validateRepoUrl(url);
   const [dirError, setDirError] = useState("");
 
   const clone = useClone();
+
+  useEffect(() => {
+    if (autoFillDirectory) {
+      const repoName =
+        url
+          .split(/\/{1,2}/)
+          .pop()
+          ?.replace(/\.git$/, "") ?? "";
+      setDirectory(repoName ? path.join(parentDir, repoName) : parentDir);
+    }
+  }, [parentDir, url, autoFillDirectory]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,15 +122,6 @@ function GitCloneWindow({
     close();
   };
 
-  function getAutoFillDir(value: string) {
-    const repoName =
-      value
-        .split(/\/{1,2}/)
-        .pop()
-        ?.replace(/\.git$/, "") ?? "";
-    return repoName ? path.join(parentDir, repoName) : parentDir;
-  }
-
   return (
     <ModalWindow minWidth={600} minHeight="content">
       <WindowLayout
@@ -144,9 +141,6 @@ function GitCloneWindow({
                   validationMessage={showValidationErrors && urlError}
                   onValueChange={(value) => {
                     setUrl(value);
-                    if (autoFillDirectory) {
-                      setDirectory(getAutoFillDir(value));
-                    }
                   }}
                   items={visitedUrls}
                 >
