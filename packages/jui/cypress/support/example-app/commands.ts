@@ -46,11 +46,7 @@ function initialize(
 ) {
   cy.visit("/", {
     onBeforeLoad(win: Cypress.AUTWindow) {
-      return ((win as any).INITIALIZE_APP = async ({
-        fs,
-        git,
-        path,
-      }: AppGlobals) => {
+      (win as any).INITIALIZE_APP = async ({ fs, git, path }: AppGlobals) => {
         await fs.promises.mkdir("/workspace");
         return Promise.all(
           initializeFns.map(async (fn) =>
@@ -62,11 +58,13 @@ function initialize(
             })
           )
         );
-      });
+      };
     },
   });
   // Without this, the keyboard events in potential next commands may get triggered before the app is fully loaded.
   cy.focused({ timeout: 8000 });
+  // Editor loads asynchronously. If autofocusing after the test interactions begins causes focus to jump unexpectedly.
+  cy.contains("Loading...").should("not.exist");
 }
 
 function searchAndInvokeAction(
