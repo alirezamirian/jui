@@ -57,7 +57,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 16.16.0
+          node-version: 20.18.1
           cache: yarn
 
       - name: Install Dependencies 🔧
@@ -78,7 +78,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 16.16.0
+          node-version: 20.18.1
           cache: yarn
 
       - name: Install Dependencies 🔧
@@ -113,7 +113,7 @@ jobs:
       matrix:
         group: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     runs-on: ubuntu-latest # note: macos doesn't have docker installed!
-    container: cypress/browsers:node16.16.0-chrome107-ff107-edge
+    container: cypress/browsers:node-20.18.0-chrome-130.0.6723.69-1-ff-131.0.3-edge-130.0.2849.52-1
 
     env:
       CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
@@ -130,7 +130,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 16.16.0
+          node-version: 20.18.1
           cache: yarn
 
       - name: Install Dependencies 🔧
@@ -163,7 +163,7 @@ jobs:
       matrix:
         group: [1, 2, 3, 4, 5]
     runs-on: ubuntu-latest # note: macos doesn't have docker installed!
-    container: cypress/browsers:node16.16.0-chrome107-ff107-edge
+    container: cypress/browsers:node-20.18.0-chrome-130.0.6723.69-1-ff-131.0.3-edge-130.0.2849.52-1
 
     env:
       CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
@@ -175,7 +175,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 16.16.0
+          node-version: 20.18.1
           cache: yarn
 
       - name: Install Dependencies 🔧

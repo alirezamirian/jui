@@ -12,10 +12,10 @@ jobs:
         uses: actions/checkout@v3
 
       # Predictable node version. Going to node 18 build started to fail with some openssl provider error
-      - name: Use Node 16
+      - name: Use Node 20
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 20.18.1
           cache: yarn
 
       - name: Install and Build 🔧
@@ -36,10 +36,10 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
 
-      - name: Use Node 16
+      - name: Use Node 20
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 20.18.1
           cache: yarn
 
       - name: Check NPM Auth 🔐
