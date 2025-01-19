@@ -1,12 +1,16 @@
 import git from "isomorphic-git";
 import { fs } from "../../fs/fs";
-import { currentProjectAtom } from "../../Project/project.state";
+import {
+  activePathsAtom,
+  currentProjectAtom,
+} from "../../Project/project.state";
 import { VcsActionIds } from "../VcsActionIds";
 import {
   refreshRepoStatusesCallback,
   vcsRootsAtom,
 } from "../file-status.state";
 import { actionAtom } from "../../actionAtom";
+import { stat } from "../../fs/fs-utils";
 
 /**
  * FIXME: action is not enabled on repo roots.
@@ -20,7 +24,9 @@ export const gitInitActionAtom = actionAtom({
   actionPerformed: async ({ get, set }) => {
     // TODO: open a path selector to select the path where the git repo should be initialized
     const project = get(currentProjectAtom);
-    const dir = project.path;
+    const activePath = get(activePathsAtom)[0];
+    const stats = await stat(activePath);
+    const dir = stats?.isDirectory() ? activePath : project.path;
     await git.init({ fs, dir });
     set(vcsRootsAtom, (roots) =>
       roots
