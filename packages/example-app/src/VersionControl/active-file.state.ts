@@ -11,6 +11,8 @@ import {
   repoBranchesAtom,
 } from "./Branches/branches.state";
 
+import { latestDefinedValue } from "../atom-utils/latestDefinedValue";
+
 /**
  * Repo root of the file opened in the active editor tab.
  */
@@ -35,10 +37,12 @@ export const activeFileRepoBranchesAtom = atom<Promise<RepoBranches | null>>(
 /**
  * Current branch of the file opened in the active editor tab.
  */
-export const activeFileCurrentBranchAtom = atom(async (get) => {
-  const activeFile = get(activeEditorTabAtom)?.filePath;
-  return activeFile ? get(branchForPathAtoms(activeFile)) : null;
-});
+export const activeFileCurrentBranchAtom = latestDefinedValue(
+  atom(async (get) => {
+    const activeFile = get(activeEditorTabAtom)?.filePath;
+    return activeFile ? get(branchForPathAtoms(activeFile)) : null;
+  })
+);
 
 /**
  * HEAD of the repository of the file opened in the active editor tab.
