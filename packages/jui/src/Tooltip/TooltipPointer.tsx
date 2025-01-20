@@ -1,5 +1,5 @@
 import { compose, identity } from "ramda";
-import React, { CSSProperties, RefObject, useEffect, useState } from "react";
+import React, { CSSProperties } from "react";
 import { css, styled } from "@intellij-platform/core/styled";
 
 import {
@@ -132,30 +132,19 @@ function pointerPositionToOffsetStyle({
 export function TooltipPointer({
   side,
   offset,
-  tooltipRef,
+  tooltipSize,
 }: {
   side: TooltipPointerPosition["side"];
   offset:
     | { type: "calculated"; value: CSSProperties }
     | { type: "specific"; value: TooltipPointerPosition["offset"] };
-  tooltipRef: RefObject<HTMLElement>;
+  tooltipSize: { width: number; height: number };
 }) {
-  const [size, setSize] = useState<{
-    height: number | undefined;
-    width: number | undefined;
-  }>({ height: undefined, width: undefined });
-  useEffect(() => {
-    const { offsetHeight, offsetWidth } = tooltipRef.current || {};
-    if (offsetHeight != size?.height || offsetWidth != size?.width) {
-      setSize({ height: offsetHeight, width: offsetWidth });
-    }
-  });
-
   return (
     <StyledTooltipPointer
       side={side}
       style={limitPointerPositionStyles(
-        size,
+        tooltipSize,
         offset.type === "specific"
           ? pointerPositionToOffsetStyle({ side, offset: offset.value })
           : offset.value

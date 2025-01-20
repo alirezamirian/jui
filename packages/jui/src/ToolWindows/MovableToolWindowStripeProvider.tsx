@@ -103,15 +103,15 @@ export const MovableToolWindowStripeProvider = <T extends unknown>({
         }
         const { stripeElRef } = stripe;
         const stripeElement = stripeElRef.current!;
-        const getItemRect = (key: Key) =>
-          stripeElement
-            .querySelector(`[data-key="${key}"]`)! // FIXME
-            .getBoundingClientRect();
-
-        // Running the following two state setters immediately affect the layout
-        // in a way that is necessary for drop position calculation, so the order
-        // is important
-        setDraggingRect(getItemRect(key).toJSON());
+        const itemElement = stripeElement.querySelector<HTMLElement>(
+          `[data-key="${key}"]`
+        );
+        if (!itemElement) {
+          throw new Error(
+            `unexpected state: Could not find stripe button element ${key} via data-key attribute`
+          );
+        }
+        setDraggingRect(itemElement.getBoundingClientRect().toJSON());
         setDraggingKey(key);
 
         const indexInMain = stripe.mainItems.findIndex(
@@ -126,11 +126,20 @@ export const MovableToolWindowStripeProvider = <T extends unknown>({
           index: indexInMain > -1 ? indexInMain : indexInSplit,
           isSplit: indexInSplit > -1,
         };
-
+        const display = itemElement.style.display;
+        // Hiding the button that's being dragged immediately is important for size calculation.
+        // It will be controlled and overridden by style prop later, But it's important to have it
+        // set here too.
+        // That's because in React 18 setting state (which subsequently sets style prop) is batched
+        // with other state changes in the event handler this is being called and is not immediately
+        // applied.
+        itemElement.style.display = "none";
         const dropPositionGetters = Object.entries(stripes.current).map(
           ([id, stripe]) =>
             [id, stripe.current!.createGetDropPosition(key)] as const
         );
+        itemElement.style.display = display;
+
         const getDropPosition = (draggedRect: Rect) => {
           for (const [id, getDropPosition] of dropPositionGetters) {
             const dropPosition = getDropPosition(draggedRect);

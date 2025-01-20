@@ -1,4 +1,10 @@
-import React, { ForwardedRef, MutableRefObject, useContext } from "react";
+import React, {
+  ForwardedRef,
+  MutableRefObject,
+  useContext,
+  useLayoutEffect,
+  useState,
+} from "react";
 import { AriaTooltipProps, useTooltip } from "@react-aria/tooltip";
 import { useObjectRef } from "@react-aria/utils";
 import { PositionAria } from "@react-aria/overlays";
@@ -185,6 +191,7 @@ const Tooltip = React.forwardRef(function Tooltip(
         }
       : state
   );
+  const measuredSize = useMeasuredSize(ref);
 
   const { side, offset } =
     typeof withPointer === "object"
@@ -199,9 +206,9 @@ const Tooltip = React.forwardRef(function Tooltip(
       className={props.className}
       ref={ref}
     >
-      {withPointer && (
+      {withPointer && measuredSize && (
         <TooltipPointer
-          tooltipRef={ref}
+          tooltipSize={measuredSize}
           side={side}
           offset={
             offset || !pointerPositionStyle
@@ -214,6 +221,32 @@ const Tooltip = React.forwardRef(function Tooltip(
     </StyledTooltip>
   );
 });
+
+const useMeasuredSize = (
+  ref: React.MutableRefObject<HTMLDivElement | null>
+) => {
+  const [measuredSize, setMeasuredSize] = useState<
+    | undefined
+    | {
+        height: number;
+        width: number;
+      }
+  >(undefined);
+
+  useLayoutEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+    const { offsetHeight, offsetWidth } = ref.current;
+    if (
+      offsetHeight != measuredSize?.height ||
+      offsetWidth != measuredSize?.width
+    ) {
+      setMeasuredSize({ height: offsetHeight, width: offsetWidth });
+    }
+  });
+  return measuredSize;
+};
 
 const _Tooltip = Object.assign(Tooltip, {
   Header: StyledHeader,

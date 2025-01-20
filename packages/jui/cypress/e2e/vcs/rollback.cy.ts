@@ -16,7 +16,6 @@ describe("vcs => rollback", () => {
 
   it("can rollback a combination of additions and modifications, not deleting local copies", () => {
     cy.initialization(withDifferentChangeTypes);
-
     cy.step("Verify initial state");
     cy.findTreeNodeInProjectView("existing-file.ts");
     cy.findTreeNodeInProjectView("new-file.ts");

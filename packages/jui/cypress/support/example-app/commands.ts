@@ -64,7 +64,9 @@ function initialize(
   // Without this, the keyboard events in potential next commands may get triggered before the app is fully loaded.
   cy.focused({ timeout: 8000 });
   // Editor loads asynchronously. If autofocusing after the test interactions begins causes focus to jump unexpectedly.
-  cy.contains("Loading...").should("not.exist");
+  cy.get(
+    "textarea[aria-roledescription=editor], [data-testid=EditorZeroState]"
+  );
 }
 
 function searchAndInvokeAction(

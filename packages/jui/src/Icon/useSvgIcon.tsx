@@ -1,4 +1,10 @@
-import { RefObject, useContext, useEffect } from "react";
+import {
+  RefObject,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import { useTheme } from "@intellij-platform/core/styled";
 import { ItemStateContext } from "@intellij-platform/core/Collections";
 
@@ -15,6 +21,23 @@ export function useSvgIcon(
   const theme = useTheme();
   const itemState = useContext(ItemStateContext);
   const selected = itemState?.isSelected || itemState?.isContainerFocused;
+  const [svg, setSvg] = useState<null | string>(null);
+
+  useLayoutEffect(() => {
+    const element = ref.current;
+    if (element) {
+      element.ariaBusy = svg === null ? "true" : null;
+      element.querySelector("svg")?.remove();
+      if (svg) {
+        const svgElement = document.createElement("svg");
+        element.appendChild(svgElement);
+        svgElement.outerHTML = makeIdsUnique(svg); // UNSAFE! Would require sanitization, or icon sources must be trusted.
+      }
+    } else {
+      console.log(`unexpected state - ${path}`);
+    }
+  }, [svg]);
+
   useEffect(() => {
     let canceled = false;
     const fetchIcon = async () => {
@@ -22,10 +45,7 @@ export function useSvgIcon(
         console.error("icon path is empty");
         return;
       }
-      if (ref.current) {
-        // For querying for icons that are not loaded yet. Especially useful for visual testing
-        ref.current.ariaBusy = "true";
-      }
+      setSvg(null);
       const svg = await theme
         .getSvgIcon(path, selected)
         .catch((e) => {
@@ -34,21 +54,12 @@ export function useSvgIcon(
           }
           throw e;
         })
-        .finally(() => {
-          if (ref?.current && !canceled) {
-            ref.current.ariaBusy = "false";
-          }
+        .catch((e) => {
+          console.error(`Could not resolve icon "${path}"`, e);
+          return "";
         });
-      if (svg) {
-        const element = ref?.current;
-        if (!canceled && element) {
-          element.querySelector("svg")?.remove();
-          const svgElement = document.createElement("svg");
-          element.appendChild(svgElement);
-          svgElement.outerHTML = makeIdsUnique(svg); // UNSAFE! Would require sanitization, or icon sources must be trusted.
-        }
-      } else {
-        console.error("Could not resolve icon:", path);
+      if (!canceled) {
+        setSvg(svg);
       }
     };
     fetchIcon().catch(console.error);

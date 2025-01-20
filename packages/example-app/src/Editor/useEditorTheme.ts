@@ -1,7 +1,7 @@
 import { EditorProps, useMonaco } from "@monaco-editor/react";
 import { Theme } from "@intellij-platform/core";
 import { editor } from "monaco-editor";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useTheme } from "styled-components";
 
 import vsCodeTheme from "../resources/dracula-color-theme.json"; // FIXME: don't read a fixed color scheme
@@ -28,9 +28,7 @@ const darculaColorSchemeTokenRules: editor.ITokenThemeRule[] =
 export const useEditorTheme = () => {
   const monaco = useMonaco();
   const theme = useTheme() as Theme;
-  const [themeName, setThemeName] = useState<EditorProps["theme"]>(
-    theme.dark ? "vs-dark" : "light"
-  );
+  const [themeName, setThemeName] = useState<EditorProps["theme"]>(undefined);
   useLayoutEffect(() => {
     if (monaco) {
       const name = `jui-theme-${theme.name.replace(" ", "")}`;

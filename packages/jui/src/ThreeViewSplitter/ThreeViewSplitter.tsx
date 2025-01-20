@@ -91,6 +91,10 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const firstViewRef = useRef<HTMLDivElement>(null);
   const lastViewRef = useRef<HTMLDivElement>(null);
+  const resizeFromRef = useRef<{
+    firstView: number | null;
+    lastView: number | null;
+  }>({ firstView: null, lastView: null });
   const [firstSizeState, setFirstSizeState] = useState<number | null>(null);
   const [lastSizeState, setLastSizeState] = useState<number | null>(null);
   const theme = useTheme() as Theme;
@@ -129,8 +133,8 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
   const getSize = (elem: HTMLElement): number =>
     value(elem.offsetWidth, elem.offsetHeight);
 
-  const getNewSize = (currentSize: number, newSize: number) => {
-    if (currentSize != null && isFractionSize(currentSize)) {
+  const getNewSize = (fromSize: number, resize: number) => {
+    if (fromSize != null && isFractionSize(fromSize)) {
       if (!containerRef.current) {
         throw new Error(
           "ThreeViewSplitter: Could not locate container to calculate fraction size"
@@ -140,10 +144,10 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
         containerRef.current.offsetWidth,
         containerRef.current.offsetHeight
       );
-      const newFractionSize = newSize / containerSize;
-      return newFractionSize < 1 ? newFractionSize : currentSize;
+      const newFractionSize = resize / containerSize;
+      return newFractionSize < 1 ? newFractionSize : fromSize;
     } else {
-      return Math.max(newSize, 1);
+      return Math.max(resize, 1);
     }
   };
 
@@ -188,11 +192,18 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
                 ? getSize(firstViewRef.current)
                 : 0;
               setFirstSizeState(firstSize ?? size);
+              // In React 18, set state in handlers can be batched, so we can't rely
+              // on `firstSizeState` in `onResize`, and keep the initial size in a ref too.
+              // Although not likely in practice for those events to be batched,
+              // it at least happened in tests.
+              resizeFromRef.current.firstView = firstSize ?? size;
               return size;
             }}
             onResize={(newSize) => {
-              if (firstSizeState != null) {
-                setFirstSizeState(getNewSize(firstSizeState, newSize));
+              if (resizeFromRef.current.firstView != null) {
+                setFirstSizeState(
+                  getNewSize(resizeFromRef.current.firstView, newSize)
+                );
               }
             }}
             onResizeEnd={() => {
@@ -221,11 +232,14 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
             onResizeStarted={() => {
               const size = getSize(lastViewRef.current!);
               setLastSizeState(lastSize ?? size);
+              resizeFromRef.current.lastView = lastSize ?? size;
               return size;
             }}
             onResize={(newSize) => {
-              if (lastSizeState != null) {
-                setLastSizeState(getNewSize(lastSizeState, newSize));
+              if (resizeFromRef.current.lastView != null) {
+                setLastSizeState(
+                  getNewSize(resizeFromRef.current.lastView, newSize)
+                );
               }
             }}
             onResizeEnd={() => {

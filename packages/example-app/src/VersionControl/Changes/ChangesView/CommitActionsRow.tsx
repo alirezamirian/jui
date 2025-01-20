@@ -1,5 +1,5 @@
 import React from "react";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   IconButton,
   ActionHelpTooltip,
@@ -14,7 +14,7 @@ import {
 import { ChangesSummary } from "../ChangesSummary";
 import { notImplemented } from "../../../Project/notImplemented";
 import { amendCommitAtom, includedChangesAtom } from "./ChangesView.state";
-import { focusCommitMessage } from "./ChangesViewSplitter";
+import { focusCommitMessageAtom } from "./ChangesViewSplitter";
 
 const StyledActionsRow = styled.div`
   display: flex;
@@ -43,6 +43,7 @@ const ChangesViewChangesSummary = () => {
  */
 export function CommitActionsRow() {
   const [amend, setAmend] = useAtom(amendCommitAtom);
+  const focusCommitMessage = useSetAtom(focusCommitMessageAtom);
 
   return (
     <StyledActionsRow>

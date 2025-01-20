@@ -296,7 +296,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   };
   const toolbarOverflowPopupProps = {
     onMouseEnter: () => setOverflowPopupVisible(true),
-    onMouseLeave: () => setOverflowPopupVisible(false),
+    onMouseLeave: (e: React.MouseEvent) => {
+      if (e.relatedTarget !== ref.current) {
+        setOverflowPopupVisible(false);
+      }
+    },
   };
   return (
     <OrientationContext.Provider value={orientation}>

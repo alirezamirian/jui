@@ -24,36 +24,42 @@ export const StyledEditor = styled(MonacoEditor)`
  *  - selection look different.
  *  - BUG: height is more than necessary. Needs investigation first.
  */
-export const Editor = (props: Omit<EditorProps, "theme">) => {
+export const Editor: React.FC<Omit<EditorProps, "theme">> = (
+  props: Omit<EditorProps, "theme">
+) => {
   const editorTheme = useEditorTheme();
   const fontSize = 13;
   return (
-    <StyledEditor
-      {...props}
-      options={
-        {
-          minimap: { enabled: false },
-          lineHeight: 22,
-          showFoldingControls: "always",
-          guides: {
-            indentation: true,
-          },
-          overviewRulerBorder: false,
-          fontFamily: "JetBrains Mono",
-          fontSize,
-          scrollbar: {
-            verticalScrollbarSize: 14,
-            horizontalScrollbarSize: 8,
-            verticalSliderSize: 8,
-            horizontalSliderSize: 8,
-            horizontal: "auto",
-            vertical: "visible",
-            alwaysConsumeMouseWheel: false, // to let example-app be rendered as a part of a page.
-          },
-          ...props.options,
-        } as EditorProps["options"]
-      }
-      theme={editorTheme as any} // FIXME
-    />
+    <>
+      {editorTheme && (
+        <StyledEditor
+          {...props}
+          options={
+            {
+              minimap: { enabled: false },
+              lineHeight: 22,
+              showFoldingControls: "always",
+              guides: {
+                indentation: true,
+              },
+              overviewRulerBorder: false,
+              fontFamily: "JetBrains Mono",
+              fontSize,
+              scrollbar: {
+                verticalScrollbarSize: 14,
+                horizontalScrollbarSize: 8,
+                verticalSliderSize: 8,
+                horizontalSliderSize: 8,
+                horizontal: "auto",
+                vertical: "visible",
+                alwaysConsumeMouseWheel: false, // to let example-app be rendered as a part of a page.
+              },
+              ...props.options,
+            } as EditorProps["options"]
+          }
+          theme={editorTheme as any} // FIXME
+        />
+      )}
+    </>
   );
 };

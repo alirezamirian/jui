@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { useAtom, useAtomValue } from "jotai";
+import React, { useEffect, useRef } from "react";
+import { atom, useAtom, useAtomValue } from "jotai";
 import {
   ActionsProvider,
   getAnchorOrientation,
@@ -39,15 +39,13 @@ const StyledLoadingWrapper = styled.div`
   z-index: 1;
 `;
 
-// Not so ideal solution for allowing imperatively focusing commit message. Should be ok, since there will
-// be at most only one instance of change view rendered.
-let editor: { focus: () => void } | null = null;
-
-export let focusCommitMessage = () => {
-  setTimeout(() => {
-    editor?.focus();
-  });
-};
+const _focusCommitMessageAtom = atom(false);
+// Not-so-ideal solution to allow for focusing the commit message editor
+// in a way that doesn't depend on the timing of the commit message editor
+// being rendered, which can vary when the rendering suspends.
+export const focusCommitMessageAtom = atom(null, (_get, set) => {
+  set(_focusCommitMessageAtom, true);
+});
 
 export const ChangesViewSplitter = () => {
   const {
@@ -60,11 +58,21 @@ export const ChangesViewSplitter = () => {
   const [commitMessageSize, setCommitMessageSize] = useAtom(
     commitMessageSizeState(orientation)
   );
+  const [focusCommitMessage, setFocusCommitMessage] = useAtom(
+    _focusCommitMessageAtom
+  );
   const changesViewActions = useChangesViewActions();
   const treeActions = useTreeActions({ treeRef });
   // TODO(lib-candidate): ToolWindowAwareSplitter. A wrapper around ThreeViewSplitter which sets orientation based
   //  on anchor orientation from useToolWindowState.
-  editor = editorRef.current;
+  useEffect(() => {
+    if (focusCommitMessage) {
+      setTimeout(() => {
+        editorRef.current?.focus();
+      });
+      setFocusCommitMessage(false);
+    }
+  }, [focusCommitMessage]);
 
   return (
     <ThreeViewSplitter

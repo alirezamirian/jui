@@ -12,7 +12,6 @@ import {
   COMMIT_TOOLWINDOW_ID,
   CommitToolWindow,
 } from "../VersionControl/CommitToolWindow";
-import { UNSAFE_FocusRestoringSuspense } from "../UNSAFE_FocusRestoringSuspense";
 import {
   VERSION_CONTROL_TOOLWINDOW_ID,
   VersionControlToolWindow,
@@ -50,7 +49,7 @@ export const toolWindows: ToolWindowDescriptor[] = [
     title: "Commit",
     icon: <PlatformIcon icon="toolwindows/toolWindowCommit" />,
     content: (
-      <Suspense fallback={<UNSAFE_FocusRestoringSuspense />}>
+      <Suspense>
         <CommitToolWindow />
       </Suspense>
     ),
@@ -65,7 +64,7 @@ export const toolWindows: ToolWindowDescriptor[] = [
     title: "Version Control",
     icon: <PlatformIcon icon="toolwindows/toolWindowChanges" />,
     content: (
-      <Suspense fallback={<UNSAFE_FocusRestoringSuspense />}>
+      <Suspense>
         <VersionControlToolWindow />
       </Suspense>
     ),

@@ -28,7 +28,7 @@ const StyledShortcut = styled.div`
 
 export function EditorZeroState() {
   return (
-    <StyledContainer>
+    <StyledContainer data-testid="EditorZeroState">
       <ActionTip actionId={CommonActionId.GO_TO_FILE} />
       <ActionTip actionId={CommonActionId.GO_TO_ACTION} />
     </StyledContainer>
