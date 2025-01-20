@@ -1,10 +1,10 @@
-import useForwardedRef from "@intellij-platform/core/utils/useForwardedRef";
 import React, { ForwardedRef } from "react";
 import { useTheme } from "styled-components";
 import { Theme } from "../Theme/Theme";
 import { IconProps } from "./IconProps";
 import { StyledIconWrapper } from "./StyledIconWrapper";
 import { useSvgIcon } from "./useSvgIcon";
+import { useObjectRef } from "@react-aria/utils";
 
 interface IconModifiers {
   Selected?: boolean;
@@ -76,7 +76,7 @@ export const LafIcon = React.forwardRef(
   ) => {
     const resolvedIconPath = useIconPath(icon, themePath);
 
-    const ref = useForwardedRef(forwardedRef);
+    const ref = useObjectRef(forwardedRef);
     useSvgIcon({ path: `platform/platform-impl/src/${resolvedIconPath}` }, ref);
     return <StyledIconWrapper {...props} ref={ref} size={size} />;
   }

@@ -1,9 +1,9 @@
 import React, { ForwardedRef } from "react";
-import useForwardedRef from "@intellij-platform/core/utils/useForwardedRef";
 import { useTheme } from "@intellij-platform/core/styled";
 import { IconProps } from "./IconProps";
 import { StyledIconWrapper } from "./StyledIconWrapper";
 import { useSvgIcon } from "./useSvgIcon";
+import { useObjectRef } from "@react-aria/utils";
 
 export interface PlatformIconProps extends IconProps {
   /**
@@ -46,7 +46,7 @@ export const PlatformIcon = React.forwardRef(
     { icon, darkIcon, ...props }: PlatformIconProps,
     forwardedRef: ForwardedRef<HTMLElement>
   ) => {
-    const ref = useForwardedRef(forwardedRef);
+    const ref = useObjectRef(forwardedRef);
     const theme = useTheme();
     const iconName = theme.dark ? getDarkPath(icon, darkIcon) : icon;
     useSvgIcon(

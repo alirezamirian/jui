@@ -6,7 +6,6 @@ import {
   SpeedSearchProps,
   SpeedSearchStateProps,
 } from "@intellij-platform/core/SpeedSearch";
-import useForwardedRef from "@intellij-platform/core/utils/useForwardedRef";
 import { StyledTree } from "../StyledTree";
 import { SpeedSearchPopup } from "../../SpeedSearch/SpeedSearchPopup";
 import { useTreeState } from "../useTreeState";
@@ -15,7 +14,7 @@ import { useTreeVirtualizer } from "../useTreeVirtualizer";
 import { TreeContext } from "../TreeContext";
 import { useSpeedSearchTree } from "./useSpeedSearchTree";
 import { SpeedSearchTreeNode } from "./SpeedSearchTreeNode";
-import { filterDOMProps } from "@react-aria/utils";
+import { filterDOMProps, useObjectRef } from "@react-aria/utils";
 
 export type SpeedSearchTreeProps<T extends object> = TreeProps<T> &
   SpeedSearchProps &
@@ -43,7 +42,7 @@ export const SpeedSearchTree = React.forwardRef(
       { ...props, disallowEmptySelection: !props.allowEmptySelection },
       treeRef
     );
-    const ref = useForwardedRef(forwardedRef);
+    const ref = useObjectRef(forwardedRef);
     const {
       treeProps,
       treeContext,

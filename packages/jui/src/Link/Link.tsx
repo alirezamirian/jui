@@ -1,10 +1,9 @@
 import React, { ForwardedRef } from "react";
 import { AriaLinkProps } from "@react-types/link";
-import useForwardedRef from "@intellij-platform/core/utils/useForwardedRef";
 import { FocusRing, useFocusable } from "@react-aria/focus";
 import { StyledLink } from "@intellij-platform/core/Link/StyledLink";
 import { usePress } from "@react-aria/interactions";
-import { filterDOMProps, mergeProps } from "@react-aria/utils";
+import { filterDOMProps, mergeProps, useObjectRef } from "@react-aria/utils";
 
 export type LinkProps = AriaLinkProps & {
   isDisabled?: boolean;
@@ -31,7 +30,7 @@ export const Link = React.forwardRef(
     props: LinkProps,
     forwardedRef: ForwardedRef<HTMLAnchorElement>
   ): React.ReactElement => {
-    const ref = useForwardedRef(forwardedRef);
+    const ref = useObjectRef(forwardedRef);
 
     const { focusableProps } = useFocusable(props, ref);
     const { pressProps, isPressed } = usePress({ ...props, ref });
