@@ -129,7 +129,7 @@
     "storybook-addon-theme-provider": "^0.2.8",
     "stream-browserify": "^3.0.0",
     "ts-loader": "^8",
-    "webpack": "5"
+    "webpack": "^5.97.1"
   },
   "peerDependencies": {
     "react": ">=16.8",

@@ -54,4 +54,11 @@ export default {
       },
     ],
   },
+  ignoreWarnings: [
+    // @storybook/react imports @storybook/test which is its optional peer dependency.
+    // Webpack doesn't handle it well. Upgrading to >=5.90.2 didn't work.
+    // https://github.com/webpack/webpack/discussions/18027#discussioncomment-10073944
+    // https://github.com/webpack/webpack/issues/7713
+    (e) => e.message.includes("Can't resolve '@storybook/test'"),
+  ],
 } as Configuration;
