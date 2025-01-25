@@ -3,8 +3,8 @@
 
 const lightCodeTheme = require("prism-react-renderer/themes/github");
 const darkCodeTheme = require("prism-react-renderer/themes/dracula");
-const webpack = require("webpack");
-const path = require("path");
+const exampleAppConfig = require("../../config/example-app-webpack-config");
+const libAliases = require("../../config/lib-aliases");
 
 const repoUrl = "https://github.com/alirezamirian/jui";
 
@@ -30,7 +30,7 @@ const config = {
     [
       "@docusaurus/preset-classic",
       /** @type {import('@docusaurus/preset-classic').Options} */
-      ({
+      {
         docs: {
           sidebarPath: require.resolve("./sidebars.js"),
           editUrl: `${repoUrl}/edit/master/packages/website/`,
@@ -42,13 +42,13 @@ const config = {
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
         },
-      }),
+      },
     ],
   ],
 
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
-    ({
+    {
       tableOfContents: {
         maxHeadingLevel: 4,
       },
@@ -146,7 +146,7 @@ const config = {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
       },
-    }),
+    },
 };
 
 function myPlugin() {
@@ -154,22 +154,7 @@ function myPlugin() {
     name: "my-docusaurus-plugin",
     configureWebpack(config, isServer) {
       const resolve = {
-        alias: {
-          /**
-           * without this alias also we would be linked to the package source, but two things to consider:
-           * - `module`, `browser` and `main` fields are linked to `dist` folder, which means we would need to have
-           *   the library built on every change, in development, if we want it truly linked.
-           * - At the moment build is broken, due to duplicate exported identifiers.
-           *
-           * It's probably nicer to have this alias configured in website's package.json, but it didn't work as expected
-           * in the first attempt at least.
-           */
-          "@intellij-platform/core/themes": path.resolve(
-            __dirname,
-            "../jui/themes"
-          ),
-          "@intellij-platform/core": path.resolve(__dirname, "../jui/src"),
-        },
+        alias: libAliases,
       };
       if (config.mode === "production" && !isServer) {
         return {
@@ -189,25 +174,8 @@ function myPlugin() {
 function isomorphicGitWebpackConfigPlugin() {
   return {
     name: "isomorphic-git-webpack-config-docusaurus-plugin",
-    configureWebpack(config, isServer, utils) {
-      return {
-        resolve: {
-          fallback: {
-            buffer: require.resolve("buffer"),
-            process: require.resolve("process/browser"),
-            stream: require.resolve("stream-browserify"),
-            path: require.resolve("path-browserify"),
-          },
-        },
-        plugins: [
-          new webpack.ProvidePlugin({
-            Buffer: ["buffer", "Buffer"],
-          }),
-          new webpack.ProvidePlugin({
-            process: "process/browser",
-          }),
-        ],
-      };
+    configureWebpack() {
+      return exampleAppConfig;
     },
   };
 }

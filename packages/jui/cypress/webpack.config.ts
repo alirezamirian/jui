@@ -1,5 +1,7 @@
-const libSrcAlias = require("../../../config/lib-src-webpack-alias");
-import { Configuration, ProvidePlugin } from "webpack";
+const libSrcAlias = require("../../../config/lib-aliases.js");
+const exampleAppConfig = require("../../../config/example-app-webpack-config.js");
+
+import { Configuration } from "webpack";
 /**
  * This is needed for cypress component testing.
  *
@@ -20,19 +22,14 @@ export default {
     alias: {
       ...libSrcAlias,
     },
+    // fallbacks needed for cypress-plugin-snapshots
     fallback: {
       crypto: require.resolve("crypto-browserify"),
       path: require.resolve("path-browserify"),
       stream: require.resolve("stream-browserify"),
-      process: require.resolve("process/browser"),
     },
   },
-  plugins: [
-    new ProvidePlugin({
-      process: "process/browser",
-      Buffer: ["buffer", "Buffer"],
-    }),
-  ],
+  plugins: exampleAppConfig.plugins,
   module: {
     rules: [
       {

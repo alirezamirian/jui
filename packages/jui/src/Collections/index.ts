@@ -13,7 +13,7 @@ export { Item } from "./Item";
 // FIXME: remove this comment and reorder exports when the build tool is changed (to Rolldown or Vite or...)
 export { Section } from "@react-stately/collections";
 export { SelectionManager } from "@react-stately/selection";
-export { type Selection } from "@react-types/shared";
+export type { Selection } from "@react-types/shared";
 
 // NOTE: some stuff like `useCollectionCacheInvalidation` are not exported from the index, since the index is re-exported
 // from other modules like Menu, Tabs, etc., but that part of the API is not considered a public API at the moment.

@@ -1,6 +1,8 @@
 {
   "extends": "./tsconfig.json",
-  "compilerOptions": {},
+  "compilerOptions": {
+    "allowJs": true
+  },
   "include": ["src/**/*.stories.tsx", "src/ForwardRefPatch.d.ts"],
   "exclude": [
     "src/demo.stories.tsx" // FIXME: maybe handle in example app package, separately, although demos can be more than example-app
