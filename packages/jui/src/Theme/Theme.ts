@@ -361,9 +361,9 @@ export class Theme<P extends string = string> {
           return (
             theme.color("Component.disabledBorderColor") ||
             theme.color(
-              ("Outline.disabledColor" as UnknownThemeProp<"Outline.disabledColor">) ||
-                "#cfcfcf"
-            )
+              "Outline.disabledColor" as UnknownThemeProp<"Outline.disabledColor">
+            ) ||
+            "#cfcfcf"
           );
         }
         if (validationState === "error" || validationState === "warning") {
@@ -375,9 +375,9 @@ export class Theme<P extends string = string> {
         return focused
           ? theme.color("Component.focusedBorderColor") ||
               theme.color(
-                ("Outline.focusedColor" as UnknownThemeProp<"Outline.focusedColor">) ||
-                  "#87afda"
-              )
+                "Outline.focusedColor" as UnknownThemeProp<"Outline.focusedColor">
+              ) ||
+              "#87afda"
           : theme.color("Component.borderColor") ||
               theme.color(
                 "Outline.color" as UnknownThemeProp<"Outline.color">

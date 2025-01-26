@@ -1,5 +1,5 @@
 import { css } from "@intellij-platform/core/styled";
-import { StyledTabProps } from "./StyledDefaultTab";
+import { TabComponentProps } from "./StyledDefaultTab";
 
 /**
  * Describes theme-able properties of a tab, which can then be passed to {@link getTabThemeStyles}
@@ -56,7 +56,7 @@ export const getTabThemeStyles = ({
   inactiveUnderlineColor,
   underlineColor,
 }: TabTheme) =>
-  css<StyledTabProps>`
+  css<TabComponentProps>`
     // active indicator
     &::after {
       height: ${underlineHeight != null ? `${underlineHeight}px` : undefined};

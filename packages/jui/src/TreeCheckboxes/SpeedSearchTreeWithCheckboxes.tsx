@@ -2,7 +2,6 @@ import React, { ForwardedRef } from "react";
 import {
   SpeedSearchTree,
   SpeedSearchTreeProps,
-  TreeRefValue,
 } from "@intellij-platform/core/Tree";
 import { NestedSelectionState } from "./NestedSelection";
 

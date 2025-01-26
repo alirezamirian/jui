@@ -13,7 +13,7 @@ import {
   Selection,
   SelectionManager,
   styled,
-  StyledTabProps,
+  TabComponentProps,
   Tabs,
   Tooltip,
   TooltipTrigger,
@@ -42,7 +42,7 @@ const StyledHeader = styled.div`
   border-bottom: 1px solid
     ${({ theme }) => theme.color("SearchEverywhere.SearchField.borderColor")};
 `;
-const StyledTab = styled.button<StyledTabProps>`
+const StyledTab = styled.button<TabComponentProps>`
   all: unset;
   background: ${({ theme, selected }) =>
     selected && theme.color("SearchEverywhere.Tab.selectedBackground")};

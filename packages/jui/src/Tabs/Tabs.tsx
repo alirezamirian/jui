@@ -1,4 +1,4 @@
-import React, { Key, useEffect } from "react";
+import React, { ComponentType, HTMLAttributes, Key, useEffect } from "react";
 import { useTabList } from "@react-aria/tabs";
 import { filterDOMProps, mergeProps, scrollIntoView } from "@react-aria/utils";
 import { useTabListState } from "@react-stately/tabs";
@@ -9,8 +9,8 @@ import { useOverflowObserver } from "../utils/overflow-utils/useOverflowObserver
 import { useHasOverflow } from "./useHasOverflow";
 import { css, styled } from "@intellij-platform/core/styled";
 import { notNull } from "@intellij-platform/core/utils/array-utils";
-import { StyledDefaultTab } from "./StyledDefaultTab";
-import { StyledDefaultTabs } from "./StyledDefaultTabs";
+import { TabComponentProps } from "./StyledDefaultTab";
+import { StyledDefaultTabs, TabsComponentProps } from "./StyledDefaultTabs";
 import { Tab } from "./Tab";
 
 export type TabsProps<T> = Omit<
@@ -80,11 +80,11 @@ export type TabsProps<T> = Omit<
    */
   noBorders?: boolean;
 
-  TabsComponent?: typeof StyledDefaultTabs;
+  TabsComponent?: ComponentType<TabsComponentProps>;
   /**
    *
    */
-  TabComponent?: typeof StyledDefaultTab;
+  TabComponent?: ComponentType<TabComponentProps>;
 };
 
 const scrollBarDisabledStyle = css`

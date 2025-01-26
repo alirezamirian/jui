@@ -45,7 +45,9 @@ export function createSpeedSearchKeyboardDelegate(
           wrappedKeyboardDelegate.getFirstKey?.(key, global),
           "down"
         );
-        return firstKey == null ? matches?.values().next().value : firstKey;
+        return firstKey == null
+          ? matches?.keys().next().value ?? null
+          : firstKey;
       },
     },
     getLastKey: {
