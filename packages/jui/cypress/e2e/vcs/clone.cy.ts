@@ -46,5 +46,7 @@ it("clones a git repo", () => {
     .type("{selectAll}/workspace/example-branches")
     .type("{enter}");
   cy.contains("Cloning");
-  cy.findTreeNodeInProjectView("example-branches");
+  cy.findTreeNodeInProjectView("example-branches", {
+    timeout: 30_000 /*corsProxy can be slow*/,
+  });
 });
