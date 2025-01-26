@@ -25,7 +25,9 @@ export interface IconResolver {
   resolve(iconPath: string): Promise<SvgString>;
 }
 
-type ThemeProperties = Record<string, ThemePropertyRawValue>;
+type ThemeProperties = {
+  [key: string]: ThemePropertyRawValue | ThemeProperties;
+};
 
 export type ThemeJson = {
   name: string;
@@ -35,9 +37,7 @@ export type ThemeJson = {
 
   colors?: Record<string, string>;
   iconColorsOnSelection?: Record<string, string>;
-  ui: { "*": ThemeProperties } & {
-    [key: string]: ThemeProperties | ThemePropertyRawValue;
-  };
+  ui: { "*": ThemeProperties } & ThemeProperties;
 };
 
 export type KnownThemePropertyPath =

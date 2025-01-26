@@ -22,7 +22,6 @@ export const ExampleContext: React.FC<{
 
   // IMPORTANT: passing a function that returns Theme is crucial in get it working. Otherwise, ThemeProvider will try
   // to "merge" themes, and the end result is an POJO, with prototype link lost.
-  // @ts-expect-error ThemeJson type is not accurate ATM.
   const theme = useMemo(() => new Theme(themeJson), [themeJson]);
 
   useFixDocusaurusStyleBleeds();

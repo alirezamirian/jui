@@ -1,14 +1,6 @@
 {
-  // This file is not used in compilation. It is here just for a nice editor experience.
-  // TODO(TS5): change to an array to extend the root tsconfig too, and remove some duplication
-  "extends": "@tsconfig/docusaurus/tsconfig.json",
+  "extends": ["../../tsconfig.json", "@docusaurus/tsconfig"],
   "compilerOptions": {
-    "baseUrl": ".",
-    "resolveJsonModule": true, // Could be inherited from root tsconfig
-    "experimentalDecorators": true, // Could be inherited from root tsconfig
-    "strict": true, // Could be inherited from root tsconfig
-    "target": "ES2022", // Could be inherited from root tsconfig
-    "module": "commonjs", // Could be inherited from root tsconfig.
     "lib": null, // needed to undo the lib set in docusaurus base tsconfig, as if it's unset.
     "types": [
       "node",
@@ -16,11 +8,12 @@
       "@docusaurus/theme-classic",
       "@docusaurus/theme-live-codeblock" // addition with respect to the default types in @tsconfig/docusaurus/tsconfig.json
     ],
+    "baseUrl": ".", // even thought inherits the same value, it has to be set again here, for paths to work.
+    // need to redefine paths as it's defined in both base configs
     "paths": {
-      "jui": ["../jui/src"],
-      "jui/*": ["../jui/src/*"],
-      "@intellij-platform/core": ["../jui/src"], // Could be inherited from root tsconfig
-      "@intellij-platform/core/*": ["../jui/src/*"] // Could be inherited from root tsconfig
+      "@site/*": ["./*"],
+      "@intellij-platform/core": ["../jui/src"],
+      "@intellij-platform/core/*": ["../jui/src/*"]
     }
   },
   "include": [

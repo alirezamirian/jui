@@ -5,19 +5,22 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React from "react";
+import React, { ComponentType } from "react";
 import * as juiComponents from "@intellij-platform/core";
 import darculaThemeJson from "@intellij-platform/core/themes/darcula.theme.json";
 import lightThemeJson from "@intellij-platform/core/themes/intellijlaf.theme.json";
 import highContrastThemeJson from "@intellij-platform/core/themes/HighContrast.theme.json";
+import { JSX } from "react/jsx-runtime";
 
-const WithLoading = (Component) => (props) =>
-  (
-    // Because ReactLive doesn't render a Suspense around what it renders.
-    <React.Suspense fallback="loading">
-      <Component {...props} />
-    </React.Suspense>
-  );
+const WithLoading =
+  <P,>(Component: ComponentType<P>) =>
+  (props: P & JSX.IntrinsicAttributes) =>
+    (
+      // Because ReactLive doesn't render a Suspense around what it renders.
+      <React.Suspense fallback="loading">
+        <Component {...props} />
+      </React.Suspense>
+    );
 
 // Add react-live imports you need here
 const ReactLiveScope = {

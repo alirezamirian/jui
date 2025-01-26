@@ -1,5 +1,6 @@
 import React from "react";
 import Code from "@theme-original/MDXComponents/Code";
+import type { Props } from "@theme/CodeBlock";
 import { InlineCode } from "../../components/component-linking";
 
 /**
@@ -8,10 +9,12 @@ import { InlineCode } from "../../components/component-linking";
  * when inline code in mdx files is rendered. For that, `inlineCode` entry is set
  * in swizzled `MDXComponents`.
  */
-export default function CodeWrapper(props: {
-  children: React.ReactNode;
-}): JSX.Element {
-  if (typeof props.children === "string") {
+export default function CodeWrapper(props: Props): JSX.Element {
+  // Code is used to render both `something` and ```something```.
+  // There is no prop to distinguish code blocks from inline codes
+  // but it seems like code blocks always have more props, like className
+  const isInlineCode = Object.keys(props).length === 1;
+  if (typeof props.children === "string" && isInlineCode) {
     return <InlineCode>{props.children}</InlineCode>;
   }
   return (

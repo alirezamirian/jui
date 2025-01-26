@@ -326,11 +326,12 @@ to place a menu in an overlay that's positioned based on a pointer event, which 
 ```tsx live noPadding
 function ContextMenuExample() {
   const [origin, setOrigin] = React.useState(null);
+  const defaultValue = "\nRight click somewhere to open the context menu.\n";
   return (
     <>
       <MonacoEditor
         height={200}
-        defaultValue="\nRight click somewhere to open the context menu.\n"
+        defaultValue={defaultValue}
         options={{ contextmenu: false }}
         onMount={(monacoEditor) => {
           monacoEditor.focus();

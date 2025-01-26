@@ -5,21 +5,33 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React from "react";
-import { useTheme } from "styled-components";
+import React, { ComponentType } from "react";
+import { useTheme } from "@intellij-platform/core";
 import Playground from "./Playground";
 import ReactLiveScope from "@theme/ReactLiveScope";
+import type { Props as CodeBlockProps } from "@theme/CodeBlock";
 import CodeBlock from "@theme-init/CodeBlock";
 import clsx from "clsx";
 import styles from "../Playground/style-overrides.module.css";
 
-const withLiveEditor = (Component) => {
-  function WithLiveEditor(props) {
+const withLiveEditor = <P extends CodeBlockProps & { live?: boolean }>(
+  Component: ComponentType<P>
+) => {
+  function WithLiveEditor(props: P) {
+    if (typeof props.children !== "string") {
+      throw new Error(
+        `unexpected non-string code block children: ${props.children}`
+      );
+    }
     if (props.live) {
       // idea: We can support playground with alternative sources, where each of them will show up as a button
       // below the default playground. Clicking on buttons will switch to that example. There can be a simple syntax
       // for embedding multiple sources in one code block which then will be converted into examples here.
-      return <Playground scope={ReactLiveScope} {...props} />;
+      return (
+        <Playground scope={ReactLiveScope} {...props}>
+          {props.children}
+        </Playground>
+      );
     }
 
     return <Component {...props} />;
@@ -28,15 +40,19 @@ const withLiveEditor = (Component) => {
   return WithLiveEditor;
 };
 
-const withThemeBackground = (Component) => {
-  function WithThemeBackground(props) {
+const withThemeBackground = <P extends CodeBlockProps>(
+  Component: ComponentType<P>
+) => {
+  function WithThemeBackground(props: P) {
     const theme = useTheme();
     const content = <Component {...props} />;
-    const style = {
+    const style: Record<string, string | number | undefined> = {
       "--ifm-list-item-margin": 0,
     };
 
-    if (props.themed) {
+    const flags = props.metastring?.split(" ") ?? [];
+    const themed = flags.includes("themed");
+    if (themed) {
       style.color = theme.color("*.foreground");
       style["--ifm-pre-background"] = theme.color("*.background");
       style["--ifm-code-background"] = "none";
@@ -45,7 +61,7 @@ const withThemeBackground = (Component) => {
       <div
         style={style}
         className={clsx(styles.playground, {
-          [styles.noPadding]: props.noPadding,
+          [styles.noPadding]: flags.includes("noPadding"),
         })}
       >
         {content}
