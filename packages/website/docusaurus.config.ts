@@ -1,5 +1,6 @@
 import type { Config, PluginConfig } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
+import { ProvidePlugin } from "@rspack/core"; // 🟡transitive dependency
 import { themes as prismThemes } from "prism-react-renderer";
 // @ts-expect-error TS7016: Could not find a declaration file for module ...
 import exampleAppConfig from "../../config/example-app-webpack-config";
@@ -38,9 +39,33 @@ const config: Config = {
   organizationName: "alirezamirian",
   projectName: "jui",
   trailingSlash: false,
-
   future: {
-    // experimental_faster: true,
+    experimental_faster: {
+      /**
+       * swc loader for js files is disabled because:
+       * - the swc config is not customizable (via .swcrc) at the moment,
+       *   and we need `jsc.parser.decorators` set to true.
+       *   easy to work around, though, via patching.
+       * - we use `babel-plugin-react-docgen` to capture jsdoc description
+       *   of different library objects on a special property and render them
+       *   in the docs.
+       *   There is currently no swc plugin for react-docgen.
+       *
+       * Still a huge performance gain even without swc js loader:
+       *
+       * | experimental_faster | time                                                  |
+       * | ------------------- | ----------------------------------------------------- |
+       * | false               | 385.85s user 36.71s system 210% cpu **3:20.60** total |
+       * | without swcJsLoader | 97.00s user 10.75s system 195% cpu **55.169** total   |
+       * | true                | 51.54s user 6.84s system 237% cpu **24.538** total    |
+       */
+      swcJsLoader: false,
+      swcJsMinimizer: true,
+      swcHtmlMinimizer: true,
+      lightningCssMinimizer: true,
+      mdxCrossCompilerCache: true,
+      rspackBundler: true,
+    },
   },
   plugins: [
     "@docusaurus/theme-live-codeblock",
@@ -175,7 +200,17 @@ function isomorphicGitWebpackConfigPlugin() {
   return {
     name: "isomorphic-git-webpack-config-docusaurus-plugin",
     configureWebpack() {
-      return exampleAppConfig;
+      return {
+        ...exampleAppConfig,
+        plugins: [
+          new ProvidePlugin({
+            Buffer: ["buffer", "Buffer"],
+          }),
+          new ProvidePlugin({
+            process: "process/browser",
+          }),
+        ],
+      };
     },
   };
 }
