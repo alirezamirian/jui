@@ -15,7 +15,7 @@ jobs:
       - name: Use Node 20
         uses: actions/setup-node@v3
         with:
-          node-version: 20.18.1
+          node-version-file: ".nvmrc"
           cache: yarn
 
       - name: Install and Build 🔧
@@ -39,7 +39,7 @@ jobs:
       - name: Use Node 20
         uses: actions/setup-node@v3
         with:
-          node-version: 20.18.1
+          node-version-file: ".nvmrc"
           cache: yarn
 
       - name: Check NPM Auth 🔐
