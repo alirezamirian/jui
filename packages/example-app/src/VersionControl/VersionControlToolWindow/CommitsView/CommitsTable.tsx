@@ -87,6 +87,7 @@ export function CommitsTable() {
           </List>
         )}
         {rows && rows.length === 0 && (
+          // TODO: use a different zero state when there is no filter set
           <StyledPlaceholderContainer>
             No commits matching filters
             <Link onPress={() => resetFilters(currentTabKey)}>

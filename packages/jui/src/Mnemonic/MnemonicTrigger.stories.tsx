@@ -37,6 +37,14 @@ export const NonTextContent: StoryObj<MnemonicProps> = {
     ),
   },
 };
+
+export const PrioritizeWordStart: StoryObj<MnemonicProps> = {
+  args: {
+    children: " Include disabled actions",
+    mnemonic: "d",
+  },
+};
+
 export const Multiple: StoryObj<MnemonicProps> = {
   render: () => {
     return (

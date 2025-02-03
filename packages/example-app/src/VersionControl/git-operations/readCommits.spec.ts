@@ -3,17 +3,19 @@ import path from "path";
 
 import { readCommits } from "./readCommits";
 
-const repoPath = path.resolve(
-  // eslint-disable-next-line no-undef
-  __dirname,
-  "../../../../fixture/git/example-branches.git"
-);
+const repo = {
+  repoPath: path.resolve(
+    // eslint-disable-next-line no-undef
+    __dirname,
+    "../../../fixture/git/example-branches.git"
+  ),
+  isBare: true,
+};
 
 describe("readCommits", () => {
   it("works for a single branch of a single repo", async () => {
     const result = await readCommits(fs, {
-      repoPath,
-      isBare: true,
+      ...repo,
       refs: ["master"],
     });
     expect(result).toHaveLength(12);
@@ -35,8 +37,7 @@ describe("readCommits", () => {
 
   it("works for multiple branches of a single repo", async () => {
     const result = await readCommits(fs, {
-      repoPath,
-      isBare: true,
+      ...repo,
       refs: ["master", "topic1", "topic2"],
     });
     expect(result).toHaveLength(15);
@@ -61,8 +62,7 @@ describe("readCommits", () => {
 
   it("includes all refs for commits that exist in multiple branches", async () => {
     const result = await readCommits(fs, {
-      repoPath,
-      isBare: true,
+      ...repo,
       refs: ["topic1", "topic2"],
     });
     expect(
@@ -86,8 +86,7 @@ describe("readCommits", () => {
     ]);
 
     const result = await readCommits(fs, {
-      repoPath,
-      isBare: true,
+      ...repo,
       refs: [...almostAllBranches, "gh-pages"],
     });
 
@@ -133,10 +132,46 @@ describe("readCommits", () => {
     ]);
   });
 
+  it("includes stops when reaching an ref specified in notRef", async () => {
+    const result = await readCommits(fs, {
+      ...repo,
+      refs: ["master"],
+      notRefs: ["enhancement"],
+    });
+
+    expect(result.map((i) => i.readCommitResult.commit.message)).toEqual([
+      "Forget Argh\n\nNot much, just updating for a second commit.\n",
+      'Add text "Argh" in comments\n\nOptional extended description?\n',
+    ]);
+
+    expect(result).toHaveLength(2);
+
+    const result2 = await readCommits(fs, {
+      ...repo,
+      refs: ["featureGreen"],
+      notRefs: ["topic2"],
+    });
+    expect(result2).toHaveLength(9);
+
+    expect(
+      await readCommits(fs, {
+        ...repo,
+        refs: ["featureGreen"],
+        notRefs: ["gh-pages"], // edge case: ref with no common history
+      })
+    ).toHaveLength(
+      (
+        await readCommits(fs, {
+          ...repo,
+          refs: ["featureGreen"],
+        })
+      ).length
+    );
+  });
+
   it("creates unique sets of refs", async () => {
     const result = await readCommits(fs, {
-      repoPath,
-      isBare: true,
+      ...repo,
       refs: ["topic1", "topic2"],
     });
     expect(new Set(result.map(({ containingRefs }) => containingRefs)).size)

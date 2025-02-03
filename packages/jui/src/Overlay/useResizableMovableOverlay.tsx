@@ -137,6 +137,8 @@ export function useResizableMovableOverlay(
   );
   const [contentSize, measureContentSize] = useContentSize(overlayRef, {
     observe: observeContentResize,
+    width: bounds?.width,
+    height: bounds?.height,
   });
   // local state of bounds for when the overlay is in a UI interaction, like movement or resize with mouse.
   // We don't want to update the state in the higher levels repeatedly in such transactions, and we just want to

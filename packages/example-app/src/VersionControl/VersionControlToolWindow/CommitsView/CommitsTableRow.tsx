@@ -27,7 +27,7 @@ import {
   formatCommitDateTime,
   parseCommitMessage,
   shortenOid,
-} from "../commit-utils";
+} from "../../commit-utils";
 
 const StyledCommitRow = styled.div`
   display: flex;

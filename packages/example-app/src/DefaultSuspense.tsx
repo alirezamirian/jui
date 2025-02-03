@@ -1,9 +1,10 @@
 import React, { SuspenseProps } from "react";
 import styled from "styled-components";
-import { LoadingGif } from "./LoadingGif";
+import { LoadingSpinner } from "@intellij-platform/core";
 
-const Loading = styled(LoadingGif)`
+const Loading = styled(LoadingSpinner)`
   width: fit-content;
+  display: block;
   margin: auto;
 `;
 export const DefaultSuspense: React.FC<Partial<SuspenseProps>> = ({

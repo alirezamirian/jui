@@ -66,12 +66,16 @@ const repoLocalBranchesAtom = atomFamily((repoRoot: string) =>
   })
 );
 
+export const repoRemotesAtoms = atomFamily((repoRoot: string) =>
+  atomWithRefresh(() => git.listRemotes({ fs, dir: repoRoot }))
+);
+
 /**
  * List of remote branches of a given repository
  */
-const repoRemoteBranchesAtoms = atomFamily((repoRoot: string) =>
-  atomWithRefresh(async (): Promise<RemoteBranch[]> => {
-    const remotes = await git.listRemotes({ fs, dir: repoRoot });
+export const repoRemoteBranchesAtoms = atomFamily((repoRoot: string) =>
+  atomWithRefresh(async (get): Promise<RemoteBranch[]> => {
+    const remotes = await get(repoRemotesAtoms(repoRoot));
     return (
       await Promise.all(
         remotes.map(({ remote }) =>
@@ -90,6 +94,7 @@ const repoRemoteBranchesAtoms = atomFamily((repoRoot: string) =>
 
 /**
  * List of local and remote branches of a given repository
+ * TODO: rename and refactor to be repoState?
  */
 export const repoBranchesAtom = atomFamily((repoRoot: string) =>
   atomWithRefresh(async (get) => {
@@ -227,7 +232,7 @@ type GitSettings = {
 };
 
 const gitSettingsAtom = atomWithPersistence(
-  { branches: [], excludedBranches: [] },
+  { branches: [], excludedBranches: [] } as GitSettings,
   {
     schema: gitSettingsSchema,
     componentName: "Git.Settings",

@@ -10,11 +10,11 @@ import {
 } from "../../Changes/ChangesTree/changesTreeNodeRenderers";
 import { RepositoryNode } from "../../Changes/ChangesTree/ChangeTreeNode";
 import { RepoColorIcon } from "../../Changes/StyledRepoColorSquare";
-import { shortenOid } from "../commit-utils";
+import { shortenOid } from "../../commit-utils";
 import {
   CommitChangesTreeNode,
   CommitParentChangeTreeNode,
-} from "./CommitsChangedFiles.state";
+} from "./createCommitsChangesTreeState";
 
 const repoNodeRenderer: NodeRenderer<RepositoryNode> = (
   node,

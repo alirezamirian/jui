@@ -1,12 +1,16 @@
-import React, { FocusEventHandler, useContext, useRef } from "react";
+import React, { RefObject, useContext } from "react";
 import { useOverlayTriggerState } from "@react-stately/overlays";
-import { useModalOverlay, usePreventScroll } from "@react-aria/overlays";
-import { focusSafely, FocusScope } from "@react-aria/focus";
+import {
+  Overlay,
+  useModalOverlay,
+  usePreventScroll,
+} from "@react-aria/overlays";
+import { FocusScope } from "@react-aria/focus";
+import { DOMAttributes } from "@react-types/shared";
 import { useDialog } from "@react-aria/dialog";
 import { AriaDialogProps } from "@react-types/dialog"; // temporary phantom dependency
-import { styled } from "@intellij-platform/core/styled";
-import { WINDOW_SHADOW } from "@intellij-platform/core/style-constants";
-import { mergeProps } from "@react-aria/utils";
+import { css, styled } from "@intellij-platform/core/styled";
+import { isMac, mergeProps } from "@react-aria/utils";
 import {
   OverlayInteractionHandler,
   OverlayResizeHandles,
@@ -15,6 +19,7 @@ import {
 } from "@intellij-platform/core/Overlay";
 import { WindowContext } from "@intellij-platform/core/ModalWindow/WindowContext";
 import { UNSAFE_React17SuspenseFix } from "@intellij-platform/core/Overlay/UNSAFE_React17SuspenseFix";
+import { DelayedLoadingSpinner } from "@intellij-platform/core/LoadingSpinner";
 
 export interface ModalWindowProps
   extends AriaDialogProps,
@@ -22,22 +27,44 @@ export interface ModalWindowProps
   children: React.ReactNode;
   className?: string;
   onClose?: () => void;
+  /**
+   * By default, a Suspense boundary is included around the overlays
+   * to avoid suspended renders from bubbling up into
+   * the higher levels of the application.
+   * The suspense boundary is around the overlay itself, and *inside* the modal
+   * underlay (if any), which means the interaction with background content
+   * will immediately get blocked until rendering is unsuspended.
+   * Pass `false` if you don't want this behavior.
+   * Pass anything else to render a custom Suspense fallback.
+   */
+  suspense?: React.ReactNode;
 }
 
 const StyledWindowUnderlay = styled.div`
   position: fixed;
   z-index: 1000; // FIXME: z-index should not be hard-coded like this
   inset: 0;
+  align-content: center; // for loading
 `;
 
+const WINDOW_SHADOW = isMac()
+  ? css`
+      box-shadow: 0 22px 70px 4px rgba(0, 0, 0, 0.56),
+        0 0 0 1px #747474
+          /* FIXME: it's not accurate. In macOS the outline has a gradient*/;
+    `
+  : css`
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15), 0 8px 12px rgba(0, 0, 0, 0.1),
+        inset 0 0 0 1px #515355;
+    `;
 export const StyledWindowContainer = styled.div`
   position: fixed;
   // not checked if there should be a better substitute for * in the following colors. Maybe "Component"?
   background-color: ${({ theme }) => theme.color("*.background")};
   color: ${({ theme }) => theme.color("*.foreground")};
   border-radius: 8px;
-  ${WINDOW_SHADOW}; // FIXME: OS-dependant style?
-  outline: 1px solid #555; // FIXME
+  outline: none;
+  ${WINDOW_SHADOW};
 `;
 
 /**
@@ -58,6 +85,11 @@ export const DEFAULT_WINDOW_MIN_HEIGHT = 24;
 export const WindowControllerContext = React.createContext<
   Partial<Pick<ModalWindowProps, "onClose">>
 >({});
+
+const StyledDelayedLoadingSpinner = styled(DelayedLoadingSpinner)`
+  display: block;
+  margin: auto;
+`;
 
 /**
  * A movable/resizable modal window. The window header which holds the title, can be used to drag the window around.
@@ -83,9 +115,9 @@ export const ModalWindow = ({
   minWidth = DEFAULT_WINDOW_MIN_WIDTH,
   minHeight = DEFAULT_WINDOW_MIN_HEIGHT,
   className,
+  suspense,
   ...props
 }: ModalWindowProps): React.ReactElement => {
-  const { children } = props;
   const propsContext = useContext(WindowControllerContext);
   const onClose = () => {
     propsContext.onClose?.();
@@ -115,84 +147,87 @@ export const ModalWindow = ({
   );
   usePreventScroll();
 
-  const { dialogProps, titleProps } = useDialog(props, ref);
+  const MaybeSuspend = suspense === false ? React.Fragment : React.Suspense;
+  return (
+    // disableFocusManagement is used because FocusScope is rendered in our implementation.
+    // Might be a candidate for refactoring to use the built-in FocusScope of Overlay
+    <Overlay disableFocusManagement>
+      <StyledWindowUnderlay {...underlayProps} className={className}>
+        <MaybeSuspend
+          fallback={
+            suspense === undefined ? <StyledDelayedLoadingSpinner /> : suspense
+          }
+        >
+          <WindowFrame
+            modalProps={modalProps}
+            windowRef={ref}
+            modalWindowProps={{ ...props, minHeight, minWidth, interactions }}
+          />
+        </MaybeSuspend>
+      </StyledWindowUnderlay>
+    </Overlay>
+  );
+};
+
+/**
+ * Window frame taken out into a separate component, so that hook that measures
+ * content size based on the passed ref is remounted whenever the suspense
+ * boundary unsuspends.
+ */
+function WindowFrame({
+  windowRef,
+  modalProps,
+  modalWindowProps: {
+    minWidth,
+    minHeight,
+    interactions,
+    children,
+    ...modalWindowProps
+  },
+}: {
+  windowRef: RefObject<HTMLDivElement>;
+  modalProps: DOMAttributes;
+  modalWindowProps: ModalWindowProps;
+}) {
+  const { dialogProps, titleProps } = useDialog(modalWindowProps, windowRef);
 
   const {
     bounds: style,
     overlayInteractionHandlerProps,
     UNSAFE_measureContentSize,
-  } = useResizableMovableOverlay(ref, { ...props, minHeight, minWidth });
-
-  const { focusContainmentFixProps } = useFocusContainmentFix();
+  } = useResizableMovableOverlay(windowRef, {
+    ...modalWindowProps,
+    minHeight,
+    minWidth,
+  });
 
   return (
-    <StyledWindowUnderlay {...underlayProps} className={className}>
-      <OverlayInteractionHandler {...overlayInteractionHandlerProps}>
-        <FocusScope contain restoreFocus autoFocus>
-          <StyledWindowContainer
-            {...mergeProps(dialogProps, modalProps, focusContainmentFixProps, {
-              style,
-            })}
-            ref={ref}
-          >
-            <StyledWindowInnerContainer>
-              <WindowContext.Provider
-                value={{
-                  isActive: true, // because it's modal. WindowContext would be used for non-modal windows too, in future
-                  titleProps,
-                  movable: interactions !== "none",
-                }}
+    <OverlayInteractionHandler {...overlayInteractionHandlerProps}>
+      <FocusScope contain restoreFocus autoFocus>
+        <StyledWindowContainer
+          {...mergeProps(dialogProps, modalProps, {
+            style,
+          })}
+          ref={windowRef}
+        >
+          <StyledWindowInnerContainer>
+            <WindowContext.Provider
+              value={{
+                isActive: true, // because it's modal. WindowContext would be used for non-modal windows too, in future
+                titleProps,
+                movable: interactions !== "none",
+              }}
+            >
+              <UNSAFE_React17SuspenseFix
+                measureContentSize={UNSAFE_measureContentSize}
               >
-                <UNSAFE_React17SuspenseFix
-                  measureContentSize={UNSAFE_measureContentSize}
-                >
-                  {children}
-                </UNSAFE_React17SuspenseFix>
-              </WindowContext.Provider>
-            </StyledWindowInnerContainer>
-            {interactions === "all" && <OverlayResizeHandles />}
-          </StyledWindowContainer>
-        </FocusScope>
-      </OverlayInteractionHandler>
-    </StyledWindowUnderlay>
+                {children}
+              </UNSAFE_React17SuspenseFix>
+            </WindowContext.Provider>
+          </StyledWindowInnerContainer>
+          {interactions === "all" && <OverlayResizeHandles />}
+        </StyledWindowContainer>
+      </FocusScope>
+    </OverlayInteractionHandler>
   );
-};
-
-/**
- * The way FocusScope is implemented at the moment, it's possible for another focus scope to steal the focus,
- * right after the modal window is opened. The issue is not tracked down to the root cause. But with this hook,
- * we make sure there is no way for focus to go out of the modal window, when it's mounted.
- */
-function useFocusContainmentFix<T extends HTMLElement>() {
-  const lastFocusedElementRef = useRef<HTMLElement | null>(null);
-  const onFocus: FocusEventHandler<T> = (e) => {
-    lastFocusedElementRef.current = e.target;
-  };
-  const onBlur: FocusEventHandler = (e) => {
-    const probablyFocusedElement = e.relatedTarget;
-    if (
-      !probablyFocusedElement ||
-      (probablyFocusedElement instanceof Element &&
-        !e.currentTarget.contains(probablyFocusedElement) &&
-        // The following condition is added to exclude cases where the focus
-        // is going to an overlay that is opened from within the modal window.
-        // The condition is suboptimal as there is no check on whether the
-        // overlay is a logical child of the modal or not.
-        // However, it seems justified since the entire hook is a temporary hack,
-        // and also it doesn't seem likely for an overlay outside the modal
-        // to grab the focus.
-        !probablyFocusedElement.closest("[data-overlay-root]"))
-    ) {
-      const elementToFocus = lastFocusedElementRef.current;
-      if (elementToFocus) {
-        focusSafely(elementToFocus);
-      }
-    }
-  };
-  return {
-    focusContainmentFixProps: {
-      onFocus,
-      onBlur,
-    },
-  };
 }

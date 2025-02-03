@@ -43,7 +43,7 @@ describe("vcs => branch switching", () => {
 
     cy.step("Switch to branch-1");
     cy.focused(); // waiting for the editor (or whatever element) to get focused, so the keyboard events can be handled
-    cy.searchAndInvokeAction("Branches", "Branches...");
+    cy.searchAndInvokeAction({ actionName: "Branches", search: "Branches..." });
     cy.contains("branch-1").click();
     cy.findByRole("menuitem", { name: "Checkout" }).click();
 

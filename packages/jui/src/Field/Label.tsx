@@ -91,7 +91,7 @@ function useAlignedLabels({
 
   useEffect(() => {
     if (ref.current) {
-      ref.current.style.width =
+      ref.current.style.minWidth =
         commonWidth && enabled ? `${commonWidth}px` : "";
     }
   }, [commonWidth, enabled]);

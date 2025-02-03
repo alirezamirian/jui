@@ -4,10 +4,11 @@ import git from "isomorphic-git";
 import http from "isomorphic-git/http/web";
 import {
   KeymapProvider,
+  LoadingSpinner,
   PopupManager,
+  styled,
   WindowManager,
 } from "@intellij-platform/core";
-import { DefaultSuspense } from "./DefaultSuspense";
 import { Project } from "./Project/Project";
 import { ProjectInitializer } from "./ProjectInitializer";
 import { fs, WaitForFs } from "./fs/fs";
@@ -20,6 +21,14 @@ import "./jetbrains-mono-font.css";
 (window as any).path = path;
 (window as any).http = http;
 
+const StyledLoadingContainer = styled.div<{
+  $height?: CSSProperties["height"];
+}>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: ${({ $height }) => $height ?? "100vh"};
+`;
 /**
  * Example app root component. It expects ThemeProvider to be provided based on where it's rendered.
  */
@@ -32,7 +41,13 @@ export const App = ({
 }) => {
   return (
     // TODO: add an error boundary
-    <DefaultSuspense>
+    <React.Suspense
+      fallback={
+        <StyledLoadingContainer>
+          <LoadingSpinner />
+        </StyledLoadingContainer>
+      }
+    >
       <WaitForFs>
         <ProjectInitializer autoCloneSampleRepo={autoCloneSampleRepo}>
           <KeymapProvider keymap={exampleAppKeymap}>
@@ -44,7 +59,7 @@ export const App = ({
           </KeymapProvider>
         </ProjectInitializer>
       </WaitForFs>
-    </DefaultSuspense>
+    </React.Suspense>
   );
 };
 

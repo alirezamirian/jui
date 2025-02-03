@@ -195,6 +195,7 @@ jobs:
           PERCY_PARALLEL_NONCE: ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         run: |
+          yarn workspace jui-example-app run e2e:git-server:start
           yarn workspace jui-example-app run serve &
           yarn run cypress:e2e --record --parallel --group e2e
 
@@ -203,6 +204,7 @@ jobs:
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         run: |
+          yarn workspace jui-example-app run e2e:git-server:start
           yarn workspace jui-example-app run serve &
           yarn run cypress:e2e --record --parallel --group e2e
 

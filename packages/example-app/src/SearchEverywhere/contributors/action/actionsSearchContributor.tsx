@@ -73,6 +73,7 @@ export const actionsSearchContributor: SearchEverywhereContributor<{
           onChange={(value) => {
             setShowDisabledActions(value);
           }}
+          mnemonic="d"
         >
           Include disabled actions
         </Checkbox>

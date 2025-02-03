@@ -5,13 +5,18 @@
 import { AppGlobals } from "./AppGlobals";
 import { ByRoleOptions } from "@testing-library/cypress";
 
+type InvokeActionOptions = {
+  actionName: string;
+  search?: string;
+  disabled?: boolean;
+};
+
 declare global {
   namespace Cypress {
     interface Chainable {
-      searchAndInvokeAction(
-        actionName: string,
-        search?: string
-      ): Chainable<void>;
+      searchAndInvokeAction(actionName: string): Chainable<void>;
+      searchAndInvokeAction(options: InvokeActionOptions): Chainable<void>;
+      searchAndInvokeAction(arg: string | InvokeActionOptions): Chainable<void>;
 
       /**
        * Creates a file via Projects tool window UI.
@@ -67,13 +72,23 @@ function initialize(
   );
 }
 
-function searchAndInvokeAction(
-  actionName: string,
-  search: string = actionName
-) {
+function searchAndInvokeAction(arg: string | InvokeActionOptions): void {
+  const {
+    actionName,
+    search = actionName,
+    disabled,
+  } = typeof arg === "string"
+    ? { actionName: arg, search: arg, disabled: false }
+    : arg;
   cy.realPress(["Meta", "Shift", "A"]);
   cy.findByRole("dialog");
   cy.realType(search);
+  if (disabled) {
+    cy.findAllByRole("listitem", {
+      name: new RegExp(actionName, "ig"),
+    }).should(`not.exist`);
+    cy.findByRole("checkbox", { name: "Include disabled actions" }).click();
+  }
   cy.findAllByRole("listitem", {
     name: new RegExp(actionName, "ig"),
   })
@@ -105,7 +120,7 @@ function createFile(filename: string) {
     .click()
     .should("be.focused");
 
-  cy.searchAndInvokeAction("File", "create file");
+  cy.searchAndInvokeAction({ actionName: "File", search: "create file" });
   cy.findByPlaceholderText("Name").should("be.focused");
   cy.realType(filename, { delay: 1 });
   cy.realPress("Enter");

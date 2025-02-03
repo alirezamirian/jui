@@ -29,7 +29,10 @@ function createDirectory(pathname: string) {
     .click()
     .should("be.focused");
 
-  cy.searchAndInvokeAction("Directory", "create directory");
+  cy.searchAndInvokeAction({
+    actionName: "Directory",
+    search: "create directory",
+  });
   cy.findByPlaceholderText("Name").should("be.focused");
   cy.realType(pathname, { delay: 1 });
   cy.realPress("Enter");

@@ -8,14 +8,14 @@ import {
   StatusBarWidget,
   TooltipTrigger,
 } from "@intellij-platform/core";
-import { activeFileRepoHeadAtom } from "../VersionControl/active-file.state";
+import { activeRepoHeadAtom } from "../VersionControl/active-repo.state";
 import { BranchesPopup } from "../VersionControl/Branches/BranchesPopup";
 import { useShowGitTipIfNeeded } from "../VersionControl/useShowGitTipIfNeeded";
 
 import { unwrapLatestOrNull } from "../atom-utils/unwrapLatest";
 
 export function BranchPopupTrigger() {
-  const gitRepoHead = useAtomValue(unwrapLatestOrNull(activeFileRepoHeadAtom));
+  const gitRepoHead = useAtomValue(unwrapLatestOrNull(activeRepoHeadAtom));
   const maybeShowGitCloneTip = useShowGitTipIfNeeded();
 
   return (

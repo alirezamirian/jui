@@ -58,6 +58,11 @@ describe("Mnemonic", () => {
           {/* making sure only the first occurrence is underlined, even when not matching the case */}
           disconnect Disconnect
         </MnemonicTrigger>
+        <br />
+        <MnemonicTrigger mnemonic="D">
+          {/* making sure first-letter of words is prioritized over mid-word letter that comes before it */}
+          Include disabled actions
+        </MnemonicTrigger>
       </StyledContainer>
     );
     cy.window().focus();
@@ -81,7 +86,7 @@ describe("Mnemonic", () => {
     );
     cy.window().focus();
     cy.get("body").type("{alt}", { release: false });
-    matchImageSnapshot("Mnemonic-activated");
+    matchImageSnapshot("Mnemonic-non-string-activated");
   });
 
   it("doesn't trigger if the trigger is hidden", () => {

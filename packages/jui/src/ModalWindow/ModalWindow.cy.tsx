@@ -1,7 +1,11 @@
 import React from "react";
 import { composeStories } from "@storybook/react";
 import * as stories from "./ModalWindow.stories";
-import { ModalWindow, WindowLayout } from "@intellij-platform/core";
+import {
+  ModalWindow,
+  WindowLayout,
+  WindowManager,
+} from "@intellij-platform/core";
 
 const { Default, WithFooter } = composeStories(stories);
 
@@ -81,6 +85,7 @@ describe("ModalWindow", () => {
       height: 150,
     });
   });
+
   it("supports drag header to move", () => {
     const onBoundsChange = cy.stub().as("onBoundsChange");
     cy.mount(
@@ -106,6 +111,44 @@ describe("ModalWindow", () => {
     // TODO
   });
 
+  it("supports sizing the window based on the content", () => {
+    cy.mount(
+      <ModalWindow>
+        <WindowLayout
+          header="title"
+          content={
+            <div style={{ padding: "1rem" }}>
+              line 1 line 1 line 1<br />
+              line 2 line 2 line 2<br />
+              line 3 line 3 line 3<br />
+            </div>
+          }
+        />
+      </ModalWindow>
+    );
+    cy.findByRole("dialog").invoke("width").should("be.approximately", 138, 3);
+    cy.findByRole("dialog").invoke("height").should("be.approximately", 101, 3);
+  });
+
+  it("supports sizing the window height based on the content, when width is set", () => {
+    cy.mount(
+      <ModalWindow defaultBounds={{ width: 100 }}>
+        <WindowLayout
+          header="title"
+          content={
+            <div style={{ padding: "1rem" }}>
+              line 1 line 1 line 1 line 1<br />
+              line 2 line 2 line 2 line 2<br />
+              line 3 line 3 line 3 line 3<br />
+            </div>
+          }
+        />
+      </ModalWindow>
+    );
+    cy.findByRole("dialog").invoke("width").should("eq", 100);
+    cy.findByRole("dialog").invoke("height").should("be.approximately", 176, 3);
+  });
+
   it("measures window size correctly, when window content suspends rendering", () => {
     let resolved = false;
     const promise = new Promise<void>((resolve) => {
@@ -128,6 +171,64 @@ describe("ModalWindow", () => {
       </React.Suspense>
     );
     cy.get("#window").invoke("width").should("eq", 200);
+  });
+
+  it("can open on top of other windows", () => {
+    const Example = () => {
+      const [window1Open, setWindow1Open] = React.useState(false);
+      const [window2Open, setWindow2Open] = React.useState(false);
+
+      return (
+        <>
+          <Button
+            onPress={() => setWindow1Open(true)}
+            style={{ margin: "1rem" }}
+          >
+            Open window 1
+          </Button>
+          {window1Open && (
+            <ModalWindow onClose={() => setWindow1Open(false)}>
+              <WindowLayout
+                header="Window 1 header"
+                content={
+                  <>
+                    <Button
+                      preventFocusOnPress
+                      onPress={() => setWindow2Open(true)}
+                      style={{ margin: "1rem" }}
+                    >
+                      Open window 2
+                    </Button>
+                  </>
+                }
+              />
+            </ModalWindow>
+          )}
+
+          {window2Open && (
+            <ModalWindow onClose={() => setWindow2Open(false)}>
+              <WindowLayout
+                header="Window 2 header"
+                content={
+                  <>
+                    Window 2 content <br /> <input style={{ width: 300 }} />
+                  </>
+                }
+              />
+            </ModalWindow>
+          )}
+        </>
+      );
+    };
+    cy.mount(
+      <WindowManager>
+        <Example />
+      </WindowManager>
+    );
+    cy.contains("Open window 1").click();
+    cy.contains("Open window 2").click();
+    cy.get("input").should("be.focused").realType("abc");
+    cy.get("input").should("have.value", "abc");
   });
 });
 

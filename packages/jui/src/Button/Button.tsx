@@ -15,7 +15,8 @@ import { MnemonicTrigger } from "@intellij-platform/core/Mnemonic";
 import { PressEvent } from "@react-types/shared/src/events";
 
 type ButtonVariant = "default" | "icon";
-export interface ButtonProps extends AriaButtonProps {
+export interface ButtonProps<T extends "button" | "a" = "button">
+  extends AriaButtonProps<T> {
   variant?: ButtonVariant; // can allow for custom (styled) component too if needed.
   // NOTE: there is a chance of unchecked breaking change here, since this is not explicitly mentioned as public API
   // of useButton, but it is passed to the underlying usePress.
@@ -68,18 +69,28 @@ const variants: { [key in ButtonVariant]: typeof StyledButton } = {
  * behaviour is followed here too. But we may reconsider deviating from the original impl for an improvement here.
  *
  */
-export const Button: React.FC<ButtonProps> = React.forwardRef(function Button(
-  { variant, style, className, mnemonic, ...props }: ButtonProps,
+export const Button = React.forwardRef(function Button<
+  T extends "a" | "button"
+>(
+  { variant, style, className, mnemonic, ...props }: ButtonProps<T>,
   forwardedRef: ForwardedRef<HTMLButtonElement>
 ) {
   const ref = useObjectRef(forwardedRef);
-  const { buttonProps } = useButton(props, ref);
+  const { elementType = props.href ? "a" : "button" } = props;
+  const { buttonProps } = useButton(
+    {
+      ...props,
+      elementType,
+    },
+    ref
+  );
   const domProps = filterDOMProps(props);
   const { autoFocus, form } = props;
 
   const Component = (variant && variants[variant]) || StyledButton;
   return (
     <Component
+      as={elementType}
       {...mergeProps(domProps, buttonProps, { autoFocus, form })}
       style={style}
       className={className}
