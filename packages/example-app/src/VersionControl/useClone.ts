@@ -3,9 +3,9 @@ import { useCallback } from "react";
 import { useSetAtom } from "jotai";
 import { useAtomCallback } from "jotai/utils";
 import { useRunTask } from "../tasks";
-import { cloneRepo } from "../ProjectInitializer";
 import { _balloonManagerRef } from "../Project/notImplemented";
 import { dirContentAtom } from "../fs/fs.state";
+import { cloneRepo } from "./git-operations/cloneRepo";
 import { vcsRootsAtom } from "./file-status.state";
 
 export function useClone() {

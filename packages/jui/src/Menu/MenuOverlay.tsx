@@ -1,12 +1,16 @@
 import React, { HTMLProps, useEffect } from "react";
+import { mergeProps, useObjectRef } from "@react-aria/utils";
+import { useOverlay, usePreventScroll } from "@react-aria/overlays";
 import { FocusScope } from "@intellij-platform/core/utils/FocusScope";
 import {
   MenuOverlayContext,
   MenuProps,
 } from "@intellij-platform/core/Menu/Menu";
 import { areInNestedOverlays, Overlay } from "@intellij-platform/core/Overlay";
-import { mergeProps, useObjectRef } from "@react-aria/utils";
-import { useOverlay, usePreventScroll } from "@react-aria/overlays";
+import {
+  DelayedLoadingSpinner,
+  LOADING_SPINNER_SIZE_SMALL,
+} from "@intellij-platform/core/LoadingSpinner";
 
 export interface MenuOverlayProps {
   children: React.ReactNode;
@@ -18,6 +22,7 @@ export interface MenuOverlayProps {
    */
   defaultAutoFocus?: MenuProps<unknown>["autoFocus"];
   onClose: () => void;
+  suspense?: React.ReactNode;
 }
 
 /**
@@ -32,6 +37,7 @@ export function MenuOverlay({
   overlayRef: inputOverlayRef,
   defaultAutoFocus,
   onClose,
+  suspense,
 }: MenuOverlayProps) {
   const overlayRef = useObjectRef(inputOverlayRef);
   const { overlayProps } = useOverlay(
@@ -68,6 +74,7 @@ export function MenuOverlay({
     return () =>
       document.removeEventListener("contextmenu", onOutsideContextMenu);
   }, []);
+  const MaybeSuspend = suspense === false ? React.Fragment : React.Suspense;
 
   return (
     <Overlay>
@@ -82,7 +89,17 @@ export function MenuOverlay({
             {...mergeProps(overlayProps, otherOverlayProps)}
             ref={overlayRef}
           >
-            {children}
+            <MaybeSuspend
+              fallback={
+                suspense === undefined ? (
+                  <DelayedLoadingSpinner size={LOADING_SPINNER_SIZE_SMALL} />
+                ) : (
+                  suspense
+                )
+              }
+            >
+              {children}
+            </MaybeSuspend>
           </div>
         </MenuOverlayContext.Provider>
       </FocusScope>

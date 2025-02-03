@@ -1,6 +1,5 @@
 import React, { HTMLAttributes, useEffect } from "react";
-import { atom, Atom, useAtom, useAtomValue } from "jotai";
-import { loadable } from "jotai/utils";
+import { useAtom, useAtomValue } from "jotai";
 
 import {
   HelpTooltip,
@@ -14,13 +13,7 @@ import { LoadingGif } from "../../../LoadingGif";
 import { Delayed } from "../../../Delayed";
 import { StyledPlaceholderContainer } from "../styled-components";
 import { selectedCommitsAtom } from "../CommitsView/CommitsTable.state";
-import {
-  changedFilesAtom,
-  changedFilesWithoutRenamesAtom,
-  commitChangesTreeRefAtom,
-  expandedKeysAtom,
-  selectionAtom,
-} from "./CommitsChangedFiles.state";
+import { gitLogCommitsChangesTreeState } from "./CommitsChangedFiles.state";
 import { commitChangesTreeNodeRenderer } from "./commitChangesTreeNodeRenderer";
 
 import { unwrapLatestOrNull } from "../../../atom-utils/unwrapLatest";
@@ -35,18 +28,6 @@ const StyledLoadingWrapper = styled.div`
   justify-content: center;
 `;
 
-const loadableChangedFilesAtom = [
-  changedFilesAtom,
-  changedFilesWithoutRenamesAtom,
-].map(loadable);
-
-const changedFilesLoadableAtom = atom((get) => {
-  return get(
-    loadableChangedFilesAtom.find((atom) => get(atom).state === "hasData") ??
-      loadableChangedFilesAtom.slice(-1)[0]
-  );
-});
-
 /**
  * TODO: handle multiple selected commits (check Changes.ShowChangesFromParents https://github.com/JetBrains/intellij-community/blob/ac57611a0612bd65ba2a19c841a4f95b40591134/platform/vcs-log/impl/src/com/intellij/vcs/log/ui/frame/VcsLogChangesBrowser.java#L255-L254)
  */
@@ -56,13 +37,19 @@ export function CommitChangedFiles({
   treeShortcutHandlerProps: HTMLAttributes<HTMLElement>;
 }) {
   const selectedCommits = useAtomValue(unwrapLatestOrNull(selectedCommitsAtom));
-  const treeRef = useAtomValue(commitChangesTreeRefAtom);
+  const treeRef = useAtomValue(gitLogCommitsChangesTreeState.treeRefAtom);
   const nothingSelected = !selectedCommits?.length;
 
-  const stateLoadable = useAtomValue(changedFilesLoadableAtom);
+  const stateLoadable = useAtomValue(
+    gitLogCommitsChangesTreeState.changedFilesLoadableAtom
+  );
   const state = stateLoadable.state === "hasData" ? stateLoadable.data : null;
-  const [expandedKeys, setExpandedKeys] = useAtom(expandedKeysAtom);
-  const [selection, setSelection] = useAtom(selectionAtom);
+  const [expandedKeys, setExpandedKeys] = useAtom(
+    gitLogCommitsChangesTreeState.expandedKeysAtom
+  );
+  const [selection, setSelection] = useAtom(
+    gitLogCommitsChangesTreeState.selectionAtom
+  );
 
   useEffect(() => {
     // TODO: expanded keys are supposed to be set based on selected keys

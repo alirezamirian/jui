@@ -51,6 +51,15 @@ export const exampleAppKeymap: Keymap = {
       firstKeyStroke: { code: "KeyU", modifiers: ["Meta", "Alt"] },
     },
   ],
+  [VcsActionIds.GIT_PUSH]: [
+    {
+      type: "keyboard",
+      firstKeyStroke: {
+        modifiers: ["Meta", "Shift"],
+        code: "KeyK",
+      },
+    },
+  ],
   [SearchEverywhereActionIds.PREVIOUS_TAB]: [
     {
       type: "keyboard",

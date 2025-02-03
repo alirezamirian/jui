@@ -2,8 +2,12 @@ import { Theme, UnknownThemeProp } from "@intellij-platform/core/Theme";
 import { styled } from "@intellij-platform/core/styled";
 
 const getDefaultLinkColor = ({ theme }: { theme: Theme }) =>
-  theme.commonColors.linkForegroundEnabled;
+  theme.currentForegroundAware(theme.commonColors.linkForegroundEnabled);
 
+//   FIXME(styled-components): add, check and generalized after upgrading styled-components
+//   @container style(--jui-foreground) {
+//     text-decoration: underline;
+//   }
 export const StyledLink = styled.a`
   cursor: pointer;
   text-decoration: none;
@@ -24,22 +28,26 @@ export const StyledLink = styled.a`
   &.hover /* for testing purposes*/ {
     text-decoration: underline;
     color: ${({ theme }) =>
-      theme.color(
-        "Link.hoverForeground",
+      theme.currentForegroundAware(
         theme.color(
-          "link.hover.foreground" as UnknownThemeProp<"link.hover.foreground">,
-          "" /*FIXME: check*/
+          "Link.hoverForeground",
+          theme.color(
+            "link.hover.foreground" as UnknownThemeProp<"link.hover.foreground">,
+            "" /*FIXME: check*/
+          )
         )
       )};
   }
   &:active,
   &.active {
     color: ${({ theme }) =>
-      theme.color(
-        "Link.pressedForeground",
+      theme.currentForegroundAware(
         theme.color(
-          "link.pressed.foreground" as UnknownThemeProp<"link.pressed.foreground">,
-          !theme.dark ? "#F00000" : "#BA6F25"
+          "Link.pressedForeground",
+          theme.color(
+            "link.pressed.foreground" as UnknownThemeProp<"link.pressed.foreground">,
+            !theme.dark ? "#F00000" : "#BA6F25"
+          )
         )
       )};
   }
@@ -62,11 +70,13 @@ export const StyledLink = styled.a`
   &:visited,
   &.visited {
     color: ${({ theme }) =>
-      theme.color(
-        "Link.visitedForeground",
+      theme.currentForegroundAware(
         theme.color(
-          "link.visited.foreground" as UnknownThemeProp<"link.visited.foreground">,
-          !theme.dark ? "#800080" : "#9776A9"
+          "Link.visitedForeground",
+          theme.color(
+            "link.visited.foreground" as UnknownThemeProp<"link.visited.foreground">,
+            !theme.dark ? "#800080" : "#9776A9"
+          )
         )
       )};
   }

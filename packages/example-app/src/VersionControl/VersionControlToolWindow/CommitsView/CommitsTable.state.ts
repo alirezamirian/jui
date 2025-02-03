@@ -10,7 +10,7 @@ import { allBranchesAtom } from "../../Branches/branches.state";
 import { resolvedRefAtoms } from "../../refs.state";
 import { GitRef } from "../GitRef";
 import { vcsLogFilterCurrentTab } from "../vcs-logs.state";
-import { readCommits } from "./readCommits";
+import { readCommits } from "../../git-operations/readCommits";
 
 function match(
   input: string,

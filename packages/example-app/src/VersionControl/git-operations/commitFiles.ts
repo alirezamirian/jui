@@ -14,7 +14,7 @@ export async function commitFiles({
   dir,
   gitdir,
   ...options
-}: Omit<Parameters<typeof git["commit"]>[0], "tree"> & {
+}: Omit<Parameters<(typeof git)["commit"]>[0], "tree"> & {
   /**
    * A mapping from file paths to either:
    * - the new content of the file that should be committed, in form of a Uint8Array blob

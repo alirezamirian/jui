@@ -1,4 +1,4 @@
-import { atom, SetStateAction, WritableAtom } from "jotai";
+import { Atom, atom, SetStateAction, WritableAtom } from "jotai";
 import { atomEffect } from "jotai-effect";
 import { atomFamily } from "jotai/utils";
 import {
@@ -13,19 +13,30 @@ import { z, ZodType } from "zod";
 import { fs } from "../fs/fs";
 import { currentProjectAtom } from "../Project/project.state";
 import { fileContentAtom } from "../fs/fs.state";
+import { ensureDir } from "../fs/fs-utils";
 
-export enum StorageFiles {
+export enum StoragePathMacros {
   WORKSPACE_FILE = "$WORKSPACE_FILE$",
+  PRODUCT_WORKSPACE_FILE = "$PRODUCT_WORKSPACE_FILE$",
+  NON_ROAMABLE_FILE = "other.xml",
 }
 
-const storagePaths = atomFamily((storageFile: string) =>
-  atom((get) => {
-    const storageFileDir = path.join(get(currentProjectAtom).path, ".idea");
+const CONFIG_DIR = "/user/test/.JUIExample2025.1";
+const OPTIONS_DIRECTORY = "options";
 
-    return path.join(
-      storageFileDir,
-      storageFileMapping[storageFile] || storageFile
-    );
+const storagePaths = atomFamily((storageFile: string) =>
+  atom((get): string => {
+    const storageFileDir = path.join(get(currentProjectAtom).path, ".idea");
+    switch (storageFile) {
+      case StoragePathMacros.PRODUCT_WORKSPACE_FILE:
+      // TODO: implement product workspace file. For now it will fallback to WORKSPACE_FILE
+      case StoragePathMacros.WORKSPACE_FILE:
+        return path.join(storageFileDir, "workspace.xml");
+      case StoragePathMacros.NON_ROAMABLE_FILE:
+        return path.join(CONFIG_DIR, OPTIONS_DIRECTORY, storageFile);
+      default:
+        return path.join(storageFileDir, storageFile);
+    }
   })
 );
 
@@ -37,6 +48,7 @@ const persistentStateStoreAtoms = atomFamily((storageFile: string) => {
     readStorageFile(get(storagePaths(storageFile)))
   );
   let fsWriteTimer: ReturnType<(typeof window)["setTimeout"]> | null = null;
+  let ensureDirPromise: Promise<void>;
   return atom(
     (get): Promise<PersistedState> | PersistedState =>
       get(cacheAtom) ?? get(storageContentAtom),
@@ -50,8 +62,16 @@ const persistentStateStoreAtoms = atomFamily((storageFile: string) => {
       if (fsWriteTimer !== null) {
         clearTimeout(fsWriteTimer);
       }
+      if (!ensureDirPromise) {
+        ensureDirPromise = ensureDir(
+          fs.promises,
+          path.dirname(storageFilepath)
+        );
+      }
       fsWriteTimer = setTimeout(() => {
-        set(fileContentAtom(storageFilepath), serializeState(get(cacheAtom)!));
+        ensureDirPromise.then(() =>
+          set(fileContentAtom(storageFilepath), serializeState(get(cacheAtom)!))
+        );
       }, PERSISTENCE_WRITE_TIMEOUT);
     }
   );
@@ -77,21 +97,22 @@ function createPersistedStateAtom<
   Schema extends ZodType<any, any, WithOptionalArrays<any>>,
   Value extends object
 >({
-  storageFile = StorageFiles.WORKSPACE_FILE,
+  storageFile = StoragePathMacros.WORKSPACE_FILE,
   componentName,
   schema,
   ...args
 }: {
   componentName: string;
-  schema: Schema extends ZodType<infer Output, any, infer Input>
-    ? WithOptionalArrays<Output> extends Input
+  schema: Schema extends ZodType<any, any, infer Input>
+    ? WithOptionalArrays<Input> extends Input
       ? Schema
       : `⚠️⚠️ If you see this error, it means the schema produces an array somewhere but doesn't expect singular value in the input. Look for usages of z.array() and replace them with maybeArray() utility ⚠️⚠️`
-    : never;
+    : never; // TODO: similarly check for numbers that don't allow for string and suggest replacing with numberFromString
+
   storageFile?: string;
-} & (
-  | {}
-  | {
+} & (Value extends Schema["_output"]
+  ? {}
+  : {
       read: (
         componentState: Schema["_output"] | undefined
       ) => Value | Promise<Value> | undefined;
@@ -99,10 +120,9 @@ function createPersistedStateAtom<
         value: Value,
         componentState: Schema["_output"]
       ) => Schema["_output"];
-    }
-)): PersistedStateAtom<Value> {
-  const write = "write" in args ? args.write : (v: Value) => v;
-  const read = "read" in args ? args.read : identity;
+    })): PersistedStateAtom<Value> {
+  const write: any /*FIXME*/ = "write" in args ? args.write : (v: Value) => v;
+  const read: any /*FIXME*/ = "read" in args ? args.read : identity;
 
   return atom(
     async (get): Promise<Value | undefined> => {
@@ -200,7 +220,7 @@ export const testAtom2 = atomWithPersistence(
   {
     componentName: "test2",
     storageFile: "test.xml",
-    schema: z.object({ y: z.number() }).optional(),
+    schema: z.object({ y: z.number() }),
   }
 );
 
@@ -212,14 +232,19 @@ export type PersistedState = {
     component: Array<ComponentState>;
   };
 };
+
+export const CDATA_PROP_NAME = "__cdata";
+
 const WORKSPACE_XML_PARSE_OPTIONS: X2jOptionsOptional = {
   attributeNamePrefix: "@",
   ignoreAttributes: false,
+  cdataPropName: CDATA_PROP_NAME,
   isArray: (tagName, jPath) => jPath === "project.component",
 };
 const WORKSPACE_XML_BUILD_OPTIONS: XmlBuilderOptionsOptional = {
   format: true,
   attributeNamePrefix: "@",
+  cdataPropName: CDATA_PROP_NAME,
   ignoreAttributes: false,
 };
 
@@ -253,8 +278,3 @@ function serializeState(state: PersistedState): string {
   const xmlBuilder = new XMLBuilder(WORKSPACE_XML_BUILD_OPTIONS);
   return xmlBuilder.build(state);
 }
-
-export const storageFileMapping: Record<StorageFiles, string> &
-  Record<string, string> = {
-  [StorageFiles.WORKSPACE_FILE]: "workspace.xml",
-};

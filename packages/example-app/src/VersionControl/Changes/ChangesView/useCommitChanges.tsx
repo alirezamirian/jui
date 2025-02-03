@@ -6,7 +6,7 @@ import React, { useCallback } from "react";
 import { useBalloonManager } from "@intellij-platform/core";
 
 import { fs } from "../../../fs/fs";
-import { commitFiles } from "../../commit-utils";
+import { commitFiles } from "../../git-operations/commitFiles";
 import {
   useRefreshRepoStatuses,
   vcsFootForFileAtom,

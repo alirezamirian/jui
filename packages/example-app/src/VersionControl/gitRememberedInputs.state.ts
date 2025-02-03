@@ -39,16 +39,20 @@ const gitRememberedInputsSchema = z.object({
 type VisitedUrlsOption = (typeof visitedUrlsSchema)["_output"];
 type CloneParentDirOption = (typeof cloneParentDirSchema)["_output"];
 
+type GitRememberedInput = {
+  visitedUrls: VisitedUrl[];
+  cloneParentDir: string;
+};
 const gitRememberedInputsAtom = atomWithPersistence(
   {
     visitedUrls: [],
     cloneParentDir: "",
-  },
+  } as GitRememberedInput,
   {
     storageFile: "vcs.xml", // GitRememberedInputs is user-level configuration, kept here temporarily
     componentName: "GitRememberedInputs",
     schema: gitRememberedInputsSchema,
-    read: ({ option: options } = { option: [] }) => {
+    read: ({ option: options } = { option: [] }): GitRememberedInput => {
       return {
         visitedUrls:
           options

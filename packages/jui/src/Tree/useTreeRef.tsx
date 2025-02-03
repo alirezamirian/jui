@@ -3,6 +3,7 @@ import { useLatest } from "@intellij-platform/core/utils/useLatest";
 import { TreeSelectionManager } from "./TreeSelectionManager";
 import { TreeCollection } from "./useTreeState";
 
+// TODO(api): rename to Tree or ...?
 export interface TreeRefValue {
   focus(key: Key): void;
   replaceSelection(key: Key): void;

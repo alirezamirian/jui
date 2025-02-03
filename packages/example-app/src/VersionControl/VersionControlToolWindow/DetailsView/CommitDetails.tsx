@@ -11,7 +11,7 @@ import {
   formatCommitTime,
   parseCommitMessage,
   shortenOid,
-} from "../commit-utils";
+} from "../../commit-utils";
 import {
   allResolvedRefsAtom,
   selectedCommitAtom,

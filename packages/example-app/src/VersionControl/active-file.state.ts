@@ -35,12 +35,21 @@ export const activeFileRepoBranchesAtom = atom<Promise<RepoBranches | null>>(
 );
 
 /**
- * Current branch of the file opened in the active editor tab.
+ * The current branch of the file opened in the active editor tab.
  */
 export const activeFileCurrentBranchAtom = latestDefinedValue(
   atom(async (get) => {
     const activeFile = get(activeEditorTabAtom)?.filePath;
     return activeFile ? get(branchForPathAtoms(activeFile)) : null;
+  })
+);
+/**
+ * The repository of the file opened in the active editor tab.
+ */
+export const activeFileRepoAtom = latestDefinedValue(
+  atom(async (get) => {
+    const activeFile = get(activeEditorTabAtom)?.filePath;
+    return activeFile ? get(vcsFootForFileAtom(activeFile)) : null;
   })
 );
 
