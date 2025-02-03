@@ -58,7 +58,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 20.18.1
+          node-version-file: ".nvmrc"
           cache: yarn
 
       - name: Install Dependencies 🔧
@@ -79,7 +79,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 20.18.1
+          node-version-file: ".nvmrc"
           cache: yarn
 
       - name: Install Dependencies 🔧
@@ -131,7 +131,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 20.18.1
+          node-version-file: ".nvmrc"
           cache: yarn
 
       - name: Install Dependencies 🔧
@@ -176,7 +176,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 20.18.1
+          node-version-file: ".nvmrc"
           cache: yarn
 
       - name: Install Dependencies 🔧
