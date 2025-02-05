@@ -45,6 +45,7 @@ describe("Toolbar", () => {
         <OverflowWrap orientation="horizontal" />
       </div>
     );
+    cy.wait(200); // attempting to fix the issue of the show more arrow not being visible only in snapshot tests
     matchImageSnapshot("Toolbar-looks-good");
   });
 
@@ -84,6 +85,10 @@ describe("Toolbar", () => {
   it("fits the overflow popup within the viewport", () => {
     cy.mount(<OverflowFittedInViewport containerWidth={100} />);
     cy.findByRole("toolbar").realHover({ position: "right" });
+    cy.findAllByRole("button", {
+      name: "Collapse All" /* the last button*/,
+    }).should("be.visible");
+    cy.wait(200); // attempting to fix the issue of the show more icon not being visible only in snapshot tests
     matchImageSnapshot("Toolbar-horizontal-overflow-fitted-into-viewport");
   });
 

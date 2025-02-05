@@ -1,5 +1,7 @@
-const libSrcAlias = require("../../../config/lib-src-webpack-alias");
-import { Configuration, ProvidePlugin } from "webpack";
+const libSrcAlias = require("../../../config/lib-aliases.js");
+const exampleAppConfig = require("../../../config/example-app-webpack-config.js");
+
+import { Configuration } from "webpack";
 /**
  * This is needed for cypress component testing.
  *
@@ -19,24 +21,15 @@ export default {
     extensions: [".ts", ".tsx", ".js"],
     alias: {
       ...libSrcAlias,
-      // FIXME(react-18): remove when upgraded to react 18
-      //  https://github.com/xyflow/xyflow/issues/4683#issuecomment-2388049017
-      "react/jsx-dev-runtime": "react/jsx-dev-runtime.js",
-      "react/jsx-runtime": "react/jsx-runtime.js",
     },
+    // fallbacks needed for cypress-plugin-snapshots
     fallback: {
       crypto: require.resolve("crypto-browserify"),
       path: require.resolve("path-browserify"),
       stream: require.resolve("stream-browserify"),
-      process: require.resolve("process/browser"),
     },
   },
-  plugins: [
-    new ProvidePlugin({
-      process: "process/browser",
-      Buffer: ["buffer", "Buffer"],
-    }),
-  ],
+  plugins: exampleAppConfig.plugins,
   module: {
     rules: [
       {
@@ -58,4 +51,11 @@ export default {
       },
     ],
   },
+  ignoreWarnings: [
+    // @storybook/react imports @storybook/test which is its optional peer dependency.
+    // Webpack doesn't handle it well. Upgrading to >=5.90.2 didn't work.
+    // https://github.com/webpack/webpack/discussions/18027#discussioncomment-10073944
+    // https://github.com/webpack/webpack/issues/7713
+    (e) => e.message.includes("Can't resolve '@storybook/test'"),
+  ],
 } as Configuration;

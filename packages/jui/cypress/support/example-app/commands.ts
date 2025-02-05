@@ -3,6 +3,7 @@
 /* global JQuery */
 
 import { AppGlobals } from "./AppGlobals";
+import { ByRoleOptions } from "@testing-library/cypress";
 
 declare global {
   namespace Cypress {
@@ -13,24 +14,21 @@ declare global {
       ): Chainable<void>;
 
       /**
-       * Creates a file via Projects tool window UI. Assumes Project tool window is open.
+       * Creates a file via Projects tool window UI.
+       * Assumes Project tool window is open.
        */
-      createFile(filename: string): Chainable<void>;
+      createFile(...args: Parameters<typeof createFile>): Chainable<void>;
       findTreeNodeInProjectView(
-        filename: string
+        ...args: Parameters<typeof findTreeNodeInProjectView>
       ): Chainable<JQuery<HTMLElement>>;
       findTreeNodeInChangesView(
-        filename: string
+        ...args: Parameters<typeof findTreeNodeInChangesView>
       ): Chainable<JQuery<HTMLElement>>;
 
       /**
-       * Loads the app's URL, and runs a number of initializer functions in parallel.
-       *
-       * @param init
+       * Loads the app's URL and runs a number of initializer functions in parallel.
        */
-      initialization(
-        ...init: Array<(params: AppGlobals) => unknown | Promise<unknown>>
-      ): Chainable<void>;
+      initialization(...args: Parameters<typeof initialize>): Chainable<void>;
     }
   }
 }
@@ -64,7 +62,9 @@ function initialize(
   // Without this, the keyboard events in potential next commands may get triggered before the app is fully loaded.
   cy.focused({ timeout: 8000 });
   // Editor loads asynchronously. If autofocusing after the test interactions begins causes focus to jump unexpectedly.
-  cy.contains("Loading...").should("not.exist");
+  cy.get(
+    "textarea[aria-roledescription=editor], [data-testid=EditorZeroState]"
+  );
 }
 
 function searchAndInvokeAction(
@@ -82,10 +82,13 @@ function searchAndInvokeAction(
   cy.realPress("Enter");
 }
 
-function findTreeNodeInProjectView(filename: string) {
+function findTreeNodeInProjectView(
+  filename: string,
+  options?: Omit<ByRoleOptions, "name">
+) {
   return cy
     .findByRole("tree", { name: "Project structure tree" })
-    .findByRole("treeitem", { name: new RegExp(filename) });
+    .findByRole("treeitem", { name: new RegExp(filename), ...options });
 }
 
 function findTreeNodeInChangesView(filename: string) {

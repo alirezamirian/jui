@@ -7,7 +7,9 @@ export * from "./CommonActionIds";
 export { keystrokeToString, shortcutToString } from "./shortcutToString";
 export * from "./ActionGroup";
 export { defaultKeymap } from "./defaultKeymap";
-export { Action } from "@intellij-platform/core/ActionSystem/Action";
-export { MutableAction } from "@intellij-platform/core/ActionSystem/Action";
-export { ActionDefinition } from "@intellij-platform/core/ActionSystem/Action";
-export { ActionContext } from "@intellij-platform/core/ActionSystem/Action";
+export type {
+  Action,
+  MutableAction,
+  ActionDefinition,
+  ActionContext,
+} from "@intellij-platform/core/ActionSystem/Action";

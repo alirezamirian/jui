@@ -4,7 +4,7 @@
  * Original file: https://github.com/facebook/docusaurus/blob/main/packages/docusaurus-theme-live-codeblock/src/theme/Playground/index.tsx
  */
 
-import React, { useState } from "react";
+import React, { ForwardedRef, useState } from "react";
 import clsx from "clsx";
 import useIsBrowser from "@docusaurus/useIsBrowser";
 import { LiveEditor, LiveError, LivePreview, LiveProvider } from "react-live";
@@ -172,12 +172,10 @@ function EditorWithHeader() {
   );
 }
 
-export default function Playground({
-  children,
-  transformCode,
-  ref,
-  ...props
-}: Props): JSX.Element {
+export default React.forwardRef(function Playground(
+  { children, transformCode, ...props }: Props,
+  ref: ForwardedRef<HTMLDivElement>
+): JSX.Element {
   const prismTheme = usePrismTheme();
 
   const noInline = props.metastring?.includes("noInline") ?? false;
@@ -186,7 +184,7 @@ export default function Playground({
     <>
       <div ref={ref} className={styles.playgroundContainer}>
         <LiveProvider
-          code={children.replace(/\n$/, "")}
+          code={children?.replace(/\n$/, "")}
           noInline={noInline}
           transformCode={transformCode ?? ((code) => `${code};`)}
           theme={prismTheme}
@@ -198,4 +196,4 @@ export default function Playground({
       </div>
     </>
   );
-}
+});

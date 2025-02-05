@@ -14,6 +14,7 @@ import { projectActionIds } from "./projectActionIds";
 import { copyFilenameActionAtom } from "./actions/copyFilename";
 import { copyAbsolutePathActionAtom } from "./actions/copyAbsolutePath";
 import { copyPathFromRepositoryRootActionAtom } from "../VersionControl/actions/copyPathFromRepositoryRoot";
+import { switchAppVersionAtom } from "./actions/switchVersionAction";
 
 const openSearchEverywhereCallback = (
   _get: Getter,
@@ -84,5 +85,6 @@ export function useProjectActions(): ActionDefinition[] {
     },
     newElementActionGroup,
     copyReferencePopupGroup,
+    useAtomValue(switchAppVersionAtom),
   ];
 }

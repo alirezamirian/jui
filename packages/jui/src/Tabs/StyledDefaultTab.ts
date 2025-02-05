@@ -1,12 +1,13 @@
 import { getTabThemeStyles } from "./TabTheme";
 import { styled } from "../styled";
 import { Theme, UnknownThemeProp } from "../Theme";
+import { HTMLProps } from "react";
 
-export type StyledTabProps = {
+export interface TabComponentProps extends HTMLProps<HTMLElement> {
   selected?: boolean;
   disabled?: boolean;
   active?: boolean;
-};
+}
 
 const defaultTabTheme = ({ theme }: { theme: Theme }) =>
   getTabThemeStyles({
@@ -45,7 +46,7 @@ const defaultTabTheme = ({ theme }: { theme: Theme }) =>
     ),
   });
 
-export const StyledDefaultTab = styled.div<StyledTabProps>`
+export const StyledDefaultTab = styled.div<TabComponentProps>`
   box-sizing: border-box;
   display: inline-flex;
   letter-spacing: 0.015rem;

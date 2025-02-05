@@ -1,9 +1,9 @@
 import { useTab } from "@react-aria/tabs";
 import { TabListState } from "@react-stately/tabs";
 import { Node } from "@react-types/shared";
-import { StyledDefaultTab } from "./StyledDefaultTab";
-import React, { ForwardedRef, forwardRef, RefObject, useEffect } from "react";
-import useForwardedRef from "@intellij-platform/core/utils/useForwardedRef";
+import { StyledDefaultTab, TabComponentProps } from "./StyledDefaultTab";
+import React, { ComponentType, ForwardedRef, forwardRef } from "react";
+import { useObjectRef } from "@react-aria/utils";
 
 type TabProps<T extends object> = {
   state: TabListState<object>;
@@ -17,7 +17,7 @@ type TabProps<T extends object> = {
    */
   active?: boolean;
   shouldSelectOnPressUp?: boolean;
-  Component?: typeof StyledDefaultTab;
+  Component?: ComponentType<TabComponentProps>;
 };
 
 export const Tab = forwardRef(function Tab<T extends object>(
@@ -32,7 +32,7 @@ export const Tab = forwardRef(function Tab<T extends object>(
   forwardedRef: ForwardedRef<HTMLDivElement>
 ): React.ReactElement {
   const { key, rendered } = item;
-  const ref = useForwardedRef(forwardedRef);
+  const ref = useObjectRef(forwardedRef);
   const {
     tabProps: {
       /**

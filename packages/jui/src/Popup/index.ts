@@ -8,7 +8,7 @@ export { type PopupTriggerProps, PopupTrigger } from "./PopupTrigger";
 export { PopupLayout } from "./PopupLayout";
 export {
   type PopupManagerProps,
-  PopupManagerAPI,
+  type PopupManagerAPI,
   PopupManager,
   usePopupManager,
 } from "./PopupManager";

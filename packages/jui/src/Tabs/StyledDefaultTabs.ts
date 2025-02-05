@@ -1,3 +1,4 @@
+import { HTMLProps } from "react";
 import { Theme } from "../Theme";
 import { styled } from "@intellij-platform/core/styled";
 import { getTabsThemeStyles } from "./TabTheme";
@@ -11,7 +12,11 @@ const defaultTabsTheme = ({ theme }: { theme: Theme }) =>
     background: theme.color("DefaultTabs.background"),
   });
 
-export const StyledDefaultTabs = styled.div<{ noBorders?: boolean }>`
+export interface TabsComponentProps extends HTMLProps<HTMLElement> {
+  noBorders?: boolean;
+}
+
+export const StyledDefaultTabs = styled.div<TabsComponentProps>`
   display: flex;
   align-items: center;
   box-sizing: border-box;

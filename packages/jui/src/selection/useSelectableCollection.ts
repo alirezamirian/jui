@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { useSelectableCollection as useAriaSelectableCollection } from "@react-aria/selection";
 
 /**
@@ -22,6 +22,11 @@ export const useSelectableCollection: typeof useAriaSelectableCollection = (
       selectionManager.replaceSelection(selectionManager.focusedKey);
     }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useLayoutEffect(() => {
+    const { selectionManager } = options;
     // Working around https://github.com/adobe/react-spectrum/issues/7512
     // FIXME: remove the workaround the issue is closed
     if (
@@ -32,7 +37,6 @@ export const useSelectableCollection: typeof useAriaSelectableCollection = (
       // onFocus doesn't get to run.
       selectionManager.setFocusedKey(selectionManager.firstSelectedKey);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return {
     collectionProps: {

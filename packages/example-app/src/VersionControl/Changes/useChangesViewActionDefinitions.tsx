@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useAtomCallback } from "jotai/utils";
 import path from "path";
 import { ActionDefinition, PlatformIcon } from "@intellij-platform/core";
@@ -22,7 +22,7 @@ import { getExpandedToNodesKeys } from "@intellij-platform/core/utils/tree-utils
 import { COMMIT_TOOLWINDOW_ID } from "../CommitToolWindow";
 import { VcsActionIds } from "../VcsActionIds";
 import { useToolWindowManager } from "../../Project/useToolWindowManager";
-import { focusCommitMessage } from "./ChangesView/ChangesViewSplitter";
+import { focusCommitMessageAtom } from "./ChangesView/ChangesViewSplitter";
 import {
   activePathsAtom,
   currentProjectFilesAtom,
@@ -97,6 +97,7 @@ const commitDirMsg = new IntlMessageFormat(
 function useCheckInActionDefinition(): ActionDefinition {
   const queueCheckIn = useAtomCallback(queueCheckInCallback);
   const toolWindowManager = useToolWindowManager();
+  const focusCommitMessage = useSetAtom(focusCommitMessageAtom);
   const activePaths = useAtomValue(activePathsAtom);
   const projectFiles = useAtomValue(
     unwrapLatestOrNull(currentProjectFilesAtom)
@@ -128,6 +129,7 @@ function useCheckInActionDefinition(): ActionDefinition {
 }
 function useCheckInProjectAction(): ActionDefinition {
   const toolWindowManager = useToolWindowManager();
+  const focusCommitMessage = useSetAtom(focusCommitMessageAtom);
 
   const queueChanges = useAtomCallback(
     useCallback((get, set) => {

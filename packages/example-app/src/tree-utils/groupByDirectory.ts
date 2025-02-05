@@ -26,7 +26,7 @@ type GroupByDirectorAdapter<T, D extends DirectoryNode> = {
  * @internal
  */
 export const createGroupByDirectory =
-  <T, D extends DirectoryNode>({
+  <T extends object, D extends DirectoryNode>({
     getPath,
     mapNode = identity,
     createDirectoryNode = (i) => i as D,
@@ -68,11 +68,13 @@ export const createGroupByDirectory =
       : directoryNodes;
   };
 
-function isDirectoryNode<T, D extends DirectoryNode>(node: D | T): node is D {
+function isDirectoryNode<T extends object, D extends DirectoryNode>(
+  node: D | T
+): node is D {
   return "type" in node && node.type === "directory";
 }
 
-function collapseDirectories<T, D extends DirectoryNode>(
+function collapseDirectories<T extends object, D extends DirectoryNode>(
   createDirectorNode: Required<
     GroupByDirectorAdapter<T, any>
   >["createDirectoryNode"],

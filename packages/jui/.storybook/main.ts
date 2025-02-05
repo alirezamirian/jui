@@ -1,9 +1,9 @@
 import { dirname, join } from "path";
-import { Configuration, ProvidePlugin } from "webpack";
+import { Configuration } from "webpack";
 // @ts-expect-error noImplicitAny
 import CircularDependencyPlugin from "circular-dependency-plugin";
-// @ts-expect-error noImplicitAny
-import alias from "../../../config/lib-src-webpack-alias";
+import alias from "../../../config/lib-aliases";
+import exampleAppConfig from "../../../config/example-app-webpack-config";
 import { StorybookConfig } from "@storybook/react-webpack5";
 
 module.exports = {
@@ -37,10 +37,7 @@ module.exports = {
     config.resolve = config.resolve || {};
     config.resolve.fallback = {
       ...config.resolve.fallback,
-      buffer: require.resolve("buffer"),
-      process: require.resolve("process/browser"),
-      stream: require.resolve("stream-browserify"),
-      path: require.resolve("path-browserify"),
+      ...exampleAppConfig.resolve.fallback,
     };
     config.resolve.alias = {
       ...config.resolve.alias,
@@ -52,12 +49,7 @@ module.exports = {
         include: /jui/,
         failOnError: false,
       }),
-      new ProvidePlugin({
-        Buffer: ["buffer", "Buffer"],
-      }),
-      new ProvidePlugin({
-        process: "process/browser",
-      })
+      ...exampleAppConfig.plugins
     );
     return config;
   },

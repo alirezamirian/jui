@@ -38,10 +38,11 @@ export function atomWithRefresh<Value>(
   read: Read<Value, [], void>
 ): WritableAtom<Value, [], void>;
 
-export function atomWithRefresh<Value, Args extends unknown[], Result>(
-  read: Read<Value, Args, Result>,
-  write?: Write<Value, Args, Result>
-) {
+export function atomWithRefresh<
+  Value extends {},
+  Args extends unknown[],
+  Result
+>(read: Read<Value, Args, Result>, write?: Write<Value, Args, Result>) {
   const refreshAtom = atom(0);
   const refreshableAtom = atom(
     (get, options) => {

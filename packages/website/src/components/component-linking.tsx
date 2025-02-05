@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
-import { GlobalPluginData } from "@docusaurus/plugin-content-docs/lib/client";
+import type { GlobalPluginData } from "@docusaurus/plugin-content-docs/client";
 import { parse } from "jsdoc-parse-plus";
 import Link from "@docusaurus/Link";
 
