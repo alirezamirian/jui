@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([["3723"],{65581:function(e){e.exports=JSON.parse('{"authors":[{"name":"Alireza Mirian","title":"Maintainer of jui","url":"https://github.com/alirezamirian","imageURL":"https://github.com/alirezamirian.png","key":"endi","page":null,"count":0}]}')}}]);

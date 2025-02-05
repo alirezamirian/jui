@@ -1,14 +1,8 @@
 Bundled license information:
 
-object-assign/index.js:
-  /*
-  object-assign
-  (c) Sindre Sorhus
-  @license MIT
-  */
-
 react/cjs/react-jsx-runtime.production.min.js:
-  /** @license React v17.0.2
+  /**
+   * @license React
    * react-jsx-runtime.production.min.js
    *
    * Copyright (c) Facebook, Inc. and its affiliates.

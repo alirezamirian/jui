@@ -1,2 +1,0 @@
-"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[5079],{51330:(e,t,o)=>{o.r(t),o.d(t,{default:()=>r});var s=o(2784);const n=!1;function r(){return(0,s.useEffect)((()=>{n&&(window.location.href="http://localhost:6008/")}),[]),n?"Redirecting to storybook...":s.createElement("div",null,"You are not supposed to land on this page. Try refreshing this page.")}}}]);
-//# sourceMappingURL=55bfaa1d.701975c7.js.map
