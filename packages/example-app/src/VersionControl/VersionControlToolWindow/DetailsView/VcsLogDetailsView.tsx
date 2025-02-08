@@ -33,7 +33,6 @@ import {
   vcsLogTabShowCommitDetailsAtoms,
 } from "../vcs-logs.state";
 import { VcsActionIds } from "../../VcsActionIds";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
 import { useRedefineAction } from "../../../useRedefineAction";
 
 import { isAtom } from "../../../atom-utils/isAtom";
@@ -117,7 +116,7 @@ export function VcsLogDetailsView({ tabKey }: { tabKey: string }) {
               VcsActionIds.SHOW_DIFF_PREVIEW,
               SHOW_DIFF_PREVIEW_ACTION_ID
             ),
-          ].filter(notNull),
+          ].filter((i) => i != null),
         }),
       ],
     }),

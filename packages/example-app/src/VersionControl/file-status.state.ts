@@ -10,7 +10,6 @@ import {
   VcsDirectoryMapping,
 } from "./file-status";
 import * as path from "path";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
 import { atomWithRefresh } from "../atom-utils/atomWithRefresh";
 import { atomWithPersistence } from "../persistence/atomWithPersistence";
 import { maybeArray } from "../persistence/schema-utils";
@@ -41,12 +40,12 @@ const TMP_findGitRoots = () =>
       }
     })
   ).then((roots) => {
-    return [...new Set(roots.filter(notNull))].map<VcsDirectoryMapping>(
-      (dir) => ({
-        dir,
-        vcs: "Git",
-      })
-    );
+    return [
+      ...new Set(roots.filter((i) => i != null)),
+    ].map<VcsDirectoryMapping>((dir) => ({
+      dir,
+      vcs: "Git",
+    }));
   });
 
 const vcsDirectoryMappingsSchema = z

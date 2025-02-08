@@ -1,5 +1,4 @@
 import { diffLines } from "diff";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
 import { AdditionChange, AnyChange, Change, DeletionChange } from "./Change";
 
 // Read more: https://www.git-scm.com/docs/git-diff/2.6.7#:~:text=The-,similarity%20index,-is%20the%20percentage
@@ -34,7 +33,7 @@ function detectRenamesBasedOnHash(
           }
           return null;
         })
-        .filter(notNull)
+        .filter((i) => i != null)
     ),
     changes
   );

@@ -4,7 +4,6 @@ import { useAtomCallback } from "jotai/utils";
 import { IntlMessageFormat } from "intl-messageformat";
 import React, { useCallback } from "react";
 import { useBalloonManager } from "@intellij-platform/core";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 import { fs } from "../../../fs/fs";
 import { commitFiles } from "../../commit-utils";
@@ -63,7 +62,7 @@ export function useCommitChanges() {
                         : null;
                     })
                   )
-                ).filter(notNull)
+                ).filter((i) => i != null)
               );
               await Promise.all(
                 Object.entries(changesGroupedByRepo).map(

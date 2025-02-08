@@ -19,7 +19,6 @@ import {
   bfsVisit,
   getExpandedToNodesKeys,
 } from "@intellij-platform/core/utils/tree-utils";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
 import {
   createSetInterface,
   NestedSelection,
@@ -42,7 +41,6 @@ import { Task } from "../../../tasks";
 import { AnyChange, Change } from "../Change";
 import { changesTreeNodesResult } from "../ChangesTree/changesTreeNodesResult";
 import { allChangesAtom } from "../changes.state";
-import { withAtomEffect } from "jotai-effect";
 
 export interface ChangeListNode<
   C extends ChangesTreeNode<any> = ChangesViewTreeNode
@@ -114,7 +112,7 @@ const selectedNodesAtom = atom<ReadonlySet<ChangesViewTreeNode>>((get) => {
   const selectedKeys = get(resolvedSelectedKeysAtom);
   const { byKey } = get(changesTreeNodesAtom);
   return new Set(
-    [...selectedKeys].map((key) => byKey.get(key)).filter(notNull)
+    [...selectedKeys].map((key) => byKey.get(key)).filter((i) => i != null)
   );
 });
 

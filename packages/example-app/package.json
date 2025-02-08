@@ -17,7 +17,6 @@
     "@intellij-platform/core/utils/usePrevious": "@intellij-platform/core/src/utils/usePrevious",
     "@intellij-platform/core/Menu/StyledMenu": "@intellij-platform/core/src/Menu/StyledMenu",
     "@intellij-platform/core/utils/tree-utils": "@intellij-platform/core/src/utils/tree-utils",
-    "@intellij-platform/core/utils/array-utils": "@intellij-platform/core/src/utils/array-utils",
     "@intellij-platform/core/utils/useEventCallback": "@intellij-platform/core/src/utils/useEventCallback",
     "@intellij-platform/core/StyledSeparator": "@intellij-platform/core/src/StyledSeparator",
     "@intellij-platform/core/List/StyledListItem": "@intellij-platform/core/src/List/StyledListItem",

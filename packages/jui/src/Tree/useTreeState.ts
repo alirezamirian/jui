@@ -5,7 +5,7 @@ import {
   MultipleSelection,
   Node,
 } from "@react-types/shared";
-import { TreeProps as _TreeProps, TreeState } from "@react-stately/tree";
+import { TreeState } from "@react-stately/tree";
 import {
   TreeRefValue,
   useTreeRef,
@@ -21,7 +21,6 @@ import {
 import { TreeCollection as _TreeCollection } from "./__copied__TreeCollection";
 import { getSingleChildrenKeys } from "./getSingleChildrenKeys";
 import { TreeSelectionManager } from "@intellij-platform/core/Tree/TreeSelectionManager";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 export class TreeCollection<T> extends _TreeCollection<T> {
   public readonly rootKeys: Key[];
@@ -36,7 +35,7 @@ export class TreeCollection<T> extends _TreeCollection<T> {
   getAllExpandableKeys(): Set<Key> {
     const rootNodes = this.rootKeys
       .map((key) => this.getItem(key))
-      .filter(notNull);
+      .filter((i) => i != null);
     return this.recursivelyAddExpandableKeys(rootNodes, new Set<Key>());
   }
 
@@ -170,7 +169,7 @@ function getChildItems<T>(node: Node<T>): Node<T>[] {
 function getRootItemKeys(tree: TreeCollection<unknown>) {
   return tree.rootKeys
     .map((key) => tree.getItem(key))
-    .filter(notNull)
+    .filter((i) => i != null)
     .flatMap(getChildItems)
     .map(({ key }) => key);
 }

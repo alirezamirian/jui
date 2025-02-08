@@ -8,7 +8,6 @@ import {
   PlatformIcon,
   useCreateDefaultActionGroup,
 } from "@intellij-platform/core";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 import { notImplemented } from "../Project/notImplemented";
 import { AppActionIds } from "../appActionIds";
@@ -247,7 +246,7 @@ export function useEditorActionGroup(
           },
         },
       ] as const
-    ).filter(notNull),
+    ).filter((i) => i != null),
   });
 }
 

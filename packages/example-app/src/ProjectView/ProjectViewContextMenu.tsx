@@ -5,7 +5,6 @@ import {
   DividerItem,
   useAction,
 } from "@intellij-platform/core";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
 import React from "react";
 import { projectActionIds } from "../Project/projectActionIds";
 
@@ -32,7 +31,7 @@ export function ProjectViewContextMenu({
         new DividerItem(),
         useAction(CommonActionId.DELETE),
         new DividerItem(),
-      ].filter(notNull)}
+      ].filter((i) => i != null)}
     />
   );
 }

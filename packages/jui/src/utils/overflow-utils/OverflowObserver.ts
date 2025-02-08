@@ -1,5 +1,4 @@
 import { sortBy, uniqBy } from "ramda";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 export interface OverflowObserverRecord {
   target: Element;
@@ -70,14 +69,14 @@ export class OverflowObserver {
               ? entry.target
               : undefined
           )
-          .filter(notNull);
+          .filter((i) => i != null);
         const newVisibleElements = validEntries
           .map((entry) =>
             entry.isIntersecting && entry.target instanceof Element
               ? entry.target
               : null
           )
-          .filter(notNull);
+          .filter((i) => i != null);
 
         //  Also cover this in Toolbar with a test case
         const previouslyOverflowedElements =

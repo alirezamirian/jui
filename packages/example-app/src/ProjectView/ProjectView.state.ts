@@ -8,7 +8,6 @@ import { dirContentAtom, FsItem } from "../fs/fs.state";
 import { filterPath } from "../Project/project-utils";
 import { getParentPaths } from "../file-utils";
 import { vcsRootsAtom } from "../VersionControl/file-status.state";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 interface FileTreeNodeBase {
   parent: (FileTreeNodeBase & { children: FsItem[] }) | null;
@@ -52,7 +51,7 @@ export const selectedNodesAtom = atom(
     const selectedKeys = selection === "all" ? nodesByKey.keys() : selection;
     return [...selectedKeys]
       .map((key) => nodesByKey.get(`${key}`))
-      .filter(notNull);
+      .filter((i) => i != null);
   }
 );
 
@@ -113,7 +112,7 @@ async function createProjectTree(
                 mapItem(dirNode)
               )
             )
-          ).filter(notNull);
+          ).filter((i) => i != null);
           sortProjectTreeNodes(dirNode.children);
           byKey.set(dirNode.path, dirNode);
           return dirNode;
@@ -126,7 +125,7 @@ async function createProjectTree(
 
   const children = (
     await Promise.all((rootItems || []).map(mapItem(null)))
-  ).filter(notNull);
+  ).filter((i) => i != null);
   sortProjectTreeNodes(children);
   const root: ProjectTreeNode = {
     type: "project",
