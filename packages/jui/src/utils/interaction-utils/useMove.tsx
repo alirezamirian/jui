@@ -90,6 +90,10 @@ export function useMove<S>({
     if (event.button !== 0 || !canMoveStart(event)) {
       return;
     }
+    // In the use case of resize handles, preventing default is necessary to avoid focus getting lost
+    // while resizing a container.
+    // It didn't seem necessary in any other use case to not prevent default, so it's done without any option.
+    event.preventDefault();
     disableTextSelection();
     const from = { x: event.pageX, y: event.pageY };
     let dragStarted = false;

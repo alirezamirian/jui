@@ -36,19 +36,28 @@ const ThreeViewSplitterWithStyles: React.FC<ThreeViewSplitterProps> = (
       {...otherProps}
       style={{ height: "100vh" }}
       firstView={
-        <div style={{ background: "lightyellow", height: "100%", padding: 8 }}>
+        <div
+          data-testid="first"
+          style={{ background: "lightyellow", height: "100%", padding: 8 }}
+        >
           {firstView}
           <div>size: {props.firstSize}</div>
         </div>
       }
       lastView={
-        <div style={{ background: "lightcoral", height: "100%", padding: 8 }}>
+        <div
+          data-testid="last"
+          style={{ background: "lightcoral", height: "100%", padding: 8 }}
+        >
           {lastView}
           <div>size: {props.lastSize}</div>
         </div>
       }
       innerView={
-        <div style={{ background: "lightcyan", height: "100%", padding: 8 }}>
+        <div
+          data-testid="middle"
+          style={{ background: "lightcyan", height: "100%", padding: 8 }}
+        >
           {innerView}
         </div>
       }
@@ -63,6 +72,23 @@ export const WithInitialSize = {
     return (
       <ThreeViewSplitterWithStyles
         {...props}
+        firstSize={firstSize}
+        onFirstResize={setFirstSize}
+        lastSize={lastSize}
+        onLastResize={setLastSize}
+      />
+    );
+  },
+};
+
+export const WithFocusableContent = {
+  render: (props: Partial<ThreeViewSplitterProps>) => {
+    const [firstSize, setFirstSize] = useState<number>();
+    const [lastSize, setLastSize] = useState<number>();
+    return (
+      <ThreeViewSplitterWithStyles
+        {...props}
+        firstView={<input autoFocus />}
         firstSize={firstSize}
         onFirstResize={setFirstSize}
         lastSize={lastSize}
