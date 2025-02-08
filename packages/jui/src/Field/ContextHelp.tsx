@@ -38,6 +38,7 @@ const StyledContextHelpWrapper = styled.div<{
       align-items: center;
       gap: 1rem; /* Not checked with the reference impl */
     `}
+  align-self: stretch; /* Needed for when the control is inside a flex layout */
   flex-grow: 1; /* Needed for when the control is inside a flex layout */
 `;
 
