@@ -5,7 +5,6 @@ import {
   MultiViewToolWindow,
   TooltipTrigger,
 } from "@intellij-platform/core";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 import { ChangesViewPane } from "./Changes/ChangesView/ChangesViewPane";
 import { vcsFootForFileAtom } from "./file-status.state";
@@ -25,7 +24,7 @@ const changesBranchesAtom = atom(
           get(vcsFootForFileAtom(Change.path(change)))
         )
       )
-    ).filter(notNull);
+    ).filter((i) => i != null);
 
     return (
       await Promise.all(
@@ -39,7 +38,7 @@ const changesBranchesAtom = atom(
             : null;
         })
       )
-    ).filter(notNull);
+    ).filter((i) => i != null);
   }
 );
 

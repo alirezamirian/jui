@@ -3,7 +3,6 @@ import { atomFamily, useAtomCallback } from "jotai/utils";
 import path from "path";
 import { groupBy } from "ramda";
 import git, { checkout, resetIndex } from "isomorphic-git";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 import { dirContentAtom, reloadFileFromDiskCallback } from "../../fs/fs.state";
 import { fs } from "../../fs/fs";
@@ -40,7 +39,7 @@ const repoChangesAtoms = atomFamily((repoDir: string) =>
           return null;
         }
       })
-      .filter(notNull)
+      .filter((i) => i != null)
   )
 );
 
@@ -73,7 +72,7 @@ const rollbackChangesCallback = async (
           }
         })
     )
-  ).filter(notNull);
+  ).filter((i) => i != null);
   const groupedChanges = groupBy(
     ({ repoRoot }) => repoRoot,
     changesWithRepoRoots

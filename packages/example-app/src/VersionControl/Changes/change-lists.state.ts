@@ -1,7 +1,6 @@
 import { atom as jotaiAtom, useAtomValue, useSetAtom } from "jotai";
 import { useAtomCallback } from "jotai/utils";
 import { useCallback, useEffect } from "react";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 import { allChangesAtom } from "./changes.state";
 import { AnyChange, Change, UnversionedChange } from "./Change";
@@ -86,7 +85,7 @@ export function SyncChangeListsState() {
             .map((change) =>
               trackedChanges.find((aChange) => Change.equals(aChange, change))
             )
-            .filter(notNull),
+            .filter((i) => i != null),
         };
       });
       const existingChanges = updatedChangeLists.flatMap(
