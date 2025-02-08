@@ -51,6 +51,7 @@ export const MnemonicTrigger = ({
     if (active && !e.repeat) {
       const character = e.code.match(/Key([A-Z])/)?.[1];
       if (character && character.toLowerCase() === mnemonic.toLowerCase()) {
+        e.preventDefault();
         onTriggered();
       }
     }
