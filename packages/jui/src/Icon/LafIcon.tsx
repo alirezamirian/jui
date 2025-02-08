@@ -77,7 +77,10 @@ export const LafIcon = React.forwardRef(
     const resolvedIconPath = useIconPath(icon, themePath);
 
     const ref = useObjectRef(forwardedRef);
-    useSvgIcon({ path: `platform/platform-impl/src/${resolvedIconPath}` }, ref);
+    useSvgIcon(
+      { path: `platform/platform-impl/resources/${resolvedIconPath}` },
+      ref
+    );
     return <StyledIconWrapper {...props} ref={ref} size={size} />;
   }
 );
