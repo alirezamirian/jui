@@ -116,6 +116,18 @@ describe("Mnemonic", () => {
     );
     cy.get("@consoleWarn").should("be.calledTwice");
   });
+
+  it("when activated, prevents alt code special characters being inserted into the currently focused input", () => {
+    cy.mount(
+      <StyledContainer>
+        <input />
+        <MnemonicTrigger mnemonic="D">Disconnect</MnemonicTrigger>
+      </StyledContainer>
+    );
+    cy.get("input").focus();
+    cy.realPress(["Alt", "d"]);
+    cy.get("input").should("have.value", "");
+  });
 });
 
 function matchImageSnapshot(snapshotsName: string) {
