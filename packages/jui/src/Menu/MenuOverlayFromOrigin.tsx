@@ -35,6 +35,11 @@ interface MenuOverlayFromOriginProps
       }
     | undefined;
   children: React.ReactNode;
+  /**
+   * Weather the content of the popover should not grab the focus upon open
+   * @default false
+   */
+  disableAutoFocus?: boolean;
 }
 
 const DisableScrollStyles = createGlobalStyle`
@@ -46,10 +51,16 @@ const DisableScrollStyles = createGlobalStyle`
 /**
  * Menu overlay position based on an origin point on the screen.
  * Useful when the menu is opened by a pointer event.
+ * TODO: Decouple from menu and make it OverlayFromOrigin
  */
 export const MenuOverlayFromOrigin = React.forwardRef(
   function MenuOverlayFromOrigin(
-    { children, origin, ...otherProps }: MenuOverlayFromOriginProps,
+    {
+      children,
+      origin,
+      disableAutoFocus = false,
+      ...otherProps
+    }: MenuOverlayFromOriginProps,
     forwardedRef: ForwardedRef<HTMLDivElement>
   ) {
     const overlayRef = useObjectRef(forwardedRef);
@@ -86,6 +97,7 @@ export const MenuOverlayFromOrigin = React.forwardRef(
             overlayProps={positionProps}
             overlayRef={overlayRef}
             restoreFocus
+            autoFocus={!disableAutoFocus}
             {...otherProps}
           >
             {children}

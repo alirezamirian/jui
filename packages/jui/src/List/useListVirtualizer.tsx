@@ -44,7 +44,7 @@ export const useListVirtualizer = <T extends object>({
 
   return {
     virtualizerProps: {
-      focusedKey: state.selectionManager.focusedKey,
+      focusedKey: state.selectionManager.focusedKey ?? undefined,
       collection: state.collection,
       layout,
       // Not clear how this sizeToFit is supposed to work, due to lack of documentation, but don't be tempted to

@@ -205,6 +205,7 @@ export function PathInputField({
             setAutocompleteVisible(false);
           }}
           origin={menuOrigin}
+          disableAutoFocus
         >
           <StyledPopover>
             <ListBoxStyledAsMenu

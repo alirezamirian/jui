@@ -122,7 +122,6 @@ export function useTreeState<T extends object>(
       selectionState.focusedKey != null &&
       !tree.getItem(selectionState.focusedKey)
     ) {
-      // @ts-expect-error imprecise typing in @react-stately/selection
       selectionState.setFocusedKey(null);
     }
   }, [tree, selectionState.focusedKey]);

@@ -81,7 +81,7 @@ export const TooltipTriggerAndOverlay = <T extends HTMLElement>({
             value={{
               state,
               isInteractive,
-              placement: positionAria.placement,
+              placement: positionAria.placement ?? undefined,
               pointerPositionStyle: positionAria.arrowProps.style,
             }}
           >

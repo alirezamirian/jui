@@ -144,7 +144,7 @@ const StyledLink = styled.div`
 `;
 
 export const placementToPointerSide: Record<
-  PositionAria["placement"],
+  NonNullable<PositionAria["placement"]>,
   TooltipPointerPosition["side"]
 > = {
   bottom: "top",

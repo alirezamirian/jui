@@ -15,6 +15,7 @@ import {
 export interface MenuOverlayProps {
   children: React.ReactNode;
   restoreFocus?: boolean;
+  autoFocus?: boolean;
   overlayProps: HTMLProps<HTMLDivElement>;
   overlayRef?: React.Ref<HTMLDivElement>;
   /**
@@ -33,6 +34,7 @@ export interface MenuOverlayProps {
 export function MenuOverlay({
   children,
   restoreFocus,
+  autoFocus,
   overlayProps: otherOverlayProps,
   overlayRef: inputOverlayRef,
   defaultAutoFocus,
@@ -78,7 +80,7 @@ export function MenuOverlay({
 
   return (
     <Overlay>
-      <FocusScope restoreFocus={restoreFocus} autoFocus>
+      <FocusScope restoreFocus={restoreFocus} autoFocus={autoFocus}>
         <MenuOverlayContext.Provider
           value={{
             close: onClose,
