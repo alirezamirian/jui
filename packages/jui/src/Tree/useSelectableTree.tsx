@@ -117,8 +117,9 @@ export function useSelectableTree<T>(
       : null;
     if (focusedItem) {
       const isExpandable = Boolean(focusedItem?.hasChildNodes);
-      const expanded = state.expandedKeys.has(focusedKey);
-      const isDisabled = state.disabledKeys.has(focusedKey);
+      const expanded = focusedKey != null && state.expandedKeys.has(focusedKey);
+      const isDisabled =
+        focusedKey != null && state.disabledKeys.has(focusedKey);
       if (isDisabled) {
         event.continuePropagation();
         return;
@@ -129,11 +130,11 @@ export function useSelectableTree<T>(
         (event.key === "Enter" ||
           (event.key === "ArrowLeft" && expanded) ||
           (event.key === "ArrowRight" && !expanded));
-      if (isExpandable && shouldToggle) {
+      if (isExpandable && shouldToggle && focusedKey != null) {
         event.preventDefault();
         state.toggleKey(focusedKey);
         return;
-      } else if (event.key === "Enter") {
+      } else if (event.key === "Enter" && focusedKey != null) {
         onAction?.(focusedKey);
         return;
       }

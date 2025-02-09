@@ -6,6 +6,7 @@ import { StyledSpacer, StyledToolWindowStripe } from "./StyledToolWindowStripe";
 import { StyledToolWindowStripeButton } from "./StyledToolWindowStripeButton";
 import { useElementMove, UseElementMoveOptions } from "./useElementMove";
 import { Anchor, isHorizontalToolWindow } from "./utils";
+import { getItemElement } from "@intellij-platform/core/Collections/getItemElement";
 
 interface ToolWindowStripeProps<T> {
   anchor: Anchor;
@@ -42,8 +43,7 @@ export function ToolWindowStripe<T>({
         const isNotCurrentItem = (anItem: T) => getKey(anItem) !== key;
         const stripeElement = containerRef.current!;
         const getItemRect = (key: Key) =>
-          stripeElement
-            .querySelector(`[data-key="${key}"]`)! // FIXME
+          getItemElement(containerRef, key)! // FIXME
             .getBoundingClientRect();
         return createGetDropPosition({
           stripeElement: stripeElement,

@@ -8,6 +8,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { getItemElement } from "@intellij-platform/core/Collections/getItemElement";
 import { useLatest } from "../utils/useLatest";
 import { DropPosition } from "./createGetDropPosition";
 import { UseElementMoveOptions } from "./useElementMove";
@@ -102,10 +103,7 @@ export const MovableToolWindowStripeProvider = <T extends unknown>({
           return;
         }
         const { stripeElRef } = stripe;
-        const stripeElement = stripeElRef.current!;
-        const itemElement = stripeElement.querySelector<HTMLElement>(
-          `[data-key="${key}"]`
-        );
+        const itemElement = getItemElement(stripeElRef, key);
         if (!itemElement) {
           throw new Error(
             `unexpected state: Could not find stripe button element ${key} via data-key attribute`

@@ -15,6 +15,7 @@ import { TreeContext } from "../TreeContext";
 import { useSpeedSearchTree } from "./useSpeedSearchTree";
 import { SpeedSearchTreeNode } from "./SpeedSearchTreeNode";
 import { filterDOMProps, useObjectRef } from "@react-aria/utils";
+import { useTreeRef } from "@intellij-platform/core/Tree/useTreeRef";
 
 export type SpeedSearchTreeProps<T extends object> = TreeProps<T> &
   SpeedSearchProps &
@@ -38,11 +39,14 @@ export const SpeedSearchTree = React.forwardRef(
     }: SpeedSearchTreeProps<T>,
     forwardedRef: ForwardedRef<HTMLDivElement>
   ) => {
-    const state = useTreeState(
-      { ...props, disallowEmptySelection: !props.allowEmptySelection },
-      treeRef
-    );
+    const state = useTreeState({
+      ...props,
+      disallowEmptySelection: !props.allowEmptySelection,
+    });
+
     const ref = useObjectRef(forwardedRef);
+    useTreeRef({ state, scrollRef: ref }, treeRef);
+
     const {
       treeProps,
       treeContext,

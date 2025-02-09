@@ -5,12 +5,8 @@ import {
   MultipleSelection,
   Node,
 } from "@react-types/shared";
-import { TreeState } from "@react-stately/tree";
-import {
-  TreeRefValue,
-  useTreeRef,
-} from "@intellij-platform/core/Tree/useTreeRef";
-import { ForwardedRef, Key, useCallback, useEffect, useMemo } from "react";
+import { TreeState as AriaTreeState } from "@react-stately/tree";
+import { Key, useCallback, useEffect, useMemo } from "react";
 import { useMultipleSelectionState } from "@react-stately/selection";
 import { useCollection } from "@react-stately/collections";
 import { useControlledState } from "@react-stately/utils";
@@ -59,13 +55,16 @@ export interface TreeProps<T>
     CollectionCacheInvalidationProps {
   childExpansionBehaviour?: "multi" | "single";
 }
+
+export interface TreeState<T> extends AriaTreeState<T> {
+  selectionManager: TreeSelectionManager;
+  collection: TreeCollection<T>;
+}
 /**
  * Provides state management for tree-like components. Handles building a collection
  * of items from props, item expanded state, and manages multiple selection state.
  *
  * Similar to (and initially copied from) useTreeState from @react-stately/tree, but with the following changes:
- * - Supports exposing some imperative API via ref.
- *   Could be done via a wrapper too.
  * - Different onToggle implementation with two adjustments to match Intellij Platform:
  *   - Collapsing a key collapses all descendants as well.
  *   - Expanding a single-child node will recursively expand all single-child descendants.
@@ -79,10 +78,10 @@ export interface TreeProps<T>
  * - returned `collection` is of type `TreeCollection` (which is an improved version of react-stately `TreeCollection`),
  *   instead of the more generic `Collection`.
  */
-export function useTreeState<T extends object>(
-  { childExpansionBehaviour = "multi", ...props }: TreeProps<T>,
-  treeRef?: ForwardedRef<TreeRefValue>
-): TreeState<T> {
+export function useTreeState<T extends object>({
+  childExpansionBehaviour = "multi",
+  ...props
+}: TreeProps<T>): TreeState<T> {
   let [expandedKeys, setExpandedKeys] = useControlledState(
     props.expandedKeys ? new Set(props.expandedKeys) : undefined!,
     props.defaultExpandedKeys ? new Set(props.defaultExpandedKeys) : new Set(),
@@ -114,15 +113,12 @@ export function useTreeState<T extends object>(
     selectionState
   );
 
-  useTreeRef({ selectionManager, setExpandedKeys, tree }, treeRef);
-
   // Reset focused key if that item is deleted from the collection.
   useEffect(() => {
     if (
       selectionState.focusedKey != null &&
       !tree.getItem(selectionState.focusedKey)
     ) {
-      // @ts-expect-error imprecise typing in @react-stately/selection
       selectionState.setFocusedKey(null);
     }
   }, [tree, selectionState.focusedKey]);
@@ -149,7 +145,7 @@ export function useTreeState<T extends object>(
   };
 
   return {
-    collection: tree as Collection<Node<T>>,
+    collection: tree,
     expandedKeys,
     disabledKeys,
     toggleKey,

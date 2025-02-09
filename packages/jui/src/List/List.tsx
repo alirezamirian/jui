@@ -86,7 +86,7 @@ export const List = React.forwardRef(function List<T extends object>(
   return (
     <ListContext.Provider value={listContext}>
       <StyledList
-        as={Virtualizer<Node<any>, any>}
+        as={Virtualizer<Node<any>, any, any>}
         {...virtualizerProps}
         {...listProps}
         {...filterDOMProps(props, { labelable: true })}

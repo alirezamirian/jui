@@ -2,6 +2,7 @@ import React from "react";
 import { composeStories } from "@storybook/react";
 import * as stories from "./ModalWindow.stories";
 import {
+  Button,
   ModalWindow,
   WindowLayout,
   WindowManager,
@@ -19,23 +20,34 @@ describe("ModalWindow", () => {
     matchImageSnapshot("ModalWindow-default");
   });
 
-  it(
-    "it allows for navigating buttons with arrow keys",
-    {
-      retries: 3 /* Some flakiness on the CI pipeline that doesn't seem to happen when running tests locally */,
-    },
-    () => {
-      cy.mount(<WithFooter />);
-      cy.findByRole("button", { name: "Ok" })
-        .focus()
-        .should("be.focused")
-        .realPress("ArrowLeft");
-      cy.findByRole("button", { name: "Cancel" })
-        .should("be.focused")
-        .realPress("ArrowLeft"); // should wrap
-      cy.findByRole("button", { name: "Ok" }).should("be.focused");
-    }
-  );
+  it("it allows for navigating buttons with arrow keys", () => {
+    cy.mount(
+      <ModalWindow>
+        <WindowLayout
+          header="Dialog title"
+          content="Content"
+          footer={
+            <WindowLayout.Footer
+              right={
+                <>
+                  <Button autoFocus>Cancel</Button>
+                  <Button variant="default">Ok</Button>
+                </>
+              }
+            />
+          }
+        />
+      </ModalWindow>
+    );
+    cy.findByRole("button", { name: "Ok" })
+      .focus()
+      .should("be.focused")
+      .realPress("ArrowLeft");
+    cy.findByRole("button", { name: "Cancel" })
+      .should("be.focused")
+      .realPress("ArrowLeft"); // should wrap
+    cy.findByRole("button", { name: "Ok" }).should("be.focused");
+  });
 
   it("supports resize", () => {
     const onBoundsChange = cy.stub().as("onBoundsChange");

@@ -1,7 +1,7 @@
 import React, {
   CSSProperties,
   HTMLAttributes,
-  Ref,
+  RefObject,
   useContext,
   useEffect,
   useMemo,
@@ -253,14 +253,13 @@ type ProgressBarIconButtonProps = Pick<PressProps, "onPress"> & {
  */
 export function useProgressBarIconButton(
   { onPress, hoverTooltip }: ProgressBarIconButtonProps,
-  ref: Ref<HTMLElement>
+  ref: RefObject<HTMLElement>
 ) {
   const { buttonProps } = useButton(
     {
       onPress,
       elementType: "span",
       excludeFromTabOrder: true,
-      // @ts-expect-error: it works, but it's intentionally excluded from the type.
       preventFocusOnPress: true,
     },
     ref
@@ -280,7 +279,7 @@ export function useProgressBarIconButton(
  * */
 export function useProgressBarPauseIconButton(
   { paused, ...props }: ProgressBarIconButtonProps & { paused: boolean },
-  ref: Ref<HTMLElement>
+  ref: RefObject<HTMLElement>
 ) {
   const context = useContext(ProgressBarContext);
   useEffect(() => {

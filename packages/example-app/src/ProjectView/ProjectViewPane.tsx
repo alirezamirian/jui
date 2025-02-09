@@ -70,10 +70,11 @@ export const ProjectViewPane = (): React.ReactElement => {
    */
   const getActionContext = (): ActionContext => {
     return {
-      element:
-        containerRef.current?.querySelector(
-          `[data-key="${contextMenuTargetKey.current}"]`
-        ) ?? null,
+      element: contextMenuTargetKey.current
+        ? containerRef.current?.querySelector(
+            `[data-key="${CSS.escape(contextMenuTargetKey.current)}"]`
+          ) ?? null
+        : null,
       event: null,
     };
   };

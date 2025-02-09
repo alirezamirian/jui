@@ -2,7 +2,7 @@ import React, { CSSProperties, ForwardedRef, RefObject } from "react";
 import { Node } from "@react-types/shared";
 import { Virtualizer } from "@react-aria/virtualizer";
 import { StyledTree } from "./StyledTree";
-import { TreeRefValue } from "./useTreeRef";
+import { TreeRefValue, useTreeRef } from "./useTreeRef";
 import { TreeNode } from "./TreeNode";
 import { TreeContext } from "./TreeContext";
 import { TreeProps as StatelyTreeProps, useTreeState } from "./useTreeState";
@@ -46,8 +46,9 @@ export const Tree = React.forwardRef(
     }: TreeProps<T>,
     forwardedRef: ForwardedRef<HTMLDivElement>
   ) => {
-    const state = useTreeState(props, treeRef);
+    const state = useTreeState(props);
     const ref = useObjectRef(forwardedRef);
+    useTreeRef({ state, scrollRef: ref }, treeRef);
 
     const { treeProps, treeContext } = useSelectableTree(
       {
@@ -57,12 +58,13 @@ export const Tree = React.forwardRef(
       state,
       ref
     );
+
     const { virtualizerProps } = useTreeVirtualizer({ state });
 
     return (
       <TreeContext.Provider value={treeContext}>
         <StyledTree
-          as={Virtualizer<Node<any>, unknown>}
+          as={Virtualizer<Node<any>, unknown, unknown>}
           ref={ref}
           fillAvailableSpace={fillAvailableSpace}
           {...virtualizerProps}

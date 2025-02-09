@@ -94,7 +94,6 @@ export const MenuTrigger = <E extends "button" | "a" = "button">({
   const ariaButtonProps: AriaButtonProps<E> = {
     ...triggerProps,
     elementType,
-    // @ts-expect-error: preventFocusOnPress is not defined in public API of useButton
     preventFocusOnPress,
   };
   const { buttonProps } = useButton(ariaButtonProps, triggerRef);

@@ -154,7 +154,7 @@ export const expandToPathCallback = (
 };
 
 /**
- * a function to be passed to useAtomCallback to get back a callback for selecting a file in project view and focusing
+ * a function to be passed to useAtomCallback to get back a callback for selecting a file in ProjectView and focusing
  * the project view.
  */
 export const selectKeyAndFocusCallback = (
@@ -171,8 +171,15 @@ export const useSelectPathInProjectView = () => {
   const expandToOpenedFile = useAtomCallback(expandToPathCallback);
   const selectKeyAndFocus = useAtomCallback(selectKeyAndFocusCallback);
   return (path: string) => {
-    // TODO: open project view tool window if needed
+    // TODO: open project view tool window if needed and move the action to top level
     expandToOpenedFile(path);
-    selectKeyAndFocus(path);
+    // Needed for the tree to rerender with the new nodes after expansion to be able to successfully focus
+    // the (potentially new) node.
+    // Setting focusedKey to some key for which there is no collection node is noop.
+    // Covered by e2e tests, so removing this timeout can safely be re-checked if an upgrade of
+    // react-aria dependencies changes anything.
+    setTimeout(() => {
+      selectKeyAndFocus(path);
+    });
   };
 };

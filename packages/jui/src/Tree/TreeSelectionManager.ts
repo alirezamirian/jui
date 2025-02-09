@@ -7,7 +7,7 @@ import { Collection, Node } from "@react-types/shared";
 import React, { Key } from "react";
 
 export class TreeSelectionManager extends SelectionManager {
-  private readonly collection: Collection<Node<unknown>>;
+  readonly collection: Collection<Node<unknown>>;
 
   constructor(
     collection: Collection<Node<unknown>>,

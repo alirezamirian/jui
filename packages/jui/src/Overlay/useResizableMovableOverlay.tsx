@@ -182,7 +182,6 @@ export function useResizableMovableOverlay(
     },
     finishInteraction: () => {
       if (currentInteraction && overlayRef.current) {
-        // @ts-expect-error https://github.com/adobe/react-spectrum/issues/6784
         setBounds(getBounds(overlayRef.current), currentInteraction.type);
       }
       setCurrentInteraction(null);

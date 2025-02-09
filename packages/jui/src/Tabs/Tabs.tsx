@@ -8,6 +8,7 @@ import { TabsOverflowMenu } from "./TabsOverflowMenu";
 import { useOverflowObserver } from "../utils/overflow-utils/useOverflowObserver";
 import { useHasOverflow } from "./useHasOverflow";
 import { css, styled } from "@intellij-platform/core/styled";
+import { getItemElement } from "@intellij-platform/core/Collections/getItemElement";
 import { TabComponentProps } from "./StyledDefaultTab";
 import { StyledDefaultTabs, TabsComponentProps } from "./StyledDefaultTabs";
 import { Tab } from "./Tab";
@@ -137,11 +138,9 @@ export const Tabs = <T extends object>({
   );
 
   useEffect(() => {
-    if (!noScroll) {
+    if (!noScroll && state.selectedKey !== null) {
       const scrollableContainer = ref.current;
-      const selectedTabElement = scrollableContainer?.querySelector(
-        `[data-key="${state.selectedKey}"]`
-      ) as HTMLElement;
+      const selectedTabElement = getItemElement(ref, state.selectedKey);
       if (scrollableContainer && selectedTabElement) {
         scrollIntoView(scrollableContainer, selectedTabElement);
       }
