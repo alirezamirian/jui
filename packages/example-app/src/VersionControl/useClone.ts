@@ -28,6 +28,7 @@ const cloneCallback = atomCallback(
         await cloneRepo({
           dir,
           url,
+          singleBranch: false,
           ...gitArgs,
         }).then(
           () => {

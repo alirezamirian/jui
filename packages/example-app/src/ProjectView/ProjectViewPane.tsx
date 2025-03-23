@@ -101,7 +101,9 @@ export const ProjectViewPane = (): React.ReactElement => {
             {...activePathsProviderProps}
             items={[treeState.root] as ProjectTreeNode[]}
             onAction={(path) => {
-              editor.openPath(`${path}`);
+              if (treeState.byKey?.get(`${path}`)?.type === "file") {
+                editor.openPath(`${path}`);
+              }
             }}
             fillAvailableSpace
             autoFocus
