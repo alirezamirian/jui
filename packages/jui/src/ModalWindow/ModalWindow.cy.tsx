@@ -129,7 +129,7 @@ describe("ModalWindow", () => {
         <WindowLayout
           header="title"
           content={
-            <div style={{ padding: "1rem" }}>
+            <div style={{ padding: "1rem", fontFamily: "monospace" }}>
               line 1 line 1 line 1<br />
               line 2 line 2 line 2<br />
               line 3 line 3 line 3<br />
@@ -138,17 +138,17 @@ describe("ModalWindow", () => {
         />
       </ModalWindow>
     );
-    cy.findByRole("dialog").invoke("width").should("be.approximately", 138, 3);
+    cy.findByRole("dialog").invoke("width").should("be.approximately", 189, 3);
     cy.findByRole("dialog").invoke("height").should("be.approximately", 101, 3);
   });
 
   it("supports sizing the window height based on the content, when width is set", () => {
     cy.mount(
-      <ModalWindow defaultBounds={{ width: 100 }}>
+      <ModalWindow defaultBounds={{ width: 120 }}>
         <WindowLayout
           header="title"
           content={
-            <div style={{ padding: "1rem" }}>
+            <div style={{ padding: "1rem", fontFamily: "monospace" }}>
               line 1 line 1 line 1 line 1<br />
               line 2 line 2 line 2 line 2<br />
               line 3 line 3 line 3 line 3<br />
@@ -157,8 +157,8 @@ describe("ModalWindow", () => {
         />
       </ModalWindow>
     );
-    cy.findByRole("dialog").invoke("width").should("eq", 100);
-    cy.findByRole("dialog").invoke("height").should("be.approximately", 176, 3);
+    cy.findByRole("dialog").invoke("width").should("eq", 120);
+    cy.findByRole("dialog").invoke("height").should("be.approximately", 191, 3);
   });
 
   it("measures window size correctly, when window content suspends rendering", () => {
