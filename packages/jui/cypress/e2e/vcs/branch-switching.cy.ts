@@ -51,7 +51,9 @@ describe("vcs => branch switching", () => {
     cy.findTreeNodeInProjectView("test-on-branch-2.ts").should("not.exist");
     cy.findByRole("tab", { name: "test-on-branch-2.ts" }).should("not.exist");
     cy.findByRole("tab", { name: "test-on-both-branches.ts" }).should("exist");
-    cy.findTreeNodeInProjectView("test-on-branch-1.ts").dblclick();
+    cy.findTreeNodeInProjectView("test-on-branch-1.ts")
+      .click() // added after upgrading react-spectrum deps to workaround an issue that didn't seem to happen in actual usage
+      .dblclick();
     cy.contains("test-on-branch-1.ts content on branch-1");
     cy.findTreeNodeInProjectView("test-on-both-branches.ts").dblclick();
     cy.contains("test-on-both-branches.ts content on branch-1");
