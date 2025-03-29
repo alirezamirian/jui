@@ -8,12 +8,12 @@ describe("ThreeViewSplitter", () => {
     cy.get('[data-testid="first"]')
       .resizeFromSide("right", 50)
       .invoke("outerWidth")
-      .should("be.closeTo", 94, 2);
+      .should("be.closeTo", 105, 2);
 
     cy.get('[data-testid="last"]')
       .resizeFromSide("left", 50)
       .invoke("outerWidth")
-      .should("be.closeTo", 94, 2);
+      .should("be.closeTo", 105, 2);
   });
 
   it("doesn't steal the focus when resize handles are being dragged", () => {

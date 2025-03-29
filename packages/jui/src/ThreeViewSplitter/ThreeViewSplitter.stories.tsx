@@ -38,7 +38,13 @@ const ThreeViewSplitterWithStyles: React.FC<ThreeViewSplitterProps> = (
       firstView={
         <div
           data-testid="first"
-          style={{ background: "lightyellow", height: "100%", padding: 8 }}
+          style={{
+            background: "lightyellow",
+            height: "100%",
+            padding: 8,
+            fontFamily: "monospace",
+            boxSizing: "border-box",
+          }}
         >
           {firstView}
           <div>size: {props.firstSize}</div>
@@ -47,7 +53,13 @@ const ThreeViewSplitterWithStyles: React.FC<ThreeViewSplitterProps> = (
       lastView={
         <div
           data-testid="last"
-          style={{ background: "lightcoral", height: "100%", padding: 8 }}
+          style={{
+            background: "lightcoral",
+            height: "100%",
+            padding: 8,
+            fontFamily: "monospace",
+            boxSizing: "border-box",
+          }}
         >
           {lastView}
           <div>size: {props.lastSize}</div>
