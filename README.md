@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> This library is a work in progress. 
+> This library is a work in progress.
 > The API of components needs to be revisited and made consistent.
 > The documentation is incomplete and may contain unreleased features.
 
@@ -333,6 +333,21 @@ https://user-images.githubusercontent.com/3150694/232305636-e8b63780-4777-4d27-8
         </tr>
         <tr>
             <td rowspan="1" colspan="3"><a href="https://jetbrains.github.io/ui/controls/link/">Link</a></td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td rowspan="4"><a href="https://plugins.jetbrains.com/docs/intellij/mnemonics.html">Mnemonics</a></td>
+        </tr>
+        <tr>
+            <td colspan="2">In Menus</td>
+            <td>❌</td>
+        </tr>
+        <tr>
+            <td colspan="2">In controls (Button and Checkbox)</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td colspan="2">In custom components</td>
             <td>✅</td>
         </tr>
     </tbody>

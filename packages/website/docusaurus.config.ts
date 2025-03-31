@@ -40,6 +40,7 @@ const config: Config = {
   projectName: "jui",
   trailingSlash: false,
   future: {
+    // v4: true, // Opt-in for upcoming v4 breaking changes
     experimental_faster: {
       /**
        * swc loader for js files is disabled because:
@@ -67,6 +68,19 @@ const config: Config = {
       rspackBundler: true,
     },
   },
+  // https://github.com/facebook/docusaurus/issues/10556#issuecomment-2615684999
+  // webpack: {
+  //   jsLoader: (isServer) => {
+  //     const options = require("@docusaurus/faster").getSwcLoaderOptions({
+  //       isServer,
+  //     });
+  //     options.jsc.parser.decorators = true;
+  //     return {
+  //       loader: "builtin:swc-loader",
+  //       options,
+  //     };
+  //   },
+  // },
   plugins: [
     "@docusaurus/theme-live-codeblock",
     myPlugin,
