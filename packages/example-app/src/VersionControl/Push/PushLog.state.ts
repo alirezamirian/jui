@@ -20,12 +20,26 @@ import {
   unwrapLatest,
   unwrapLatestOrNull,
 } from "../../atom-utils/unwrapLatest";
+import { atomWithRefresh } from "../../atom-utils/atomWithRefresh";
 
 const withResetOnMount = <T extends ReturnType<typeof atomWithDefault<any>>>(
   atom: T
 ): T => {
   return withAtomEffect(atom, (_get, set) => {
     set(atom, RESET);
+    return () => {
+      set(atom, RESET);
+    };
+  });
+};
+const withRefreshOnMount = <T extends ReturnType<typeof atomWithRefresh<any>>>(
+  atom: T
+): T => {
+  return withAtomEffect(atom, (_get, set) => {
+    set(atom);
+    return () => {
+      set(atom);
+    };
   });
 };
 
@@ -188,23 +202,25 @@ export const pushTargetExistsAtom = atomFamily((repoPath: string) =>
 export const commitNodesAtom = atomFamily(
   ({ repoPath }: { repoPath: string }) =>
     unwrapLatestOrNull(
-      atom(async (get) => {
-        const { remoteBranches } = await get(repoBranchesAtom(repoPath));
-        const source = await get(pushSourceAtom(repoPath));
-        const targetRemote = await get(pushTargetRemoteAtom(repoPath));
-        const targetBranch = await get(pushTargetBranchAtom(repoPath));
-        const targetExists = await get(pushTargetExistsAtom(repoPath));
-        const allTargetRemoteRefs = remoteBranches
-          .filter((branch) => branch.remote === targetRemote)
-          .map((branch) => `${targetRemote}/${branch.name}`);
-        return await readCommits(fs, {
-          repoPath,
-          refs: [source.ref],
-          notRefs: targetExists
-            ? [`${targetRemote}/${targetBranch}`]
-            : allTargetRemoteRefs,
-        });
-      })
+      withRefreshOnMount(
+        atomWithRefresh(async (get) => {
+          const { remoteBranches } = await get(repoBranchesAtom(repoPath));
+          const source = await get(pushSourceAtom(repoPath));
+          const targetRemote = await get(pushTargetRemoteAtom(repoPath));
+          const targetBranch = await get(pushTargetBranchAtom(repoPath));
+          const targetExists = await get(pushTargetExistsAtom(repoPath));
+          const allTargetRemoteRefs = remoteBranches
+            .filter((branch) => branch.remote === targetRemote)
+            .map((branch) => `${targetRemote}/${branch.name}`);
+          return await readCommits(fs, {
+            repoPath,
+            refs: [source.ref],
+            notRefs: targetExists
+              ? [`${targetRemote}/${targetBranch}`]
+              : allTargetRemoteRefs,
+          });
+        })
+      )
     ),
   equals
 );

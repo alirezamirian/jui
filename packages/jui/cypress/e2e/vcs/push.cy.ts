@@ -207,10 +207,22 @@ describe("push to unknown git servers", () => {
 
     cy.section("Valid credential");
     cy.searchAndInvokeAction("push");
+    cy.findByRole("treeitem", { name: "initial empty commit" });
     cy.findByRole("button", { name: /Push/i }).click();
     cy.findByLabelText(/Username/i).type("testuser");
     cy.findByLabelText(/Password/i).type("testpassword{enter}");
     cy.contains("Pushed master to new branch origin/master");
+
+    cy.section("Check push dialog state is up-to-date");
+    cy.searchAndInvokeAction("push");
+    cy.findByRole("dialog", { name: /Push commits/ });
+    cy.findByRole("treeitem", { name: "initial empty commit" }).should(
+      "not.exist"
+    );
+    cy.findByRole("treeitem", { name: /master/ }).should(
+      "not.contain.text",
+      "new"
+    );
   });
 });
 
