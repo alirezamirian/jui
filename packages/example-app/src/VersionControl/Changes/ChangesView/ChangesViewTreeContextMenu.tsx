@@ -1,14 +1,13 @@
 import { useAtomValue } from "jotai";
 import { selectedKeysAtom } from "./ChangesView.state";
 import {
+  ActionsMenu,
   CommonActionId,
   DividerItem,
   useAction,
 } from "@intellij-platform/core";
 import React from "react";
 import { VcsActionIds } from "../../VcsActionIds";
-import { ActionsMenu } from "@intellij-platform/core";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 export const ChangesViewTreeContextMenu = () => {
   const selectedKeys = useAtomValue(selectedKeysAtom);
@@ -32,7 +31,7 @@ export const ChangesViewTreeContextMenu = () => {
         useAction(VcsActionIds.MOVE_TO_ANOTHER_CHANGELIST),
         new DividerItem(),
         useAction(CommonActionId.REFRESH),
-      ].filter(notNull)}
+      ].filter((i) => i != null)}
     />
   );
 };

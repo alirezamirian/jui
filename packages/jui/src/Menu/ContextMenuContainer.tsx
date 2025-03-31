@@ -9,6 +9,7 @@ import { MenuOverlayFromOrigin } from "@intellij-platform/core/Menu/MenuOverlayF
 interface ContextMenuContainerProps
   extends Omit<HTMLProps<HTMLDivElement>, "children">,
     UseContextMenuProps {
+  // TODO(api): change renderMenu to menu which would be a react element.
   /**
    * Will be called to return the Menu when context menu is triggered. Use {@link Menu} component to render a menu.
    */

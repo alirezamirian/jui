@@ -70,7 +70,7 @@ export const SpeedSearchList = React.forwardRef(function SpeedSearchList<
         <CollectionSpeedSearchContext.Provider value={speedSearchContextValue}>
           <SpeedSearchPopup {...searchPopupProps} />
           <StyledList
-            as={Virtualizer<Node<any>, any>}
+            as={Virtualizer<Node<any>, any, any>}
             ref={ref}
             fillAvailableSpace={fillAvailableSpace}
             {...filterDOMProps(props, { labelable: true })}

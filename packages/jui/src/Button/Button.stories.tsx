@@ -25,6 +25,10 @@ export const Default: StoryObj<ButtonProps> = {
   args: { variant: "default", children: "Default" },
 };
 
+export const AsLink: StoryObj<ButtonProps<"a">> = {
+  args: { children: "Link", elementType: "a" },
+};
+
 export const PreventFocusOnPress: StoryObj<ButtonProps> = {
   render: (props: ButtonProps) => (
     <div>

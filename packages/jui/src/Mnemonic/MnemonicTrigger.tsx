@@ -51,6 +51,7 @@ export const MnemonicTrigger = ({
     if (active && !e.repeat) {
       const character = e.code.match(/Key([A-Z])/)?.[1];
       if (character && character.toLowerCase() === mnemonic.toLowerCase()) {
+        e.preventDefault();
         onTriggered();
       }
     }
@@ -143,7 +144,16 @@ function isVisible(e: HTMLElement) {
 export function MnemonicText({ children }: { children: string }) {
   const { character, active, rendered } = useContext(MnemonicContext);
   if (character) {
-    const index = children.toLowerCase().indexOf(character.toLowerCase());
+    const index =
+      [
+        // Prioritizing word start.
+        // E.g. "Include disabled actions".
+        // In the reference impl, mnemonic is specified by "_" before a character and therefore the index is pre-determined.
+        // But that comes with its own problems and doesn't seem necessary.
+        children.match(new RegExp(`^${character}`, "i"))?.index ?? -1,
+        (children.match(new RegExp(` ${character}`, "i"))?.index ?? -2) + 1,
+        children.toLowerCase().indexOf(character.toLowerCase()),
+      ].find((index) => index >= 0) ?? -1;
     const found = index > -1;
     if (found) {
       rendered();

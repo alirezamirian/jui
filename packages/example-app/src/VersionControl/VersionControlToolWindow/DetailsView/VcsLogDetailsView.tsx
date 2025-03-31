@@ -24,16 +24,12 @@ import { StyledHeader, StyledSpacer } from "../styled-components";
 import { CommitChangedFiles } from "../CommitChanges/CommitsChangedFiles";
 import { CommitDetails } from "./CommitDetails";
 import { defaultChangeGroupings } from "../../Changes/ChangesTree/changesGroupings";
-import {
-  changesGroupingActiveAtoms,
-  commitChangesTreeRefAtom,
-} from "../CommitChanges/CommitsChangedFiles.state";
+import { gitLogCommitsChangesTreeState } from "../CommitChanges/CommitsChangedFiles.state";
 import {
   vcsLogTabShowCommitDetailsInCurrentTabAtom,
   vcsLogTabShowCommitDetailsAtoms,
 } from "../vcs-logs.state";
 import { VcsActionIds } from "../../VcsActionIds";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
 import { useRedefineAction } from "../../../useRedefineAction";
 
 import { isAtom } from "../../../atom-utils/isAtom";
@@ -55,7 +51,9 @@ const groupingAtom = atom((get) => {
   return groupings.map((grouping) => ({
     ...grouping,
     key: `groupBy:${grouping.id}`,
-    isActive: get(changesGroupingActiveAtoms(grouping.id)),
+    isActive: get(
+      gitLogCommitsChangesTreeState.isGroupingActiveAtom(grouping.id)
+    ),
   }));
 });
 
@@ -76,13 +74,16 @@ export function VcsLogDetailsView({ tabKey }: { tabKey: string }) {
   );
   const toggleGroupBy = useAtomCallback(
     useCallback((get, set, id: string) => {
-      set(changesGroupingActiveAtoms(id), (currentValue) => !currentValue);
+      set(
+        gitLogCommitsChangesTreeState.isGroupingActiveAtom(id),
+        (currentValue) => !currentValue
+      );
     }, [])
   );
   const createActionGroup = useCreateDefaultActionGroup();
   const availableGroupings = useAtomValue(groupingAtom);
 
-  const treeRef = useAtomValue(commitChangesTreeRefAtom);
+  const treeRef = useAtomValue(gitLogCommitsChangesTreeState.treeRefAtom);
   const actions = [
     createActionGroup({
       id: VIEW_OPTIONS_ACTION_GROUP_ID,
@@ -117,7 +118,7 @@ export function VcsLogDetailsView({ tabKey }: { tabKey: string }) {
               VcsActionIds.SHOW_DIFF_PREVIEW,
               SHOW_DIFF_PREVIEW_ACTION_ID
             ),
-          ].filter(notNull),
+          ].filter((i) => i != null),
         }),
       ],
     }),
@@ -191,7 +192,7 @@ const toggleActionAtoms: { [actionId: string]: Atom<boolean> } = {
   ...Object.fromEntries(
     defaultChangeGroupings.map((grouping) => [
       groupingActionId(grouping),
-      changesGroupingActiveAtoms(grouping.id),
+      gitLogCommitsChangesTreeState.isGroupingActiveAtom(grouping.id),
     ])
   ),
 };

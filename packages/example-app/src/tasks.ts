@@ -1,7 +1,6 @@
 // @ts-expect-error caf doesn't have typing :/
 import { CAF } from "caf";
-import { useEventCallback } from "@intellij-platform/core/utils/useEventCallback";
-import { atom, useSetAtom } from "jotai";
+import { atom, Getter, Setter } from "jotai";
 import { useAtomCallback } from "jotai/utils";
 import { useCallback } from "react";
 
@@ -64,79 +63,79 @@ export const taskCountAtom = atom<number>((get) => get(tasksAtom).length);
 
 let progressSeq = 0;
 
-type TaskRunFn = (
+export type TaskRunFn = (
   progressIndicator: ProgressIndicator,
   abortSignal: AbortSignal /* FIXME: refine type*/
 ) => void | Promise<void>;
 
 type TaskDefinition = TaskRunFn | { run: TaskRunFn; onFinished?: () => void };
 
+type TaskOptions = { title: string; isCancelable?: boolean };
+
+export const createTaskCallback = (
+  _get: Getter,
+  set: Setter,
+  options: TaskOptions, // TODO: why separate options and task definition? maybe merge?
+  task: TaskDefinition
+): Task["id"] => {
+  const { title, isCancelable = false } = options;
+  const abortController: AbortController = new CAF.cancelToken();
+  const id = ++progressSeq;
+  set(tasksAtom, (tasks) => [
+    ...tasks,
+    {
+      id: progressSeq++,
+      title,
+      abortController,
+      isCancelable,
+      progress: {
+        fraction: 0,
+        text: "",
+        secondaryText: "",
+        isIndeterminate: false,
+      },
+    },
+  ]);
+  const setTaskProgressState = (updates: Partial<Progress>) => {
+    set(tasksAtom, (tasks) => {
+      return tasks.map((task) =>
+        task.id === id
+          ? { ...task, progress: { ...task.progress, ...updates } }
+          : task
+      );
+    });
+  };
+  const taskDefinition = typeof task === "function" ? { run: task } : task;
+  Promise.resolve(
+    taskDefinition.run(
+      {
+        setFraction(fraction: number) {
+          setTaskProgressState({ fraction });
+        },
+        setText(text: string) {
+          setTaskProgressState({ text });
+        },
+        setSecondaryText(secondaryText: string) {
+          setTaskProgressState({ secondaryText });
+        },
+        setIndeterminate(isIndeterminate: boolean) {
+          setTaskProgressState({ isIndeterminate });
+        },
+      },
+      abortController.signal
+    )
+  ).finally(() => {
+    set(tasksAtom, (tasks) => tasks.filter((task) => task.id !== id));
+    taskDefinition.onFinished?.();
+  });
+  return id;
+};
 /**
  * Returns a function which can be used to run a task.
  * Tasks are shown in the toolbar or as a modal window.
  */
 export const useRunTask = () => {
-  const setTasksState = useSetAtom(tasksAtom);
-  return useEventCallback(
-    (
-      {
-        title,
-        isCancelable = false,
-      }: { title: string; isCancelable?: boolean },
-      task: TaskDefinition
-    ): Task["id"] => {
-      const abortController: AbortController = new CAF.cancelToken();
-      const id = ++progressSeq;
-      setTasksState((tasks) => [
-        ...tasks,
-        {
-          id: progressSeq++,
-          title,
-          abortController,
-          isCancelable,
-          progress: {
-            fraction: 0,
-            text: "",
-            secondaryText: "",
-            isIndeterminate: false,
-          },
-        },
-      ]);
-      const setTaskProgressState = (updates: Partial<Progress>) => {
-        setTasksState((tasks) => {
-          return tasks.map((task) =>
-            task.id === id
-              ? { ...task, progress: { ...task.progress, ...updates } }
-              : task
-          );
-        });
-      };
-      const taskDefinition = typeof task === "function" ? { run: task } : task;
-      Promise.resolve(
-        taskDefinition.run(
-          {
-            setFraction(fraction: number) {
-              setTaskProgressState({ fraction });
-            },
-            setText(text: string) {
-              setTaskProgressState({ text });
-            },
-            setSecondaryText(secondaryText: string) {
-              setTaskProgressState({ secondaryText });
-            },
-            setIndeterminate(isIndeterminate: boolean) {
-              setTaskProgressState({ isIndeterminate });
-            },
-          },
-          abortController.signal
-        )
-      ).finally(() => {
-        setTasksState((tasks) => tasks.filter((task) => task.id !== id));
-        taskDefinition.onFinished?.();
-      });
-      return id;
-    }
-  );
+  return useAtomCallback(createTaskCallback);
 };
 
 /**

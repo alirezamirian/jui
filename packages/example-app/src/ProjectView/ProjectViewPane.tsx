@@ -70,10 +70,11 @@ export const ProjectViewPane = (): React.ReactElement => {
    */
   const getActionContext = (): ActionContext => {
     return {
-      element:
-        containerRef.current?.querySelector(
-          `[data-key="${contextMenuTargetKey.current}"]`
-        ) ?? null,
+      element: contextMenuTargetKey.current
+        ? containerRef.current?.querySelector(
+            `[data-key="${CSS.escape(contextMenuTargetKey.current)}"]`
+          ) ?? null
+        : null,
       event: null,
     };
   };
@@ -100,7 +101,9 @@ export const ProjectViewPane = (): React.ReactElement => {
             {...activePathsProviderProps}
             items={[treeState.root] as ProjectTreeNode[]}
             onAction={(path) => {
-              editor.openPath(`${path}`);
+              if (treeState.byKey?.get(`${path}`)?.type === "file") {
+                editor.openPath(`${path}`);
+              }
             }}
             fillAvailableSpace
             autoFocus

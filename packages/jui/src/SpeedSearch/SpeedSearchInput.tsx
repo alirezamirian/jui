@@ -61,7 +61,6 @@ export const SpeedSearchInput = React.forwardRef<
       elementType: "span",
       "aria-label": "Clear search",
       excludeFromTabOrder: true,
-      // @ts-expect-error: preventFocusOnPress is not defined in public API of useButton
       preventFocusOnPress: true,
       onPress: clear,
     },

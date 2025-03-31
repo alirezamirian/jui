@@ -92,6 +92,15 @@ const StyledInput = styled(Input)`
   width: 100%;
 `;
 
+const StyledWithLabel = styled(WithLabel)`
+  // by default, WithLabel doesn't stretch the labeled content to fill the width of the container. The container
+  // width might be set explicitly, based on parent, or based on the label width.
+  // This behavior seemed more reasonable as default, but for input field it makes more sense to have the text input
+  // fill in the width of the field. For dropdown it seemed more reasonable for the dropdown to not stretch just
+  // because the label is long. But it might be something to rethink or maybe even allow to be controlled via an option?
+  align-items: normal;
+`;
+
 /**
  * An input box with an associated label, error message, and context help.
  */
@@ -124,7 +133,7 @@ export const InputField = React.forwardRef(function InputField(
     });
 
   return (
-    <WithLabel
+    <StyledWithLabel
       ref={ref}
       label={props.label}
       labelPlacement={labelPlacement}
@@ -170,6 +179,6 @@ export const InputField = React.forwardRef(function InputField(
           />
         </PositionedTooltipTrigger>
       </WithInlineContextHelp>
-    </WithLabel>
+    </StyledWithLabel>
   );
 });

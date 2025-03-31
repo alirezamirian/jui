@@ -33,6 +33,13 @@ export const StyledButton = styled.button<{ disabled?: boolean }>`
 
   flex-shrink: 0; // button should not shrink when rendered in a flex container
 
+  a& {
+    text-decoration: none;
+    align-content: center;
+    text-align: center;
+    display: inline-block;
+  }
+
   &:focus,
   &.focus /* for testing purposes*/ {
     border-color: ${({ theme }) =>

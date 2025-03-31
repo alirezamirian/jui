@@ -107,6 +107,26 @@ export function branch(branchName: string, ...changes: Array<Change>): Change {
 }
 
 /**
+ * Defines a remote for the current git repository.
+ * @param remoteName the name of the new remote to create.
+ * @param url the url of the new remote to create.
+ *
+ * @example
+ * ```ts
+ * gitInit(defineRemote("origin", "https://mock-remote")
+ * ```
+ */
+export function addRemote(remoteName: string, url: string): Change {
+  return async (
+    args,
+    { dir = args.projectDir }: InitializationContext = {}
+  ) => {
+    const { git, fs } = args;
+    await git.addRemote({ fs, dir, remote: remoteName, url });
+  };
+}
+
+/**
  * Creates an initializer which applies a number of initializers on the current branch. Before each initializer is
  * applied, it checks out the current branch. A typical use case is to create a bunch of parallel branches, off of the
  * current branch

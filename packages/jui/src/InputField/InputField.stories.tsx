@@ -2,7 +2,6 @@ import React from "react";
 import { Meta, StoryObj } from "@storybook/react";
 import * as inputStories from "./Input.stories";
 import { InputField, InputFieldProps } from "./InputField";
-import { dir } from "../../cypress/support/example-app";
 
 export default {
   title: "Components/InputField",
@@ -23,6 +22,26 @@ export const Default: StoryObj<InputFieldProps> = {
 
 export const LabelAbove: StoryObj<InputFieldProps> = {
   render,
+  args: {
+    labelPlacement: "above",
+  },
+};
+
+export const LabelAboveFullWidth: StoryObj<InputFieldProps> = {
+  render: (props) => (
+    <div
+      style={{
+        border: "1px solid rgba(0, 0, 0, 0.25)",
+        padding: "1rem",
+        margin: ".5rem",
+        width: 400,
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      {render(props)}
+    </div>
+  ),
   args: {
     labelPlacement: "above",
   },

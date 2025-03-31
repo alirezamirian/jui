@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
 import path from "path";
-import git, { clone, GitProgressEvent } from "isomorphic-git";
-import http from "isomorphic-git/http/web";
-import { defaultProject, autoClonedRepo } from "./Project/project.state";
-import { fs } from "./fs/fs";
-import { ensureDir } from "./fs/fs-utils";
+import git, { GitProgressEvent } from "isomorphic-git";
 import {
   AlertDialog,
   Button,
@@ -13,6 +9,11 @@ import {
   styled,
 } from "@intellij-platform/core";
 import { StyledPopupContainer } from "@intellij-platform/core/Popup/StyledPopupContainer";
+
+import { fs } from "./fs/fs";
+import { ensureDir } from "./fs/fs-utils";
+import { autoClonedRepo, defaultProject } from "./Project/project.state";
+import { cloneRepo } from "./VersionControl/git-operations/git-http-operations";
 
 const defaultWorkspaceFiles = {
   ".idea/vcs.xml": `<?xml version="1.0" encoding="UTF-8"?>
@@ -193,20 +194,3 @@ export const ProjectInitializer = ({
       );
   }
 };
-
-export async function cloneRepo({
-  dir,
-  url,
-  onProgress,
-}: Pick<Parameters<typeof clone>[0], "url" | "dir" | "onProgress">) {
-  console.log("cloning repo: ");
-  await clone({
-    fs,
-    url,
-    http,
-    corsProxy: "https://cors.isomorphic-git.org",
-    dir,
-    onProgress,
-    singleBranch: true,
-  });
-}

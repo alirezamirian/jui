@@ -8,6 +8,7 @@ import { filterDOMProps, mergeProps, useObjectRef } from "@react-aria/utils";
 export type LinkProps = AriaLinkProps & {
   isDisabled?: boolean;
   className?: string;
+  style?: React.CSSProperties;
   children: React.ReactNode;
   preventFocusOnPress?: boolean; // Should this be become true by default?
   excludeFromTabOrder?: boolean;
@@ -40,7 +41,7 @@ export const Link = React.forwardRef(
     return (
       <FocusRing focusRingClass="focus-visible">
         <StyledLink
-          {...mergeProps(focusableProps, interactionHandlers, domProps)}
+          {...mergeProps(interactionHandlers, domProps)}
           as="span"
           role="link"
           ref={ref}

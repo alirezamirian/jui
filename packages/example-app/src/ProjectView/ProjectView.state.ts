@@ -8,7 +8,6 @@ import { dirContentAtom, FsItem } from "../fs/fs.state";
 import { filterPath } from "../Project/project-utils";
 import { getParentPaths } from "../file-utils";
 import { vcsRootsAtom } from "../VersionControl/file-status.state";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 interface FileTreeNodeBase {
   parent: (FileTreeNodeBase & { children: FsItem[] }) | null;
@@ -52,7 +51,7 @@ export const selectedNodesAtom = atom(
     const selectedKeys = selection === "all" ? nodesByKey.keys() : selection;
     return [...selectedKeys]
       .map((key) => nodesByKey.get(`${key}`))
-      .filter(notNull);
+      .filter((i) => i != null);
   }
 );
 
@@ -113,7 +112,7 @@ async function createProjectTree(
                 mapItem(dirNode)
               )
             )
-          ).filter(notNull);
+          ).filter((i) => i != null);
           sortProjectTreeNodes(dirNode.children);
           byKey.set(dirNode.path, dirNode);
           return dirNode;
@@ -126,7 +125,7 @@ async function createProjectTree(
 
   const children = (
     await Promise.all((rootItems || []).map(mapItem(null)))
-  ).filter(notNull);
+  ).filter((i) => i != null);
   sortProjectTreeNodes(children);
   const root: ProjectTreeNode = {
     type: "project",
@@ -155,7 +154,7 @@ export const expandToPathCallback = (
 };
 
 /**
- * a function to be passed to useAtomCallback to get back a callback for selecting a file in project view and focusing
+ * a function to be passed to useAtomCallback to get back a callback for selecting a file in ProjectView and focusing
  * the project view.
  */
 export const selectKeyAndFocusCallback = (
@@ -172,8 +171,15 @@ export const useSelectPathInProjectView = () => {
   const expandToOpenedFile = useAtomCallback(expandToPathCallback);
   const selectKeyAndFocus = useAtomCallback(selectKeyAndFocusCallback);
   return (path: string) => {
-    // TODO: open project view tool window if needed
+    // TODO: open project view tool window if needed and move the action to top level
     expandToOpenedFile(path);
-    selectKeyAndFocus(path);
+    // Needed for the tree to rerender with the new nodes after expansion to be able to successfully focus
+    // the (potentially new) node.
+    // Setting focusedKey to some key for which there is no collection node is noop.
+    // Covered by e2e tests, so removing this timeout can safely be re-checked if an upgrade of
+    // react-aria dependencies changes anything.
+    setTimeout(() => {
+      selectKeyAndFocus(path);
+    });
   };
 };

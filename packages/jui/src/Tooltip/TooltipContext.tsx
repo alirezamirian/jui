@@ -5,7 +5,7 @@ import { PositionAria } from "@react-aria/overlays";
 interface TooltipContextObject {
   state: TooltipTriggerState;
   isInteractive: boolean;
-  placement: PositionAria["placement"];
+  placement: NonNullable<PositionAria["placement"]> | undefined;
   pointerPositionStyle?: CSSProperties;
 }
 

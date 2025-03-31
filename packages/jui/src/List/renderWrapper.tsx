@@ -22,7 +22,8 @@ function ListSection<T extends object>({
 }: SectionProps<T>) {
   const headerRef = useRef<HTMLDivElement>(null);
   useVirtualizerItem({
-    reusableView: header,
+    layoutInfo: header.layoutInfo,
+    virtualizer: reusableView.virtualizer,
     ref: headerRef,
   });
   return (
@@ -32,7 +33,7 @@ function ListSection<T extends object>({
         ref={headerRef}
         style={layoutInfoToStyle(header.layoutInfo!, "ltr")}
       >
-        {reusableView.content.rendered}
+        {reusableView.content?.rendered}
       </StyledListSectionHeader>
       <div
         key={reusableView.key}
@@ -46,6 +47,7 @@ function ListSection<T extends object>({
 
 export const renderWrapper: VirtualizerProps<
   Node<any>,
+  unknown,
   unknown
 >["renderWrapper"] = (parent, reusableView, children, renderChildren) => {
   if (reusableView.viewType === "section") {
@@ -62,8 +64,11 @@ export const renderWrapper: VirtualizerProps<
   return (
     <VirtualizerItem
       key={reusableView.key}
-      reusableView={reusableView}
-      parent={parent ?? undefined}
-    />
+      layoutInfo={reusableView.layoutInfo!}
+      virtualizer={reusableView.virtualizer!}
+      parent={parent?.layoutInfo}
+    >
+      {reusableView.rendered as ReactNode}
+    </VirtualizerItem>
   );
 };

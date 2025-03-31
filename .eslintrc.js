@@ -49,6 +49,16 @@ module.exports = {
         "no-dupe-class-members": OFF, // no need in ts. TSC handles it, and it doesn't work nice with method overloads
         "no-redeclare": "off",
         "@typescript-eslint/no-redeclare": ["warn"],
+        "no-restricted-globals": [
+          "error",
+          {
+            name: "close",
+            message:
+              "Use local parameter instead. Global `close` closes the window.",
+          },
+          "focus",
+          "event",
+        ],
       },
     },
     {

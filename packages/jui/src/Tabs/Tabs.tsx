@@ -1,4 +1,4 @@
-import React, { ComponentType, HTMLAttributes, Key, useEffect } from "react";
+import React, { ComponentType, Key, useEffect } from "react";
 import { useTabList } from "@react-aria/tabs";
 import { filterDOMProps, mergeProps, scrollIntoView } from "@react-aria/utils";
 import { useTabListState } from "@react-stately/tabs";
@@ -8,7 +8,7 @@ import { TabsOverflowMenu } from "./TabsOverflowMenu";
 import { useOverflowObserver } from "../utils/overflow-utils/useOverflowObserver";
 import { useHasOverflow } from "./useHasOverflow";
 import { css, styled } from "@intellij-platform/core/styled";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
+import { getItemElement } from "@intellij-platform/core/Collections/getItemElement";
 import { TabComponentProps } from "./StyledDefaultTab";
 import { StyledDefaultTabs, TabsComponentProps } from "./StyledDefaultTabs";
 import { Tab } from "./Tab";
@@ -134,15 +134,13 @@ export const Tabs = <T extends object>({
       .map((element) =>
         element instanceof HTMLElement ? element.dataset["key"] : null
       )
-      .filter(notNull)
+      .filter((i) => i != null)
   );
 
   useEffect(() => {
-    if (!noScroll) {
+    if (!noScroll && state.selectedKey !== null) {
       const scrollableContainer = ref.current;
-      const selectedTabElement = scrollableContainer?.querySelector(
-        `[data-key="${state.selectedKey}"]`
-      ) as HTMLElement;
+      const selectedTabElement = getItemElement(ref, state.selectedKey);
       if (scrollableContainer && selectedTabElement) {
         scrollIntoView(scrollableContainer, selectedTabElement);
       }

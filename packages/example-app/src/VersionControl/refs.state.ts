@@ -7,7 +7,11 @@ import { fs } from "../fs/fs";
 export const resolvedRefAtoms = atomFamily(
   ({ repoRoot, ref }: { repoRoot: string; ref: string }) =>
     atomWithRefresh(() => {
-      return git.resolveRef({ fs, dir: repoRoot, ref, depth: 3 });
+      // resolveRef promise rejects when ref doesn't exist
+      // A newly initialized repo doesn't have anything under refs/heads/
+      return git
+        .resolveRef({ fs, dir: repoRoot, ref, depth: 3 })
+        .catch((e) => null);
     }),
   equals
 );

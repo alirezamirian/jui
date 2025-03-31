@@ -8,6 +8,7 @@ const {
   Error,
   Disabled,
   LabelAbove,
+  LabelAboveFullWidth,
   WithPlaceholder,
   WithContextHelp,
   WithBeforeAndAfterAddons,
@@ -32,6 +33,7 @@ describe("InputField", () => {
         <WithBeforeAndAfterAddons />
         <Error />
         <Error /> {/* Focused */}
+        <LabelAboveFullWidth />
       </div>
     );
     cy.findAllByRole("textbox").last().focus();
@@ -62,6 +64,11 @@ describe("InputField", () => {
   it("supports autofocusing", () => {
     cy.mount(<InputField autoFocus />);
     cy.findByRole("textbox").should("have.focus");
+  });
+
+  it("lets the input stretch as big as the field container, when label is above", () => {
+    cy.mount(<LabelAboveFullWidth />);
+    cy.get("input").invoke("outerWidth").should("be.approximately", 400, 5);
   });
 
   describe("react API", () => {

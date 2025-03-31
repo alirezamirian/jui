@@ -1,11 +1,11 @@
 import React from "react";
-import { ActionItem, ActionsMenu } from "@intellij-platform/core";
 import {
   ActionGroupDefinition,
+  ActionItem,
+  ActionsMenu,
   ActionsProvider,
   useAction,
 } from "@intellij-platform/core";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 describe("ActionsMenu", () => {
   it("passes aria-label down to the menu component", () => {
@@ -20,7 +20,7 @@ describe("ActionsMenu", () => {
       return (
         <ActionsMenu
           actions={[useAction("Action 1"), useAction("Action 2")].filter(
-            notNull
+            (i) => i != null
           )}
         />
       );
@@ -52,7 +52,9 @@ describe("ActionsMenu", () => {
     const action1 = cy.stub().as("Action 1");
     const MyActionMenu = () => {
       return (
-        <ActionsMenu actions={[useAction("Action Group 1")].filter(notNull)} />
+        <ActionsMenu
+          actions={[useAction("Action Group 1")].filter((i) => i != null)}
+        />
       );
     };
     cy.mount(
@@ -87,7 +89,9 @@ describe("ActionsMenu", () => {
     const action1 = cy.stub().as("Action 1");
     const MyActionMenu = () => {
       return (
-        <ActionsMenu actions={[useAction("Action Group 1")].filter(notNull)} />
+        <ActionsMenu
+          actions={[useAction("Action Group 1")].filter((i) => i != null)}
+        />
       );
     };
     cy.mount(
@@ -120,7 +124,9 @@ describe("ActionsMenu", () => {
     const action1 = cy.stub().as("Action 1");
     const MyActionMenu = () => {
       return (
-        <ActionsMenu actions={[useAction("Action Group 1")].filter(notNull)} />
+        <ActionsMenu
+          actions={[useAction("Action Group 1")].filter((i) => i != null)}
+        />
       );
     };
     cy.mount(
@@ -167,7 +173,7 @@ describe("ActionsMenu", () => {
               menuPresentation: "submenu",
               children: [useAction("Action 2")],
             } as ActionItem,
-          ].filter(notNull)}
+          ].filter((i) => i != null)}
         />
       );
     };

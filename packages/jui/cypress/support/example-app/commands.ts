@@ -2,16 +2,38 @@
 /// <reference types="@testing-library/cypress" />
 /* global JQuery */
 
-import { AppGlobals } from "./AppGlobals";
+import path from "path";
 import { ByRoleOptions } from "@testing-library/cypress";
+import { AppGlobals } from "./AppGlobals";
+
+type InvokeActionOptions = {
+  actionName: string;
+  search?: string;
+  disabled?: boolean;
+};
+
+type SearchFileOptions = {
+  /**
+   * the full path of the file
+   */
+  filename: string;
+  search?: string;
+  /**
+   * something in the content to check to make sure the file is opened.
+   * false to skip the check.
+   * @default `${path.basename(filename)} content`
+   */
+  content?: string | false;
+};
 
 declare global {
   namespace Cypress {
     interface Chainable {
-      searchAndInvokeAction(
-        actionName: string,
-        search?: string
-      ): Chainable<void>;
+      searchAndInvokeAction(actionName: string): Chainable<void>;
+      searchAndInvokeAction(options: InvokeActionOptions): Chainable<void>;
+      searchAndInvokeAction(arg: string | InvokeActionOptions): Chainable<void>;
+
+      searchAndOpenFile(options: SearchFileOptions): Chainable<void>;
 
       /**
        * Creates a file via Projects tool window UI.
@@ -34,6 +56,7 @@ declare global {
 }
 
 Cypress.Commands.add("searchAndInvokeAction", searchAndInvokeAction);
+Cypress.Commands.add("searchAndOpenFile", searchAndOpenFile);
 Cypress.Commands.add("createFile", createFile);
 Cypress.Commands.add("findTreeNodeInProjectView", findTreeNodeInProjectView);
 Cypress.Commands.add("findTreeNodeInChangesView", findTreeNodeInChangesView);
@@ -67,19 +90,46 @@ function initialize(
   );
 }
 
-function searchAndInvokeAction(
-  actionName: string,
-  search: string = actionName
-) {
+function searchAndInvokeAction(arg: string | InvokeActionOptions): void {
+  const {
+    actionName,
+    search = actionName,
+    disabled,
+  } = typeof arg === "string"
+    ? { actionName: arg, search: arg, disabled: false }
+    : arg;
   cy.realPress(["Meta", "Shift", "A"]);
   cy.findByRole("dialog");
   cy.realType(search);
+  if (disabled) {
+    cy.findAllByRole("listitem", {
+      name: new RegExp(actionName, "ig"),
+    }).should(`not.exist`);
+    cy.findByRole("checkbox", { name: "Include disabled actions" }).click();
+  }
   cy.findAllByRole("listitem", {
     name: new RegExp(actionName, "ig"),
   })
     .filter("[aria-selected=true]") // "aria-selected" is not supported on role "listitem" :/ maybe FIXME in the list component
     .should("have.length", 1);
   cy.realPress("Enter");
+}
+
+function searchAndOpenFile({
+  filename,
+  search = filename,
+  content = `${path.basename(filename)} content`,
+}: SearchFileOptions): void {
+  cy.realPress(["Meta", "Shift", "O"]);
+  cy.findByRole("dialog");
+  cy.realType(search);
+  cy.findAllByRole("listitem", { name: filename })
+    .click()
+    // pressing enter should not be necessary (TODO: trigger search everywhere items on click and remove this)
+    .realPress("Enter");
+  if (content) {
+    cy.contains(content);
+  }
 }
 
 function findTreeNodeInProjectView(
@@ -105,7 +155,7 @@ function createFile(filename: string) {
     .click()
     .should("be.focused");
 
-  cy.searchAndInvokeAction("File", "create file");
+  cy.searchAndInvokeAction({ actionName: "File", search: "create file" });
   cy.findByPlaceholderText("Name").should("be.focused");
   cy.realType(filename, { delay: 1 });
   cy.realPress("Enter");

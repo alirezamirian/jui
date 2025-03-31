@@ -10,7 +10,7 @@ import {
 import React, { FormEvent, ReactNode, useState } from "react";
 import { useAtomValue } from "jotai";
 import { Errors } from "isomorphic-git";
-import { activeFileRepoBranchesAtom } from "../active-file.state";
+import { activeRepoBranchesAtom } from "../active-repo.state";
 import { useCreateBranch } from "./branches.state";
 import {
   BranchNameError,
@@ -52,7 +52,7 @@ const ErrorMessages: Record<
 export function CreateNewBranchWindow({ close }: { close: () => void }) {
   const [checkout, setCheckout] = useState(true);
   const [overwrite, setOverwrite] = useState(false);
-  const branches = useAtomValue(activeFileRepoBranchesAtom);
+  const branches = useAtomValue(activeRepoBranchesAtom);
   const [isErrorVisible, setIsErrorVisible] = useState(false);
   const balloonManager = useBalloonManager();
   const createBranch = useCreateBranch();
@@ -122,13 +122,18 @@ export function CreateNewBranchWindow({ close }: { close: () => void }) {
               labelPlacement="above"
             />
             <StyledCheckboxesContainer>
-              <Checkbox isSelected={checkout} onChange={setCheckout}>
+              <Checkbox
+                mnemonic="C"
+                isSelected={checkout}
+                onChange={setCheckout}
+              >
                 Checkout branch
               </Checkbox>
               <Checkbox
                 isSelected={overwrite}
                 isDisabled={!isErrorVisible || error !== "EXISTING"}
                 onChange={setOverwrite}
+                mnemonic="r"
               >
                 Overwrite existing branch
               </Checkbox>

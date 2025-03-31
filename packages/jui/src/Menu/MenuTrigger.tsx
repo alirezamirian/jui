@@ -8,16 +8,21 @@ import { MenuTriggerProps as AriaMenuTriggerProps } from "@react-types/menu";
 import { MenuOverlay } from "./MenuOverlay";
 import { AriaButtonProps } from "@react-types/button";
 import { Alignment } from "@react-types/shared";
+import { PressResponder } from "@react-aria/interactions";
 
-export interface MenuTriggerProps
+export interface MenuTriggerProps<E extends "button" | "a" = "button">
   extends Omit<AriaMenuTriggerProps, "closeOnSelect"> {
   restoreFocus?: boolean;
   // TODO: replace render function children with normal children, and utilize PressResponder. Add a story for the
   //  edge case of custom trigger, using PressResponder
-  children: (
-    props: HTMLAttributes<HTMLButtonElement>,
-    ref: RefObject<any> // Using a generic didn't seem to work for some reason
-  ) => React.ReactNode;
+  children:
+    | ((
+        props: "button" extends E
+          ? HTMLAttributes<HTMLButtonElement>
+          : HTMLAttributes<HTMLAnchorElement>,
+        ref: RefObject<any> // Using a generic didn't seem to work for some reason
+      ) => React.ReactNode)
+    | React.ReactElement;
   // NOTE: there is a chance of unchecked breaking change here, since this is not explicitly mentioned as public API
   // of useButton, but it is passed to the underlying usePress.
   preventFocusOnPress?: boolean;
@@ -27,6 +32,7 @@ export interface MenuTriggerProps
    * text box, but the menu semantically belongs to the container list item or text box.
    */
   positioningTargetRef?: React.RefObject<HTMLElement>;
+  elementType?: E;
   renderMenu: (props: {
     // AriaMenuOptions contains more properties than needed
     menuProps: Pick<
@@ -34,6 +40,7 @@ export interface MenuTriggerProps
       "id" | "aria-labelledby" | "autoFocus" | "onClose"
     >;
   }) => React.ReactNode;
+  suspense?: React.ReactNode;
 
   /**
    * Alignment of the menu relative to the trigger.
@@ -61,17 +68,19 @@ export interface MenuTriggerProps
  * Makes its children a trigger for a menu, rendered via {@link MenuTriggerProps#renderMenu} prop.
  * Closes the menu when a menu action is triggered.
  */
-export const MenuTrigger: React.FC<MenuTriggerProps> = ({
+export const MenuTrigger = <E extends "button" | "a" = "button">({
   children,
   renderMenu,
+  elementType = "button" as E,
   direction = "bottom",
   align = "start",
   shouldFlip = true,
   restoreFocus = true,
   preventFocusOnPress = true,
+  suspense,
   positioningTargetRef,
   ...otherProps
-}) => {
+}: MenuTriggerProps<E>) => {
   const state = useMenuTriggerState(otherProps);
   const triggerRef = React.useRef(null);
   const overlayRef = React.useRef(null);
@@ -82,9 +91,9 @@ export const MenuTrigger: React.FC<MenuTriggerProps> = ({
     state,
     triggerRef
   );
-  const ariaButtonProps: AriaButtonProps<"button"> = {
+  const ariaButtonProps: AriaButtonProps<E> = {
     ...triggerProps,
-    // @ts-expect-error: preventFocusOnPress is not defined in public API of useButton
+    elementType,
     preventFocusOnPress,
   };
   const { buttonProps } = useButton(ariaButtonProps, triggerRef);
@@ -102,13 +111,20 @@ export const MenuTrigger: React.FC<MenuTriggerProps> = ({
 
   return (
     <>
-      {children(buttonProps, triggerRef)}
+      {typeof children === "function" ? (
+        children(buttonProps, triggerRef)
+      ) : (
+        <PressResponder ref={triggerRef} {...buttonProps}>
+          {children}
+        </PressResponder>
+      )}
       {state.isOpen && (
         <MenuOverlay
           overlayProps={positionProps}
           overlayRef={overlayRef}
           onClose={state.close}
           restoreFocus={restoreFocus}
+          suspense={suspense}
         >
           {renderMenu({ menuProps })}
         </MenuOverlay>

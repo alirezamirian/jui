@@ -10,7 +10,7 @@ import { allBranchesAtom } from "../../Branches/branches.state";
 import { resolvedRefAtoms } from "../../refs.state";
 import { GitRef } from "../GitRef";
 import { vcsLogFilterCurrentTab } from "../vcs-logs.state";
-import { readCommits } from "./readCommits";
+import { readCommits } from "../../git-operations/readCommits";
 
 function match(
   input: string,
@@ -101,29 +101,37 @@ export const allResolvedRefsAtom = atom(async (get) => {
         get(resolvedRefAtoms({ repoRoot, ref: "HEAD" }))
       )
     )
-  ).forEach((resolvedRef) => {
-    addRef(resolvedRef, {
-      type: "head",
-      name: "HEAD",
+  )
+    .filter((ref) => ref !== null)
+    .forEach((resolvedRef) => {
+      addRef(resolvedRef, {
+        type: "head",
+        name: "HEAD",
+      });
     });
-  });
   for (const { repoRoot, localBranches, currentBranch } of repoBranches) {
     for (const branch of localBranches) {
-      addRef(await get(resolvedRefAtoms({ repoRoot, ref: branch.name })), {
-        type: "localBranch",
-        name: branch.name,
-        isCurrent: currentBranch?.name === branch.name,
-        trackingBranch: branch.trackingBranch,
-      });
+      const ref = await get(resolvedRefAtoms({ repoRoot, ref: branch.name }));
+      if (ref) {
+        addRef(ref, {
+          type: "localBranch",
+          name: branch.name,
+          isCurrent: currentBranch?.name === branch.name,
+          trackingBranch: branch.trackingBranch,
+        });
+      }
     }
   }
   for (const { repoRoot, remoteBranches } of repoBranches) {
     for (const branch of remoteBranches) {
       const branchName = `${branch.remote}/${branch.name}`;
-      addRef(await get(resolvedRefAtoms({ repoRoot, ref: branchName })), {
-        type: "remoteBranch",
-        name: branchName,
-      });
+      const ref = await get(resolvedRefAtoms({ repoRoot, ref: branchName }));
+      if (ref) {
+        addRef(ref, {
+          type: "remoteBranch",
+          name: branchName,
+        });
+      }
     }
   }
   return refs;

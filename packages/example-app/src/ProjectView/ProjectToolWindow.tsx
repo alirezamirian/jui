@@ -20,7 +20,6 @@ import { deleteActionAtom } from "./actions/deleteAction";
 import { copyActionAtom } from "./actions/copyAction";
 import { cutActionAtom } from "./actions/cutAction";
 import { pasteActionAtom } from "./actions/pasteAction";
-import { notNull } from "@intellij-platform/core/utils/array-utils";
 
 const { SELECT_IN_PROJECT_VIEW } = ProjectViewActionIds;
 
@@ -73,5 +72,5 @@ function useProjectViewActions(): Array<ActionDefinition> {
     useAtomValue(cutActionAtom),
     useAtomValue(copyActionAtom),
     useAtomValue(pasteActionAtom),
-  ].filter(notNull);
+  ];
 }

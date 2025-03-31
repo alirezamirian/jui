@@ -64,6 +64,7 @@ export const useChangesViewActionDefinitions = (): ActionDefinition[] => {
     {
       id: VcsActionIds.SHOW_DIFF,
       title: "Show Diff",
+      description: "Compare files or revisions.",
       icon: <PlatformIcon icon="actions/diff.svg" />,
       actionPerformed: notImplemented,
     },
