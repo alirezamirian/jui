@@ -203,9 +203,9 @@ describe("push to unknown git servers", () => {
     cy.findByLabelText(/Password/i).type("wrong password{enter}");
     cy.contains("Push failed");
     cy.contains(/remote: .* Authentication failed/);
-    cy.findByRole("treeitem", { name: /Workspace/i }).click(); // FIXME: this should not be needed. Fix the focus issue
 
     cy.section("Valid credential");
+    cy.findByRole("treeitem", { name: /Workspace/i }).click(); // FIXME: this should not be needed. Fix the focus issue
     cy.searchAndInvokeAction("push");
     cy.findByRole("treeitem", { name: "initial empty commit" });
     cy.findByRole("button", { name: /Push/i }).click();
@@ -214,6 +214,7 @@ describe("push to unknown git servers", () => {
     cy.contains("Pushed master to new branch origin/master");
 
     cy.section("Check push dialog state is up-to-date");
+    cy.findByRole("treeitem", { name: /Workspace/i }).click(); // FIXME: this should not be needed. Fix the focus issue
     cy.searchAndInvokeAction("push");
     cy.findByRole("dialog", { name: /Push commits/ });
     cy.findByRole("treeitem", { name: "initial empty commit" }).should(
