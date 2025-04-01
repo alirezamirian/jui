@@ -33,7 +33,8 @@ export const StyledButton = styled.button<{ disabled?: boolean }>`
 
   flex-shrink: 0; // button should not shrink when rendered in a flex container
 
-  a& {
+  a&,
+  a&:hover {
     text-decoration: none;
     align-content: center;
     text-align: center;
