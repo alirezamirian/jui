@@ -26,9 +26,9 @@ export function ListItem<T>({ item, children }: ListItemProps<T>) {
 
   return (
     <StyledListItem
-      containerFocused={listFocused}
-      selected={isSelected}
-      disabled={isDisabled}
+      $containerFocused={listFocused}
+      $selected={isSelected}
+      $disabled={isDisabled}
       aria-disabled={isDisabled}
       aria-selected={isSelected}
       aria-label={item["aria-label"]}

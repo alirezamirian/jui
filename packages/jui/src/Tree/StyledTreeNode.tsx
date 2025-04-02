@@ -4,25 +4,25 @@ import { StyledListItem } from "@intellij-platform/core/List/StyledListItem";
 import { TREE_ICON_SIZE } from "./TreeNodeIcon";
 
 type StyledListItemProps = {
-  level: number;
+  $level: number;
 };
 export const StyledTreeNode = styled(StyledListItem).attrs<StyledListItemProps>(
   { role: "treeitem" }
 )<StyledListItemProps>`
   // There are some theme properties for tree node padding (theme.ui.Tree.leftChildIndent and
   // theme.ui.Tree.leftChildIndent), but they doesn't seem to be applicable.
-  padding-left: ${({ level }) => `${(level + 1) * TREE_ICON_SIZE + 8}px`};
+  padding-left: ${({ $level }) => `${($level + 1) * TREE_ICON_SIZE + 8}px`};
   padding-right: 0.25rem;
-  ${({ containerFocused, selected, disabled, theme }) => {
+  ${({ $containerFocused, $selected, $disabled, theme }) => {
     let backgroundColor;
-    let color = disabled
+    let color = $disabled
       ? theme.color("*.disabledForeground")
       : theme.color(
           "Tree.foreground" as UnknownThemeProp<"Tree.foreground">,
           theme.commonColors.labelForeground
         );
-    if (selected) {
-      if (containerFocused) {
+    if ($selected) {
+      if ($containerFocused) {
         color = theme.asCurrentForeground(
           theme.color(
             "Tree.selectionForeground" as UnknownThemeProp<"Tree.selectionForeground">

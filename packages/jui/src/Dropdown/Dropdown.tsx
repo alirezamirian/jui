@@ -82,7 +82,8 @@ export const Dropdown = forwardRef(
           <BareButton {...triggerProps} autoFocus={props.autoFocus} ref={ref}>
             <StyledDropdownContainer
               as="button"
-              validationState={validationState}
+              $validationState={validationState}
+              $disabled={props.isDisabled}
               className={state.isOpen ? "is-focus" : ""}
             >
               <StyledDropdownValue {...valueProps}>

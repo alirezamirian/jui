@@ -2,15 +2,15 @@ import { styled } from "@intellij-platform/core/styled";
 import React from "react";
 import { ButtonGroup } from "@intellij-platform/core/ButtonGroup";
 
-const StyledFooter = styled.div<{ hasBorder?: boolean }>`
+const StyledFooter = styled.div<{ $hasBorder?: boolean }>`
   padding: 0.625rem 0.875rem;
   display: flex;
   gap: 0.5rem;
   justify-content: space-between;
   align-items: center;
   border-top: 1px solid transparent;
-  border-color: ${({ hasBorder, theme }) =>
-    hasBorder && theme.commonColors.contrastBorder};
+  border-color: ${({ $hasBorder, theme }) =>
+    $hasBorder && theme.commonColors.contrastBorder};
 `;
 const StyledFooterSide = styled.div`
   display: flex;
@@ -42,7 +42,7 @@ export function WindowFooter({
   hasBorder?: boolean;
 }) {
   return (
-    <StyledFooter hasBorder={hasBorder}>
+    <StyledFooter $hasBorder={hasBorder}>
       <StyledFooterSide>{left}</StyledFooterSide>
       <StyledFooterSide>
         <ButtonGroup>{right}</ButtonGroup>

@@ -26,7 +26,7 @@ const StyledFloatView = styled.div`
   border: ${({ theme }) => `1px solid ${theme.color("Component.borderColor")}`};
   ${WINDOW_SHADOW};
   ${isMac() &&
-  css<{ theme: Theme }>`
+  css`
     border-radius: 8px;
   `}
   z-index: 2;

@@ -439,7 +439,7 @@ export const ToolWindows = React.forwardRef(function ToolWindows(
        * rendering tool window bars, instead of considering it as a feature of
        * StyledToolWindowOuterLayout
        **/
-      hideStripes={hideToolWindowBars}
+      $hideStripes={hideToolWindowBars}
       style={{ height, minHeight, ...containerProps?.style }}
     >
       {layoutState && renderInnerLayout(layoutState)}

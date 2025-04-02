@@ -11,12 +11,12 @@ const StyledItemLayout = styled.div`
   gap: ${GAP};
 `;
 
-const StyledHint = styled.span<{ small?: boolean }>`
+const StyledHint = styled.span<{ $small?: boolean }>`
   display: inline-flex;
   color: ${({ theme }) =>
     theme.currentForegroundAware(theme.commonColors.inactiveTextColor)};
   padding-left: 0.1rem;
-  font-size: ${({ small }) => small && "0.9em"};
+  font-size: ${({ $small }) => $small && "0.9em"};
 `;
 
 const StyledGroup = styled.span.attrs({

@@ -91,11 +91,11 @@ const StyledWrapperLabel = styled.label`
 `;
 
 const StyledCheckboxLabelText = styled.span<{
-  isDisabled: boolean | undefined;
+  $disabled: boolean | undefined;
 }>`
   margin-left: 0.25rem;
-  color: ${({ theme, isDisabled }) =>
-    isDisabled
+  color: ${({ theme, $disabled }) =>
+    $disabled
       ? theme.color(
           "CheckBox.disabledText" as UnknownThemeProp<"CheckBox.disabledText">,
           "#808080" /* this default value was a bit tricky. Still not clear from where it comes in darcular 
@@ -173,7 +173,7 @@ export const Checkbox = ({
         }}
       />
       {props.children && (
-        <StyledCheckboxLabelText isDisabled={props.isDisabled}>
+        <StyledCheckboxLabelText $disabled={props.isDisabled}>
           {mnemonic ? (
             <MnemonicTrigger
               mnemonic={mnemonic}

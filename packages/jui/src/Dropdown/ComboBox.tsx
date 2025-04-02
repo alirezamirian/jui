@@ -81,8 +81,8 @@ export interface ComboBoxProps<T extends object>
 
 const StyledComboBoxContainer = styled(StyledContainer)`
   padding: 0;
-  color: ${({ theme, disabled }) =>
-    disabled
+  color: ${({ theme, $disabled }) =>
+    $disabled
       ? theme.color(
           "TextField.disabledForeground" as UnknownThemeProp<"TextField.disabledForeground">
         )
@@ -119,7 +119,7 @@ const StyledDropdownButton = styled.button`
    * few pixels. The following trick implements that
    */
   position: relative;
-  ::before {
+  &::before {
     content: "";
     position: absolute;
     left: -4px;
@@ -216,8 +216,8 @@ export const ComboBox = forwardRef(
           >
             <StyledComboBoxContainer
               ref={dropdownContainerRef}
-              validationState={validationState}
-              disabled={props.isDisabled}
+              $validationState={validationState}
+              $disabled={props.isDisabled}
               className={state.isFocused ? "is-focus" : ""}
             >
               {/* FIXME: tooltip comes and goes on mouse enter/leave, which is especially weird when trying to open options */}

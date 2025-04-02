@@ -14,14 +14,14 @@ const minHeight = `calc(${STRIPE_BUTTON_LINE_HEIGHT} + ${
 }px)`;
 
 const anchorStyles = ({
-  anchor,
-  preventCollapse,
+  $anchor,
+  $preventCollapse,
 }: StyledToolWindowStripeProps) =>
-  isHorizontalToolWindow(anchor)
+  isHorizontalToolWindow($anchor)
     ? css`
         flex-direction: row;
         width: 100%;
-        min-height: ${preventCollapse ? minHeight : "fit-content"};
+        min-height: ${$preventCollapse ? minHeight : "fit-content"};
         ${StyledToolWindowStripeButton} {
           height: 1.25rem;
         }
@@ -29,26 +29,26 @@ const anchorStyles = ({
     : css`
         flex-direction: column;
         height: 100%;
-        min-width: ${preventCollapse ? minHeight : "fit-content"};
+        min-width: ${$preventCollapse ? minHeight : "fit-content"};
         ${StyledToolWindowStripeButton} {
           width: 1.25rem;
         }
       `;
-const borderStyle = ({ anchor, theme }: { anchor: Anchor; theme: Theme }) =>
-  css`border-${theOtherSide(anchor)}: 1px solid ${
+const borderStyle = ({ $anchor, theme }: { $anchor: Anchor; theme: Theme }) =>
+  css`border-${theOtherSide($anchor)}: 1px solid ${
     theme.commonColors.contrastBorder
   }`;
 
 export interface StyledToolWindowStripeProps {
-  anchor: Anchor;
-  highlighted?: boolean;
-  preventCollapse?: boolean;
+  $anchor: Anchor;
+  $highlighted?: boolean;
+  $preventCollapse?: boolean;
 }
 
 export const StyledToolWindowStripe = styled.div<StyledToolWindowStripeProps>`
   box-sizing: border-box;
-  background: ${({ theme, highlighted }) =>
-    highlighted
+  background: ${({ theme, $highlighted }) =>
+    $highlighted
       ? Color.brighter(theme.commonColors.panelBackground)
       : theme.commonColors.panelBackground};
   display: inline-flex;

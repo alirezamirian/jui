@@ -36,8 +36,8 @@ const disabledStyle = css`
   background: unset !important;
 `;
 export const StyledMenuItem = styled.li<{
-  isDisabled: boolean;
-  isActive: boolean;
+  $disabled: boolean;
+  $active: boolean;
 }>`
   position: relative; // for being able to position arrow icon absolutely
   outline: none;
@@ -46,8 +46,8 @@ export const StyledMenuItem = styled.li<{
 
   // bg/fg style for different states. Order is based on how they should override each other
   ${defaultStyle};
-  ${({ isActive }) => isActive && highlightedStyle};
-  ${({ isDisabled }) => isDisabled && disabledStyle};
+  ${({ $active }) => $active && highlightedStyle};
+  ${({ $disabled }) => $disabled && disabledStyle};
 
   padding-right: 1.25rem;
   line-height: 1.3125rem; // to make the item have the right height

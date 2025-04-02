@@ -13,7 +13,7 @@ const defaultTabsTheme = ({ theme }: { theme: Theme }) =>
   });
 
 export interface TabsComponentProps extends HTMLProps<HTMLElement> {
-  noBorders?: boolean;
+  $noBorders?: boolean;
 }
 
 export const StyledDefaultTabs = styled.div<TabsComponentProps>`
@@ -21,7 +21,7 @@ export const StyledDefaultTabs = styled.div<TabsComponentProps>`
   align-items: center;
   box-sizing: border-box;
   border-style: solid;
-  border-width: ${({ noBorders }) => (noBorders ? "0" : "1px 0")};
+  border-width: ${({ $noBorders }) => ($noBorders ? "0" : "1px 0")};
 
   ${defaultTabsTheme};
 `;

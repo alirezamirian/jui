@@ -12,12 +12,12 @@ export default {
 
 export const StripeButton = {
   render: (props: StyledToolWindowStripeButtonProps) => {
-    const { anchor = "left" } = props;
+    const { $anchor = "left" } = props;
     return (
       <>
         <p>Note: background is meant to be semi-transparent</p>
-        <StyledToolWindowStripeButton {...props} anchor={anchor}>
-          Anchor: {anchor}
+        <StyledToolWindowStripeButton {...props} $anchor={$anchor}>
+          Anchor: {$anchor}
         </StyledToolWindowStripeButton>
       </>
     );

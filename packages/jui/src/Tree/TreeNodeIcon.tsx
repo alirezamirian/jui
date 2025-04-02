@@ -22,8 +22,7 @@ const getIcon = (selected: boolean, expanded: boolean) => {
       themePath: selected ? "Tree.expandedSelectedIcon" : "Tree.expandedIcon",
       iconPath: { name: "treeExpanded", modifiers },
     };
-  }
-  if (!expanded) {
+  } else {
     return {
       themePath: selected ? "Tree.collapsedSelectedIcon" : "Tree.collapsedIcon",
       iconPath: { name: "treeCollapsed", modifiers },
@@ -35,7 +34,7 @@ export function TreeNodeIcon({
   selected,
   expanded,
   ...props
-}: TreeNodeIconProps) {
+}: Omit<TreeNodeIconProps, "icon">) {
   const icon = useMemo(() => getIcon(selected, expanded), [selected, expanded]);
   return (
     <StyledTreeNodeIcon

@@ -80,12 +80,24 @@ export type TabsProps<T> = Omit<
    */
   noBorders?: boolean;
 
-  TabsComponent?: ComponentType<TabsComponentProps>;
+  TabsComponent?: WithoutDefaultProps<ComponentType<TabsComponentProps>>;
   /**
    *
    */
-  TabComponent?: ComponentType<TabComponentProps>;
+  TabComponent?: WithoutDefaultProps<ComponentType<TabComponentProps>>;
 };
+
+// defaultProps type conflicts when trying to pass another styled-component.
+// might be an issue in styled-components@v6 types, but also defaultProps
+// doesn't matter, and dropping it is ok.
+// Note that a simple Omit<ComponentType<...>, 'defaultProps'> doesn't work
+// as it also drops the call signature of the component.
+type WithoutDefaultProps<T extends React.ComponentType<any>> =
+  T extends React.FunctionComponent<infer P>
+    ? (props: P) => React.ReactElement | null
+    : T extends React.ComponentClass<infer P>
+    ? new (props: P) => React.Component<P>
+    : never;
 
 const scrollBarDisabledStyle = css`
   -ms-overflow-style: none; /* for Internet Explorer, Edge */
@@ -96,9 +108,9 @@ const scrollBarDisabledStyle = css`
   }
 `;
 
-const StyledTabList = styled.div<{ multiRow?: boolean }>`
+const StyledTabList = styled.div<{ $multiRow?: boolean }>`
   display: flex;
-  flex-wrap: ${({ multiRow }) => (multiRow ? "wrap" : "nowrap")};
+  flex-wrap: ${({ $multiRow }) => ($multiRow ? "wrap" : "nowrap")};
   overflow: auto;
 
   ${scrollBarDisabledStyle};
@@ -155,15 +167,15 @@ export const Tabs = <T extends object>({
     throw new Error("noScroll is not supported yet.");
   }
   return (
-    <TabsComponent noBorders={noBorders} {...filterDOMProps(props)}>
+    <TabsComponent $noBorders={noBorders} {...filterDOMProps(props)}>
       <StyledHorizontalOverflowShadows
-        hasOverflowAtStart={hasOverflow.left}
-        hasOverflowAtEnd={hasOverflow.right}
+        $hasOverflowAtStart={hasOverflow.left}
+        $hasOverflowAtEnd={hasOverflow.right}
         style={{ minWidth: 0 }}
       >
         <StyledTabList
           {...mergeProps(tabListProps, scrolledIndicatorProps)}
-          multiRow={multiRow}
+          $multiRow={multiRow}
           ref={ref}
         >
           {[...state.collection].map((item) => (

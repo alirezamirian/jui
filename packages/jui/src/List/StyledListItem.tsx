@@ -2,9 +2,9 @@ import { UnknownThemeProp } from "@intellij-platform/core/Theme";
 import { styled } from "../styled";
 
 export type StyledListItemProps = {
-  containerFocused: boolean;
-  selected: boolean;
-  disabled: boolean;
+  $containerFocused: boolean;
+  $selected: boolean;
+  $disabled: boolean;
 };
 
 export const StyledListItem = styled.div.attrs<StyledListItemProps>(
@@ -12,16 +12,16 @@ export const StyledListItem = styled.div.attrs<StyledListItemProps>(
     role: props.role || "listitem",
   })
 )<StyledListItemProps>`
-  ${({ containerFocused, selected, disabled, theme }) => {
+  ${({ $containerFocused, $selected, $disabled, theme }) => {
     let backgroundColor;
-    let color = disabled
+    let color = $disabled
       ? theme.color("*.disabledForeground")
       : theme.color(
           "List.foreground" as UnknownThemeProp<"List.foreground">,
           theme.commonColors.labelForeground
         );
-    if (selected) {
-      if (containerFocused) {
+    if ($selected) {
+      if ($containerFocused) {
         color = theme.asCurrentForeground(
           theme.color(
             "List.selectionForeground" as UnknownThemeProp<"List.selectionForeground">

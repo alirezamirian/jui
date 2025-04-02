@@ -72,7 +72,7 @@ export const SpeedSearchList = React.forwardRef(function SpeedSearchList<
           <StyledList
             as={Virtualizer<Node<any>, any, any>}
             ref={ref}
-            fillAvailableSpace={fillAvailableSpace}
+            $fillAvailableSpace={fillAvailableSpace}
             {...filterDOMProps(props, { labelable: true })}
             {...virtualizerProps}
             {...listProps}

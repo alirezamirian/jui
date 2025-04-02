@@ -32,7 +32,7 @@ export function ActionItem({
   return (
     <StyledItemLayout>
       <StyledIconWrapper>{action.icon}</StyledIconWrapper>
-      <StyledTitleWrapper isDisabled={action.isDisabled}>
+      <StyledTitleWrapper $disabled={action.isDisabled}>
         {isSelected ? (
           <TextWithHighlights highlights={highlights}>
             {action.title}

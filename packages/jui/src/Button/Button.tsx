@@ -41,7 +41,7 @@ export interface ButtonProps<T extends "button" | "a" = "button">
   onPress?: (e?: PressEvent) => void;
 }
 
-const variants: { [key in ButtonVariant]: typeof StyledButton } = {
+const variants: { [key in ButtonVariant]: typeof StyledDefaultButton } = {
   default: StyledDefaultButton,
   icon: StyledIconButton,
 };
@@ -87,7 +87,9 @@ export const Button = React.forwardRef(function Button<
   const domProps = filterDOMProps(props);
   const { autoFocus, form } = props;
 
-  const Component = (variant && variants[variant]) || StyledButton;
+  const Component =
+    (variant && variants[variant]) ||
+    (StyledButton as typeof StyledDefaultButton);
   return (
     <Component
       as={elementType}

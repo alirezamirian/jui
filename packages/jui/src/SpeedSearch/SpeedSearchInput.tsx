@@ -18,12 +18,12 @@ const StyledSearchIcon = styled(PlatformIcon)`
   margin-right: 0.25rem;
 `;
 
-const StyledSpeedSearchInput = styled.span<{ noMatch?: boolean }>`
+const StyledSpeedSearchInput = styled.span<{ $noMatch?: boolean }>`
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  background: ${({ theme, noMatch }) =>
-    noMatch
+  background: ${({ theme, $noMatch }) =>
+    $noMatch
       ? theme.color(
           "SearchField.errorBackground",
           theme.dark ? "#743A3A" : "#ffcccc"
@@ -69,7 +69,7 @@ export const SpeedSearchInput = React.forwardRef<
 
   // Temporary styled components until SearchInput is implemented
   return active ? (
-    <StyledSpeedSearchInput ref={ref} noMatch={!match}>
+    <StyledSpeedSearchInput ref={ref} $noMatch={!match}>
       <StyledSearchIcon icon={"actions/search"} />
       <StyledSearchText>
         {(children || "").replace(/ /g, "\u00A0")}

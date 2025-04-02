@@ -20,28 +20,28 @@ export default {
 
 const newVar: ComponentArgTypes<StoryProps> = {
   empty: { type: "boolean" },
-  anchor: { defaultValue: "left" },
+  $anchor: { defaultValue: "left" },
 };
 export const StyledStripe = {
   render: (props: StoryProps) => {
-    const { anchor, empty } = props;
+    const { $anchor, empty } = props;
     return (
       <div style={{ height: "calc(100vh - 50px)" }}>
         <StyledToolWindowStripe {...props}>
           {!empty && (
             <>
-              <StyledToolWindowStripeButton active anchor={anchor}>
-                {anchor} - Active
+              <StyledToolWindowStripeButton $active $anchor={$anchor}>
+                {$anchor} - Active
               </StyledToolWindowStripeButton>
-              <StyledToolWindowStripeButton anchor={anchor}>
-                {anchor} - Inactive
+              <StyledToolWindowStripeButton $anchor={$anchor}>
+                {$anchor} - Inactive
               </StyledToolWindowStripeButton>
               <StyledSpacer />
-              <StyledToolWindowStripeButton active anchor={anchor}>
-                {anchor} - Split 1
+              <StyledToolWindowStripeButton $active $anchor={$anchor}>
+                {$anchor} - Split 1
               </StyledToolWindowStripeButton>
-              <StyledToolWindowStripeButton anchor={anchor}>
-                {anchor} - Split 2
+              <StyledToolWindowStripeButton $anchor={$anchor}>
+                {$anchor} - Split 2
               </StyledToolWindowStripeButton>
             </>
           )}

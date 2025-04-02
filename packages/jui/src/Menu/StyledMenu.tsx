@@ -11,7 +11,7 @@ export const MENU_VERTICAL_PADDING = 5;
 export const MENU_BORDER_WIDTH = 1;
 
 // noinspection CssInvalidPropertyValue
-export const StyledMenu = styled.ul<{ fillAvailableSpace?: boolean }>`
+export const StyledMenu = styled.ul<{ $fillAvailableSpace?: boolean }>`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -52,8 +52,8 @@ export const StyledMenu = styled.ul<{ fillAvailableSpace?: boolean }>`
     margin: ${({ theme }) =>
       `0 ${theme.value("PopupMenuSeparator.withToEdge") ?? 1}px`};
   }
-  ${({ fillAvailableSpace }) =>
-    fillAvailableSpace &&
+  ${({ $fillAvailableSpace }) =>
+    $fillAvailableSpace &&
     css`
       flex: 1;
       width: fill-available; // will be converted to --webkit-fill-available and --moz-available, but doesn't work in FF

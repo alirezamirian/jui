@@ -30,7 +30,7 @@ const InnerView = styled.div`
  * the center area.
  * It also supports toggling stripes visibility.
  */
-const Shell = styled.div<{ hideStripes: boolean }>`
+const Shell = styled.div<{ $hideStripes: boolean }>`
   display: grid;
   grid-template-columns: min-content auto min-content;
   grid-template-rows: min-content auto min-content;
@@ -41,8 +41,8 @@ const Shell = styled.div<{ hideStripes: boolean }>`
 
   background: ${({ theme }) => theme.commonColors.panelBackground};
   color: ${({ theme }) => theme.color("*.foreground")};
-  ${({ hideStripes }) =>
-    hideStripes &&
+  ${({ $hideStripes }) =>
+    $hideStripes &&
     css`
       ${TopStripe},
       ${BottomStripe}, 

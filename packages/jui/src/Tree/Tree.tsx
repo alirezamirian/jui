@@ -66,7 +66,7 @@ export const Tree = React.forwardRef(
         <StyledTree
           as={Virtualizer<Node<any>, unknown, unknown>}
           ref={ref}
-          fillAvailableSpace={fillAvailableSpace}
+          $fillAvailableSpace={fillAvailableSpace}
           {...virtualizerProps}
           {...treeProps}
           {...filterDOMProps(props, { labelable: true })}

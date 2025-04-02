@@ -16,7 +16,7 @@ export interface StatusBarWidgetProps extends PressProps {
  * Disabled style is not couldn't be found, so it's skipped at the moment.
  */
 export const StatusBarWidget = React.forwardRef(function StatusBarWidget(
-  props: StatusBarWidgetProps,
+  { label, icon, ...props }: StatusBarWidgetProps,
   forwardedRef: ForwardedRef<HTMLSpanElement>
 ) {
   const ref = useObjectRef(forwardedRef);
@@ -28,7 +28,7 @@ export const StatusBarWidget = React.forwardRef(function StatusBarWidget(
   });
   const { focusableProps } = useFocusable({ excludeFromTabOrder: true }, ref);
 
-  const StyledWrapper = props.label
+  const StyledWrapper = label
     ? StyledStatusBarWidget
     : StyledStatusBarIconWidget;
   return (
@@ -37,11 +37,11 @@ export const StatusBarWidget = React.forwardRef(function StatusBarWidget(
       className={isPressed ? "pressed" : ""}
       ref={ref}
     >
-      {props.icon}
-      {props.icon && props.label && (
+      {icon}
+      {icon && label && (
         <>&nbsp;</> //not the nicest way to handle spacing!
       )}
-      {props.label}
+      {label}
     </StyledWrapper>
   );
 });

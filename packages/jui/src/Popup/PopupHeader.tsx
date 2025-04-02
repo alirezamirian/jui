@@ -8,19 +8,19 @@ import { OverlayMoveHandle } from "@intellij-platform/core/Overlay";
 import { PopupContext } from "./PopupContext";
 
 const StyledPopupHeader = styled.div<{
-  active?: boolean;
-  hasControls?: boolean;
+  $active?: boolean;
+  $hasControls?: boolean;
 }>`
   box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 1.5rem;
-  min-height: ${({ hasControls }) => hasControls && "1.75rem"};
+  min-height: ${({ $hasControls }) => $hasControls && "1.75rem"};
   cursor: default;
   white-space: nowrap;
-  color: ${({ theme, active }) =>
-    active
+  color: ${({ theme, $active }) =>
+    $active
       ? theme.color(
           "Popup.Header.activeForeground" as UnknownThemeProp<"Popup.Header.activeForeground">,
           theme.commonColors.labelForeground
@@ -29,8 +29,8 @@ const StyledPopupHeader = styled.div<{
           "Popup.Header.inactiveForeground" as UnknownThemeProp<"Popup.Header.inactiveForeground">,
           theme.commonColors.labelDisabledForeground
         )};
-  background-color: ${({ theme, active }) =>
-    active
+  background-color: ${({ theme, $active }) =>
+    $active
       ? theme.color("Popup.Header.activeBackground", "#e6e6e6")
       : theme.color("Popup.Header.inactiveBackground", `#ededed`)};
 `;
@@ -61,8 +61,8 @@ export const PopupHeader = ({
   const { isActive, movable, titleProps } = useContext(PopupContext);
   const renderHeader = (otherProps: HTMLAttributes<HTMLElement> = {}) => (
     <StyledPopupHeader
-      active={isActive}
-      hasControls={hasControls}
+      $active={isActive}
+      $hasControls={hasControls}
       className={className}
       style={style}
       {...mergeProps(titleProps, otherProps)}

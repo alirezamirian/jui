@@ -47,12 +47,12 @@ const sideStyles = {
   `,
 };
 const StyledTooltipPointer = styled.span<{
-  side: TooltipPointerPosition["side"];
+  $side: TooltipPointerPosition["side"];
 }>`
   position: absolute;
   width: 0;
   height: 0;
-  ${({ side }) => sideStyles[side]};
+  ${({ $side }) => sideStyles[$side]};
 
   &::before {
     content: "";
@@ -142,7 +142,7 @@ export function TooltipPointer({
 }) {
   return (
     <StyledTooltipPointer
-      side={side}
+      $side={side}
       style={limitPointerPositionStyles(
         tooltipSize,
         offset.type === "specific"

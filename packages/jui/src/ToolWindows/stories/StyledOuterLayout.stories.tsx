@@ -13,7 +13,7 @@ export const StyledOuterLayout = {
     return (
       <StyledToolWindowOuterLayout.Shell
         style={{ height: "100vh" }}
-        hideStripes={hideStripes}
+        $hideStripes={hideStripes}
       >
         <StyledToolWindowOuterLayout.TopStripe>
           <ToolWindowStripe

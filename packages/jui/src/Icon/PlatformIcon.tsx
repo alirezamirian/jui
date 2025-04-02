@@ -43,7 +43,7 @@ const getPlatformIconPath = (relativePath: string) =>
  */
 export const PlatformIcon = React.forwardRef(
   (
-    { icon, darkIcon, ...props }: PlatformIconProps,
+    { icon, darkIcon, size, ...props }: PlatformIconProps,
     forwardedRef: ForwardedRef<HTMLElement>
   ) => {
     const ref = useObjectRef(forwardedRef);
@@ -57,6 +57,6 @@ export const PlatformIcon = React.forwardRef(
       ref
     );
 
-    return <StyledIconWrapper {...props} ref={ref} />;
+    return <StyledIconWrapper {...props} $size={size} ref={ref} />;
   }
 );

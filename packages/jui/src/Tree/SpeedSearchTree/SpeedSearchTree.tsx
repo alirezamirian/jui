@@ -65,7 +65,7 @@ export const SpeedSearchTree = React.forwardRef(
           <StyledTree
             as={Virtualizer}
             ref={ref}
-            fillAvailableSpace={fillAvailableSpace}
+            $fillAvailableSpace={fillAvailableSpace}
             {...virtualizerProps}
             {...treeProps}
             {...filterDOMProps(props, { labelable: true })}

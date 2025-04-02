@@ -4,9 +4,9 @@ import { Theme, UnknownThemeProp } from "../Theme";
 import { HTMLProps } from "react";
 
 export interface TabComponentProps extends HTMLProps<HTMLElement> {
-  selected?: boolean;
-  disabled?: boolean;
-  active?: boolean;
+  $selected?: boolean;
+  $disabled?: boolean;
+  $active?: boolean;
 }
 
 const defaultTabTheme = ({ theme }: { theme: Theme }) =>
@@ -59,7 +59,7 @@ export const StyledDefaultTab = styled.div<TabComponentProps>`
   line-height: 1.7rem; // vertical spacing handled by line-height
 
   // disabled state doesn't seem to be supported in Intellij Platform at all.
-  opacity: ${({ disabled }) => (disabled ? ".5" : "1")};
+  opacity: ${({ $disabled }) => ($disabled ? ".5" : "1")};
   color: ${({ theme }) =>
     theme.color(
       "DefaultTabs.foreground" as UnknownThemeProp<"DefaultTabs.foreground">

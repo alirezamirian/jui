@@ -60,30 +60,31 @@ export const getTabThemeStyles = ({
     // active indicator
     &::after {
       height: ${underlineHeight != null ? `${underlineHeight}px` : undefined};
-      background-color: ${({ selected }) => selected && inactiveUnderlineColor};
-      background-color: ${({ selected, active }) =>
-        selected && active && underlineColor};
+      background-color: ${({ $selected }) =>
+        $selected && inactiveUnderlineColor};
+      background-color: ${({ $selected, $active }) =>
+        $selected && $active && underlineColor};
     }
 
     // foreground rules
-    color: ${({ selected }) => selected && underlinedTabInactiveForeground};
-    color: ${({ selected, active }) =>
-      selected && active && underlinedTabForeground};
+    color: ${({ $selected }) => $selected && underlinedTabInactiveForeground};
+    color: ${({ $selected, $active }) =>
+      $selected && $active && underlinedTabForeground};
 
     //  background rules
     background: ${background};
-    background: ${({ selected }) =>
-      selected && underlinedTabInactiveBackground};
-    background: ${({ selected, active }) =>
-      selected && active && underlinedTabBackground};
+    background: ${({ $selected }) =>
+      $selected && underlinedTabInactiveBackground};
+    background: ${({ $selected, $active }) =>
+      $selected && $active && underlinedTabBackground};
 
-    ${({ disabled, active }) =>
+    ${({ disabled, $active }) =>
       !disabled &&
       css`
         &:hover,
         &.hover /* for testing purposes */ {
           background: ${hoverInactiveBackground};
-          background: ${active && hoverBackground};
+          background: ${$active && hoverBackground};
         }
       `}
   `;

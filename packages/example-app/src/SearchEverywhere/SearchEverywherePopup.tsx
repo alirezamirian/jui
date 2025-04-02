@@ -44,11 +44,11 @@ const StyledHeader = styled.div`
 `;
 const StyledTab = styled.button<TabComponentProps>`
   all: unset;
-  background: ${({ theme, selected }) =>
-    selected && theme.color("SearchEverywhere.Tab.selectedBackground")};
+  background: ${({ theme, $selected }) =>
+    $selected && theme.color("SearchEverywhere.Tab.selectedBackground")};
   color: ${({ theme }) =>
     theme.color("SearchEverywhere.Tab.selectedForeground")};
-  opacity: ${({ disabled }) => disabled && ".5"};
+  opacity: ${({ $disabled }) => $disabled && ".5"};
 `;
 const StyledTabContent = styled.span`
   display: flex;

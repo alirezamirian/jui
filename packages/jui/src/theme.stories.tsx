@@ -390,52 +390,52 @@ export const Theme: StoryFn = () => {
         <div style={{ padding: 8 }}>
           <StyledDefaultTabs>
             <StyledDefaultTab>Default tabs</StyledDefaultTab>
-            <StyledDefaultTab selected>selected</StyledDefaultTab>
-            <StyledDefaultTab disabled>disabled</StyledDefaultTab>
+            <StyledDefaultTab $selected>selected</StyledDefaultTab>
+            <StyledDefaultTab $disabled>disabled</StyledDefaultTab>
             <StyledDefaultTab className="hover">hovered</StyledDefaultTab>
-            <StyledDefaultTab className="hover" active>
+            <StyledDefaultTab className="hover" $active>
               hovered active
             </StyledDefaultTab>
-            <StyledDefaultTab selected active>
+            <StyledDefaultTab $selected $active>
               selected active
             </StyledDefaultTab>
           </StyledDefaultTabs>
 
           <StyledEditorTabs>
             <StyledEditorTab>Editor tabs</StyledEditorTab>
-            <StyledEditorTab selected>selected</StyledEditorTab>
-            <StyledEditorTab disabled>disabled</StyledEditorTab>
+            <StyledEditorTab $selected>selected</StyledEditorTab>
+            <StyledEditorTab $disabled>disabled</StyledEditorTab>
             <StyledEditorTab className="hover">hovered</StyledEditorTab>
-            <StyledEditorTab className="hover" active>
+            <StyledEditorTab className="hover" $active>
               hovered active
             </StyledEditorTab>
-            <StyledEditorTab selected active>
+            <StyledEditorTab $selected $active>
               selected active
             </StyledEditorTab>
           </StyledEditorTabs>
 
           <StyledToolWindowTabs>
             <StyledToolWindowTab>ToolWindow tabs</StyledToolWindowTab>
-            <StyledToolWindowTab selected>selected</StyledToolWindowTab>
-            <StyledToolWindowTab disabled>disabled</StyledToolWindowTab>
+            <StyledToolWindowTab $selected>selected</StyledToolWindowTab>
+            <StyledToolWindowTab $disabled>disabled</StyledToolWindowTab>
             <StyledToolWindowTab className="hover">hovered</StyledToolWindowTab>
-            <StyledToolWindowTab className="hover" active>
+            <StyledToolWindowTab className="hover" $active>
               hovered active
             </StyledToolWindowTab>
-            <StyledToolWindowTab selected active>
+            <StyledToolWindowTab $selected $active>
               selected active
             </StyledToolWindowTab>
           </StyledToolWindowTabs>
 
           <StyledDefaultTabs>
             <StyledDebuggerTab>Debugger tabs</StyledDebuggerTab>
-            <StyledDebuggerTab selected>selected</StyledDebuggerTab>
-            <StyledDebuggerTab disabled>disabled</StyledDebuggerTab>
+            <StyledDebuggerTab $selected>selected</StyledDebuggerTab>
+            <StyledDebuggerTab $disabled>disabled</StyledDebuggerTab>
             <StyledDebuggerTab className="hover">hovered</StyledDebuggerTab>
-            <StyledDebuggerTab className="hover" active>
+            <StyledDebuggerTab className="hover" $active>
               hovered active
             </StyledDebuggerTab>
-            <StyledDebuggerTab selected active>
+            <StyledDebuggerTab $selected $active>
               selected active
             </StyledDebuggerTab>
           </StyledDefaultTabs>

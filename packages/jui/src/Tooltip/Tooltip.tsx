@@ -56,7 +56,10 @@ export interface TooltipProps extends Omit<AriaTooltipProps, "isOpen"> {
 export const DEFAULT_TEXT_BORDER_INSETS = "0.5rem 0.8125rem 0.625rem 0.625rem";
 export const DEFAULT_SMALL_TEXT_BORDER_INSETS =
   "0.375rem 0.75rem 0.4375rem 0.625rem";
-const StyledTooltip = styled.div<{ multiline?: boolean; hasPointer?: boolean }>`
+const StyledTooltip = styled.div<{
+  $multiline?: boolean;
+  $hasPointer?: boolean;
+}>`
   box-sizing: content-box;
   max-width: ${
     /**
@@ -67,8 +70,8 @@ const StyledTooltip = styled.div<{ multiline?: boolean; hasPointer?: boolean }>`
      * is meant to be for description we set the box-sizing to "content-box" to exclude container's padding in max-width
      * calculation.
      */
-    ({ theme, multiline }) =>
-      multiline
+    ({ theme, $multiline }) =>
+      $multiline
         ? `${
             theme.value<number>(
               "HelpTooltip.maxWidth" as UnknownThemeProp<"HelpTooltip.maxWidth">
@@ -76,7 +79,7 @@ const StyledTooltip = styled.div<{ multiline?: boolean; hasPointer?: boolean }>`
           }px`
         : null
   };
-  white-space: ${({ multiline }) => (!multiline ? "nowrap" : null)};
+  white-space: ${({ $multiline }) => (!$multiline ? "nowrap" : null)};
   display: inline-flex;
   flex-direction: column;
   gap: ${({ theme }) =>
@@ -86,20 +89,20 @@ const StyledTooltip = styled.div<{ multiline?: boolean; hasPointer?: boolean }>`
   background: ${tooltipBackground};
   color: ${({ theme }) =>
     theme.color("ToolTip.foreground", !theme.dark ? "#000" : "#bfbfbf")};
-  padding: ${({ theme, multiline }) =>
-    multiline
+  padding: ${({ theme, $multiline }) =>
+    $multiline
       ? theme.inset("HelpTooltip.defaultTextBorderInsets") ||
         DEFAULT_TEXT_BORDER_INSETS
       : theme.inset("HelpTooltip.smallTextBorderInsets") ||
         DEFAULT_SMALL_TEXT_BORDER_INSETS};
   line-height: 1.2;
   border-style: solid;
-  border-width: ${({ theme, hasPointer }) =>
-    theme.value<boolean>("ToolTip.paintBorder") || hasPointer ? "1px" : "0px"};
+  border-width: ${({ theme, $hasPointer }) =>
+    theme.value<boolean>("ToolTip.paintBorder") || $hasPointer ? "1px" : "0px"};
   border-color: ${tooltipBorderColor};
   ${WINDOW_SHADOW};
-  ${({ hasPointer }) =>
-    hasPointer &&
+  ${({ $hasPointer }) =>
+    $hasPointer &&
     css`
       position: relative; // needed for absolute positioning of the pointer
       border-radius: ${WITH_POINTER_BORDER_RADIUS}px;
@@ -200,8 +203,8 @@ const Tooltip = React.forwardRef(function Tooltip(
 
   return (
     <StyledTooltip
-      hasPointer={Boolean(withPointer)}
-      multiline={multiline}
+      $hasPointer={Boolean(withPointer)}
+      $multiline={multiline}
       {...tooltipProps}
       className={props.className}
       ref={ref}

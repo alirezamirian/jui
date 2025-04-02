@@ -43,9 +43,9 @@ const StyledCommitCell = styled.div`
   padding-left: 0.25rem;
 `;
 
-const StyledRefsContainer = styled.div<{ asOverlay?: boolean }>`
-  ${({ asOverlay }) =>
-    !asOverlay
+const StyledRefsContainer = styled.div<{ $asOverlay?: boolean }>`
+  ${({ $asOverlay }) =>
+    !$asOverlay
       ? css`
           position: absolute;
           right: 0;
@@ -218,7 +218,7 @@ function CommitRefs({ refs, onLeft }: { refs: GitRef[]; onLeft?: boolean }) {
       {({ ref, ...tooltipTriggerProps }) => (
         <StyledRefsContainer
           ref={ref as RefObject<HTMLDivElement>}
-          asOverlay={onLeft}
+          $asOverlay={onLeft}
           {...tooltipTriggerProps}
         >
           {filteredRefs

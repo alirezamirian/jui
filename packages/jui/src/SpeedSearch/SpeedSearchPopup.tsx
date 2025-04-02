@@ -23,14 +23,14 @@ export const SpeedSearchPopup = React.forwardRef<
   SpeedSearchPopupProps
 >(({ active, match, children }, ref) =>
   active ? (
-    <StyledSpeedSearchPopup ref={ref} noMatch={!match}>
+    <StyledSpeedSearchPopup ref={ref} $noMatch={!match}>
       <StyledSearchIcon icon={"actions/search"} />
       {(children || "").replace(/ /g, "\u00A0")}
     </StyledSpeedSearchPopup>
   ) : null
 );
 
-const StyledSpeedSearchPopup = styled.span<{ noMatch?: boolean }>`
+const StyledSpeedSearchPopup = styled.span<{ $noMatch?: boolean }>`
   // ref: https://github.com/JetBrains/intellij-community/blob/e3c7d96daba1d5d84d5650bde6c220aed225bfda/platform/platform-impl/src/com/intellij/ui/SpeedSearchBase.java#L53-L53
   box-sizing: border-box;
   position: absolute;
@@ -45,8 +45,8 @@ const StyledSpeedSearchPopup = styled.span<{ noMatch?: boolean }>`
         "SpeedSearch.borderColor",
         theme.dark ? "rgb(64, 64, 64)" : "rgb(192, 192, 192)"
       )};
-  color: ${({ noMatch, theme }) =>
-    noMatch
+  color: ${({ $noMatch, theme }) =>
+    $noMatch
       ? theme.color("SpeedSearch.errorForeground", theme.commonColors.red)
       : theme.color(
           "SpeedSearch.foreground",

@@ -26,9 +26,9 @@ export const StyledComponents = (): React.ReactElement => {
       <h3>StyledDefaultTab</h3>
       <StyledDefaultTabs>
         <StyledDefaultTab>Default tab</StyledDefaultTab>
-        <StyledDefaultTab selected>Selected tab</StyledDefaultTab>
-        <StyledDefaultTab disabled>Disabled tab</StyledDefaultTab>
-        <StyledDefaultTab selected active>
+        <StyledDefaultTab $selected>Selected tab</StyledDefaultTab>
+        <StyledDefaultTab $disabled>Disabled tab</StyledDefaultTab>
+        <StyledDefaultTab $selected $active>
           Selected & active tab
         </StyledDefaultTab>
       </StyledDefaultTabs>
@@ -37,9 +37,9 @@ export const StyledComponents = (): React.ReactElement => {
       <h3>StyledEditorTab</h3>
       <StyledEditorTabs>
         <StyledEditorTab>Default tab</StyledEditorTab>
-        <StyledEditorTab selected>Selected tab</StyledEditorTab>
-        <StyledEditorTab disabled>Disabled tab</StyledEditorTab>
-        <StyledEditorTab selected active>
+        <StyledEditorTab $selected>Selected tab</StyledEditorTab>
+        <StyledEditorTab $disabled>Disabled tab</StyledEditorTab>
+        <StyledEditorTab $selected $active>
           Selected & active tab
         </StyledEditorTab>
       </StyledEditorTabs>
@@ -48,9 +48,9 @@ export const StyledComponents = (): React.ReactElement => {
       <h3>StyledToolWindowTab</h3>
       <StyledToolWindowTabs>
         <StyledToolWindowTab>Default tab</StyledToolWindowTab>
-        <StyledToolWindowTab selected>Selected tab</StyledToolWindowTab>
-        <StyledToolWindowTab disabled>Disabled tab</StyledToolWindowTab>
-        <StyledToolWindowTab selected active>
+        <StyledToolWindowTab $selected>Selected tab</StyledToolWindowTab>
+        <StyledToolWindowTab $disabled>Disabled tab</StyledToolWindowTab>
+        <StyledToolWindowTab $selected $active>
           Selected & active tab
         </StyledToolWindowTab>
       </StyledToolWindowTabs>
@@ -59,9 +59,9 @@ export const StyledComponents = (): React.ReactElement => {
       <h3>StyledDebuggerTab</h3>
       <StyledDefaultTabs>
         <StyledDebuggerTab>Tabs.stories.tsx</StyledDebuggerTab>
-        <StyledDebuggerTab selected>Selected tab</StyledDebuggerTab>
-        <StyledDebuggerTab disabled>Disabled tab</StyledDebuggerTab>
-        <StyledDebuggerTab selected active>
+        <StyledDebuggerTab $selected>Selected tab</StyledDebuggerTab>
+        <StyledDebuggerTab $disabled>Disabled tab</StyledDebuggerTab>
+        <StyledDebuggerTab $selected $active>
           Selected & active tab
         </StyledDebuggerTab>
       </StyledDefaultTabs>

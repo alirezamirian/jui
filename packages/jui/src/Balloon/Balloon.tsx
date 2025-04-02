@@ -161,7 +161,7 @@ export const Balloon = ({
             onToggle={toggle}
           >
             <StyledBalloonBody
-              lineClamp={!effectiveExpanded && maxLinesWhenNotExpanded}
+              $lineClamp={!effectiveExpanded && maxLinesWhenNotExpanded}
               ref={bodyRef}
             >
               {body}
@@ -192,7 +192,7 @@ const ToggleWrapper: React.FC<{
   children?: React.ReactNode;
   enabled: boolean;
   expanded: boolean;
-  Component?: typeof StyledToggleExpandButtonContainer;
+  Component?: typeof StyledToggleExpandButtonFooterContainer;
   onToggle: () => void;
 }> = ({
   children,

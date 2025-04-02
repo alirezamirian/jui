@@ -26,7 +26,7 @@ export interface IconButtonProps
 export const DEFAULT_MINIMUM_BUTTON_SIZE = 22;
 export const NAVBAR_MINIMUM_BUTTON_SIZE = 20;
 
-export const StyledIconButton = styled.button<{ minSize: number }>`
+export const StyledIconButton = styled.button<{ $minSize: number }>`
   position: relative; // to allow absolutely positioned overlays like an dropdown icon at the bottom right corner
   background: none;
   color: inherit;
@@ -35,8 +35,8 @@ export const StyledIconButton = styled.button<{ minSize: number }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: ${({ minSize }) => `${minSize}px`};
-  min-width: ${({ minSize }) => `${minSize}px`};
+  min-height: ${({ $minSize }) => `${$minSize}px`};
+  min-width: ${({ $minSize }) => `${$minSize}px`};
   padding: 0;
   margin: 0;
   &:disabled {
@@ -110,7 +110,7 @@ export const IconButton = React.forwardRef(function IconButton(
       className={isPressed ? "active" : ""}
       disabled={isDisabled}
       {...mergeProps(pressProps, otherProps, focusableProps)}
-      minSize={minSize}
+      $minSize={minSize}
       tabIndex={excludeFromTabOrder && !isDisabled ? -1 : undefined}
       ref={ref}
     />
