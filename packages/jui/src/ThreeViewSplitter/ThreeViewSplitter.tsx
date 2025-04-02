@@ -32,14 +32,14 @@ export interface ThreeViewSplitterProps {
 }
 
 const StyledSplitterContainer = styled.div<{
-  orientation: "horizontal" | "vertical";
+  $orientation: "horizontal" | "vertical";
 }>`
   display: flex;
   width: 100%;
   height: 100%;
   overflow: hidden;
-  flex-direction: ${({ orientation }) =>
-    orientation === "vertical" ? "column" : "row"};
+  flex-direction: ${({ $orientation }) =>
+    $orientation === "vertical" ? "column" : "row"};
 `;
 
 const StyledView = styled.div`
@@ -167,7 +167,7 @@ export const ThreeViewSplitter: React.FC<ThreeViewSplitterProps> = ({
   return (
     <StyledSplitterContainer
       ref={containerRef}
-      orientation={orientation}
+      $orientation={orientation}
       {...containerProps}
     >
       {firstView && (

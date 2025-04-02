@@ -11,8 +11,8 @@ export const StyledItemLayout = styled(ItemLayout)`
   width: 100%;
   padding: 0;
 `;
-export const StyledTitleWrapper = styled.span<{ isDisabled?: boolean }>`
-  color: ${({ theme, isDisabled }) =>
-    isDisabled &&
+export const StyledTitleWrapper = styled.span<{ $disabled?: boolean }>`
+  color: ${({ theme, $disabled }) =>
+    $disabled &&
     theme.currentForegroundAware(theme.commonColors.inactiveTextColor)};
 `;

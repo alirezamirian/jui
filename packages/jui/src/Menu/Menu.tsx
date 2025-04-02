@@ -198,7 +198,7 @@ export function Menu<T extends object>({ minWidth, ...props }: MenuProps<T>) {
         {...menuProps}
         ref={ref}
         style={{ minWidth }}
-        fillAvailableSpace={props.fillAvailableSpace}
+        $fillAvailableSpace={props.fillAvailableSpace}
       >
         {renderMenuNodes(state, [...state.collection])}
       </StyledMenu>

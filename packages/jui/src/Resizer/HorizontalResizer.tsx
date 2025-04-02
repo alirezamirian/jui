@@ -13,14 +13,14 @@ const StyledHorizontalResizer = styled.div`
 `;
 
 const StyledHorizontalResizerArea = styled.div<{
-  handleSize: number;
-  cursor: HorizontalResizerViewProps["cursor"];
+  $handleSize: number;
+  $cursor: HorizontalResizerViewProps["cursor"];
 }>`
   position: absolute;
-  cursor: ${({ cursor }) => `${cursor}-resize`};
-  width: ${({ handleSize }) => `calc(100% + ${handleSize}px)`};
+  cursor: ${({ $cursor }) => `${$cursor}-resize`};
+  width: ${({ $handleSize }) => `calc(100% + ${$handleSize}px)`};
   height: 100%;
-  left: ${({ handleSize }) => `-${handleSize / 2}px`};
+  left: ${({ $handleSize }) => `-${$handleSize / 2}px`};
 `;
 
 /**
@@ -43,7 +43,10 @@ export const HorizontalResizer: React.FC<HorizontalResizerViewProps> = ({
       style={{ ...style, background, width: size }}
     >
       {children}
-      <StyledHorizontalResizerArea handleSize={outerPadding} cursor={cursor} />
+      <StyledHorizontalResizerArea
+        $handleSize={outerPadding}
+        $cursor={cursor}
+      />
     </StyledHorizontalResizer>
   );
 };

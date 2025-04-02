@@ -24,15 +24,15 @@ const StyledContextHelp = styled.div`
 `;
 
 const StyledContextHelpWrapper = styled.div<{
-  placement: ContextHelpProps["contextHelpPlacement"];
+  $placement: ContextHelpProps["contextHelpPlacement"];
 }>`
   font-size: 0.75rem; // 12px, in new UI. It's 11px in the old UI.
   display: flex;
   flex-direction: column;
   align-items: start;
   gap: 0.25rem; /* Not checked with the reference impl */
-  ${({ placement }) =>
-    placement === "after" &&
+  ${({ $placement }) =>
+    $placement === "after" &&
     css`
       flex-direction: row;
       align-items: center;
@@ -59,7 +59,7 @@ export const WithInlineContextHelp = ({
   descriptionProps: DOMAttributes;
 } & ContextHelpProps) => {
   return (
-    <StyledContextHelpWrapper placement={contextHelpPlacement}>
+    <StyledContextHelpWrapper $placement={contextHelpPlacement}>
       {children}
       {contextHelp && (
         <StyledContextHelp {...descriptionProps}>

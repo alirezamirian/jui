@@ -51,16 +51,16 @@ export type ToolbarProps = {
     }
 );
 
-const borderStyle = ({ border }: { border?: ToolbarBorderProp }) =>
-  border &&
+const borderStyle = ({ $border }: { $border?: ToolbarBorderProp }) =>
+  $border &&
   css`
     border-style: solid;
     border-color: ${({ theme }) => theme.commonColors.borderColor};
-    border-width: ${border === true ? "1px" : borderPropToCssProp[border]};
+    border-width: ${$border === true ? "1px" : borderPropToCssProp[$border]};
   `;
 
 const StyledToolbar = styled.div<{
-  border?: ToolbarBorderProp;
+  $border?: ToolbarBorderProp;
 }>`
   display: inline-flex;
   box-sizing: border-box;
@@ -93,7 +93,7 @@ const borderPropToCssProp: Record<
 const SIDE_PADDING = 3;
 const END_PADDING = 4;
 
-const StyledShowMoreButton = styled.button`
+const StyledShowMoreButton = styled.button<{ $border?: ToolbarBorderProp }>`
   all: unset;
   display: flex;
   justify-content: center;
@@ -129,20 +129,20 @@ const StyledVerticalToolbar = styled(StyledToolbar)`
 `;
 
 const StyledToolbarContent = styled.div<{
-  shouldWrap?: boolean;
-  firstOverflowedIndex: number;
+  $shouldWrap?: boolean;
+  $firstOverflowedIndex: number;
 }>`
   box-sizing: inherit;
   display: inherit;
   flex-direction: inherit;
-  flex-wrap: ${({ shouldWrap }) => (shouldWrap ? "wrap" : "nowrap")};
+  flex-wrap: ${({ $shouldWrap }) => ($shouldWrap ? "wrap" : "nowrap")};
   gap: inherit;
   max-height: inherit;
   max-width: inherit;
   min-height: 0;
   min-width: 0;
 
-  ${({ firstOverflowedIndex }) =>
+  ${({ $firstOverflowedIndex }) =>
     /**
      * The hidden styles should be in a way that the hidden element:
      * - occupies its space in the document layout.
@@ -150,9 +150,9 @@ const StyledToolbarContent = styled.div<{
      * - remains accessible to screen readers.
      */
     css`
-      > ${firstOverflowedIndex === 0
+      > ${$firstOverflowedIndex === 0
           ? "*"
-          : `:nth-child(${firstOverflowedIndex}) ~ *`} {
+          : `:nth-child(${$firstOverflowedIndex}) ~ *`} {
         opacity: 0 !important;
         pointer-events: none !important;
       }
@@ -305,15 +305,15 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   return (
     <OrientationContext.Provider value={orientation}>
       <StyledToolbar
-        border={border}
+        $border={border}
         {...mergeProps(rootProps, toolbarProps)}
         role="toolbar"
       >
         <StyledToolbarContent
           ref={ref}
           role="presentation"
-          firstOverflowedIndex={firstOverflowedChildIndex}
-          shouldWrap={overflowBehavior === "wrap"}
+          $firstOverflowedIndex={firstOverflowedChildIndex}
+          $shouldWrap={overflowBehavior === "wrap"}
         >
           {props.children}
         </StyledToolbarContent>
@@ -339,7 +339,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               {...mergeProps(overlayProps, toolbarOverflowPopupProps)}
             >
               <ToolbarInOverlay
-                border
+                $border
                 firstVisibleIndex={
                   orientation === "vertical"
                     ? firstOverflowedChildIndex

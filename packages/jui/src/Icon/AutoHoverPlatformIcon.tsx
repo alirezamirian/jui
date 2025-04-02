@@ -3,17 +3,19 @@ import React, { ForwardedRef } from "react";
 import { amendName, PlatformIcon, PlatformIconProps } from "./PlatformIcon";
 
 export const StyledHoverContainer = styled.span<{
-  hoverContainerSelector?: string;
+  $hoverContainerSelector?: string;
 }>`
-  ${({ hoverContainerSelector }) =>
-    hoverContainerSelector
-      ? `${hoverContainerSelector} &`
+  ${({ $hoverContainerSelector }) =>
+    $hoverContainerSelector
+      ? `${$hoverContainerSelector} &`
       : ""} .icon[data-hover] {
     display: none;
   }
 
-  ${({ hoverContainerSelector }) =>
-    hoverContainerSelector ? `${hoverContainerSelector}:hover &` : "&:hover"} {
+  ${({ $hoverContainerSelector }) =>
+    $hoverContainerSelector
+      ? `${$hoverContainerSelector}:hover &`
+      : "&:hover"} {
     .icon {
       display: none;
     }
@@ -77,7 +79,7 @@ export const AutoHoverPlatformIcon = React.forwardRef(
     return (
       <StyledIconHoverContainer
         ref={ref}
-        hoverContainerSelector={hoverContainerSelector}
+        $hoverContainerSelector={hoverContainerSelector}
       >
         <PlatformIcon {...props} className={className} />
         <PlatformIcon

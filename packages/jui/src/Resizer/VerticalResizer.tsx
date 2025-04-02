@@ -12,14 +12,14 @@ const StyledVerticalResizer = styled.div`
 `;
 
 const StyledVerticalResizerArea = styled.div<{
-  handleSize: number;
-  cursor: VerticalResizerViewProps["cursor"];
+  $handleSize: number;
+  $cursor: VerticalResizerViewProps["cursor"];
 }>`
   position: absolute;
-  cursor: ${({ cursor }) => `${cursor}-resize`};
-  height: ${({ handleSize }) => `calc(100% + ${handleSize}px)`};
+  cursor: ${({ $cursor }) => `${$cursor}-resize`};
+  height: ${({ $handleSize }) => `calc(100% + ${$handleSize}px)`};
   width: 100%;
-  top: ${({ handleSize }) => `-${handleSize / 2}px`};
+  top: ${({ $handleSize }) => `-${$handleSize / 2}px`};
 `;
 
 /**
@@ -41,6 +41,6 @@ export const VerticalResizer: React.FC<VerticalResizerViewProps> = ({
     style={{ ...style, background, height: size }}
   >
     {children}
-    <StyledVerticalResizerArea handleSize={outerPadding} cursor={cursor} />
+    <StyledVerticalResizerArea $handleSize={outerPadding} $cursor={cursor} />
   </StyledVerticalResizer>
 );

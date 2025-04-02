@@ -126,15 +126,15 @@ export const ProgressBar = ({
     <StyledProgressBarContainer style={style} className={className}>
       {namePosition === "top" && label}
       <StyledProgressBarLineContainer
-        dense={dense}
-        hasTopMargin={Boolean(name) && namePosition === "top"}
-        hasBottomMargin={Boolean(effectiveDetails)}
+        $dense={dense}
+        $hasTopMargin={Boolean(name) && namePosition === "top"}
+        $hasBottomMargin={Boolean(effectiveDetails)}
       >
         {namePosition === "side" && label}
         <StyledProgressBarTrack
           style={{ width }}
           {...progressBarProps}
-          indeterminate={props.isIndeterminate}
+          $indeterminate={props.isIndeterminate}
         >
           {!props.isIndeterminate && (
             <StyledProgressBarProgress style={{ width: `${percentage}%` }} />
@@ -161,19 +161,19 @@ const StyledProgressBarContainer = styled.div`
 `;
 
 const StyledProgressBarLineContainer = styled.div<{
-  dense?: boolean;
-  hasTopMargin?: boolean;
-  hasBottomMargin?: boolean;
+  $dense?: boolean;
+  $hasTopMargin?: boolean;
+  $hasBottomMargin?: boolean;
 }>`
   display: flex;
   align-items: center;
-  gap: ${({ dense }) => (dense ? "0.5rem" : "0.625rem")};
+  gap: ${({ $dense }) => ($dense ? "0.5rem" : "0.625rem")};
   height: 4px;
   // spacing is based on the reference impl and figma designs. top and bottom spacing is inverted in the spec document
   // figma: https://www.figma.com/file/nfDfMAdV7j2fnQlpYNAOfP/IntelliJ-Platform-UI-Kit-(Community)?node-id=75426%3A16650
   // spec document: https://jetbrains.github.io/ui/controls/progress_bar/#25
-  margin-top: ${({ hasTopMargin }) => hasTopMargin && "0.375rem"};
-  margin-bottom: ${({ hasBottomMargin }) => hasBottomMargin && "0.25rem"};
+  margin-top: ${({ $hasTopMargin }) => $hasTopMargin && "0.375rem"};
+  margin-bottom: ${({ $hasBottomMargin }) => $hasBottomMargin && "0.25rem"};
 `;
 
 const StyledProgressBarLabel = styled.div`
@@ -191,7 +191,7 @@ const StyledProgressBarDetails = styled.div`
   max-width: calc(100% - 2rem); // not the best way
 `;
 
-const StyledProgressBarTrack = styled.div<{ indeterminate?: boolean }>`
+const StyledProgressBarTrack = styled.div<{ $indeterminate?: boolean }>`
   height: inherit;
   border-radius: 2px;
   overflow: hidden;
@@ -206,8 +206,8 @@ const StyledProgressBarTrack = styled.div<{ indeterminate?: boolean }>`
       "ProgressBar.trackColor",
       theme.dark ? "rgb(85,85,85)" : "rgb(196,196,196)"
     )};
-  ${({ indeterminate }) =>
-    indeterminate &&
+  ${({ $indeterminate }) =>
+    $indeterminate &&
     css`
       background: linear-gradient(
         90deg,

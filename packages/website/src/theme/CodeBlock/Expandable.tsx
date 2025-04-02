@@ -24,9 +24,9 @@ const StyledExpandButton = styled.div`
     opacity: 1;
   }
 `;
-const StyledContainer = styled.div<{ expanded: boolean }>`
+const StyledContainer = styled.div<{ $expanded: boolean }>`
   position: relative;
-  max-height: ${({ expanded }) => (expanded ? undefined : "200px")};
+  max-height: ${({ $expanded }) => ($expanded ? undefined : "200px")};
 `;
 
 export function Expandable({
@@ -52,7 +52,7 @@ export function Expandable({
     }
   });
   return (
-    <StyledContainer ref={ref} expanded={expanded}>
+    <StyledContainer ref={ref} $expanded={expanded}>
       {children}
       {!expanded && isExpandable && (
         <StyledExpandButton onClick={onExpand}>

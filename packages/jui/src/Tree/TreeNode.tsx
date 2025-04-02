@@ -64,12 +64,12 @@ export function TreeNode<T>({ item }: TreeNodeProps<T>) {
       <StyledTreeNode
         ref={ref}
         {...treeNodeProps}
-        containerFocused={containerFocused}
-        disabled={isDisabled}
-        selected={isSelected}
+        $containerFocused={containerFocused}
+        $disabled={isDisabled}
+        $selected={isSelected}
         aria-disabled={isDisabled}
         aria-selected={isSelected}
-        level={item.level}
+        $level={item.level}
       >
         {[...item.childNodes].length > 0 && (
           <TreeNodeIcon

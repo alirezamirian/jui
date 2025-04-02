@@ -58,9 +58,9 @@ export const Tab = forwardRef(function Tab<T extends object>(
       {...tabProps}
       tabIndex={focusable ? tabIndex : undefined}
       ref={ref}
-      active={active}
-      selected={isSelected}
-      disabled={isDisabled}
+      $active={active}
+      $selected={isSelected}
+      $disabled={isDisabled}
     >
       {rendered}
     </Component>

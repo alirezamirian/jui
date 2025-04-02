@@ -81,6 +81,6 @@ export const LafIcon = React.forwardRef(
       { path: `platform/platform-impl/resources/${resolvedIconPath}` },
       ref
     );
-    return <StyledIconWrapper {...props} ref={ref} size={size} />;
+    return <StyledIconWrapper {...props} ref={ref} $size={size} />;
   }
 );
