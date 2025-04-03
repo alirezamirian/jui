@@ -1,0 +1,7 @@
+{
+  "onlyChanged": true,
+  "projectId": "Project:675f26b92775b27faba91556",
+  "storybookBaseDir": "packages/jui",
+  "buildScriptName": "storybook:build",
+  "zip": true
+}

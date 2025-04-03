@@ -14,7 +14,7 @@ module.exports = {
     getAbsolutePath("@storybook/addon-essentials"),
     getAbsolutePath("storybook-addon-theme-provider"),
     getAbsolutePath("@storybook/addon-webpack5-compiler-swc"),
-    "@chromatic-com/storybook",
+    getAbsolutePath("@chromatic-com/storybook"),
   ],
   swc: () => ({
     jsc: {
@@ -62,7 +62,7 @@ module.exports = {
   docs: {
     autodocs: false,
   },
-};
+} as StorybookConfig;
 
 function getAbsolutePath(value: string): any {
   return dirname(require.resolve(join(value, "package.json")));
