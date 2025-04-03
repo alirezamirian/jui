@@ -1,6 +1,7 @@
 import type {
   AuthCallback,
   AuthFailureCallback,
+  AuthSuccessCallback,
   GitAuth,
   GitProgressEvent,
   MessageCallback,
@@ -26,6 +27,8 @@ const StyledContainer = styled.div`
   flex-direction: column;
   gap: 0.75rem;
 `;
+
+const credentialsCache = new Map<string, GitAuth>();
 
 const gitAuthenticateCallback = atomCallback(
   ({ get }, url: string, auth: GitAuth): Promise<GitAuth> => {
@@ -69,7 +72,6 @@ function GithubCredentialsHandlerWindow({
 }: GitAuthHandlerProps) {
   const url = URL.parse(urlString);
   const host = url?.host;
-  console.log("url", url, "urlString", urlString);
   const username = url?.pathname?.split("/").find(Boolean) ?? "";
 
   const [token, setToken] = useState("");
@@ -238,6 +240,7 @@ export const createGitTaskCallback = atomCallback(
         };
         onAuth: AuthCallback;
         onAuthFailure: AuthFailureCallback;
+        onAuthSuccess: AuthSuccessCallback;
         onMessage: MessageCallback;
       }) => Promise<void>;
       onFinished?: () => void;
@@ -275,9 +278,15 @@ export const createGitTaskCallback = atomCallback(
             {
               // TODO: handle onAuthFailure, onAuth, and maybe onMessage
               onProgress,
-              onAuth: (url, auth) => gitAuthenticate(url, auth),
-              onAuthFailure: (...args) => {
+              onAuth: (url, auth) => {
+                return credentialsCache.get(url) ?? gitAuthenticate(url, auth);
+              },
+              onAuthFailure: (url) => {
                 // useful for multiple methods of authentication
+                credentialsCache.delete(url);
+              },
+              onAuthSuccess: (url, auth) => {
+                credentialsCache.set(url, auth);
               },
               onMessage: (message) => {
                 // TODO: keep logs in an atom to be shown in a "Console" tab in vcs toolwindow.
