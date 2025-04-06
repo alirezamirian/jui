@@ -35,6 +35,10 @@ describe("push window", () => {
 
     cy.section("Change target branch");
     cy.findByRole("link", { name: "master" }).click();
+    cy.focused()
+      .should("have.value", "master")
+      .realClick() // Clicking the input should not cause it to blur.
+      .should("be.focused");
     cy.realType("another-branch{enter}");
     repoNode()
       .should("contain.text", "origin : another-branch")
