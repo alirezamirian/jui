@@ -134,7 +134,7 @@ const copyRevisionNumbersActionAtom = createCopyRevisionNumberActionAtom(
 );
 
 // TODO: fix the jump in window bounds by making persisted bounds async
-// TODO: handle no remote (Define Remote link)
+// TODO: make readCommit atom again
 export function PushLogTree() {
   const repoNodes: ReadonlyArray<AnyPushTreeNode> =
     useAtomValue(pushTreeNodesAtom);
@@ -379,6 +379,12 @@ function PushTreeRepoNode({
           onChange={(e) => setEditingBranchName(e.target.value)}
           onFocus={(e) => {
             e.target.select();
+          }}
+          onPointerDown={(e) => {
+            // Needed to avoid the input field from losing focus on click due to some react-aria logic (maybe detecting
+            // outside interaction) trying to move focus to the tree node.
+            // Covered by e2e tests ✅
+            e.stopPropagation();
           }}
           onBlur={submitTargetBranchName}
           onKeyDown={(e) => {
