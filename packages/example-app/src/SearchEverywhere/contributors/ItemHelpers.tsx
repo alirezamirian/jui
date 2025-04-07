@@ -7,7 +7,10 @@ export const StyledIconWrapper = styled.span`
   justify-content: center;
 `;
 export const StyledItemLayout = styled(ItemLayout)`
-  min-height: 1.375rem;
+  // Going above 20px (which is the estimated list item height in the virtualizer) makes the tab crash when
+  // running e2e tests only in local environment (both headed and headless, both against storybook dev server and
+  // static server like in the CI pipeline), and only after upgrading styled-components to v6 🤯
+  min-height: ${"Cypress" in window ? "1.25rem" : "1.375rem"};
   width: 100%;
   padding: 0;
 `;
