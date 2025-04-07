@@ -18,7 +18,7 @@ import "./shared";
 import "./example-app/support";
 
 Cypress.on("uncaught:exception", (err) => {
-  if (/ResizeObserver loop limit exceeded/.test(err.message)) {
+  if (/ResizeObserver loop/.test(err.message)) {
     return false;
   }
 });
