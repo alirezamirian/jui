@@ -32,10 +32,10 @@ jobs:
 
       - id: setTargetFolder
         run: |
-          if [ ! -z "${{ github.ref_name }}" ]; then
-            tag_without_prefix=$(echo ${{ github.ref_name }} |  cut -b 6-);
-          else
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then          
             tag_without_prefix="${{ github.event.inputs.name }}";
+          else
+            tag_without_prefix=$(echo ${{ github.ref_name }} |  cut -b 6-);
           fi
           echo "tag_without_prefix: $tag_without_prefix"
           echo "targetFolder=-/$tag_without_prefix" >> $GITHUB_OUTPUT
@@ -53,3 +53,15 @@ jobs:
           branch: gh-pages
           folder: packages/website/build
           target-folder: ${{steps.setTargetFolder.outputs.targetFolder}}
+
+      - name: Create and push tag
+        if: ${{ github.event.inputs.name }}
+        env:
+          GIT_TAG: docs/${{ github.event.inputs.name }}
+          GIT_REF: ${{ github.event.inputs.git_ref }}
+        run: |
+          # Replace spaces with dashes in the tag
+          SANITIZED_TAG="${GIT_TAG// /-}"
+          REF=${GIT_REF:-HEAD}
+          git tag "$GIT_TAG" "$REF"
+          git push origin "$GIT_TAG"
