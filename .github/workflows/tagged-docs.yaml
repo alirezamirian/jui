@@ -3,6 +3,16 @@ on:
   push:
     tags:
       - "docs/*"
+  workflow_dispatch:
+    inputs:
+      git_ref:
+        description: "Git ref to build docs from"
+        required: true
+        type: string
+      name:
+        description: "Name (without spaces). docs/{name} tag will be added."
+        required: true
+        type: string
 jobs:
   deploy-website:
     name: Deploy website to Github Pages to sub-folder
@@ -12,10 +22,21 @@ jobs:
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.git_ref }}
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: ".nvmrc"
+          cache: yarn
 
       - id: setTargetFolder
         run: |
-          tag_without_prefix=$(echo ${{ github.ref_name }} |  cut -b 6-);
+          if [ ! -z "${{ github.ref_name }}" ]; then
+            tag_without_prefix=$(echo ${{ github.ref_name }} |  cut -b 6-);
+          else
+            tag_without_prefix="${{ github.event.inputs.name }}";
+          fi
           echo "tag_without_prefix: $tag_without_prefix"
           echo "targetFolder=-/$tag_without_prefix" >> $GITHUB_OUTPUT
 
