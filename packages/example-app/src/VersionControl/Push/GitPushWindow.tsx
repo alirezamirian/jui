@@ -28,7 +28,10 @@ import { fs } from "../../fs/fs";
 import { atomCallback } from "../../atom-utils/atomCallback";
 import { createGitTaskCallback } from "../createGitTaskCallback";
 import { unwrap, useAtomCallback } from "jotai/utils";
-import { repoCurrentBranchNameAtom } from "../Branches/branches.state";
+import {
+  repoBranchesAtom,
+  repoCurrentBranchNameAtom,
+} from "../Branches/branches.state";
 import { IntlMessageFormat } from "intl-messageformat";
 
 const firstViewSizeAtom = appPropertyAtom.number(
@@ -41,7 +44,7 @@ const pushCallback = atomCallback(
   {
     createGitTaskCallback,
   },
-  async ({ get, createGitTask }) => {
+  async ({ get, set, createGitTask }) => {
     const pushes = await get(pushesAtom);
     const multiRepo = get(vcsRootsAtom).length > 1;
     createGitTask({
@@ -104,6 +107,11 @@ const pushCallback = atomCallback(
               </BalloonActionLink>
             </>
           ),
+        });
+      },
+      onFinished: () => {
+        pushes.map(({ dir }) => {
+          set(repoBranchesAtom(dir));
         });
       },
     });
