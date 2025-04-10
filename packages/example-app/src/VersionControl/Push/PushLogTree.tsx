@@ -428,7 +428,7 @@ function SetRemoteMenu(
   };
   return (
     <Menu {...menuProps} autoFocus="first" onAction={onAction}>
-      {...remotes
+      {remotes
         .map(
           (remote): CollectionElement<object> => (
             <Item key={`remote:${remote.remote}`}>{remote.remote}</Item>
