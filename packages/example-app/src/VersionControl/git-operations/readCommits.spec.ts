@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import path from "path";
+import git from "isomorphic-git";
 
 import { readCommits } from "./readCommits";
 
@@ -12,9 +13,14 @@ const repo = {
   isBare: true,
 };
 
+const gitImpl: Parameters<typeof readCommits>[0] = {
+  readCommit: (args) => git.readCommit({ fs, ...args }),
+  resolveRef: (args) => git.resolveRef({ fs, ...args }),
+};
+
 describe("readCommits", () => {
   it("works for a single branch of a single repo", async () => {
-    const result = await readCommits(fs, {
+    const result = await readCommits(gitImpl, {
       ...repo,
       refs: ["master"],
     });
@@ -36,7 +42,7 @@ describe("readCommits", () => {
   });
 
   it("works for multiple branches of a single repo", async () => {
-    const result = await readCommits(fs, {
+    const result = await readCommits(gitImpl, {
       ...repo,
       refs: ["master", "topic1", "topic2"],
     });
@@ -61,7 +67,7 @@ describe("readCommits", () => {
   });
 
   it("includes all refs for commits that exist in multiple branches", async () => {
-    const result = await readCommits(fs, {
+    const result = await readCommits(gitImpl, {
       ...repo,
       refs: ["topic1", "topic2"],
     });
@@ -85,7 +91,7 @@ describe("readCommits", () => {
       "topic2",
     ]);
 
-    const result = await readCommits(fs, {
+    const result = await readCommits(gitImpl, {
       ...repo,
       refs: [...almostAllBranches, "gh-pages"],
     });
@@ -133,7 +139,7 @@ describe("readCommits", () => {
   });
 
   it("includes stops when reaching an ref specified in notRef", async () => {
-    const result = await readCommits(fs, {
+    const result = await readCommits(gitImpl, {
       ...repo,
       refs: ["master"],
       notRefs: ["enhancement"],
@@ -146,7 +152,7 @@ describe("readCommits", () => {
 
     expect(result).toHaveLength(2);
 
-    const result2 = await readCommits(fs, {
+    const result2 = await readCommits(gitImpl, {
       ...repo,
       refs: ["featureGreen"],
       notRefs: ["topic2"],
@@ -154,14 +160,14 @@ describe("readCommits", () => {
     expect(result2).toHaveLength(9);
 
     expect(
-      await readCommits(fs, {
+      await readCommits(gitImpl, {
         ...repo,
         refs: ["featureGreen"],
         notRefs: ["gh-pages"], // edge case: ref with no common history
       })
     ).toHaveLength(
       (
-        await readCommits(fs, {
+        await readCommits(gitImpl, {
           ...repo,
           refs: ["featureGreen"],
         })
@@ -170,7 +176,7 @@ describe("readCommits", () => {
   });
 
   it("creates unique sets of refs", async () => {
-    const result = await readCommits(fs, {
+    const result = await readCommits(gitImpl, {
       ...repo,
       refs: ["topic1", "topic2"],
     });

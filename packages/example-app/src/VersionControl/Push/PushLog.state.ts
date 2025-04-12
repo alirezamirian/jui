@@ -5,13 +5,14 @@ import { Selection } from "@react-types/shared";
 import { atom, Getter } from "jotai";
 import {
   atomFamily,
-  atomWithRefresh,
   atomWithDefault,
+  atomWithRefresh,
   RESET,
 } from "jotai/utils";
 import { withAtomEffect } from "jotai-effect";
 
-import { CommitWithMeta, readCommits } from "../git-operations/readCommits";
+import { CommitWithMeta } from "../git-operations/readCommits";
+import { readCommits } from "../git.state";
 import { vcsRootsAtom } from "../file-status.state";
 import {
   repoBranchesAtom,
@@ -219,7 +220,7 @@ export const commitNodesAtom = atomFamily(
           const allTargetRemoteRefs = remoteBranches
             .filter((branch) => branch.remote === targetRemote)
             .map((branch) => `${targetRemote}/${branch.name}`);
-          return await readCommits(fs, {
+          return await readCommits(get, {
             repoPath,
             refs: [source.ref],
             notRefs: targetExists

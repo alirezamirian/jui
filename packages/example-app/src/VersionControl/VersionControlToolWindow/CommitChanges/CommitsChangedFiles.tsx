@@ -75,12 +75,10 @@ export function CommitChangedFiles({
       }}
     >
       {stateLoadable.state === "loading" && (
-        <Delayed>
-          <StyledLoadingWrapper>
-            <LoadingGif style={{ width: "1.5rem" }} />
-            Loading...
-          </StyledLoadingWrapper>
-        </Delayed>
+        <StyledLoadingWrapper>
+          <LoadingGif style={{ width: "1.5rem" }} />
+          Loading...
+        </StyledLoadingWrapper>
       )}
       {state && (
         <SpeedSearchTree

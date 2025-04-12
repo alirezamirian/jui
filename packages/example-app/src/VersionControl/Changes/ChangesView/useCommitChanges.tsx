@@ -14,7 +14,7 @@ import {
 import { useRunTask } from "../../../tasks";
 import { commitTaskIdAtom } from "./ChangesView.state";
 import { AnyChange, Change } from "../Change";
-import { resolvedRefAtoms } from "../../refs.state";
+import { resolvedRefAtoms } from "../../git.state";
 import { repoCurrentBranchNameAtom } from "../../Branches/branches.state";
 import { allCommitsAtom } from "../../VersionControlToolWindow/CommitsView/CommitsTable.state";
 

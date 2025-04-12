@@ -134,7 +134,6 @@ const copyRevisionNumbersActionAtom = createCopyRevisionNumberActionAtom(
 );
 
 // TODO: fix the jump in window bounds by making persisted bounds async
-// TODO: make readCommit atom again
 export function PushLogTree() {
   const repoNodes: ReadonlyArray<AnyPushTreeNode> =
     useAtomValue(pushTreeNodesAtom);

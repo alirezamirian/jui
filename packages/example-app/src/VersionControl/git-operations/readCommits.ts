@@ -1,14 +1,11 @@
-import git, { ReadCommitResult } from "isomorphic-git";
-import { Functor, groupBy, map, sort } from "ramda";
+import { ReadCommitResult } from "isomorphic-git";
+import { groupBy, map, sort } from "ramda";
+import type { gitImpl } from "../gitImpl";
 
-type Fs = Parameters<(typeof git)["readCommit"]>[0]["fs"];
-
-const cache = {};
 export const commitDateComparator = (
   a: ReadCommitResult,
   b: ReadCommitResult
 ) => b.commit.committer.timestamp - a.commit.committer.timestamp;
-
 export type CommitWithMeta = {
   repoPath: string;
   /**
@@ -17,7 +14,6 @@ export type CommitWithMeta = {
   containingRefs: Set<string>;
   readCommitResult: ReadCommitResult;
 };
-
 type RepoDescriptor = {
   repoPath: string;
   isBare?: boolean;
@@ -27,8 +23,7 @@ type CommitQueueItem = CommitWithMeta &
     isBare?: boolean;
     type: "whitelist" | "blacklist";
   };
-
-type CommitSource = Array<
+export type CommitSource = Array<
   RepoDescriptor & {
     refs: string[];
     /**
@@ -46,7 +41,7 @@ type CommitSource = Array<
  * Commits are sorted by commit time, from new to old.
  */
 export async function readCommits(
-  fs: Fs,
+  git: Pick<typeof gitImpl, "readCommit" | "resolveRef">,
   ...sources: CommitSource
 ): Promise<CommitWithMeta[]> {
   const allCommits: Array<CommitWithMeta> = [];
@@ -60,7 +55,7 @@ export async function readCommits(
           (type: "whitelist" | "blacklist") => async (ref: string) => {
             const oid = await git
               .resolveRef({
-                ...getCommonArgs({ repoPath, isBare }),
+                [isBare ? "gitdir" : "dir"]: repoPath,
                 ref,
                 depth: 3,
               })
@@ -71,7 +66,7 @@ export async function readCommits(
               return null;
             }
             const commit = await git.readCommit({
-              ...getCommonArgs({ repoPath, isBare }),
+              [isBare ? "gitdir" : "dir"]: repoPath,
               oid,
             });
             return { repoPath, isBare, commit, refs: new Set([ref]), type };
@@ -120,7 +115,7 @@ export async function readCommits(
     const parentCommits = await Promise.all(
       latestCommit.commit.parent.map((oid) =>
         git.readCommit({
-          ...getCommonArgs({ repoPath, isBare }),
+          [isBare ? "gitdir" : "dir"]: repoPath,
           oid,
         })
       )
@@ -166,18 +161,5 @@ export async function readCommits(
         entry
       );
     }
-  }
-  function getCommonArgs({
-    repoPath,
-    isBare,
-  }: {
-    repoPath: string;
-    isBare?: boolean;
-  }) {
-    return {
-      fs,
-      cache,
-      [isBare ? "gitdir" : "dir"]: repoPath,
-    };
   }
 }
