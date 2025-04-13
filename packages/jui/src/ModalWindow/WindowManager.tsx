@@ -1,6 +1,7 @@
 import React, {
   ReactElement,
   ReactNode,
+  Suspense,
   useContext,
   useMemo,
   useRef,
@@ -11,6 +12,7 @@ import {
   ModalWindowProps,
   WindowControllerContext,
 } from "./ModalWindow";
+import { StyledDelayedLoadingSpinner } from "./StyledDelayedLoadingSpinner";
 
 export interface WindowManagerAPI {
   /**
@@ -118,10 +120,18 @@ export const WindowManager: React.FC<WindowManagerProps> = ({ children }) => {
               }}
               key={newKeyRef.current}
             >
-              {typeof content === "function"
-                ? // @ts-expect-error close signature is not correctly inferred
-                  content({ close })
-                : content}
+              {/*
+              An extra suspense boundary is added here because the rendered element is typically of a component that
+              **renders** a Window, and itself may suspend.
+              For now, it didn't seem necessary to have an option on whether to suspend and what fallback UI to render,
+              the same way that it's an option in ModalWindow.
+              */}
+              <Suspense fallback={<StyledDelayedLoadingSpinner />}>
+                {typeof content === "function"
+                  ? // @ts-expect-error close signature is not correctly inferred
+                    content({ close })
+                  : content}
+              </Suspense>
             </WindowControllerContext.Provider>
           );
           setWindows((currentWindows) => currentWindows.concat(window));

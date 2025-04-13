@@ -232,7 +232,6 @@ type GitSettings = {
 };
 
 const gitSettingsAtom = atomWithPersistence(
-  { branches: [], excludedBranches: [] } as GitSettings,
   {
     schema: gitSettingsSchema,
     componentName: "Git.Settings",
@@ -273,7 +272,8 @@ const gitSettingsAtom = atomWithPersistence(
       }
       return newState;
     },
-  }
+  },
+  { branches: [], excludedBranches: [] } as GitSettings
 );
 
 const favoriteBranchesAtom = focusAtom(gitSettingsAtom, (optic) =>

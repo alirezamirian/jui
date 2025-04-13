@@ -19,7 +19,7 @@ import {
 } from "@intellij-platform/core/Overlay";
 import { WindowContext } from "@intellij-platform/core/ModalWindow/WindowContext";
 import { UNSAFE_React17SuspenseFix } from "@intellij-platform/core/Overlay/UNSAFE_React17SuspenseFix";
-import { DelayedLoadingSpinner } from "@intellij-platform/core/LoadingSpinner";
+import { StyledDelayedLoadingSpinner } from "@intellij-platform/core/ModalWindow/StyledDelayedLoadingSpinner";
 
 export interface ModalWindowProps
   extends AriaDialogProps,
@@ -85,11 +85,6 @@ export const DEFAULT_WINDOW_MIN_HEIGHT = 24;
 export const WindowControllerContext = React.createContext<
   Partial<Pick<ModalWindowProps, "onClose">>
 >({});
-
-const StyledDelayedLoadingSpinner = styled(DelayedLoadingSpinner)`
-  display: block;
-  margin: auto;
-`;
 
 /**
  * A movable/resizable modal window. The window header which holds the title, can be used to drag the window around.

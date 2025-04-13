@@ -45,10 +45,6 @@ type GitRememberedInput = {
 };
 const gitRememberedInputsAtom = atomWithPersistence(
   {
-    visitedUrls: [],
-    cloneParentDir: "",
-  } as GitRememberedInput,
-  {
     storageFile: "vcs.xml", // GitRememberedInputs is user-level configuration, kept here temporarily
     componentName: "GitRememberedInputs",
     schema: gitRememberedInputsSchema,
@@ -108,7 +104,11 @@ const gitRememberedInputsAtom = atomWithPersistence(
           }) ?? [],
       };
     },
-  }
+  },
+  {
+    visitedUrls: [],
+    cloneParentDir: "",
+  } as GitRememberedInput
 );
 
 export const gitVisitedUrlsAtom = focusAtom(gitRememberedInputsAtom, (optic) =>
