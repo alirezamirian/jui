@@ -53,21 +53,28 @@ import {
 } from "./PushLog.state";
 import { useAddRemote } from "./AddRemoteWindow";
 
-// FIXME: upgrade to styled-components v6 and extract this feature as a reusable utility.
-//  Also remove the use of theme.currentBackgroundAware above
-// @container style(--jui-background) {
-//     background: ${({ theme }) =>
-//       theme.dark
-//         ? "rgba(var(--jui-foreground), 0.30)"
-//         : "rgba(var(--jui-foreground), 0.20)"};
-//   }
 const StyledBadge = styled.span`
   color: ${({ theme }) =>
     theme.currentForegroundAware(theme.dark ? "#6ba65d" : "#00b53d")};
-  background: ${({ theme }) =>
-    theme.currentBackgroundAware(theme.dark ? "#313b32" : "#ebfcf1")};
+  position: relative;
+  z-index: 0;
+  background: transparent;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: -1;
+    background: currentColor;
+    opacity: 0.15;
+    @container style(--jui-foreground) {
+      background: var(--jui-foreground);
+      opacity: ${({ theme }) => (theme.dark ? 0.3 : 0.2)};
+    }
+  }
   line-height: 1;
-  padding: 2px;
+  padding: 1px 2px;
   font-size: 0.77em;
   border-radius: 0.125rem;
 `;
