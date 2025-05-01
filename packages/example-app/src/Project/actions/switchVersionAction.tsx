@@ -107,7 +107,7 @@ function SwitchVersionPopup({
             }}
           >
             {(version) => (
-              <Item key={version.url}>
+              <Item key={version.url} textValue={version.name}>
                 <MenuItemLayout
                   content={version.name}
                   shortcut={
