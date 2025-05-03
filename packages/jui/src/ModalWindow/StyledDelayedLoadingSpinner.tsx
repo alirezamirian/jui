@@ -1,4 +1,5 @@
-import { DelayedLoadingSpinner, styled } from "@intellij-platform/core";
+import { styled } from "@intellij-platform/core/styled";
+import { DelayedLoadingSpinner } from "../LoadingSpinner";
 
 export const StyledDelayedLoadingSpinner = styled(DelayedLoadingSpinner)`
   display: block;
