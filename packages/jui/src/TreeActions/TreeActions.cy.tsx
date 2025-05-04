@@ -262,6 +262,6 @@ function expectSelection(selectedItems: string[]) {
     selectedItems.length
   );
   selectedItems.forEach((name) => {
-    cy.findByRole("treeitem", { name }).should("be.selected");
+    cy.findByRole("treeitem", { name, selected: true });
   });
 }

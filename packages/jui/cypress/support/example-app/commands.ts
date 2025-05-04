@@ -102,16 +102,15 @@ function searchAndInvokeAction(arg: string | InvokeActionOptions): void {
   cy.findByRole("dialog");
   cy.realType(search);
   if (disabled) {
-    cy.findAllByRole("listitem", {
+    cy.findAllByRole("row", {
       name: new RegExp(actionName, "ig"),
     }).should(`not.exist`);
     cy.findByRole("checkbox", { name: "Include disabled actions" }).click();
   }
-  cy.findAllByRole("listitem", {
+  cy.findByRole("row", {
     name: new RegExp(actionName, "ig"),
-  })
-    .filter("[aria-selected=true]") // "aria-selected" is not supported on role "listitem" :/ maybe FIXME in the list component
-    .should("have.length", 1);
+    selected: true,
+  });
   cy.realPress("Enter");
 }
 
@@ -123,7 +122,7 @@ function searchAndOpenFile({
   cy.realPress(["Meta", "Shift", "O"]);
   cy.findByRole("dialog");
   cy.realType(search);
-  cy.findAllByRole("listitem", { name: filename })
+  cy.findAllByRole("row", { name: filename })
     .click()
     // pressing enter should not be necessary (TODO: trigger search everywhere items on click and remove this)
     .realPress("Enter");

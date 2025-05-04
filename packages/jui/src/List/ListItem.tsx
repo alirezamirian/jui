@@ -33,6 +33,7 @@ export function ListItem<T>({ item, children }: ListItemProps<T>) {
       aria-selected={isSelected}
       aria-label={item["aria-label"]}
       {...itemProps}
+      role="row"
       ref={ref}
     >
       <ItemStateContext.Provider

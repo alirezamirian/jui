@@ -7,8 +7,8 @@ const { WithHighlight, WithConnectedInput } = composeStories(stories);
 describe("SpeedSearchList", () => {
   it("renders as expected", () => {
     cy.mount(<WithHighlight />);
-    cy.findByRole("list").focus().realType("g");
-    cy.findAllByRole("listitem").should("have.length", 9);
+    cy.findByRole("grid").focus().realType("g");
+    cy.findAllByRole("row").should("have.length", 9);
     matchImageSnapshot("SpeedSearchList-searched");
   });
 
@@ -25,12 +25,13 @@ describe("SpeedSearchList", () => {
   describe("Connection to input", () => {
     it("supports keyboard navigation by arrow up and down", () => {
       cy.mount(<WithConnectedInput />);
-      cy.contains("Paco de Lucia").click().should("be.selected");
+      cy.contains("Paco de Lucia").click();
+      cy.findByRole("row", { name: "Paco de Lucia", selected: true });
       cy.get("input").focus().type("abc").realPress("ArrowDown");
-      cy.contains("Paco de Lucia").should("not.be.selected");
-      cy.contains("Vicente Amigo").should("be.selected");
+      cy.findByRole("row", { name: "Paco de Lucia", selected: false });
+      cy.findByRole("row", { name: "Vicente Amigo", selected: true });
       cy.realPress("ArrowUp");
-      cy.contains("Paco de Lucia").should("be.selected");
+      cy.findByRole("row", { name: "Paco de Lucia", selected: true });
       // Cursor should not be jumped to start, by arrow up
       cy.get("input").its("0").its("selectionStart").should("equal", 3);
       cy.get("input").its("0").its("selectionEnd").should("equal", 3);
@@ -38,18 +39,20 @@ describe("SpeedSearchList", () => {
     it("supports onAction by pressing Enter", () => {
       const onAction = cy.stub();
       cy.mount(<WithConnectedInput onAction={onAction} />);
-      cy.contains("Paco de Lucia").click().should("be.selected");
+      cy.findByRole("row", { name: "Paco de Lucia", selected: true });
       cy.get("input").focus().type("abc");
       cy.realPress("Enter");
       cy.wrap(onAction).should("have.been.calledOnceWith", "Paco de Lucia");
     });
     it("has behavior consistency with the list", () => {
       cy.mount(<WithConnectedInput shouldFocusWrap />);
-      cy.contains("Paco de Lucia").click().should("be.selected");
+      cy.findByRole("row", { name: "Paco de Lucia", selected: true });
       cy.get("input").focus().type("abc");
-      cy.findAllByRole("listitem").last().click();
+      cy.findAllByRole("row").last().click();
       cy.realPress("ArrowDown");
-      cy.findAllByRole("listitem").first().should("be.selected");
+      cy.findAllByRole("row")
+        .first()
+        .should("have.attr", "aria-selected", "true");
     });
     it("works as expected when empty selection is not allowed and the first item is auto-selected", () => {
       cy.mount(
@@ -60,10 +63,10 @@ describe("SpeedSearchList", () => {
         />
       );
       cy.get("input").focus().realPress("ArrowDown");
-      cy.contains("Paco de Lucia").should("not.be.selected");
+      cy.findByRole("row", { name: "Paco de Lucia", selected: false });
       // Make sure the first item is also set as focused item and pressing arrow down selects the second item.
       // This is particularly important here as the list is not focused to get a chance to autofocus the selected item.
-      cy.contains("Vicente Amigo").should("be.selected");
+      cy.findByRole("row", { name: "Vicente Amigo", selected: true });
     });
   });
 });
