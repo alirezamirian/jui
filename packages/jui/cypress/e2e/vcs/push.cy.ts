@@ -10,9 +10,7 @@ describe("push window", () => {
     cy.searchAndInvokeAction("push");
     cy.findByRole("dialog", { name: /Push commits/ });
     cy.section("Check push tree nodes");
-    // It should be 2, because the content outside a modal window should be inaccessible.
-    // But project tree nodes are also found.
-    cy.findAllByRole("treeitem").should("have.length", 3); // Known issue.
+    cy.findAllByRole("treeitem").should("have.length", 2);
 
     cy.section("Add a remote");
     cy.findByRole("button", { name: "Push" }).should("be.disabled");

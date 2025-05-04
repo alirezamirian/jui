@@ -1,5 +1,6 @@
-import React, { useContext, useRef } from "react";
+import React, { ForwardedRef, useContext, useRef } from "react";
 import { Overlay as AriaOverlay, OverlayProps } from "@react-aria/overlays";
+import { useObjectRef } from "@react-aria/utils";
 
 const ParentOverlayContext = React.createContext<HTMLElement | null>(null);
 
@@ -12,12 +13,14 @@ const ParentOverlayContext = React.createContext<HTMLElement | null>(null);
 export function Overlay({
   children,
   OverlayComponent = AriaOverlay,
+  containerRef: containerRefProp,
 }: {
   children: React.ReactNode;
   OverlayComponent?: React.ComponentType<OverlayProps>;
+  containerRef?: ForwardedRef<HTMLDivElement>;
 }) {
   const root = useContext(ParentOverlayContext);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useObjectRef(containerRefProp);
 
   if (root) {
     return (
