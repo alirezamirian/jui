@@ -1,6 +1,10 @@
-import React, { HTMLProps, useEffect } from "react";
-import { mergeProps, useObjectRef } from "@react-aria/utils";
-import { useOverlay, usePreventScroll } from "@react-aria/overlays";
+import React, { HTMLProps, useEffect, useRef } from "react";
+import { mergeProps, useLayoutEffect, useObjectRef } from "@react-aria/utils";
+import {
+  ariaHideOutside,
+  useOverlay,
+  usePreventScroll,
+} from "@react-aria/overlays";
 import { FocusScope } from "@intellij-platform/core/utils/FocusScope";
 import {
   MenuOverlayContext,
@@ -42,6 +46,7 @@ export function MenuOverlay({
   suspense,
 }: MenuOverlayProps) {
   const overlayRef = useObjectRef(inputOverlayRef);
+  const overlayContainerRef = useRef<HTMLDivElement>(null);
   const { overlayProps } = useOverlay(
     {
       onClose,
@@ -56,6 +61,19 @@ export function MenuOverlay({
     },
     overlayRef
   );
+
+  useLayoutEffect(() => {
+    if (overlayContainerRef.current) {
+      // This is done in usePopover, and either ariaHideOutside or keepVisible
+      // is called depending on isModal.
+      // In JUI, menus are non-modal, but keepVisible is not exposed from @react-aria/overlays.
+      // Without calling either keepVisible or ariaHideOutside, if the menu is rendered in a modal
+      // overlay like ModalWindow, it will be caught by ModalWindow's ariaHideOutside mutation observer
+      // getting aria-hidden="true".
+      // TODO: refactor to use the more high-level, usePopover hook.
+      return ariaHideOutside([overlayContainerRef.current]);
+    }
+  }, [overlayContainerRef]);
 
   usePreventScroll();
 
@@ -79,7 +97,7 @@ export function MenuOverlay({
   const MaybeSuspend = suspense === false ? React.Fragment : React.Suspense;
 
   return (
-    <Overlay>
+    <Overlay containerRef={overlayContainerRef}>
       <FocusScope restoreFocus={restoreFocus} autoFocus={autoFocus}>
         <MenuOverlayContext.Provider
           value={{

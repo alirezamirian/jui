@@ -3,10 +3,16 @@ import { equals } from "ramda";
 import { Key } from "react";
 import { Selection } from "@react-types/shared";
 import { atom, Getter } from "jotai";
-import { atomFamily, atomWithDefault, RESET } from "jotai/utils";
+import {
+  atomFamily,
+  atomWithDefault,
+  atomWithRefresh,
+  RESET,
+} from "jotai/utils";
 import { withAtomEffect } from "jotai-effect";
 
-import { CommitWithMeta, readCommits } from "../git-operations/readCommits";
+import { CommitWithMeta } from "../git-operations/readCommits";
+import { readCommits } from "../git.state";
 import { vcsRootsAtom } from "../file-status.state";
 import {
   repoBranchesAtom,
@@ -20,7 +26,6 @@ import {
   unwrapLatest,
   unwrapLatestOrNull,
 } from "../../atom-utils/unwrapLatest";
-import { atomWithRefresh } from "../../atom-utils/atomWithRefresh";
 
 const withResetOnMount = <T extends ReturnType<typeof atomWithDefault<any>>>(
   atom: T
@@ -203,6 +208,9 @@ export const commitNodesAtom = atomFamily(
   ({ repoPath }: { repoPath: string }) =>
     unwrapLatestOrNull(
       withRefreshOnMount(
+        // No deep refresh here not to have everything that depends on atoms like repoBranchesAtom
+        // refresh.
+        // E.g., not to have the CommitsTable go to loading state when push window opens/closes.
         atomWithRefresh(async (get) => {
           const { remoteBranches } = await get(repoBranchesAtom(repoPath));
           const source = await get(pushSourceAtom(repoPath));
@@ -212,7 +220,7 @@ export const commitNodesAtom = atomFamily(
           const allTargetRemoteRefs = remoteBranches
             .filter((branch) => branch.remote === targetRemote)
             .map((branch) => `${targetRemote}/${branch.name}`);
-          return await readCommits(fs, {
+          return await readCommits(get, {
             repoPath,
             refs: [source.ref],
             notRefs: targetExists

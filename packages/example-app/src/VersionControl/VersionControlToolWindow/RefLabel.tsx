@@ -48,13 +48,13 @@ const StyledRef = styled(StyledCurrentBranchTag)`
 `;
 
 const StyledLabelSvg = styled.svg.attrs({ viewBox: "0 0 14.5 14.5" })<{
-  type: GitRef["type"];
+  $type: GitRef["type"];
 }>`
   width: 1rem;
   height: 1rem;
   stroke: rgba(0, 0, 0, 0.25);
   stroke-width: 0.5px;
-  color: ${({ type, theme }) => gitLogColors[type]({ theme })};
+  color: ${({ $type, theme }) => gitLogColors[$type]({ theme })};
   z-index: 1; // for the right vertical order of grouped labels
   &:not(:first-child) {
     margin-right: -11px;
@@ -72,14 +72,14 @@ const StyledLabelText = styled.span`
 `;
 
 export function RefIcon({ type }: { type: GitRef["type"] }) {
-  return <StyledLabelSvg type={type}>{labelIcon}</StyledLabelSvg>;
+  return <StyledLabelSvg $type={type}>{labelIcon}</StyledLabelSvg>;
 }
 
 export function RefIconGroup({ types }: { types: Array<GitRef["type"]> }) {
   return (
     <StyledRefIconGroup>
       {types.map((type, index) => (
-        <StyledLabelSvg key={index} type={type}>
+        <StyledLabelSvg key={index} $type={type}>
           {labelIcon}
         </StyledLabelSvg>
       ))}

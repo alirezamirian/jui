@@ -79,13 +79,13 @@ export const StyledBalloonHeader = styled.div`
 `;
 
 export const StyledBalloonBody = styled.div<{
-  lineClamp: number | false;
+  $lineClamp: number | false;
 }>`
   margin: 0 2.125rem 0 2.125rem;
   line-height: 1rem;
   display: inline;
-  -webkit-line-clamp: ${({ lineClamp }) => lineClamp};
-  word-break: ${({ lineClamp }) => lineClamp === 1 && "break-all"};
+  -webkit-line-clamp: ${({ $lineClamp }) => $lineClamp};
+  word-break: ${({ $lineClamp }) => $lineClamp === 1 && "break-all"};
   text-overflow: ellipsis;
   overflow: hidden;
   display: -webkit-box;

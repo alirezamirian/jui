@@ -23,7 +23,7 @@ import { ChangeListObj } from "../../Changes/change-lists.state";
 import { commitChangesTreeNodeRenderer } from "./commitChangesTreeNodeRenderer";
 import { getCommitChanges } from "./getCommitChanges";
 import { detectRenames } from "../../Changes/detectRenames";
-import { readCommit } from "isomorphic-git";
+import { readCommitAtoms } from "../../git.state";
 
 export type CommitChangesTreeNode =
   ExtendedChangesTreeNode<CommitParentChangeTreeNode>;
@@ -83,7 +83,7 @@ export function createCommitsChangesTreeState(
       const includedCommitIds = await get(selectedCommitsAtom);
       const { oid, repoPath } = includedCommitIds[0]; // FIXME: take all commits into account
       const toRef = oid;
-      const { commit } = await readCommit({ fs, dir: repoPath, oid }); // FIXME use atomFamily for commits for caching.
+      const { commit } = await get(readCommitAtoms({ dir: repoPath, oid }));
       const parents = commit.parent;
       if (toRef && parents) {
         const groupFn = getChangesGroupFn({

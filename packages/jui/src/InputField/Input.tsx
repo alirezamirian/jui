@@ -11,42 +11,52 @@ import { UnknownThemeProp } from "@intellij-platform/core/Theme";
 import { styled, css } from "@intellij-platform/core/styled";
 
 const StyledInputBox = styled.div<{
-  disabled?: boolean;
-  focused?: boolean;
-  validationState: InputProps["validationState"];
-  appearance: InputProps["appearance"];
+  $disabled?: boolean;
+  $focused?: boolean;
+  $validationState: InputProps["validationState"];
+  $appearance: InputProps["appearance"];
 }>`
   box-sizing: border-box;
   display: inline-flex;
   min-width: 4rem; // https://jetbrains.github.io/ui/controls/input_field/#28
-  background: ${({ theme, disabled }) =>
-    disabled
+  background: ${({ theme, $disabled }) =>
+    $disabled
       ? theme.color("TextField.disabledBackground")
       : theme.color("TextField.background")};
   border: 1px solid
-    ${({ theme, focused, disabled, validationState }) =>
+    ${({
+      theme,
+      $focused: focused,
+      $disabled: disabled,
+      $validationState: validationState,
+    }) =>
       theme.commonColors.border({
         focused,
         disabled,
         validationState,
       })};
   box-shadow: 0 0 0 0.125rem
-    ${({ theme, focused = false, validationState, disabled }) =>
-      disabled
+    ${({
+      theme,
+      $focused: focused = false,
+      $validationState: validationState,
+      $disabled,
+    }) =>
+      $disabled
         ? "transparent"
         : theme.commonColors.focusRing({
             validationState,
-            focused: focused,
+            focused,
           })};
   border-radius: 1px;
   cursor: text; // the whole box moves focus to the input
   overflow: hidden;
-  ${({ appearance, validationState, disabled }) =>
-    appearance === "embedded" &&
+  ${({ $appearance, $validationState, $disabled }) =>
+    $appearance === "embedded" &&
     css`
-      border-color: ${validationState !== "error" && "transparent"};
-      box-shadow: ${validationState !== "error" && "none"};
-      background: ${!disabled && "transparent"};
+      border-color: ${$validationState !== "error" && "transparent"};
+      box-shadow: ${$validationState !== "error" && "none"};
+      background: ${!$disabled && "transparent"};
     `};
 `;
 
@@ -180,7 +190,7 @@ export const Input = React.forwardRef(function Input(
     <StyledInputBox
       ref={ref}
       spellCheck={false}
-      appearance={appearance}
+      $appearance={appearance}
       {...mergeProps(focusWithinProps, {
         className,
         style,
@@ -191,9 +201,9 @@ export const Input = React.forwardRef(function Input(
           }
         },
       })}
-      focused={isFocused}
-      validationState={validationState}
-      disabled={props.disabled}
+      $focused={isFocused}
+      $validationState={validationState}
+      $disabled={props.disabled}
     >
       {addonBefore && <StyledLeftAddons>{addonBefore}</StyledLeftAddons>}
       <StyledInput ref={inputRef} {...mergeProps(props, focusableProps)} />

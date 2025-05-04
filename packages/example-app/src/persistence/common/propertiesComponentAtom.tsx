@@ -17,7 +17,6 @@ import {
  * Keeping it for now, since I'm not sure about the conslusion above.
  */
 const _projectPropertiesAtom = atomWithPersistence(
-  {} as Record<string, string>,
   {
     componentName: "PropertiesComponent",
     storageFile: StoragePathMacros.WORKSPACE_FILE,
@@ -49,7 +48,8 @@ const _projectPropertiesAtom = atomWithPersistence(
         ),
       };
     },
-  }
+  },
+  {} as Record<string, string>
 );
 
 const propertyServiceParsedValueSchema = z.object({
@@ -68,15 +68,11 @@ type PropertyServiceParsedValue = {
 
 const createPropertiesAtom = (
   options: Pick<
-    Parameters<typeof atomWithPersistence>[1],
+    Parameters<typeof atomWithPersistence>[0],
     "storageFile" | "componentName"
   >
 ) =>
   atomWithPersistence(
-    {
-      keyToString: {},
-      keyToStringList: {},
-    },
     {
       ...options,
       schema: z
@@ -99,6 +95,10 @@ const createPropertiesAtom = (
           [CDATA_PROP_NAME]: JSON.stringify(value, null, 2),
         };
       },
+    },
+    {
+      keyToString: {},
+      keyToStringList: {},
     }
   );
 

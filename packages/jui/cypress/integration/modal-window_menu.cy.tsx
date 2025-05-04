@@ -63,6 +63,52 @@ it("moves focus to the modal window, when opened by a menu item action", () => {
   cy.findByRole("textbox").should("have.focus");
 });
 
+it("does not set aria-hidden on the menus opened from within a modal window", () => {
+  const Example = () => {
+    const [isOpen, setOpen] = useState(false);
+    return (
+      <>
+        <button onClick={() => setOpen(true)}>open modal window</button>
+        {isOpen && (
+          <ModalWindow onClose={() => setOpen(false)}>
+            <WindowLayout
+              header="Modal window"
+              content={
+                <div style={{ padding: "1rem" }}>
+                  <MenuTrigger
+                    renderMenu={({ menuProps }) => (
+                      <Menu {...menuProps}>
+                        <Item>Restart Typescript Service</Item>
+                        <Item>packages/jui/tsconfig.json</Item>
+                        <Item>Compile All</Item>
+                      </Menu>
+                    )}
+                  >
+                    {(props, ref) => (
+                      <IconButton
+                        {...props}
+                        aria-label="menu trigger"
+                        ref={ref}
+                      >
+                        <PlatformIcon icon={"general/gearPlain"} />
+                      </IconButton>
+                    )}
+                  </MenuTrigger>
+                </div>
+              }
+            />
+          </ModalWindow>
+        )}
+      </>
+    );
+  };
+  cy.mount(<Example />);
+  cy.contains("open modal window").click();
+  cy.findByRole("button", { name: "menu trigger" }).click();
+  cy.findByRole("menu");
+  cy.findAllByRole("menuitem").should("have.length", 3);
+});
+
 const ModalOnMenuItem = () => {
   const [isOpen, setOpen] = useState(false);
   return (

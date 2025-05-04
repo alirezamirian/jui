@@ -12,17 +12,17 @@ import { DOMAttributes } from "@react-types/shared";
 export type LabelPlacement = "above" | "before";
 
 const StyledLabelContainer = styled.div<{
-  labelPlacement?: LabelPlacement;
+  $labelPlacement?: LabelPlacement;
 }>`
   display: inline-flex;
-  flex-direction: ${({ labelPlacement }) =>
-    labelPlacement === "above" ? "column" : "row"};
+  flex-direction: ${({ $labelPlacement }) =>
+    $labelPlacement === "above" ? "column" : "row"};
   align-items: start;
   gap: 0.375rem;
 `;
 
-const StyledLabel = styled.label<{ isDisabled?: boolean }>`
-  color: ${({ theme, isDisabled: disabled }) =>
+const StyledLabel = styled.label<{ $disabled?: boolean }>`
+  color: ${({ theme, $disabled: disabled }) =>
     theme.commonColors.label({ disabled })};
   margin-top: 0.25rem;
   line-height: 1.2;
@@ -53,11 +53,11 @@ export const WithLabel = forwardRef(function WithLabel(
   return (
     <StyledLabelContainer
       {...props}
-      labelPlacement={labelPlacement}
+      $labelPlacement={labelPlacement}
       ref={forwardedRef}
     >
       {label && (
-        <StyledLabel {...labelProps} isDisabled={isDisabled} ref={labelRef}>
+        <StyledLabel {...labelProps} $disabled={isDisabled} ref={labelRef}>
           {label}
         </StyledLabel>
       )}

@@ -62,7 +62,6 @@ type VcsDirectoryMappingStorage =
   (typeof vcsDirectoryMappingsSchema)["_output"];
 
 export const vcsRootsAtom = atomWithPersistence(
-  [] as ReadonlyArray<VcsDirectoryMapping>,
   {
     componentName: "VcsDirectoryMappings",
     schema: vcsDirectoryMappingsSchema,
@@ -84,7 +83,8 @@ export const vcsRootsAtom = atomWithPersistence(
           "@vcs": vcs,
         })) ?? [],
     }),
-  }
+  },
+  [] as ReadonlyArray<VcsDirectoryMapping>
 );
 
 /**

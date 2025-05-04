@@ -242,7 +242,7 @@ export const SpeedSearchMenu = <T extends object>({
         ref={containerRef}
         style={{ minWidth }}
         {...speedSearchContainerProps}
-        fillAvailableSpace={props.fillAvailableSpace}
+        $fillAvailableSpace={props.fillAvailableSpace}
       >
         <SpeedSearchMenuContent
           items={[...state.collection]}

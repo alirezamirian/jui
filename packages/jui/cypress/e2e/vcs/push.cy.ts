@@ -10,9 +10,7 @@ describe("push window", () => {
     cy.searchAndInvokeAction("push");
     cy.findByRole("dialog", { name: /Push commits/ });
     cy.section("Check push tree nodes");
-    // It should be 2, because the content outside a modal window should be inaccessible.
-    // But project tree nodes are also found.
-    cy.findAllByRole("treeitem").should("have.length", 3); // Known issue.
+    cy.findAllByRole("treeitem").should("have.length", 2);
 
     cy.section("Add a remote");
     cy.findByRole("button", { name: "Push" }).should("be.disabled");
@@ -35,6 +33,10 @@ describe("push window", () => {
 
     cy.section("Change target branch");
     cy.findByRole("link", { name: "master" }).click();
+    cy.focused()
+      .should("have.value", "master")
+      .realClick() // Clicking the input should not cause it to blur.
+      .should("be.focused");
     cy.realType("another-branch{enter}");
     repoNode()
       .should("contain.text", "origin : another-branch")

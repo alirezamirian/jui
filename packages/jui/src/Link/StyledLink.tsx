@@ -4,10 +4,6 @@ import { styled } from "@intellij-platform/core/styled";
 const getDefaultLinkColor = ({ theme }: { theme: Theme }) =>
   theme.currentForegroundAware(theme.commonColors.linkForegroundEnabled);
 
-//   FIXME(styled-components): add, check and generalized after upgrading styled-components
-//   @container style(--jui-foreground) {
-//     text-decoration: underline;
-//   }
 export const StyledLink = styled.a`
   cursor: pointer;
   text-decoration: none;
@@ -23,6 +19,13 @@ export const StyledLink = styled.a`
     border-radius: 2px; // Registry.intValue("ide.link.button.focus.round.arc", 4)
   }
   color: ${getDefaultLinkColor};
+
+  // When rendered in a container with custom background (e.g. in selected List/Tree items), render with underline.
+  // Based on the observation in Git Push window, but seems like something that could be baked into Link component
+  // rather than per-case customization and/or through an option.
+  @container style(--jui-background) {
+    text-decoration: underline;
+  }
 
   &:hover,
   &.hover /* for testing purposes*/ {

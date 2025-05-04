@@ -31,7 +31,7 @@ const windowStateSchema = z.object({
     })
   ),
 });
-const persistedWindowStateAtom = atomWithPersistence({} as WindowState, {
+const persistedWindowStateAtom = atomWithPersistence({
   storageFile: StoragePathMacros.PRODUCT_WORKSPACE_FILE,
   componentName: "WindowStateProjectService",
   schema: windowStateSchema.optional(),
@@ -60,7 +60,7 @@ const persistedWindowStateAtom = atomWithPersistence({} as WindowState, {
       ) ?? {}
     );
   },
-  write: (value) => {
+  write: (value: WindowState) => {
     return {
       state: Object.entries(value).map(([key, value]) => {
         return {
@@ -83,7 +83,13 @@ const persistedWindowStateAtom = atomWithPersistence({} as WindowState, {
 });
 export const windowStateAtom = (key: string) =>
   atom(
-    (get) => get(persistedWindowStateAtom)[key],
+    (get) => {
+      const state = get(persistedWindowStateAtom);
+      if (state instanceof Promise) {
+        return state.then((state) => state?.[key]);
+      }
+      return state?.[key];
+    },
     (get, set, newValue: WindowState[string]) => {
       return set(persistedWindowStateAtom, (currentValue) => ({
         ...currentValue,

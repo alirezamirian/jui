@@ -165,14 +165,53 @@ function createPersistedStateAtom<
   );
 }
 
+/**
+ * Atom with persisted state, without any default value, which makes the atom
+ * value async.
+ * Useful for cases where the rendering should suspend until the persisted value
+ * is determined.
+ * For example, rendering a window with some default bounds and then re-rendering
+ * asynchronously with the persisted bounds may cause the window to jump around.
+ *
+ * **Note**: It's important to type both read and write arguments explicitly,
+ * since there is no chance to infer `Value` where there is no default value.
+ * @param config
+ */
 export function atomWithPersistence<
   Schema extends ZodType<any, any, WithOptionalArrays<any>>,
   Value extends object
 >(
-  initialValue: Value,
   config: Parameters<typeof createPersistedStateAtom<Schema, Value>>[0]
-) {
-  const baseAtom = atom<Value>(initialValue);
+): WritableAtom<
+  undefined | Value | Promise<Value | undefined>,
+  [SetStateAction<Value>],
+  Promise<void>
+>;
+/**
+ * Atom with persisted state, with a default value, not to make the atom value
+ * async.
+ * The atom will have the default value initially, switching to the persisted
+ * value asynchronously.
+ */
+export function atomWithPersistence<
+  Schema extends ZodType<any, any, WithOptionalArrays<any>>,
+  Value extends object
+>(
+  config: Parameters<typeof createPersistedStateAtom<Schema, Value>>[0],
+  initialValue: Value
+): WritableAtom<Value, [SetStateAction<Value>], Promise<void>>;
+export function atomWithPersistence<
+  Schema extends ZodType<any, any, WithOptionalArrays<any>>,
+  Value extends object
+>(
+  config: Parameters<typeof createPersistedStateAtom<Schema, Value>>[0],
+  /**
+   * if not provided, the initial value will be a promise resolving with the persisted value, and
+   * so the resulting atom value type changes from `Value` to `Value | Promise<Value>`
+   */
+  initialValue?: Value
+): WritableAtom<Value, [SetStateAction<Value>], Promise<void>> {
+  const baseAtom = atom<Value | undefined>(initialValue);
 
   const persistenceAtom = createPersistedStateAtom<Schema, Value>(config);
   const syncEffect = atomEffect((get, set) => {
@@ -182,18 +221,24 @@ export function atomWithPersistence<
       }
     });
   });
-  return atom<Value, [SetStateAction<Value>], Promise<void>>(
+  return atom(
     (get) => {
       get(syncEffect);
-      return get(baseAtom);
+      const value = get(baseAtom);
+      if (!initialValue && value === undefined) {
+        return get(persistenceAtom) as any; // FIXME
+      }
+      return value;
     },
     async (get, set, action: SetStateAction<Value>) => {
       const newValue =
         typeof action === "function"
-          ? (action as (currentValue: Value) => Value)(await get(baseAtom))
+          ? (action as (currentValue: Value | undefined) => Value)(
+              await get(baseAtom)
+            )
           : action;
       set(baseAtom, newValue);
-      await set(persistenceAtom, { type: "update", value: newValue });
+      await set(persistenceAtom, { type: "update", value: newValue as Value });
     }
   );
 }
@@ -205,23 +250,23 @@ export function atomWithPersistence<
 //    updating state of a component should not rerender the other persisted in the same file
 //  - ideally the expected type errors in read/write and type arguments
 export const testAtom = atomWithPersistence(
-  { x: 2 },
   {
     componentName: "test",
     storageFile: "test.xml",
     schema: z.object({ whatever: z.number() }).optional(),
     read: (s) => ({ x: s?.whatever ?? 2 }),
     write: (v, s) => ({ ...s, whatever: v.x }),
-  }
+  },
+  { x: 2 }
 );
 
 export const testAtom2 = atomWithPersistence(
-  { y: 3 },
   {
     componentName: "test2",
     storageFile: "test.xml",
     schema: z.object({ y: z.number() }),
-  }
+  },
+  { y: 3 }
 );
 
 export type ComponentState = { "@name": string };

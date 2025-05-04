@@ -1,5 +1,5 @@
 import * as styledComponents from "styled-components";
-import { ThemedStyledComponentsModule } from "styled-components";
+import { ThemedStyledComponentsModule } from "./ThemedStyledComponentsModule";
 import { Theme } from "./Theme";
 import { KnownThemePropertyPath } from "./Theme/types";
 

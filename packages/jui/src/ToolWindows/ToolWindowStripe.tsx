@@ -89,9 +89,9 @@ export function ToolWindowStripe<T>({
   return (
     <>
       <StyledToolWindowStripe
-        anchor={anchor}
-        preventCollapse={Boolean(dropPosition)}
-        highlighted={highlighted}
+        $anchor={anchor}
+        $preventCollapse={Boolean(dropPosition)}
+        $highlighted={highlighted}
         ref={containerRef}
       >
         {mainItems.map(renderItem)}
@@ -152,6 +152,7 @@ function ToolWindowStripeButton<T, S>({
   onMoveEnd,
   onPress,
   moveDisabled,
+  active,
   ...otherProps
 }: {
   children: React.ReactNode;
@@ -189,7 +190,8 @@ function ToolWindowStripeButton<T, S>({
 
   return (
     <StyledToolWindowStripeButton
-      anchor={anchor}
+      $anchor={anchor}
+      $active={active}
       {...mergeProps(otherProps, pressProps, props)}
       ref={ref}
     >

@@ -90,7 +90,7 @@ export const List = React.forwardRef(function List<T extends object>(
         {...virtualizerProps}
         {...listProps}
         {...filterDOMProps(props, { labelable: true })}
-        fillAvailableSpace={fillAvailableSpace}
+        $fillAvailableSpace={fillAvailableSpace}
         className={className}
         ref={ref}
       >

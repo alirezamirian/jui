@@ -93,9 +93,9 @@ function Option<T extends object>({
       <StyledListItem
         {...optionProps}
         ref={ref}
-        disabled={isDisabled}
-        selected={isSelected}
-        containerFocused
+        $disabled={isDisabled}
+        $selected={isSelected}
+        $containerFocused
       >
         {item.rendered}
       </StyledListItem>

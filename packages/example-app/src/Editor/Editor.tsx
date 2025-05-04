@@ -2,8 +2,13 @@ import MonacoEditor, { EditorProps } from "@monaco-editor/react";
 import { styled } from "@intellij-platform/core";
 import React from "react";
 import { useEditorTheme } from "./useEditorTheme";
+import { WebTarget } from "styled-components";
 
-export const StyledEditor = styled(MonacoEditor)`
+export const StyledEditor = styled<WebTarget, { $theme?: string | undefined }>(
+  MonacoEditor
+).attrs((props: { $theme: EditorProps["theme"] }) => ({
+  theme: props.$theme,
+}))`
   .monaco-editor {
     .margin-view-overlays .line-numbers {
       text-align: left;
@@ -57,7 +62,7 @@ export const Editor: React.FC<Omit<EditorProps, "theme">> = (
               ...props.options,
             } as EditorProps["options"]
           }
-          theme={editorTheme as any} // FIXME
+          $theme={editorTheme}
         />
       )}
     </>

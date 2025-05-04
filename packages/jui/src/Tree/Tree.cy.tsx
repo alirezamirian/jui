@@ -84,7 +84,7 @@ describe("Tree", () => {
     cy.findAllByRole("treeitem")
       .first()
       .should("have.focus")
-      .should("be.selected");
+      .should("have.attr", "aria-selected", "true");
   });
 
   /**

@@ -217,8 +217,8 @@ export function MenuItem<T>({ item, state }: MenuItemProps<T>) {
     <>
       <StyledMenuItem
         {...menuItemProps}
-        isDisabled={isDisabled}
-        isActive={isFocused}
+        $disabled={isDisabled}
+        $active={isFocused}
         ref={ref}
       >
         {isSelected && (

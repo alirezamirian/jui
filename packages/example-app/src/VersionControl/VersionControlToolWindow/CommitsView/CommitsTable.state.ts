@@ -3,14 +3,11 @@ import { atom } from "jotai";
 import { atomFamily } from "jotai/utils";
 import { Selection } from "@react-types/shared";
 import { indexBy } from "ramda";
-
-import { fs } from "../../../fs/fs";
 import { atomWithRefresh } from "../../../atom-utils/atomWithRefresh";
 import { allBranchesAtom } from "../../Branches/branches.state";
-import { resolvedRefAtoms } from "../../refs.state";
+import { readCommits, resolvedRefAtoms } from "../../git.state";
 import { GitRef } from "../GitRef";
 import { vcsLogFilterCurrentTab } from "../vcs-logs.state";
-import { readCommits } from "../../git-operations/readCommits";
 
 function match(
   input: string,
@@ -34,11 +31,8 @@ type CommitLogItem = {
 
 export const allCommitsAtom = atomWithRefresh<Promise<Array<CommitLogItem>>>(
   async (get) => {
-    // TODO: readCommit can take too long. Suspending anything that depends on it leads to poor UX. would be nicer
-    //  to have the state updated (like an atom instead of selector) when commits are read, instead of query inside
-    //  the selector. But the challenge is that it does depend on another piece of state, allBranchesState
     return readCommits(
-      fs,
+      get,
       ...(await get(allBranchesAtom)).map(
         ({ repoRoot, localBranches, remoteBranches }) => ({
           repoPath: repoRoot,

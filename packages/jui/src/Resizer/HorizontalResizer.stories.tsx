@@ -113,15 +113,15 @@ export const Default: StoryObj<StoryProps> = {
   },
 };
 
-const Handle = styled.div<{ orientation: "horizontal" | "vertical" }>`
+const Handle = styled.div<{ $orientation: "horizontal" | "vertical" }>`
   background: grey;
   border-radius: 100px;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  ${({ orientation }) =>
-    orientation === "horizontal"
+  ${({ $orientation }) =>
+    $orientation === "horizontal"
       ? css`
           height: 42px;
           width: 50%;
@@ -152,7 +152,7 @@ export const CustomAppearance: StoryObj<StoryProps> = {
             props.onResize(...args);
           }}
         >
-          <Handle orientation={orientation} />
+          <Handle $orientation={orientation} />
         </Resizer>
         <SecondSide />
       </Container>

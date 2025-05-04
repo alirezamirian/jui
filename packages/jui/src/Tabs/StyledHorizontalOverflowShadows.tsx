@@ -1,10 +1,5 @@
 import { css, styled } from "@intellij-platform/core/styled";
 
-interface Props {
-  hasOverflowAtStart: boolean;
-  hasOverflowAtEnd: boolean;
-}
-
 const horizontalOverflowIndicatorStyles = css`
   content: "";
   pointer-events: none;
@@ -14,14 +9,17 @@ const horizontalOverflowIndicatorStyles = css`
   width: 10px;
   z-index: 1;
 `;
-export const StyledHorizontalOverflowShadows = styled.div<Props>`
+export const StyledHorizontalOverflowShadows = styled.div<{
+  $hasOverflowAtStart: boolean;
+  $hasOverflowAtEnd: boolean;
+}>`
   position: relative; // for overflow indicator (pseudo-)elements to be positioned absolute
 
   /* FIXME: find out what color, width and gradient parameters are used in the original implementation */
-  ${({ hasOverflowAtStart }) =>
-    hasOverflowAtStart &&
+  ${({ $hasOverflowAtStart }) =>
+    $hasOverflowAtStart &&
     css`
-      ::before {
+      &::before {
         ${horizontalOverflowIndicatorStyles};
         background: linear-gradient(
           90deg,
@@ -31,10 +29,10 @@ export const StyledHorizontalOverflowShadows = styled.div<Props>`
         left: 0;
       }
     `};
-  ${({ hasOverflowAtEnd }) =>
-    hasOverflowAtEnd &&
+  ${({ $hasOverflowAtEnd }) =>
+    $hasOverflowAtEnd &&
     css`
-      ::after {
+      &::after {
         ${horizontalOverflowIndicatorStyles};
         background: linear-gradient(
           -90deg,

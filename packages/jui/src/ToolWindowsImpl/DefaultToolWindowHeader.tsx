@@ -20,7 +20,7 @@ export interface ToolWindowHeaderProps
   additionalActions?: React.ReactNode;
 }
 
-const StyledToolWindowHeader = styled.div<{ active: boolean }>`
+const StyledToolWindowHeader = styled.div<{ $active: boolean }>`
   display: flex;
   align-items: center;
   justify-content: end; // to have the content overflow from right, as the toolwindow shrinks. That will keep the left-most buttons in the view
@@ -33,8 +33,8 @@ const StyledToolWindowHeader = styled.div<{ active: boolean }>`
       ) ||
       theme.color("DefaultTabs.borderColor") ||
       theme.commonColors.contrastBorder};
-  background: ${({ theme, active }) =>
-    active
+  background: ${({ theme, $active }) =>
+    $active
       ? theme.color("ToolWindow.Header.background") ||
         theme.color(
           "ToolWindow.header.active.background" as UnknownThemeProp<"ToolWindow.header.active.background">
@@ -63,7 +63,7 @@ export const DefaultToolWindowHeader: React.FC<ToolWindowHeaderProps> = ({
   ...otherProps
 }) => {
   return (
-    <StyledToolWindowHeader active={contentHasFocus} {...otherProps}>
+    <StyledToolWindowHeader $active={contentHasFocus} {...otherProps}>
       <StyledToolWindowHeaderContent>{children}</StyledToolWindowHeaderContent>
       <StyledToolWindowHeaderActions>
         <Toolbar>

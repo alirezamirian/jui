@@ -13,9 +13,10 @@ export async function getCommitChanges({
   gitdir?: string;
   fromRef: string;
   toRef: string;
-} & Pick<Parameters<typeof git["walk"]>[0], "fs" | "dir" | "gitdir">): Promise<
-  AnyChange[]
-> {
+} & Pick<
+  Parameters<(typeof git)["walk"]>[0],
+  "fs" | "dir" | "gitdir"
+>): Promise<AnyChange[]> {
   let items: AnyChange[] = await git.walk({
     ...params,
     cache,

@@ -90,7 +90,7 @@ export function useList<T>(
   );
 
   return {
-    listProps: mergeProps(listProps, focusWithinProps),
+    listProps: mergeProps(listProps, focusWithinProps, { role: "grid" }),
     listContext,
     focused,
   };

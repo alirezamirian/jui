@@ -320,7 +320,7 @@ export function BranchesPopup({ close }: { close: () => void }) {
                                 }
                                 shortcut={
                                   trackingBranch && (
-                                    <ItemLayout.Hint small>
+                                    <ItemLayout.Hint $small>
                                       {trackingBranch}
                                     </ItemLayout.Hint>
                                   )
