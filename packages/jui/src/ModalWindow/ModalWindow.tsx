@@ -1,4 +1,4 @@
-import React, { RefObject, useContext } from "react";
+import React, { useContext } from "react";
 import { useOverlayTriggerState } from "@react-stately/overlays";
 import {
   Overlay,
@@ -6,7 +6,6 @@ import {
   usePreventScroll,
 } from "@react-aria/overlays";
 import { FocusScope } from "@react-aria/focus";
-import { DOMAttributes } from "@react-types/shared";
 import { useDialog } from "@react-aria/dialog";
 import { AriaDialogProps } from "@react-types/dialog"; // temporary phantom dependency
 import { css, styled } from "@intellij-platform/core/styled";
@@ -19,7 +18,7 @@ import {
 } from "@intellij-platform/core/Overlay";
 import { WindowContext } from "@intellij-platform/core/ModalWindow/WindowContext";
 import { UNSAFE_React17SuspenseFix } from "@intellij-platform/core/Overlay/UNSAFE_React17SuspenseFix";
-import { StyledDelayedLoadingSpinner } from "@intellij-platform/core/ModalWindow/StyledDelayedLoadingSpinner";
+import { ModalLoadingSpinner } from "@intellij-platform/core/ModalWindow/ModalLoadingSpinner";
 
 export interface ModalWindowProps
   extends AriaDialogProps,
@@ -44,7 +43,6 @@ const StyledWindowUnderlay = styled.div`
   position: fixed;
   z-index: 1000; // FIXME: z-index should not be hard-coded like this
   inset: 0;
-  align-content: center; // for loading
 `;
 
 const WINDOW_SHADOW = isMac()
@@ -106,19 +104,43 @@ export const WindowControllerContext = React.createContext<
  *
  */
 export const ModalWindow = ({
-  interactions = "all",
-  minWidth = DEFAULT_WINDOW_MIN_WIDTH,
-  minHeight = DEFAULT_WINDOW_MIN_HEIGHT,
-  className,
   suspense,
   ...props
 }: ModalWindowProps): React.ReactElement => {
+  usePreventScroll();
+
+  const MaybeSuspend = suspense === false ? React.Fragment : React.Suspense;
+  return (
+    // disableFocusManagement is used because FocusScope is rendered in our implementation.
+    // Might be a candidate for refactoring to use the built-in FocusScope of Overlay
+    <Overlay disableFocusManagement>
+      <MaybeSuspend
+        fallback={suspense === undefined ? <ModalLoadingSpinner /> : suspense}
+      >
+        <ModalWindowInner {...props} />
+      </MaybeSuspend>
+    </Overlay>
+  );
+};
+
+/**
+ * Window frame taken out into a separate component, so that hook that measures
+ * content size based on the passed ref is remounted whenever the suspense
+ * boundary unsuspends.
+ */
+function ModalWindowInner({
+  children,
+  className,
+  interactions = "all",
+  minWidth = DEFAULT_WINDOW_MIN_WIDTH,
+  minHeight = DEFAULT_WINDOW_MIN_HEIGHT,
+  ...props
+}: ModalWindowProps) {
   const propsContext = useContext(WindowControllerContext);
   const onClose = () => {
     propsContext.onClose?.();
     props.onClose?.();
   };
-
   const ref = React.useRef<HTMLDivElement>(null);
   const { modalProps, underlayProps } = useModalOverlay(
     {
@@ -140,89 +162,48 @@ export const ModalWindow = ({
     }),
     ref
   );
-  usePreventScroll();
 
-  const MaybeSuspend = suspense === false ? React.Fragment : React.Suspense;
-  return (
-    // disableFocusManagement is used because FocusScope is rendered in our implementation.
-    // Might be a candidate for refactoring to use the built-in FocusScope of Overlay
-    <Overlay disableFocusManagement>
-      <StyledWindowUnderlay {...underlayProps} className={className}>
-        <MaybeSuspend
-          fallback={
-            suspense === undefined ? <StyledDelayedLoadingSpinner /> : suspense
-          }
-        >
-          <WindowFrame
-            modalProps={modalProps}
-            windowRef={ref}
-            modalWindowProps={{ ...props, minHeight, minWidth, interactions }}
-          />
-        </MaybeSuspend>
-      </StyledWindowUnderlay>
-    </Overlay>
-  );
-};
-
-/**
- * Window frame taken out into a separate component, so that hook that measures
- * content size based on the passed ref is remounted whenever the suspense
- * boundary unsuspends.
- */
-function WindowFrame({
-  windowRef,
-  modalProps,
-  modalWindowProps: {
-    minWidth,
-    minHeight,
-    interactions,
-    children,
-    ...modalWindowProps
-  },
-}: {
-  windowRef: RefObject<HTMLDivElement>;
-  modalProps: DOMAttributes;
-  modalWindowProps: ModalWindowProps;
-}) {
-  const { dialogProps, titleProps } = useDialog(modalWindowProps, windowRef);
+  const { dialogProps, titleProps } = useDialog(props, ref);
 
   const {
     bounds: style,
     overlayInteractionHandlerProps,
     UNSAFE_measureContentSize,
-  } = useResizableMovableOverlay(windowRef, {
-    ...modalWindowProps,
+  } = useResizableMovableOverlay(ref, {
+    ...props,
     minHeight,
     minWidth,
   });
 
   return (
-    <OverlayInteractionHandler {...overlayInteractionHandlerProps}>
-      <FocusScope contain restoreFocus autoFocus>
-        <StyledWindowContainer
-          {...mergeProps(dialogProps, modalProps, {
-            style,
-          })}
-          ref={windowRef}
-        >
-          <StyledWindowInnerContainer>
-            <WindowContext.Provider
-              value={{
-                isActive: true, // because it's modal. WindowContext would be used for non-modal windows too, in future
-                titleProps,
-                movable: interactions !== "none",
-              }}
-            >
-              <UNSAFE_React17SuspenseFix
-                measureContentSize={UNSAFE_measureContentSize}
+    <StyledWindowUnderlay {...underlayProps} className={className}>
+      <OverlayInteractionHandler {...overlayInteractionHandlerProps}>
+        <FocusScope contain restoreFocus autoFocus>
+          <StyledWindowContainer
+            {...mergeProps(dialogProps, modalProps, {
+              style,
+            })}
+            ref={ref}
+          >
+            <StyledWindowInnerContainer>
+              <WindowContext.Provider
+                value={{
+                  isActive: true, // because it's modal. WindowContext would be used for non-modal windows too, in future
+                  titleProps,
+                  movable: interactions !== "none",
+                }}
               >
-                {children}
-              </UNSAFE_React17SuspenseFix>
-            </WindowContext.Provider>
-          </StyledWindowInnerContainer>
-          {interactions === "all" && <OverlayResizeHandles />}
-        </StyledWindowContainer>
-      </FocusScope>
-    </OverlayInteractionHandler>
+                <UNSAFE_React17SuspenseFix
+                  measureContentSize={UNSAFE_measureContentSize}
+                >
+                  {children}
+                </UNSAFE_React17SuspenseFix>
+              </WindowContext.Provider>
+            </StyledWindowInnerContainer>
+            {interactions === "all" && <OverlayResizeHandles />}
+          </StyledWindowContainer>
+        </FocusScope>
+      </OverlayInteractionHandler>
+    </StyledWindowUnderlay>
   );
 }

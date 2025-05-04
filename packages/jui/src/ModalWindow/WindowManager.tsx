@@ -12,7 +12,7 @@ import {
   ModalWindowProps,
   WindowControllerContext,
 } from "./ModalWindow";
-import { StyledDelayedLoadingSpinner } from "./StyledDelayedLoadingSpinner";
+import { ModalLoadingSpinner } from "./ModalLoadingSpinner";
 
 export interface WindowManagerAPI {
   /**
@@ -126,7 +126,7 @@ export const WindowManager: React.FC<WindowManagerProps> = ({ children }) => {
               For now, it didn't seem necessary to have an option on whether to suspend and what fallback UI to render,
               the same way that it's an option in ModalWindow.
               */}
-              <Suspense fallback={<StyledDelayedLoadingSpinner />}>
+              <Suspense fallback={<ModalLoadingSpinner />}>
                 {typeof content === "function"
                   ? // @ts-expect-error close signature is not correctly inferred
                     content({ close })
